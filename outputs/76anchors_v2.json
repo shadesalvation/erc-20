@@ -1,0 +1,549 @@
+{
+  "source": "TOKENS/0x76b6e1987f839b625f776d866e4678f8b4602326/FITEST3000.sol",
+  "schema_version": "erc20-security-anchor-v2",
+  "notes": [
+    "candidate_security_type is rule-based and should be reviewed manually for assembly-heavy contracts.",
+    "This script extracts anchors and raw facts; it does not perform full slicing or code deletion."
+  ],
+  "contracts": [
+    {
+      "contract": "IERC20",
+      "state_variable_roles": [],
+      "erc20_entrypoints_found": [],
+      "entrypoint_reports": [],
+      "warnings": []
+    },
+    {
+      "contract": "IWBNB",
+      "state_variable_roles": [],
+      "erc20_entrypoints_found": [],
+      "entrypoint_reports": [],
+      "warnings": []
+    },
+    {
+      "contract": "PancakeFactory",
+      "state_variable_roles": [],
+      "erc20_entrypoints_found": [],
+      "entrypoint_reports": [],
+      "warnings": []
+    },
+    {
+      "contract": "PancakeRouter",
+      "state_variable_roles": [],
+      "erc20_entrypoints_found": [],
+      "entrypoint_reports": [],
+      "warnings": []
+    },
+    {
+      "contract": "SwapHelper",
+      "state_variable_roles": [],
+      "erc20_entrypoints_found": [],
+      "entrypoint_reports": [],
+      "warnings": []
+    },
+    {
+      "contract": "DividendTracker",
+      "state_variable_roles": [
+        {
+          "name": "MAG",
+          "slot_index_guess": 0,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "USDT",
+          "slot_index_guess": 1,
+          "type": "IERC20",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "WBNB",
+          "slot_index_guess": 2,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "TOKEN",
+          "slot_index_guess": 3,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "MIN_HOLD",
+          "slot_index_guess": 4,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "idx",
+          "slot_index_guess": 5,
+          "type": "mapping(address => uint256)",
+          "semantic_role": "POSSIBLE_BALANCE_STATE",
+          "confidence": "LOW",
+          "evidence": [
+            "type resembles mapping(address=>uint256)"
+          ]
+        },
+        {
+          "name": "holders",
+          "slot_index_guess": 6,
+          "type": "address[]",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "excluded",
+          "slot_index_guess": 7,
+          "type": "mapping(address => bool)",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "shares",
+          "slot_index_guess": 8,
+          "type": "mapping(address => uint256)",
+          "semantic_role": "POSSIBLE_BALANCE_STATE",
+          "confidence": "LOW",
+          "evidence": [
+            "type resembles mapping(address=>uint256)"
+          ]
+        },
+        {
+          "name": "totalShares",
+          "slot_index_guess": 9,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "magnifiedUSDT",
+          "slot_index_guess": 10,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "magnifiedBNB",
+          "slot_index_guess": 11,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "corrUSDT",
+          "slot_index_guess": 12,
+          "type": "mapping(address => int256)",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "corrBNB",
+          "slot_index_guess": 13,
+          "type": "mapping(address => int256)",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "withdrawnUSDT",
+          "slot_index_guess": 14,
+          "type": "mapping(address => uint256)",
+          "semantic_role": "POSSIBLE_BALANCE_STATE",
+          "confidence": "LOW",
+          "evidence": [
+            "type resembles mapping(address=>uint256)"
+          ]
+        },
+        {
+          "name": "withdrawnBNB",
+          "slot_index_guess": 15,
+          "type": "mapping(address => uint256)",
+          "semantic_role": "POSSIBLE_BALANCE_STATE",
+          "confidence": "LOW",
+          "evidence": [
+            "type resembles mapping(address=>uint256)"
+          ]
+        },
+        {
+          "name": "totalDistributedUSDT",
+          "slot_index_guess": 16,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "totalDistributedBNB",
+          "slot_index_guess": 17,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "lastProcessedIndex",
+          "slot_index_guess": 18,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        }
+      ],
+      "erc20_entrypoints_found": [],
+      "entrypoint_reports": [],
+      "warnings": []
+    },
+    {
+      "contract": "FITEST3000",
+      "state_variable_roles": [
+        {
+          "name": "FEE_DENOM",
+          "slot_index_guess": 0,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "SWAP_FEE_NUM",
+          "slot_index_guess": 1,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "DEAD",
+          "slot_index_guess": 2,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "USDT",
+          "slot_index_guess": 3,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "WBNB",
+          "slot_index_guess": 4,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "PANCAKE_ROUTER",
+          "slot_index_guess": 5,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "_n",
+          "slot_index_guess": 6,
+          "type": "string",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "_s",
+          "slot_index_guess": 7,
+          "type": "string",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "_dec",
+          "slot_index_guess": 8,
+          "type": "uint8",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "_max",
+          "slot_index_guess": 9,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "tradingEnabled",
+          "slot_index_guess": 10,
+          "type": "bool",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "buyF1",
+          "slot_index_guess": 11,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "sellDev1",
+          "slot_index_guess": 12,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "sellDev2",
+          "slot_index_guess": 13,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "sellDev3",
+          "slot_index_guess": 14,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "sellReflection",
+          "slot_index_guess": 15,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "sellFeePayout",
+          "slot_index_guess": 16,
+          "type": "uint8",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "exemptFee",
+          "slot_index_guess": 17,
+          "type": "mapping(address => bool)",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "feePairs",
+          "slot_index_guess": 18,
+          "type": "mapping(address => bool)",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "liquidityPool",
+          "slot_index_guess": 19,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "developingWallet1",
+          "slot_index_guess": 20,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "developingWallet2",
+          "slot_index_guess": 21,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "developingWallet3",
+          "slot_index_guess": 22,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "minUsdToSwap",
+          "slot_index_guess": 23,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "autoSwapOnSell",
+          "slot_index_guess": 24,
+          "type": "bool",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "gasForProcessing",
+          "slot_index_guess": 25,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "swapHelper",
+          "slot_index_guess": 26,
+          "type": "SwapHelper",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "WBNB_USDT_PAIR",
+          "slot_index_guess": 27,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "WBNB_TOKEN_PAIR",
+          "slot_index_guess": 28,
+          "type": "address",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "dividendTracker",
+          "slot_index_guess": 29,
+          "type": "DividendTracker",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "operators",
+          "slot_index_guess": 30,
+          "type": "mapping(address => bool)",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "taxEnabled",
+          "slot_index_guess": 31,
+          "type": "bool",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "minSaneReserve",
+          "slot_index_guess": 32,
+          "type": "uint112",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "vestingInfo",
+          "slot_index_guess": 33,
+          "type": "mapping(address => FITEST3000.VestingInfo)",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "isVestingWallet",
+          "slot_index_guess": 34,
+          "type": "mapping(address => bool)",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "isBeneficiaryAdded",
+          "slot_index_guess": 35,
+          "type": "mapping(address => bool)",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "releaseInterval",
+          "slot_index_guess": 36,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "releasePercentage",
+          "slot_index_guess": 37,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "vestingCycles",
+          "slot_index_guess": 38,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "vestingDuration",
+          "slot_index_guess": 39,
+          "type": "uint256",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        },
+        {
+          "name": "_noReentrancy",
+          "slot_index_guess": 40,
+          "type": "bool",
+          "semantic_role": "UNKNOWN_STATE",
+          "confidence": "LOW",
+          "evidence": []
+        }
+      ],
+      "erc20_entrypoints_found": [],
+      "entrypoint_reports": [],
+      "warnings": []
+    }
+  ]
+}

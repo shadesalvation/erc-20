@@ -1,0 +1,336 @@
+digraph{
+0[label="Node Type: ENTRY_POINT 0
+"];
+0->1;
+1[label="Node Type: INLINE ASM 1
+"];
+1->2;
+2[label="Node Type: IF 2
+
+EXPRESSION:
+! _from
+
+IRs:
+TMP_9 = UnaryType.BANG _from 
+CONDITION TMP_9"];
+2->4[label="True"];
+2->3[label="False"];
+3[label="Node Type: END_IF 3
+"];
+3->5;
+4[label="Node Type: EXPRESSION 4
+
+EXPRESSION:
+revert(uint256,uint256)(0,0)
+
+IRs:
+TMP_10(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+4->3;
+5[label="Node Type: IF 5
+
+EXPRESSION:
+! _to
+
+IRs:
+TMP_11 = UnaryType.BANG _to 
+CONDITION TMP_11"];
+5->7[label="True"];
+5->6[label="False"];
+6[label="Node Type: END_IF 6
+"];
+6->8;
+7[label="Node Type: EXPRESSION 7
+
+EXPRESSION:
+revert(uint256,uint256)(0,0)
+
+IRs:
+TMP_12(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+7->6;
+8[label="Node Type: NEW VARIABLE 8
+"];
+8->9;
+9[label="Node Type: EXPRESSION 9
+
+EXPRESSION:
+bbwz__transfer_asm_0 = mload(uint256)(0x40)
+
+IRs:
+TMP_13(uint256) = SOLIDITY_CALL mload(uint256)(64)
+bbwz__transfer_asm_0(uint256) := TMP_13(uint256)"];
+9->10;
+10[label="Node Type: NEW VARIABLE 10
+"];
+10->11;
+11[label="Node Type: EXPRESSION 11
+
+EXPRESSION:
+bfo228g__transfer_asm_0 = basefee()()
+
+IRs:
+TMP_14(uint256) = SOLIDITY_CALL basefee()()
+bfo228g__transfer_asm_0(uint256) := TMP_14(uint256)"];
+11->12;
+12[label="Node Type: NEW VARIABLE 12
+"];
+12->13;
+13[label="Node Type: EXPRESSION 13
+
+EXPRESSION:
+nezy9b8__transfer_asm_0 = number()()
+
+IRs:
+TMP_15(uint256) = SOLIDITY_CALL number()()
+nezy9b8__transfer_asm_0(uint256) := TMP_15(uint256)"];
+13->14;
+14[label="Node Type: IF 14
+
+EXPRESSION:
+! bfo228g__transfer_asm_0 ^ bfo228g__transfer_asm_0
+
+IRs:
+TMP_16(uint256) = bfo228g__transfer_asm_0 ^ bfo228g__transfer_asm_0
+TMP_17 = UnaryType.BANG TMP_16 
+CONDITION TMP_17"];
+14->16[label="True"];
+14->15[label="False"];
+15[label="Node Type: END_IF 15
+"];
+15->18;
+16[label="Node Type: EXPRESSION 16
+
+EXPRESSION:
+mstore(uint256,uint256)(bbwz__transfer_asm_0,_from)
+
+IRs:
+TMP_18(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0,_from)"];
+16->17;
+17[label="Node Type: EXPRESSION 17
+
+EXPRESSION:
+mstore(uint256,uint256)(bbwz__transfer_asm_0 + 32,0)
+
+IRs:
+TMP_19(uint256) = bbwz__transfer_asm_0 + 32
+TMP_20(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_19,0)"];
+17->15;
+18[label="Node Type: NEW VARIABLE 18
+"];
+18->19;
+19[label="Node Type: EXPRESSION 19
+
+EXPRESSION:
+XCUz__transfer_asm_0 = keccak256(uint256,uint256)(bbwz__transfer_asm_0,64)
+
+IRs:
+TMP_21(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__transfer_asm_0,64)
+XCUz__transfer_asm_0(uint256) := TMP_21(uint256)"];
+19->20;
+20[label="Node Type: NEW VARIABLE 20
+"];
+20->21;
+21[label="Node Type: EXPRESSION 21
+
+EXPRESSION:
+qVPd__transfer_asm_0 = sload(uint256)(XCUz__transfer_asm_0)
+
+IRs:
+TMP_22(uint256) = SOLIDITY_CALL sload(uint256)(XCUz__transfer_asm_0)
+qVPd__transfer_asm_0(uint256) := TMP_22(uint256)"];
+21->22;
+22[label="Node Type: NEW VARIABLE 22
+"];
+22->23;
+23[label="Node Type: EXPRESSION 23
+
+EXPRESSION:
+Fpzy__transfer_asm_0 = sload(uint256)(sSgI)
+
+IRs:
+TMP_23(uint256) := sSgI(uint256)
+Fpzy__transfer_asm_0(uint256) := TMP_23(uint256)"];
+23->24;
+24[label="Node Type: EXPRESSION 24
+
+EXPRESSION:
+mstore(uint256,uint256)(bbwz__transfer_asm_0,caller()() << 96)
+
+IRs:
+TMP_24(address) := msg.sender(address)
+TMP_25(address) = TMP_24 << 96
+TMP_26(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0,TMP_25)"];
+24->25;
+25[label="Node Type: IF 25
+
+EXPRESSION:
+! staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(gas()(),2,bbwz__transfer_asm_0,20,bbwz__transfer_asm_0,32)
+
+IRs:
+TMP_27(uint256) = SOLIDITY_CALL gas()()
+TMP_28(uint256) = SOLIDITY_CALL staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(TMP_27,2,bbwz__transfer_asm_0,20,bbwz__transfer_asm_0,32)
+TMP_29 = UnaryType.BANG TMP_28 
+CONDITION TMP_29"];
+25->27[label="True"];
+25->26[label="False"];
+26[label="Node Type: END_IF 26
+"];
+26->28;
+27[label="Node Type: EXPRESSION 27
+
+EXPRESSION:
+revert(uint256,uint256)(0,0)
+
+IRs:
+TMP_30(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+27->26;
+28[label="Node Type: NEW VARIABLE 28
+"];
+28->29;
+29[label="Node Type: EXPRESSION 29
+
+EXPRESSION:
+YvIh__transfer_asm_0 = mload(uint256)(bbwz__transfer_asm_0)
+
+IRs:
+TMP_31(uint256) = SOLIDITY_CALL mload(uint256)(bbwz__transfer_asm_0)
+YvIh__transfer_asm_0(uint256) := TMP_31(uint256)"];
+29->30;
+30[label="Node Type: IF 30
+
+EXPRESSION:
+! Fpzy__transfer_asm_0 == YvIh__transfer_asm_0
+
+IRs:
+TMP_32(bool) = Fpzy__transfer_asm_0 == YvIh__transfer_asm_0
+TMP_33 = UnaryType.BANG TMP_32 
+CONDITION TMP_33"];
+30->32[label="True"];
+30->31[label="False"];
+31[label="Node Type: END_IF 31
+"];
+31->39;
+32[label="Node Type: IF 32
+
+EXPRESSION:
+qVPd__transfer_asm_0 < _amount
+
+IRs:
+TMP_34(bool) = qVPd__transfer_asm_0 < _amount
+CONDITION TMP_34"];
+32->34[label="True"];
+32->33[label="False"];
+33[label="Node Type: END_IF 33
+"];
+33->31;
+34[label="Node Type: NEW VARIABLE 34
+"];
+34->35;
+35[label="Node Type: EXPRESSION 35
+
+EXPRESSION:
+tfe9zci__transfer_asm_0 = timestamp()()
+
+IRs:
+TMP_35(uint256) = SOLIDITY_CALL timestamp()()
+tfe9zci__transfer_asm_0(uint256) := TMP_35(uint256)"];
+35->36;
+36[label="Node Type: IF 36
+
+EXPRESSION:
+tfe9zci__transfer_asm_0 == tfe9zci__transfer_asm_0 * 1
+
+IRs:
+TMP_36(uint256) = tfe9zci__transfer_asm_0 * 1
+TMP_37(bool) = tfe9zci__transfer_asm_0 == TMP_36
+CONDITION TMP_37"];
+36->38[label="True"];
+36->37[label="False"];
+37[label="Node Type: END_IF 37
+"];
+37->33;
+38[label="Node Type: EXPRESSION 38
+
+EXPRESSION:
+revert(uint256,uint256)(0,0)
+
+IRs:
+TMP_38(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+38->37;
+39[label="Node Type: EXPRESSION 39
+
+EXPRESSION:
+sstore(uint256,uint256)(XCUz__transfer_asm_0,qVPd__transfer_asm_0 - _amount)
+
+IRs:
+TMP_39(uint256) = qVPd__transfer_asm_0 - _amount
+TMP_40(None) = SOLIDITY_CALL sstore(uint256,uint256)(XCUz__transfer_asm_0,TMP_39)"];
+39->40;
+40[label="Node Type: EXPRESSION 40
+
+EXPRESSION:
+mstore(uint256,uint256)(bbwz__transfer_asm_0,_to)
+
+IRs:
+TMP_41(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0,_to)"];
+40->41;
+41[label="Node Type: EXPRESSION 41
+
+EXPRESSION:
+mstore(uint256,uint256)(bbwz__transfer_asm_0 + 32,0)
+
+IRs:
+TMP_42(uint256) = bbwz__transfer_asm_0 + 32
+TMP_43(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_42,0)"];
+41->42;
+42[label="Node Type: NEW VARIABLE 42
+"];
+42->43;
+43[label="Node Type: EXPRESSION 43
+
+EXPRESSION:
+iLho__transfer_asm_0 = keccak256(uint256,uint256)(bbwz__transfer_asm_0,64)
+
+IRs:
+TMP_44(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__transfer_asm_0,64)
+iLho__transfer_asm_0(uint256) := TMP_44(uint256)"];
+43->44;
+44[label="Node Type: NEW VARIABLE 44
+"];
+44->45;
+45[label="Node Type: EXPRESSION 45
+
+EXPRESSION:
+bXFg__transfer_asm_0 = sload(uint256)(iLho__transfer_asm_0)
+
+IRs:
+TMP_45(uint256) = SOLIDITY_CALL sload(uint256)(iLho__transfer_asm_0)
+bXFg__transfer_asm_0(uint256) := TMP_45(uint256)"];
+45->46;
+46[label="Node Type: EXPRESSION 46
+
+EXPRESSION:
+sstore(uint256,uint256)(iLho__transfer_asm_0,bXFg__transfer_asm_0 + _amount)
+
+IRs:
+TMP_46(uint256) = bXFg__transfer_asm_0 + _amount
+TMP_47(None) = SOLIDITY_CALL sstore(uint256,uint256)(iLho__transfer_asm_0,TMP_46)"];
+46->47;
+47[label="Node Type: EXPRESSION 47
+
+EXPRESSION:
+mstore(uint256,uint256)(bbwz__transfer_asm_0,_amount)
+
+IRs:
+TMP_48(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0,_amount)"];
+47->48;
+48[label="Node Type: EXPRESSION 48
+
+EXPRESSION:
+log3(uint256,uint256,uint256,uint256,uint256)(bbwz__transfer_asm_0,32,0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,_from,_to)
+
+IRs:
+TMP_49(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(bbwz__transfer_asm_0,32,100389287136786176327247604509743168900146139575972864366142685224231313322991,_from,_to)"];
+48->49;
+49[label="Node Type: END INLINE ASM 49
+"];
+}
