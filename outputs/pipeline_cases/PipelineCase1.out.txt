@@ -1,0 +1,93 @@
+INFO:AssemblyRecoveryPipeline:Source /tmp/pipeline_cases/PipelineCase1.sol
+INFO:AssemblyRecoveryPipeline:Input Solidity source only
+INFO:AssemblyRecoveryPipeline:GeneratedSlithIRSSA internal temporary file
+INFO:AssemblyRecoveryPipeline:GeneratedVariablesOrder internal temporary file
+INFO:AssemblyRecoveryPipeline:Assembly blocks 1
+INFO:AssemblyRecoveryPipeline:Note output is a semantic view; source is not modified and output is not compiled
+
+Contract PipelineCase1
+	Function PipelineCase1.f
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase1.f#0
+			SourceRange: line 5:9 to line 18:9
+		Original Assembly:
+		```solidity
+		assembly {
+		            if iszero(a) {
+		                revert(0, 0)
+		            }
+		            let p := mload(0x40)
+		            mstore(p, a)
+		            mstore(add(p, 32), bal.slot)
+		            let slot := keccak256(p, 64)
+		            let old := sload(slot)
+		            if lt(old, amount) {
+		                revert(0, 0)
+		            }
+		            sstore(slot, sub(old, amount))
+		        }
+		```
+		Processed Assembly View After Memory + Storage + Revert Recovery:
+		```solidity
+		assembly /* recovered semantic view */ {
+		    require(a != address(0)); // yul: revert(0, 0)
+		    p = memory[0x40]; // yul: let p := mload(0x40)
+		    memory[p + 0] = a; // yul: mstore(p, a)
+		    memory[p + 32] = bal.slot; // yul: mstore(add(p, 32), bal.slot)
+		    slot = slot(bal[a]); // yul: let slot := keccak256(p, 64)
+		    old = bal[a]; // yul: let old := sload(slot)
+		    require(!(old < amount)); // yul: revert(0, 0)
+		    unchecked { bal[a] = old - amount; } // yul: sstore(slot, sub(old, amount))
+		}
+		```
+		Recovered Revert Summary:
+			[1] require(a != address(0)); control=iszero(a)
+			[8] require(!(old < amount)); control=lt(old, amount)
+		Recovered Storage Summary:
+			[5] SLOT slot := bal[a]
+			[6] READ old = bal[a]; control=none
+			[9] WRITE unchecked: unchecked { bal[a] = old - amount; } control=none
+
+----- Full Storage IR -----
+INFO:AssemblyStorageIR:Source /tmp/pipeline_cases/PipelineCase1.sol
+INFO:AssemblyStorageIR:SlithIR-SSA /tmp/assembly_pipeline_xblkm8c8/slithir_ssa.generated.txt
+INFO:AssemblyStorageIR:VariablesOrder /tmp/assembly_pipeline_xblkm8c8/variables_order.generated.txt
+INFO:AssemblyStorageIR:Assembly blocks 1
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result.
+
+Contract PipelineCase1
+	Function PipelineCase1.f(address,uint256)
+		Parameters: address a, uint256 amount
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase1.f#0
+			SourceRange: line 5:9 to line 18:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[5] MAPPING_SLOT: slot := bal[a]
+				Key: a
+				Base: bal.slot
+				StateVariable: bal
+				ResolvedInputs: [0: a, 32: bal.slot]
+				ControlPath: none
+				Yul: let slot := keccak256(p, 64)
+		Storage Reads:
+			[6] MAPPING_READ: old := bal[a]
+				Slot: slot
+				StateVariable: bal
+				SolidityLike: old = bal[a];
+				ControlPath: none
+				Yul: let old := sload(slot)
+		Storage Writes:
+			[9] MAPPING_WRITE: bal[a] := old - amount
+				Slot: slot
+				StateVariable: bal
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { bal[a] = old - amount; }
+				ControlPath: none
+				Yul: sstore(slot, sub(old, amount))
+		Storage Semantic Replacement View:
+			slot = slot(bal[a]); // yul: let slot := keccak256(p, 64)
+			old = bal[a]; // yul: let old := sload(slot)
+			unchecked { bal[a] = old - amount; } // yul: sstore(slot, sub(old, amount))

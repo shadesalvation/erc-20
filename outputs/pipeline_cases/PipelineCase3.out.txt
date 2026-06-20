@@ -1,0 +1,104 @@
+INFO:AssemblyRecoveryPipeline:Source /tmp/pipeline_cases/PipelineCase3.sol
+INFO:AssemblyRecoveryPipeline:Input Solidity source only
+INFO:AssemblyRecoveryPipeline:GeneratedSlithIRSSA internal temporary file
+INFO:AssemblyRecoveryPipeline:GeneratedVariablesOrder internal temporary file
+INFO:AssemblyRecoveryPipeline:Assembly blocks 1
+INFO:AssemblyRecoveryPipeline:Note output is a semantic view; source is not modified and output is not compiled
+
+Contract PipelineCase3
+	Function PipelineCase3.f
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase3.f#0
+			SourceRange: line 6:9 to line 21:9
+		Original Assembly:
+		```solidity
+		assembly {
+		            let p := mload(0x40)
+		            if gt(amount, 10) {
+		                let t := timestamp()
+		                if eq(t, mul(t, 1)) {
+		                    revert(0, 0)
+		                }
+		            }
+		            mstore(p, x)
+		            mstore(add(p, 32), data.slot)
+		            let slot := keccak256(p, 64)
+		            sstore(slot, add(sload(slot), amount))
+		            if iszero(sload(gate.slot)) {
+		                revert(0, 0)
+		            }
+		        }
+		```
+		Processed Assembly View After Memory + Storage + Revert Recovery:
+		```solidity
+		assembly /* recovered semantic view */ {
+		    p = memory[0x40]; // yul: let p := mload(0x40)
+		    if (gt(amount, 10)) // yul: if gt(amount, 10)
+		        t = timestamp(); // yul: let t := timestamp()
+		        require(!(t == t * 1)); // yul: revert(0, 0)
+		    memory[p + 0] = x; // yul: mstore(p, x)
+		    memory[p + 32] = data.slot; // yul: mstore(add(p, 32), data.slot)
+		    slot = slot(data[x]); // yul: let slot := keccak256(p, 64)
+		    unchecked { data[x] = data[x] + amount; } // yul: sstore(slot, add(sload(slot), amount))
+		    require(gate != 0); // yul: revert(0, 0)
+		}
+		```
+		Recovered Revert Summary:
+			[4] require(!(t == t * 1)); control=gt(amount, 10) -> eq(t, mul(t, 1))
+			[10] require(gate != 0); control=iszero(sload(gate.slot))
+		Recovered Storage Summary:
+			[7] SLOT slot := data[x]
+			[8] READ read data[x]; control=none
+			[8] WRITE unchecked: unchecked { data[x] = sload(slot) + amount; } control=none
+			[9] READ read gate; control=none
+
+----- Full Storage IR -----
+INFO:AssemblyStorageIR:Source /tmp/pipeline_cases/PipelineCase3.sol
+INFO:AssemblyStorageIR:SlithIR-SSA /tmp/assembly_pipeline_ykklbmrd/slithir_ssa.generated.txt
+INFO:AssemblyStorageIR:VariablesOrder /tmp/assembly_pipeline_ykklbmrd/variables_order.generated.txt
+INFO:AssemblyStorageIR:Assembly blocks 1
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result.
+
+Contract PipelineCase3
+	Function PipelineCase3.f(uint256,uint256)
+		Parameters: uint256 x, uint256 amount
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase3.f#0
+			SourceRange: line 6:9 to line 21:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[7] MAPPING_SLOT: slot := data[x]
+				Key: x
+				Base: data.slot
+				StateVariable: data
+				ResolvedInputs: [0: x, 32: data.slot]
+				ControlPath: none
+				Yul: let slot := keccak256(p, 64)
+		Storage Reads:
+			[8] INLINE_MAPPING_READ: _ := data[x]
+				Slot: slot
+				StateVariable: data
+				SolidityLike: read data[x];
+				ControlPath: none
+				Yul: sstore(slot, add(sload(slot), amount))
+			[9] INLINE_STATE_VARIABLE_READ: _ := gate
+				Slot: gate.slot
+				StateVariable: gate
+				SolidityLike: read gate;
+				ControlPath: none
+				Yul: if iszero(sload(gate.slot))
+		Storage Writes:
+			[8] MAPPING_WRITE: data[x] := sload(slot) + amount
+				Slot: slot
+				StateVariable: data
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { data[x] = sload(slot) + amount; }
+				ControlPath: none
+				Yul: sstore(slot, add(sload(slot), amount))
+		Storage Semantic Replacement View:
+			slot = slot(data[x]); // yul: let slot := keccak256(p, 64)
+			read data[x]; // yul: sstore(slot, add(sload(slot), amount))
+			unchecked { data[x] = sload(slot) + amount; } // yul: sstore(slot, add(sload(slot), amount))
+			read gate; // yul: if iszero(sload(gate.slot))

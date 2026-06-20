@@ -1,0 +1,648 @@
+INFO:AssemblySemanticIR:Source TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol
+INFO:AssemblySemanticIR:SlithIR-SSA TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/slithir_ssa.txt
+INFO:AssemblySemanticIR:Assembly blocks 3
+INFO:AssemblySemanticIR:Note This IR is a semantic replacement view only. It is not compiled and does not modify the source.
+
+Contract Token
+	Function Token._transfer(address,address,uint256)
+		Parameters: address _from, address _to, uint256 _amount
+		Visibility: internal
+		ERC20Entry: no
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._transfer#0
+			SourceRange: line 66:9 to line 104:9
+			OffsetRange: 2079:3451
+		Semantic IRs:
+			[0] CONDITION: CONDITION iszero(_from)
+						SolidityLike: if (iszero(_from))
+						Yul: if iszero(_from)
+			[1] REVERT: REVERT args(0, 0)
+						ControlPath: iszero(_from)
+						SolidityLike: revert(0, 0);
+						Yul: revert(0, 0)
+			[2] CONDITION: CONDITION iszero(_to)
+						SolidityLike: if (iszero(_to))
+						Yul: if iszero(_to)
+			[3] REVERT: REVERT args(0, 0)
+						ControlPath: iszero(_to)
+						SolidityLike: revert(0, 0);
+						Yul: revert(0, 0)
+			[4] MEMORY_READ: bbwz := MLOAD 0x40
+						Resolved: [0: unknown]
+						SolidityLike: bbwz = memory[0x40];
+						Yul: let bbwz := mload(0x40)
+			[5] ASSIGNMENT: bfo228g := basefee()
+						SolidityLike: bfo228g = basefee();
+						Yul: let bfo228g := basefee()
+			[6] ASSIGNMENT: nezy9b8 := number()
+						SolidityLike: nezy9b8 = number();
+						Yul: let nezy9b8 := number()
+			[7] CONDITION: CONDITION iszero(xor(bfo228g, bfo228g))
+						SolidityLike: if (iszero(xor(bfo228g, bfo228g)))
+						Yul: if iszero(xor(bfo228g, bfo228g))
+			[8] MEMORY_WRITE: MSTORE mem[bbwz + 0] := _from
+						MemoryAfter: [0/size 32: _from]
+						ControlPath: iszero(xor(bfo228g, bfo228g))
+						SolidityLike: memory[bbwz + 0] = _from;
+						Yul: mstore(bbwz, _from)
+			[9] MEMORY_WRITE: MSTORE mem[bbwz + 32] := 0
+						MemoryAfter: [0/size 32: _from, 32/size 32: 0]
+						ControlPath: iszero(xor(bfo228g, bfo228g))
+						SolidityLike: memory[bbwz + 32] = 0;
+						Yul: mstore(add(bbwz, 32), 0)
+			[10] MEMORY_HASH: XCUz := KECCAK256 bbwz len 64
+						ResolvedInputs: [0: _from, 32: 0]
+						SolidityLike: XCUz = keccak256(_from, 0);
+						Yul: let XCUz := keccak256(bbwz, 64)
+			[11] STORAGE_READ: qVPd := SLOAD XCUz
+						SolidityLike: qVPd = sload(XCUz);
+						Yul: let qVPd := sload(XCUz)
+			[12] STORAGE_READ: Fpzy := SLOAD sSgI.slot
+						SolidityLike: Fpzy = sload(sSgI.slot);
+						Yul: let Fpzy := sload(sSgI.slot)
+			[13] MEMORY_WRITE: MSTORE mem[bbwz + 0] := shl(96, caller())
+						MemoryAfter: [0/size 32: _from, 32/size 32: 0, 0/size 32: shl(96, caller())]
+						SolidityLike: memory[bbwz + 0] = shl(96, caller());
+						Yul: mstore(bbwz, shl(96, caller()))
+			[14] CONDITION: CONDITION iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+						SolidityLike: if (iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))
+						Yul: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+			[15] REVERT: REVERT args(0, 0)
+						ControlPath: iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+						SolidityLike: revert(0, 0);
+						Yul: revert(0, 0)
+			[16] MEMORY_READ: YvIh := MLOAD bbwz
+						Resolved: [0: shl(96, caller())]
+						SolidityLike: YvIh = memory[bbwz];
+						Yul: let YvIh := mload(bbwz)
+			[17] CONDITION: CONDITION iszero(eq(Fpzy, YvIh))
+						SolidityLike: if (iszero(eq(Fpzy, YvIh)))
+						Yul: if iszero(eq(Fpzy, YvIh))
+			[18] CONDITION: CONDITION lt(qVPd, _amount)
+						ControlPath: iszero(eq(Fpzy, YvIh))
+						SolidityLike: if (lt(qVPd, _amount))
+						Yul: if lt(qVPd, _amount)
+			[19] ASSIGNMENT: tfe9zci := timestamp()
+						ControlPath: iszero(eq(Fpzy, YvIh)) -> lt(qVPd, _amount)
+						SolidityLike: tfe9zci = timestamp();
+						Yul: let tfe9zci := timestamp()
+			[20] CONDITION: CONDITION eq(tfe9zci, mul(tfe9zci, 1))
+						ControlPath: iszero(eq(Fpzy, YvIh)) -> lt(qVPd, _amount)
+						SolidityLike: if (eq(tfe9zci, mul(tfe9zci, 1)))
+						Yul: if eq(tfe9zci, mul(tfe9zci, 1))
+			[21] REVERT: REVERT args(0, 0)
+						ControlPath: iszero(eq(Fpzy, YvIh)) -> lt(qVPd, _amount) -> eq(tfe9zci, mul(tfe9zci, 1))
+						SolidityLike: revert(0, 0);
+						Yul: revert(0, 0)
+			[22] STORAGE_WRITE: SSTORE XCUz := sub(qVPd, _amount)
+						Flag: unchecked_arithmetic_candidate
+						SolidityLike: sstore(XCUz, sub(qVPd, _amount));
+						Yul: sstore(XCUz, sub(qVPd, _amount))
+			[23] MEMORY_WRITE: MSTORE mem[bbwz + 0] := _to
+						MemoryAfter: [0/size 32: _from, 32/size 32: 0, 0/size 32: shl(96, caller()), 0/size 32: _to]
+						SolidityLike: memory[bbwz + 0] = _to;
+						Yul: mstore(bbwz, _to)
+			[24] MEMORY_WRITE: MSTORE mem[bbwz + 32] := 0
+						MemoryAfter: [0/size 32: _from, 32/size 32: 0, 0/size 32: shl(96, caller()), 0/size 32: _to, 32/size 32: 0]
+						SolidityLike: memory[bbwz + 32] = 0;
+						Yul: mstore(add(bbwz, 32), 0)
+			[25] MEMORY_HASH: iLho := KECCAK256 bbwz len 64
+						ResolvedInputs: [0: _to, 32: 0]
+						SolidityLike: iLho = keccak256(_to, 0);
+						Yul: let iLho := keccak256(bbwz, 64)
+			[26] STORAGE_READ: bXFg := SLOAD iLho
+						SolidityLike: bXFg = sload(iLho);
+						Yul: let bXFg := sload(iLho)
+			[27] STORAGE_WRITE: SSTORE iLho := add(bXFg, _amount)
+						Flag: unchecked_arithmetic_candidate
+						SolidityLike: sstore(iLho, add(bXFg, _amount));
+						Yul: sstore(iLho, add(bXFg, _amount))
+			[28] MEMORY_WRITE: MSTORE mem[bbwz + 0] := _amount
+						MemoryAfter: [0/size 32: _from, 32/size 32: 0, 0/size 32: shl(96, caller()), 0/size 32: _to, 32/size 32: 0, 0/size 32: _amount]
+						SolidityLike: memory[bbwz + 0] = _amount;
+						Yul: mstore(bbwz, _amount)
+			[29] EVENT_LOG: LOG3 data(bbwz, 32) topics ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', '_from', '_to']
+						ResolvedData: [0: _amount]
+						SolidityLike: log3(data=['bbwz', '32'], topics=['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', '_from', '_to']);
+						Yul: log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+		Semantic Replacement View:
+			if (iszero(_from)) // yul: if iszero(_from)
+			  revert(0, 0); // yul: revert(0, 0)
+			if (iszero(_to)) // yul: if iszero(_to)
+			  revert(0, 0); // yul: revert(0, 0)
+			bbwz = memory[0x40]; // yul: let bbwz := mload(0x40)
+			bfo228g = basefee(); // yul: let bfo228g := basefee()
+			nezy9b8 = number(); // yul: let nezy9b8 := number()
+			if (iszero(xor(bfo228g, bfo228g))) // yul: if iszero(xor(bfo228g, bfo228g))
+			  memory[bbwz + 0] = _from; // yul: mstore(bbwz, _from)
+			  memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+			XCUz = keccak256(_from, 0); // yul: let XCUz := keccak256(bbwz, 64)
+			qVPd = sload(XCUz); // yul: let qVPd := sload(XCUz)
+			Fpzy = sload(sSgI.slot); // yul: let Fpzy := sload(sSgI.slot)
+			memory[bbwz + 0] = shl(96, caller()); // yul: mstore(bbwz, shl(96, caller()))
+			if (iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) // yul: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+			  revert(0, 0); // yul: revert(0, 0)
+			YvIh = memory[bbwz]; // yul: let YvIh := mload(bbwz)
+			if (iszero(eq(Fpzy, YvIh))) // yul: if iszero(eq(Fpzy, YvIh))
+			  if (lt(qVPd, _amount)) // yul: if lt(qVPd, _amount)
+			    tfe9zci = timestamp(); // yul: let tfe9zci := timestamp()
+			    if (eq(tfe9zci, mul(tfe9zci, 1))) // yul: if eq(tfe9zci, mul(tfe9zci, 1))
+			      revert(0, 0); // yul: revert(0, 0)
+			sstore(XCUz, sub(qVPd, _amount)); // yul: sstore(XCUz, sub(qVPd, _amount))
+			memory[bbwz + 0] = _to; // yul: mstore(bbwz, _to)
+			memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+			iLho = keccak256(_to, 0); // yul: let iLho := keccak256(bbwz, 64)
+			bXFg = sload(iLho); // yul: let bXFg := sload(iLho)
+			sstore(iLho, add(bXFg, _amount)); // yul: sstore(iLho, add(bXFg, _amount))
+			memory[bbwz + 0] = _amount; // yul: mstore(bbwz, _amount)
+			log3(data=['bbwz', '32'], topics=['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', '_from', '_to']); // yul: log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+		SlithIR-SSA Adapter:
+			MatchedFunction: Token._transfer
+			[1] condition: ! _from
+				IRs:
+					TMP_9 = UnaryType.BANG _from_1
+					CONDITION TMP_9
+			[2] revert: revert(uint256,uint256)(0,0)
+				IRs:
+					TMP_10(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+			[3] condition: ! _to
+				IRs:
+					TMP_11 = UnaryType.BANG _to_1
+					CONDITION TMP_11
+			[4] revert: revert(uint256,uint256)(0,0)
+				IRs:
+					TMP_12(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+			[5] memory_read: bbwz__transfer_asm_0 = mload(uint256)(0x40)
+				IRs:
+					TMP_13(uint256) = SOLIDITY_CALL mload(uint256)(64)
+					bbwz__transfer_asm_0_1(uint256) := TMP_13(uint256)
+			[8] condition: ! bfo228g__transfer_asm_0 ^ bfo228g__transfer_asm_0
+				IRs:
+					TMP_16(uint256) = bfo228g__transfer_asm_0_1 ^ bfo228g__transfer_asm_0_1
+					TMP_17 = UnaryType.BANG TMP_16
+					CONDITION TMP_17
+			[9] memory_write: mstore(uint256,uint256)(bbwz__transfer_asm_0,_from)
+				IRs:
+					TMP_18(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0_1,_from_1)
+			[10] memory_write: mstore(uint256,uint256)(bbwz__transfer_asm_0 + 32,0)
+				IRs:
+					TMP_19(uint256) = bbwz__transfer_asm_0_1 + 32
+					TMP_20(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_19,0)
+			[11] memory_hash: XCUz__transfer_asm_0 = keccak256(uint256,uint256)(bbwz__transfer_asm_0,64)
+				IRs:
+					TMP_21(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__transfer_asm_0_1,64)
+					XCUz__transfer_asm_0_1(uint256) := TMP_21(uint256)
+			[12] storage_read: qVPd__transfer_asm_0 = sload(uint256)(XCUz__transfer_asm_0)
+				IRs:
+					TMP_22(uint256) = SOLIDITY_CALL sload(uint256)(XCUz__transfer_asm_0_1)
+					qVPd__transfer_asm_0_1(uint256) := TMP_22(uint256)
+			[13] storage_read: Fpzy__transfer_asm_0 = sload(uint256)(sSgI)
+				IRs:
+					TMP_23(uint256) := sSgI_2(uint256)
+					Fpzy__transfer_asm_0_1(uint256) := TMP_23(uint256)
+			[14] memory_write: mstore(uint256,uint256)(bbwz__transfer_asm_0,caller()() << 96)
+				IRs:
+					TMP_24(address) := msg.sender(address)
+					TMP_25(address) = TMP_24 << 96
+					TMP_26(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0_1,TMP_25)
+			[15] external_call: ! staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(gas()(),2,bbwz__transfer_asm_0,20,bbwz__transfer_asm_0,32)
+				IRs:
+					TMP_27(uint256) = SOLIDITY_CALL gas()()
+					TMP_28(uint256) = SOLIDITY_CALL staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(TMP_27,2,bbwz__transfer_asm_0_1,20,bbwz__transfer_asm_0_1,32)
+					TMP_29 = UnaryType.BANG TMP_28
+					CONDITION TMP_29
+			[16] revert: revert(uint256,uint256)(0,0)
+				IRs:
+					TMP_30(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+			[17] memory_read: YvIh__transfer_asm_0 = mload(uint256)(bbwz__transfer_asm_0)
+				IRs:
+					TMP_31(uint256) = SOLIDITY_CALL mload(uint256)(bbwz__transfer_asm_0_1)
+					YvIh__transfer_asm_0_1(uint256) := TMP_31(uint256)
+			[18] condition: ! Fpzy__transfer_asm_0 == YvIh__transfer_asm_0
+				IRs:
+					TMP_32(bool) = Fpzy__transfer_asm_0_1 == YvIh__transfer_asm_0_1
+					TMP_33 = UnaryType.BANG TMP_32
+					CONDITION TMP_33
+			[19] condition: qVPd__transfer_asm_0 < _amount
+				IRs:
+					TMP_34(bool) = qVPd__transfer_asm_0_1 < _amount_1
+					CONDITION TMP_34
+			[21] condition: tfe9zci__transfer_asm_0 == tfe9zci__transfer_asm_0 * 1
+				IRs:
+					TMP_36(uint256) = tfe9zci__transfer_asm_0_1 * 1
+					TMP_37(bool) = tfe9zci__transfer_asm_0_1 == TMP_36
+					CONDITION TMP_37
+			[22] revert: revert(uint256,uint256)(0,0)
+				IRs:
+					TMP_38(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+			[23] storage_write: sstore(uint256,uint256)(XCUz__transfer_asm_0,qVPd__transfer_asm_0 - _amount)
+				IRs:
+					TMP_39(uint256) = qVPd__transfer_asm_0_1 - _amount_1
+					TMP_40(None) = SOLIDITY_CALL sstore(uint256,uint256)(XCUz__transfer_asm_0_1,TMP_39)
+			[24] memory_write: mstore(uint256,uint256)(bbwz__transfer_asm_0,_to)
+				IRs:
+					TMP_41(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0_1,_to_1)
+			[25] memory_write: mstore(uint256,uint256)(bbwz__transfer_asm_0 + 32,0)
+				IRs:
+					TMP_42(uint256) = bbwz__transfer_asm_0_1 + 32
+					TMP_43(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_42,0)
+			[26] memory_hash: iLho__transfer_asm_0 = keccak256(uint256,uint256)(bbwz__transfer_asm_0,64)
+				IRs:
+					TMP_44(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__transfer_asm_0_1,64)
+					iLho__transfer_asm_0_1(uint256) := TMP_44(uint256)
+			[27] storage_read: bXFg__transfer_asm_0 = sload(uint256)(iLho__transfer_asm_0)
+				IRs:
+					TMP_45(uint256) = SOLIDITY_CALL sload(uint256)(iLho__transfer_asm_0_1)
+					bXFg__transfer_asm_0_1(uint256) := TMP_45(uint256)
+			[28] storage_write: sstore(uint256,uint256)(iLho__transfer_asm_0,bXFg__transfer_asm_0 + _amount)
+				IRs:
+					TMP_46(uint256) = bXFg__transfer_asm_0_1 + _amount_1
+					TMP_47(None) = SOLIDITY_CALL sstore(uint256,uint256)(iLho__transfer_asm_0_1,TMP_46)
+			[29] memory_write: mstore(uint256,uint256)(bbwz__transfer_asm_0,_amount)
+				IRs:
+					TMP_48(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0_1,_amount_1)
+			[30] event_log: log3(uint256,uint256,uint256,uint256,uint256)(bbwz__transfer_asm_0,32,0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,_from,_to)
+				IRs:
+					TMP_49(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(bbwz__transfer_asm_0_1,32,100389287136786176327247604509743168900146139575972864366142685224231313322991,_from_1,_to_1)
+
+	Function Token.approve(address,uint256)
+		Parameters: address _spender, uint256 _amount
+		Visibility: public
+		ERC20Entry: approve(address,uint256)
+		ReachableFromERC20: approve
+		AssemblyBlock Token.approve#1
+			SourceRange: line 108:9 to line 119:9
+			OffsetRange: 3555:4047
+		Semantic IRs:
+			[0] MEMORY_READ: bbwz := MLOAD 0x40
+						Resolved: [0: unknown]
+						SolidityLike: bbwz = memory[0x40];
+						Yul: let bbwz := mload(0x40)
+			[1] MEMORY_WRITE: MSTORE mem[bbwz + 0] := caller()
+						MemoryAfter: [0/size 32: caller()]
+						SolidityLike: memory[bbwz + 0] = caller();
+						Yul: mstore(bbwz, caller())
+			[2] MEMORY_WRITE: MSTORE mem[bbwz + 32] := wZHA.slot
+						MemoryAfter: [0/size 32: caller(), 32/size 32: wZHA.slot]
+						SolidityLike: memory[bbwz + 32] = wZHA.slot;
+						Yul: mstore(add(bbwz, 0x20), wZHA.slot)
+			[3] MEMORY_HASH: ZFHJ := KECCAK256 bbwz len 0x40
+						ResolvedInputs: [0: caller(), 32: wZHA.slot]
+						SolidityLike: ZFHJ = keccak256(caller(), wZHA.slot);
+						Yul: let ZFHJ := keccak256(bbwz, 0x40)
+			[4] MEMORY_WRITE: MSTORE mem[bbwz + 0] := _spender
+						MemoryAfter: [0/size 32: caller(), 32/size 32: wZHA.slot, 0/size 32: _spender]
+						SolidityLike: memory[bbwz + 0] = _spender;
+						Yul: mstore(bbwz, _spender)
+			[5] MEMORY_WRITE: MSTORE mem[bbwz + 32] := ZFHJ
+						MemoryAfter: [0/size 32: caller(), 32/size 32: wZHA.slot, 0/size 32: _spender, 32/size 32: ZFHJ]
+						SolidityLike: memory[bbwz + 32] = ZFHJ;
+						Yul: mstore(add(bbwz, 0x20), ZFHJ)
+			[6] MEMORY_HASH: akRJ := KECCAK256 bbwz len 0x40
+						ResolvedInputs: [0: _spender, 32: ZFHJ]
+						SolidityLike: akRJ = keccak256(_spender, ZFHJ);
+						Yul: let akRJ := keccak256(bbwz, 0x40)
+			[7] STORAGE_WRITE: SSTORE akRJ := _amount
+						SolidityLike: sstore(akRJ, _amount);
+						Yul: sstore(akRJ, _amount)
+			[8] EVENT_LOG: LOG3 data(bbwz, 0x20) topics ['0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0', 'caller()', '_spender']
+						ResolvedData: [0: _spender]
+						SolidityLike: log3(data=['bbwz', '0x20'], topics=['0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0', 'caller()', '_spender']);
+						Yul: log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+			[9] MEMORY_WRITE: MSTORE mem[bbwz + 0] := _amount
+						MemoryAfter: [0/size 32: caller(), 32/size 32: wZHA.slot, 0/size 32: _spender, 32/size 32: ZFHJ, 0/size 32: _amount]
+						SolidityLike: memory[bbwz + 0] = _amount;
+						Yul: mstore(bbwz, _amount)
+		Semantic Replacement View:
+			bbwz = memory[0x40]; // yul: let bbwz := mload(0x40)
+			memory[bbwz + 0] = caller(); // yul: mstore(bbwz, caller())
+			memory[bbwz + 32] = wZHA.slot; // yul: mstore(add(bbwz, 0x20), wZHA.slot)
+			ZFHJ = keccak256(caller(), wZHA.slot); // yul: let ZFHJ := keccak256(bbwz, 0x40)
+			memory[bbwz + 0] = _spender; // yul: mstore(bbwz, _spender)
+			memory[bbwz + 32] = ZFHJ; // yul: mstore(add(bbwz, 0x20), ZFHJ)
+			akRJ = keccak256(_spender, ZFHJ); // yul: let akRJ := keccak256(bbwz, 0x40)
+			sstore(akRJ, _amount); // yul: sstore(akRJ, _amount)
+			log3(data=['bbwz', '0x20'], topics=['0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0', 'caller()', '_spender']); // yul: log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+			memory[bbwz + 0] = _amount; // yul: mstore(bbwz, _amount)
+		SlithIR-SSA Adapter:
+			MatchedFunction: Token.approve
+			[1] memory_read: bbwz_approve_asm_0 = mload(uint256)(0x40)
+				IRs:
+					TMP_50(uint256) = SOLIDITY_CALL mload(uint256)(64)
+					bbwz_approve_asm_0_1(uint256) := TMP_50(uint256)
+			[2] memory_write: mstore(uint256,uint256)(bbwz_approve_asm_0,caller()())
+				IRs:
+					TMP_51(address) := msg.sender(address)
+					TMP_52(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz_approve_asm_0_1,TMP_51)
+			[3] memory_write: mstore(uint256,uint256)(bbwz_approve_asm_0 + 0x20,wZHA)
+				IRs:
+					TMP_53(uint256) = bbwz_approve_asm_0_1 + 32
+					TMP_54(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_53,wZHA_2)
+			[4] memory_hash: ZFHJ_approve_asm_0 = keccak256(uint256,uint256)(bbwz_approve_asm_0,0x40)
+				IRs:
+					TMP_55(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz_approve_asm_0_1,64)
+					ZFHJ_approve_asm_0_1(uint256) := TMP_55(uint256)
+			[5] memory_write: mstore(uint256,uint256)(bbwz_approve_asm_0,_spender)
+				IRs:
+					TMP_56(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz_approve_asm_0_1,_spender_1)
+			[6] memory_write: mstore(uint256,uint256)(bbwz_approve_asm_0 + 0x20,ZFHJ_approve_asm_0)
+				IRs:
+					TMP_57(uint256) = bbwz_approve_asm_0_1 + 32
+					TMP_58(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_57,ZFHJ_approve_asm_0_1)
+			[7] memory_hash: akRJ_approve_asm_0 = keccak256(uint256,uint256)(bbwz_approve_asm_0,0x40)
+				IRs:
+					TMP_59(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz_approve_asm_0_1,64)
+					akRJ_approve_asm_0_1(uint256) := TMP_59(uint256)
+			[8] storage_write: sstore(uint256,uint256)(akRJ_approve_asm_0,_amount)
+				IRs:
+					TMP_60(None) = SOLIDITY_CALL sstore(uint256,uint256)(akRJ_approve_asm_0_1,_amount_1)
+			[9] event_log: log3(uint256,uint256,uint256,uint256,uint256)(bbwz_approve_asm_0,0x20,0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0,caller()(),_spender)
+				IRs:
+					TMP_61(address) := msg.sender(address)
+					TMP_62(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(bbwz_approve_asm_0_1,32,63486140976153616755203102802099220061386591794710701915487172890051478481568,TMP_61,_spender_1)
+			[10] memory_write: mstore(uint256,uint256)(bbwz_approve_asm_0,_amount)
+				IRs:
+					TMP_63(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz_approve_asm_0_1,_amount_1)
+
+	Function Token._spendAllowance(address,address,uint256)
+		Parameters: address _owner, address _spender, uint256 _amount
+		Visibility: internal
+		ERC20Entry: no
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._spendAllowance#2
+			SourceRange: line 124:9 to line 165:9
+			OffsetRange: 4183:5628
+		Semantic IRs:
+			[0] MEMORY_READ: bbwz := MLOAD 0x40
+						Resolved: [0: unknown]
+						SolidityLike: bbwz = memory[0x40];
+						Yul: let bbwz := mload(0x40)
+			[1] MEMORY_WRITE: MSTORE mem[bbwz + 0] := sload(qBQC.slot)
+						MemoryAfter: [0/size 32: sload(qBQC.slot)]
+						SolidityLike: memory[bbwz + 0] = sload(qBQC.slot);
+						Yul: mstore(bbwz, sload(qBQC.slot))
+			[2] MEMORY_WRITE: MSTORE mem[bbwz + 32] := 1
+						MemoryAfter: [0/size 32: sload(qBQC.slot), 32/size 32: 1]
+						SolidityLike: memory[bbwz + 32] = 1;
+						Yul: mstore(add(bbwz, 32), 1)
+			[3] MEMORY_HASH: uAnE := KECCAK256 bbwz len 64
+						ResolvedInputs: [0: sload(qBQC.slot), 32: 1]
+						SolidityLike: uAnE = keccak256(sload(qBQC.slot), 1);
+						Yul: let uAnE := keccak256(bbwz, 64)
+			[4] ASSIGNMENT: bcw8ayf := basefee()
+						SolidityLike: bcw8ayf = basefee();
+						Yul: let bcw8ayf := basefee()
+			[5] ASSIGNMENT: ncwupwx := number()
+						SolidityLike: ncwupwx = number();
+						Yul: let ncwupwx := number()
+			[6] CONDITION: CONDITION eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+						SolidityLike: if (eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))
+						Yul: if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+			[7] MEMORY_WRITE: MSTORE mem[bbwz + 0] := _owner
+						MemoryAfter: [0/size 32: sload(qBQC.slot), 32/size 32: 1, 0/size 32: _owner]
+						ControlPath: eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+						SolidityLike: memory[bbwz + 0] = _owner;
+						Yul: mstore(bbwz, _owner)
+			[8] MEMORY_WRITE: MSTORE mem[bbwz + 32] := uAnE
+						MemoryAfter: [0/size 32: sload(qBQC.slot), 32/size 32: 1, 0/size 32: _owner, 32/size 32: uAnE]
+						ControlPath: eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+						SolidityLike: memory[bbwz + 32] = uAnE;
+						Yul: mstore(add(bbwz, 32), uAnE)
+			[9] MEMORY_HASH: Jfwv := KECCAK256 bbwz len 64
+						ResolvedInputs: [0: _owner, 32: uAnE]
+						SolidityLike: Jfwv = keccak256(_owner, uAnE);
+						Yul: let Jfwv := keccak256(bbwz, 64)
+			[10] STORAGE_READ: CCkU := SLOAD Jfwv
+						SolidityLike: CCkU = sload(Jfwv);
+						Yul: let CCkU := sload(Jfwv)
+			[11] ASSIGNMENT: zfPf := CCkU
+						SolidityLike: zfPf = CCkU;
+						Yul: let zfPf := CCkU
+			[12] CONDITION: CONDITION and(zfPf, iszero(_amount))
+						SolidityLike: if (and(zfPf, iszero(_amount)))
+						Yul: if and(zfPf, iszero(_amount))
+			[13] REVERT: REVERT args(0, 0)
+						ControlPath: and(zfPf, iszero(_amount))
+						SolidityLike: revert(0, 0);
+						Yul: revert(0, 0)
+			[14] CONDITION: CONDITION iszero(zfPf)
+						SolidityLike: if (iszero(zfPf))
+						Yul: if iszero(zfPf)
+			[15] MEMORY_WRITE: MSTORE mem[bbwz + 0] := _owner
+						MemoryAfter: [0/size 32: sload(qBQC.slot), 32/size 32: 1, 0/size 32: _owner, 32/size 32: uAnE, 0/size 32: _owner]
+						ControlPath: iszero(zfPf)
+						SolidityLike: memory[bbwz + 0] = _owner;
+						Yul: mstore(bbwz, _owner)
+			[16] MEMORY_WRITE: MSTORE mem[bbwz + 32] := 1
+						MemoryAfter: [0/size 32: sload(qBQC.slot), 32/size 32: 1, 0/size 32: _owner, 32/size 32: uAnE, 0/size 32: _owner, 32/size 32: 1]
+						ControlPath: iszero(zfPf)
+						SolidityLike: memory[bbwz + 32] = 1;
+						Yul: mstore(add(bbwz, 32), 1)
+			[17] MEMORY_HASH: uAnE := KECCAK256 bbwz len 64
+						ResolvedInputs: [0: _owner, 32: 1]
+						ControlPath: iszero(zfPf)
+						SolidityLike: uAnE = keccak256(_owner, 1);
+						Yul: uAnE := keccak256(bbwz, 64)
+			[18] MEMORY_WRITE: MSTORE mem[bbwz + 0] := _spender
+						MemoryAfter: [0/size 32: sload(qBQC.slot), 32/size 32: 1, 0/size 32: _owner, 32/size 32: uAnE, 0/size 32: _owner, 32/size 32: 1, 0/size 32: _spender]
+						ControlPath: iszero(zfPf)
+						SolidityLike: memory[bbwz + 0] = _spender;
+						Yul: mstore(bbwz, _spender)
+			[19] MEMORY_WRITE: MSTORE mem[bbwz + 32] := uAnE
+						MemoryAfter: [0/size 32: sload(qBQC.slot), 32/size 32: 1, 0/size 32: _owner, 32/size 32: uAnE, 0/size 32: _owner, 32/size 32: 1, 0/size 32: _spender, 32/size 32: uAnE]
+						ControlPath: iszero(zfPf)
+						SolidityLike: memory[bbwz + 32] = uAnE;
+						Yul: mstore(add(bbwz, 32), uAnE)
+			[20] MEMORY_HASH: Jfwv := KECCAK256 bbwz len 64
+						ResolvedInputs: [0: _spender, 32: uAnE]
+						ControlPath: iszero(zfPf)
+						SolidityLike: Jfwv = keccak256(_spender, uAnE);
+						Yul: Jfwv := keccak256(bbwz, 64)
+			[21] ASSIGNMENT: zfPf := add(sload(Jfwv), CCkU)
+						ControlPath: iszero(zfPf)
+						SolidityLike: zfPf = add(sload(Jfwv), CCkU);
+						Yul: zfPf := add(sload(Jfwv), CCkU)
+			[22] ASSIGNMENT: gbj1enk := gas()
+						SolidityLike: gbj1enk = gas();
+						Yul: let gbj1enk := gas()
+			[23] CALL: pop(0)
+						SolidityLike: pop(0);
+						Yul: pop(0)
+			[24] CONDITION: CONDITION eq(gbj1enk, and(gbj1enk, gbj1enk))
+						SolidityLike: if (eq(gbj1enk, and(gbj1enk, gbj1enk)))
+						Yul: if eq(gbj1enk, and(gbj1enk, gbj1enk))
+			[25] ASSIGNMENT: zfPf := sub(zfPf, CCkU)
+						ControlPath: eq(gbj1enk, and(gbj1enk, gbj1enk))
+						SolidityLike: zfPf = sub(zfPf, CCkU);
+						Yul: zfPf := sub(zfPf, CCkU)
+			[26] CONDITION: CONDITION iszero(eq(zfPf, not(0)))
+						SolidityLike: if (iszero(eq(zfPf, not(0))))
+						Yul: if iszero(eq(zfPf, not(0)))
+			[27] CONDITION: CONDITION lt(zfPf, _amount)
+						ControlPath: iszero(eq(zfPf, not(0)))
+						SolidityLike: if (lt(zfPf, _amount))
+						Yul: if lt(zfPf, _amount)
+			[28] REVERT: REVERT args(0, 0)
+						ControlPath: iszero(eq(zfPf, not(0))) -> lt(zfPf, _amount)
+						SolidityLike: revert(0, 0);
+						Yul: revert(0, 0)
+			[29] ASSIGNMENT: bf51h1a := basefee()
+						ControlPath: iszero(eq(zfPf, not(0)))
+						SolidityLike: bf51h1a = basefee();
+						Yul: let bf51h1a := basefee()
+			[30] CALL: pop(0)
+						ControlPath: iszero(eq(zfPf, not(0)))
+						SolidityLike: pop(0);
+						Yul: pop(0)
+			[31] CONDITION: CONDITION eq(bf51h1a, and(bf51h1a, bf51h1a))
+						ControlPath: iszero(eq(zfPf, not(0)))
+						SolidityLike: if (eq(bf51h1a, and(bf51h1a, bf51h1a)))
+						Yul: if eq(bf51h1a, and(bf51h1a, bf51h1a))
+			[32] STORAGE_WRITE: SSTORE Jfwv := sub(zfPf, _amount)
+						Flag: unchecked_arithmetic_candidate
+						ControlPath: iszero(eq(zfPf, not(0))) -> eq(bf51h1a, and(bf51h1a, bf51h1a))
+						SolidityLike: sstore(Jfwv, sub(zfPf, _amount));
+						Yul: sstore(Jfwv, sub(zfPf, _amount))
+		Semantic Replacement View:
+			bbwz = memory[0x40]; // yul: let bbwz := mload(0x40)
+			memory[bbwz + 0] = sload(qBQC.slot); // yul: mstore(bbwz, sload(qBQC.slot))
+			memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+			uAnE = keccak256(sload(qBQC.slot), 1); // yul: let uAnE := keccak256(bbwz, 64)
+			bcw8ayf = basefee(); // yul: let bcw8ayf := basefee()
+			ncwupwx = number(); // yul: let ncwupwx := number()
+			if (eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) // yul: if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+			  memory[bbwz + 0] = _owner; // yul: mstore(bbwz, _owner)
+			  memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+			Jfwv = keccak256(_owner, uAnE); // yul: let Jfwv := keccak256(bbwz, 64)
+			CCkU = sload(Jfwv); // yul: let CCkU := sload(Jfwv)
+			zfPf = CCkU; // yul: let zfPf := CCkU
+			if (and(zfPf, iszero(_amount))) // yul: if and(zfPf, iszero(_amount))
+			  revert(0, 0); // yul: revert(0, 0)
+			if (iszero(zfPf)) // yul: if iszero(zfPf)
+			  memory[bbwz + 0] = _owner; // yul: mstore(bbwz, _owner)
+			  memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+			  uAnE = keccak256(_owner, 1); // yul: uAnE := keccak256(bbwz, 64)
+			  memory[bbwz + 0] = _spender; // yul: mstore(bbwz, _spender)
+			  memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+			  Jfwv = keccak256(_spender, uAnE); // yul: Jfwv := keccak256(bbwz, 64)
+			  zfPf = add(sload(Jfwv), CCkU); // yul: zfPf := add(sload(Jfwv), CCkU)
+			gbj1enk = gas(); // yul: let gbj1enk := gas()
+			pop(0); // yul: pop(0)
+			if (eq(gbj1enk, and(gbj1enk, gbj1enk))) // yul: if eq(gbj1enk, and(gbj1enk, gbj1enk))
+			  zfPf = sub(zfPf, CCkU); // yul: zfPf := sub(zfPf, CCkU)
+			if (iszero(eq(zfPf, not(0)))) // yul: if iszero(eq(zfPf, not(0)))
+			  if (lt(zfPf, _amount)) // yul: if lt(zfPf, _amount)
+			    revert(0, 0); // yul: revert(0, 0)
+			  bf51h1a = basefee(); // yul: let bf51h1a := basefee()
+			  pop(0); // yul: pop(0)
+			  if (eq(bf51h1a, and(bf51h1a, bf51h1a))) // yul: if eq(bf51h1a, and(bf51h1a, bf51h1a))
+			    sstore(Jfwv, sub(zfPf, _amount)); // yul: sstore(Jfwv, sub(zfPf, _amount))
+		SlithIR-SSA Adapter:
+			MatchedFunction: Token._spendAllowance
+			[1] memory_read: bbwz__spendAllowance_asm_0 = mload(uint256)(0x40)
+				IRs:
+					TMP_64(uint256) = SOLIDITY_CALL mload(uint256)(64)
+					bbwz__spendAllowance_asm_0_1(uint256) := TMP_64(uint256)
+			[2] memory_write: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0,sload(uint256)(qBQC))
+				IRs:
+					TMP_65(uint256) := qBQC_2(uint256)
+					TMP_66(None) = SOLIDITY_CALL mstore(uint256,uint256)(qBQC_2,bbwz__spendAllowance_asm_0_1,TMP_65)
+			[3] memory_write: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0 + 32,1)
+				IRs:
+					TMP_67(uint256) = bbwz__spendAllowance_asm_0_1 + 32
+					TMP_68(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_67,1)
+			[4] memory_hash: uAnE__spendAllowance_asm_0 = keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0,64)
+				IRs:
+					TMP_69(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0_1,64)
+					uAnE__spendAllowance_asm_0_1(uint256) := TMP_69(uint256)
+			[7] condition: bcw8ayf__spendAllowance_asm_0 - ncwupwx__spendAllowance_asm_0 == bcw8ayf__spendAllowance_asm_0 - ncwupwx__spendAllowance_asm_0
+				IRs:
+					TMP_72(uint256) = bcw8ayf__spendAllowance_asm_0_1 - ncwupwx__spendAllowance_asm_0_1
+					TMP_73(uint256) = bcw8ayf__spendAllowance_asm_0_1 - ncwupwx__spendAllowance_asm_0_1
+					TMP_74(bool) = TMP_72 == TMP_73
+					CONDITION TMP_74
+			[8] memory_write: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0,_owner)
+				IRs:
+					TMP_75(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__spendAllowance_asm_0_1,_owner_1)
+			[9] memory_write: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0 + 32,uAnE__spendAllowance_asm_0)
+				IRs:
+					TMP_76(uint256) = bbwz__spendAllowance_asm_0_1 + 32
+					TMP_77(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_76,uAnE__spendAllowance_asm_0_1)
+			[10] memory_hash: Jfwv__spendAllowance_asm_0 = keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0,64)
+				IRs:
+					TMP_78(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0_1,64)
+					Jfwv__spendAllowance_asm_0_1(uint256) := TMP_78(uint256)
+			[11] storage_read: CCkU__spendAllowance_asm_0 = sload(uint256)(Jfwv__spendAllowance_asm_0)
+				IRs:
+					TMP_79(uint256) = SOLIDITY_CALL sload(uint256)(Jfwv__spendAllowance_asm_0_1)
+					CCkU__spendAllowance_asm_0_1(uint256) := TMP_79(uint256)
+			[13] condition: zfPf__spendAllowance_asm_0 & ! _amount
+				IRs:
+					TMP_80 = UnaryType.BANG _amount_1
+					TMP_81(uint256) = zfPf__spendAllowance_asm_0_1 & TMP_80
+					CONDITION TMP_81
+			[14] revert: revert(uint256,uint256)(0,0)
+				IRs:
+					TMP_82(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+			[15] condition: ! zfPf__spendAllowance_asm_0
+				IRs:
+					TMP_83 = UnaryType.BANG zfPf__spendAllowance_asm_0_1
+					CONDITION TMP_83
+					Jfwv__spendAllowance_asm_0_3(uint256) := ϕ(['Jfwv__spendAllowance_asm_0_2', 'Jfwv__spendAllowance_asm_0_1'])
+					zfPf__spendAllowance_asm_0_3(uint256) := ϕ(['zfPf__spendAllowance_asm_0_2', 'zfPf__spendAllowance_asm_0_1'])
+			[16] memory_write: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0,_owner)
+				IRs:
+					TMP_84(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__spendAllowance_asm_0_1,_owner_1)
+			[17] memory_write: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0 + 32,1)
+				IRs:
+					TMP_85(uint256) = bbwz__spendAllowance_asm_0_1 + 32
+					TMP_86(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_85,1)
+			[18] memory_hash: uAnE__spendAllowance_asm_0 = keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0,64)
+				IRs:
+					TMP_87(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0_1,64)
+					uAnE__spendAllowance_asm_0_2(uint256) := TMP_87(uint256)
+			[19] memory_write: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0,_spender)
+				IRs:
+					TMP_88(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__spendAllowance_asm_0_1,_spender_1)
+			[20] memory_write: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0 + 32,uAnE__spendAllowance_asm_0)
+				IRs:
+					TMP_89(uint256) = bbwz__spendAllowance_asm_0_1 + 32
+					TMP_90(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_89,uAnE__spendAllowance_asm_0_2)
+			[21] memory_hash: Jfwv__spendAllowance_asm_0 = keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0,64)
+				IRs:
+					TMP_91(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0_1,64)
+					Jfwv__spendAllowance_asm_0_2(uint256) := TMP_91(uint256)
+			[22] storage_read: zfPf__spendAllowance_asm_0 = sload(uint256)(Jfwv__spendAllowance_asm_0) + CCkU__spendAllowance_asm_0
+				IRs:
+					TMP_92(uint256) = SOLIDITY_CALL sload(uint256)(Jfwv__spendAllowance_asm_0_2)
+					TMP_93(uint256) = TMP_92 + CCkU__spendAllowance_asm_0_1
+					zfPf__spendAllowance_asm_0_2(uint256) := TMP_93(uint256)
+			[25] condition: gbj1enk__spendAllowance_asm_0 == gbj1enk__spendAllowance_asm_0 & gbj1enk__spendAllowance_asm_0
+				IRs:
+					TMP_96(uint256) = gbj1enk__spendAllowance_asm_0_1 & gbj1enk__spendAllowance_asm_0_1
+					TMP_97(bool) = gbj1enk__spendAllowance_asm_0_1 == TMP_96
+					CONDITION TMP_97
+					zfPf__spendAllowance_asm_0_5(uint256) := ϕ(['zfPf__spendAllowance_asm_0_4', 'zfPf__spendAllowance_asm_0_1'])
+			[27] condition: ! zfPf__spendAllowance_asm_0 == ~ 0
+				IRs:
+					TMP_99 = UnaryType.TILD 0
+					TMP_100(bool) = zfPf__spendAllowance_asm_0_5 == TMP_99
+					TMP_101 = UnaryType.BANG TMP_100
+					CONDITION TMP_101
+			[28] condition: zfPf__spendAllowance_asm_0 < _amount
+				IRs:
+					TMP_102(bool) = zfPf__spendAllowance_asm_0_5 < _amount_1
+					CONDITION TMP_102
+			[29] revert: revert(uint256,uint256)(0,0)
+				IRs:
+					TMP_103(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+			[32] condition: bf51h1a__spendAllowance_asm_0 == bf51h1a__spendAllowance_asm_0 & bf51h1a__spendAllowance_asm_0
+				IRs:
+					TMP_106(uint256) = bf51h1a__spendAllowance_asm_0_1 & bf51h1a__spendAllowance_asm_0_1
+					TMP_107(bool) = bf51h1a__spendAllowance_asm_0_1 == TMP_106
+					CONDITION TMP_107
+			[33] storage_write: sstore(uint256,uint256)(Jfwv__spendAllowance_asm_0,zfPf__spendAllowance_asm_0 - _amount)
+				IRs:
+					TMP_108(uint256) = zfPf__spendAllowance_asm_0_5 - _amount_1
+					TMP_109(None) = SOLIDITY_CALL sstore(uint256,uint256)(Jfwv__spendAllowance_asm_0_3,TMP_108)
+					INFO:Slither:Token.sol analyzed (1 contracts)

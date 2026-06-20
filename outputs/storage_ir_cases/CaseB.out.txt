@@ -1,0 +1,64 @@
+INFO:AssemblyStorageIR:Source /tmp/storage_ir_cases/CaseB.sol
+INFO:AssemblyStorageIR:SlithIR-SSA not provided
+INFO:AssemblyStorageIR:VariablesOrder /tmp/storage_ir_cases/CaseB.variables_order.txt
+INFO:AssemblyStorageIR:Assembly blocks 1
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result.
+
+Contract CaseB
+	Function CaseB.touch(address)
+		Parameters: address user
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock CaseB.touch#0
+			SourceRange: line 7:9 to line 21:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[3] MAPPING_SLOT: claimSlot := claims[calldata[4:4+32]]
+				Key: calldata[4:4+32]
+				Base: claims.slot
+				StateVariable: claims
+				ResolvedInputs: [0: calldata[4:4+32], 32: claims.slot]
+				ControlPath: none
+				Yul: let claimSlot := keccak256(p, 64)
+			[7] MAPPING_SLOT: userSlot := used[user]
+				Key: user
+				Base: used.slot
+				StateVariable: used
+				ResolvedInputs: [0: user, 32: used.slot]
+				ControlPath: none
+				Yul: let userSlot := keccak256(p, 64)
+			[10] NESTED_MAPPING_SLOT: usedSlot := used[user][calldata[36:36+32]]
+				Key: calldata[36:36+32]
+				Base: userSlot
+				StateVariable: used
+				ResolvedInputs: [0: calldata[36:36+32], 32: userSlot]
+				ControlPath: none
+				Yul: let usedSlot := keccak256(p, 64)
+		Storage Reads:
+			[4] MAPPING_READ: claim := claims[calldata[4:4+32]]
+				Slot: claimSlot
+				StateVariable: claims
+				SolidityLike: claim = claims[calldata[4:4+32]];
+				ControlPath: none
+				Yul: let claim := sload(claimSlot)
+			[11] INLINE_NESTED_MAPPING_READ: _ := used[user][calldata[36:36+32]]
+				Slot: usedSlot
+				StateVariable: used
+				SolidityLike: read used[user][calldata[36:36+32]];
+				ControlPath: none
+				Yul: sstore(usedSlot, add(sload(usedSlot), claim))
+		Storage Writes:
+			[11] NESTED_MAPPING_WRITE: used[user][calldata[36:36+32]] := sload(usedSlot) + claim
+				Slot: usedSlot
+				StateVariable: used
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { used[user][calldata[36:36+32]] = sload(usedSlot) + claim; }
+				ControlPath: none
+				Yul: sstore(usedSlot, add(sload(usedSlot), claim))
+		Storage Semantic Replacement View:
+			claimSlot = slot(claims[calldata[4:4+32]]); // yul: let claimSlot := keccak256(p, 64)
+			claim = claims[calldata[4:4+32]]; // yul: let claim := sload(claimSlot)
+			userSlot = slot(used[user]); // yul: let userSlot := keccak256(p, 64)
+			usedSlot = slot(used[user][calldata[36:36+32]]); // yul: let usedSlot := keccak256(p, 64)
+			read used[user][calldata[36:36+32]]; // yul: sstore(usedSlot, add(sload(usedSlot), claim))
+			unchecked { used[user][calldata[36:36+32]] = sload(usedSlot) + claim; } // yul: sstore(usedSlot, add(sload(usedSlot), claim))

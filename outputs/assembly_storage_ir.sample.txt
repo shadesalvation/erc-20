@@ -1,0 +1,180 @@
+INFO:AssemblyStorageIR:Source TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol
+INFO:AssemblyStorageIR:SlithIR-SSA TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/slithir_ssa.txt
+INFO:AssemblyStorageIR:VariablesOrder TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/variables_order.txt
+INFO:AssemblyStorageIR:Assembly blocks 3
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result.
+
+Contract Token
+	Function Token._transfer(address,address,uint256)
+		Parameters: address _from, address _to, uint256 _amount
+		Visibility: internal
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._transfer#0
+			SourceRange: line 66:9 to line 104:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[10] MAPPING_SLOT: XCUz := UbLX[_from]
+				Key: _from
+				Base: 0
+				StateVariable: UbLX
+				ResolvedInputs: [0: _from, 32: 0]
+				ControlPath: none
+				Yul: let XCUz := keccak256(bbwz, 64)
+			[25] MAPPING_SLOT: iLho := UbLX[_to]
+				Key: _to
+				Base: 0
+				StateVariable: UbLX
+				ResolvedInputs: [0: _to, 32: 0]
+				ControlPath: none
+				Yul: let iLho := keccak256(bbwz, 64)
+		Storage Reads:
+			[11] MAPPING_READ: qVPd := UbLX[_from]
+				Slot: XCUz
+				StateVariable: UbLX
+				SolidityLike: qVPd = UbLX[_from];
+				ControlPath: none
+				Yul: let qVPd := sload(XCUz)
+			[12] STATE_VARIABLE_READ: Fpzy := sSgI
+				Slot: sSgI.slot
+				StateVariable: sSgI
+				SolidityLike: Fpzy = sSgI;
+				ControlPath: none
+				Yul: let Fpzy := sload(sSgI.slot)
+			[26] MAPPING_READ: bXFg := UbLX[_to]
+				Slot: iLho
+				StateVariable: UbLX
+				SolidityLike: bXFg = UbLX[_to];
+				ControlPath: none
+				Yul: let bXFg := sload(iLho)
+		Storage Writes:
+			[22] MAPPING_WRITE: UbLX[_from] := qVPd - _amount
+				Slot: XCUz
+				StateVariable: UbLX
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { UbLX[_from] = qVPd - _amount; }
+				ControlPath: none
+				Yul: sstore(XCUz, sub(qVPd, _amount))
+			[27] MAPPING_WRITE: UbLX[_to] := bXFg + _amount
+				Slot: iLho
+				StateVariable: UbLX
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { UbLX[_to] = bXFg + _amount; }
+				ControlPath: none
+				Yul: sstore(iLho, add(bXFg, _amount))
+		Storage Semantic Replacement View:
+			XCUz = slot(UbLX[_from]); // yul: let XCUz := keccak256(bbwz, 64)
+			qVPd = UbLX[_from]; // yul: let qVPd := sload(XCUz)
+			Fpzy = sSgI; // yul: let Fpzy := sload(sSgI.slot)
+			unchecked { UbLX[_from] = qVPd - _amount; } // yul: sstore(XCUz, sub(qVPd, _amount))
+			iLho = slot(UbLX[_to]); // yul: let iLho := keccak256(bbwz, 64)
+			bXFg = UbLX[_to]; // yul: let bXFg := sload(iLho)
+			unchecked { UbLX[_to] = bXFg + _amount; } // yul: sstore(iLho, add(bXFg, _amount))
+
+	Function Token.approve(address,uint256)
+		Parameters: address _spender, uint256 _amount
+		Visibility: public
+		ReachableFromERC20: approve
+		AssemblyBlock Token.approve#1
+			SourceRange: line 108:9 to line 119:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[3] MAPPING_SLOT: ZFHJ := wZHA[caller()]
+				Key: caller()
+				Base: wZHA.slot
+				StateVariable: wZHA
+				ResolvedInputs: [0: caller(), 32: wZHA.slot]
+				ControlPath: none
+				Yul: let ZFHJ := keccak256(bbwz, 0x40)
+			[6] NESTED_MAPPING_SLOT: akRJ := wZHA[caller()][_spender]
+				Key: _spender
+				Base: ZFHJ
+				StateVariable: wZHA
+				ResolvedInputs: [0: _spender, 32: ZFHJ]
+				ControlPath: none
+				Yul: let akRJ := keccak256(bbwz, 0x40)
+		Storage Reads:
+			No storage reads recovered.
+		Storage Writes:
+			[7] NESTED_MAPPING_WRITE: wZHA[caller()][_spender] := _amount
+				Slot: akRJ
+				StateVariable: wZHA
+				SolidityLike: wZHA[caller()][_spender] = _amount;
+				ControlPath: none
+				Yul: sstore(akRJ, _amount)
+		Storage Semantic Replacement View:
+			ZFHJ = slot(wZHA[caller()]); // yul: let ZFHJ := keccak256(bbwz, 0x40)
+			akRJ = slot(wZHA[caller()][_spender]); // yul: let akRJ := keccak256(bbwz, 0x40)
+			wZHA[caller()][_spender] = _amount; // yul: sstore(akRJ, _amount)
+
+	Function Token._spendAllowance(address,address,uint256)
+		Parameters: address _owner, address _spender, uint256 _amount
+		Visibility: internal
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._spendAllowance#2
+			SourceRange: line 124:9 to line 165:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[3] MAPPING_SLOT: uAnE := wZHA[sload(qBQC.slot)]
+				Key: sload(qBQC.slot)
+				Base: 1
+				StateVariable: wZHA
+				ResolvedInputs: [0: sload(qBQC.slot), 32: 1]
+				ControlPath: none
+				Yul: let uAnE := keccak256(bbwz, 64)
+			[9] NESTED_MAPPING_SLOT: Jfwv := wZHA[sload(qBQC.slot)][_owner]
+				Key: _owner
+				Base: uAnE
+				StateVariable: wZHA
+				ResolvedInputs: [0: _owner, 32: uAnE]
+				ControlPath: none
+				Yul: let Jfwv := keccak256(bbwz, 64)
+			[17] MAPPING_SLOT: uAnE := wZHA[_owner]
+				Key: _owner
+				Base: 1
+				StateVariable: wZHA
+				ResolvedInputs: [0: _owner, 32: 1]
+				ControlPath: iszero(zfPf)
+				Yul: uAnE := keccak256(bbwz, 64)
+			[20] NESTED_MAPPING_SLOT: Jfwv := wZHA[_owner][_spender]
+				Key: _spender
+				Base: uAnE
+				StateVariable: wZHA
+				ResolvedInputs: [0: _spender, 32: uAnE]
+				ControlPath: iszero(zfPf)
+				Yul: Jfwv := keccak256(bbwz, 64)
+		Storage Reads:
+			[1] INLINE_STATE_VARIABLE_READ: _ := qBQC
+				Slot: qBQC.slot
+				StateVariable: qBQC
+				SolidityLike: read qBQC;
+				ControlPath: none
+				Yul: mstore(bbwz, sload(qBQC.slot))
+			[10] NESTED_MAPPING_READ: CCkU := wZHA[sload(qBQC.slot)][_owner]
+				Slot: Jfwv
+				StateVariable: wZHA
+				SolidityLike: CCkU = wZHA[sload(qBQC.slot)][_owner];
+				ControlPath: none
+				Yul: let CCkU := sload(Jfwv)
+			[21] INLINE_NESTED_MAPPING_READ: _ := wZHA[_owner][_spender]
+				Slot: Jfwv
+				StateVariable: wZHA
+				SolidityLike: read wZHA[_owner][_spender];
+				ControlPath: iszero(zfPf)
+				Yul: zfPf := add(sload(Jfwv), CCkU)
+		Storage Writes:
+			[32] NESTED_MAPPING_WRITE: wZHA[_owner][_spender] := zfPf - _amount
+				Slot: Jfwv
+				StateVariable: wZHA
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { wZHA[_owner][_spender] = zfPf - _amount; }
+				ControlPath: iszero(eq(zfPf, not(0))) -> eq(bf51h1a, and(bf51h1a, bf51h1a))
+				Yul: sstore(Jfwv, sub(zfPf, _amount))
+		Storage Semantic Replacement View:
+			read qBQC; // yul: mstore(bbwz, sload(qBQC.slot))
+			uAnE = slot(wZHA[sload(qBQC.slot)]); // yul: let uAnE := keccak256(bbwz, 64)
+			Jfwv = slot(wZHA[sload(qBQC.slot)][_owner]); // yul: let Jfwv := keccak256(bbwz, 64)
+			CCkU = wZHA[sload(qBQC.slot)][_owner]; // yul: let CCkU := sload(Jfwv)
+			uAnE = slot(wZHA[_owner]); // yul: uAnE := keccak256(bbwz, 64)
+			Jfwv = slot(wZHA[_owner][_spender]); // yul: Jfwv := keccak256(bbwz, 64)
+			read wZHA[_owner][_spender]; // yul: zfPf := add(sload(Jfwv), CCkU)
+			unchecked { wZHA[_owner][_spender] = zfPf - _amount; } // yul: sstore(Jfwv, sub(zfPf, _amount))

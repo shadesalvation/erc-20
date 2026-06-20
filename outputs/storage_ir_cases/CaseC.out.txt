@@ -1,0 +1,55 @@
+INFO:AssemblyStorageIR:Source /tmp/storage_ir_cases/CaseC.sol
+INFO:AssemblyStorageIR:SlithIR-SSA not provided
+INFO:AssemblyStorageIR:VariablesOrder /tmp/storage_ir_cases/CaseC.variables_order.txt
+INFO:AssemblyStorageIR:Assembly blocks 1
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result.
+
+Contract CaseC
+	Function CaseC.touch(uint256,uint256)
+		Parameters: uint256 off, uint256 value
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock CaseC.touch#0
+			SourceRange: line 7:9 to line 19:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[8] MAPPING_SLOT: dynSlot := dynamicMap[unknown]
+				Key: unknown
+				Base: dynamicMap.slot
+				StateVariable: dynamicMap
+				ResolvedInputs: [0: unknown candidates=['mul(i, 32)/size 32: add(value, i)', 'off/size 32: value'], 32: dynamicMap.slot]
+				ControlPath: none
+				Yul: let dynSlot := keccak256(p, 64)
+		Storage Reads:
+			[9] MAPPING_READ: old := dynamicMap[unknown]
+				Slot: dynSlot
+				StateVariable: dynamicMap
+				SolidityLike: old = dynamicMap[unknown];
+				ControlPath: none
+				Yul: let old := sload(dynSlot)
+			[11] INLINE_MAPPING_READ: _ := dynamicMap[unknown]
+				Slot: dynSlot
+				StateVariable: dynamicMap
+				SolidityLike: read dynamicMap[unknown];
+				ControlPath: none
+				Yul: sstore(control.slot, sload(dynSlot))
+		Storage Writes:
+			[10] MAPPING_WRITE: dynamicMap[unknown] := old + value
+				Slot: dynSlot
+				StateVariable: dynamicMap
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { dynamicMap[unknown] = old + value; }
+				ControlPath: none
+				Yul: sstore(dynSlot, add(old, value))
+			[11] STATE_VARIABLE_WRITE: control := sload(dynSlot)
+				Slot: control.slot
+				StateVariable: control
+				SolidityLike: control = sload(dynSlot);
+				ControlPath: none
+				Yul: sstore(control.slot, sload(dynSlot))
+		Storage Semantic Replacement View:
+			dynSlot = slot(dynamicMap[unknown]); // yul: let dynSlot := keccak256(p, 64)
+			old = dynamicMap[unknown]; // yul: let old := sload(dynSlot)
+			unchecked { dynamicMap[unknown] = old + value; } // yul: sstore(dynSlot, add(old, value))
+			read dynamicMap[unknown]; // yul: sstore(control.slot, sload(dynSlot))
+			control = sload(dynSlot); // yul: sstore(control.slot, sload(dynSlot))

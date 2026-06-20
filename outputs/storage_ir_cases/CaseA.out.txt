@@ -1,0 +1,87 @@
+INFO:AssemblyStorageIR:Source /tmp/storage_ir_cases/CaseA.sol
+INFO:AssemblyStorageIR:SlithIR-SSA not provided
+INFO:AssemblyStorageIR:VariablesOrder /tmp/storage_ir_cases/CaseA.variables_order.txt
+INFO:AssemblyStorageIR:Assembly blocks 1
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result.
+
+Contract CaseA
+	Function CaseA.touch(address,address,address,uint256)
+		Parameters: address from, address owner, address spender, uint256 amount
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock CaseA.touch#0
+			SourceRange: line 8:9 to line 27:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[3] MAPPING_SLOT: fromSlot := balances[from]
+				Key: from
+				Base: balances.slot
+				StateVariable: balances
+				ResolvedInputs: [0: from, 32: balances.slot]
+				ControlPath: none
+				Yul: let fromSlot := keccak256(p, 64)
+			[8] MAPPING_SLOT: ownerSlot := allowance[owner]
+				Key: owner
+				Base: allowance.slot
+				StateVariable: allowance
+				ResolvedInputs: [0: owner, 32: allowance.slot]
+				ControlPath: none
+				Yul: let ownerSlot := keccak256(p, 64)
+			[11] NESTED_MAPPING_SLOT: allowSlot := allowance[owner][spender]
+				Key: spender
+				Base: ownerSlot
+				StateVariable: allowance
+				ResolvedInputs: [0: spender, 32: ownerSlot]
+				ControlPath: none
+				Yul: let allowSlot := keccak256(p, 64)
+		Storage Reads:
+			[4] MAPPING_READ: fromBal := balances[from]
+				Slot: fromSlot
+				StateVariable: balances
+				SolidityLike: fromBal = balances[from];
+				ControlPath: none
+				Yul: let fromBal := sload(fromSlot)
+			[12] NESTED_MAPPING_READ: oldAllow := allowance[owner][spender]
+				Slot: allowSlot
+				StateVariable: allowance
+				SolidityLike: oldAllow = allowance[owner][spender];
+				ControlPath: none
+				Yul: let oldAllow := sload(allowSlot)
+			[14] STATE_VARIABLE_READ: ts := totalSupply
+				Slot: totalSupply.slot
+				StateVariable: totalSupply
+				SolidityLike: ts = totalSupply;
+				ControlPath: none
+				Yul: let ts := sload(totalSupply.slot)
+		Storage Writes:
+			[5] MAPPING_WRITE: balances[from] := fromBal - amount
+				Slot: fromSlot
+				StateVariable: balances
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { balances[from] = fromBal - amount; }
+				ControlPath: none
+				Yul: sstore(fromSlot, sub(fromBal, amount))
+			[13] NESTED_MAPPING_WRITE: allowance[owner][spender] := oldAllow - amount
+				Slot: allowSlot
+				StateVariable: allowance
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { allowance[owner][spender] = oldAllow - amount; }
+				ControlPath: none
+				Yul: sstore(allowSlot, sub(oldAllow, amount))
+			[15] STATE_VARIABLE_WRITE: totalSupply := ts + amount
+				Slot: totalSupply.slot
+				StateVariable: totalSupply
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { totalSupply = ts + amount; }
+				ControlPath: none
+				Yul: sstore(totalSupply.slot, add(ts, amount))
+		Storage Semantic Replacement View:
+			fromSlot = slot(balances[from]); // yul: let fromSlot := keccak256(p, 64)
+			fromBal = balances[from]; // yul: let fromBal := sload(fromSlot)
+			unchecked { balances[from] = fromBal - amount; } // yul: sstore(fromSlot, sub(fromBal, amount))
+			ownerSlot = slot(allowance[owner]); // yul: let ownerSlot := keccak256(p, 64)
+			allowSlot = slot(allowance[owner][spender]); // yul: let allowSlot := keccak256(p, 64)
+			oldAllow = allowance[owner][spender]; // yul: let oldAllow := sload(allowSlot)
+			unchecked { allowance[owner][spender] = oldAllow - amount; } // yul: sstore(allowSlot, sub(oldAllow, amount))
+			ts = totalSupply; // yul: let ts := sload(totalSupply.slot)
+			unchecked { totalSupply = ts + amount; } // yul: sstore(totalSupply.slot, add(ts, amount))

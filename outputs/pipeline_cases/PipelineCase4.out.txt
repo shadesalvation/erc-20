@@ -1,0 +1,123 @@
+INFO:AssemblyRecoveryPipeline:Source /tmp/pipeline_cases/PipelineCase4.sol
+INFO:AssemblyRecoveryPipeline:Input Solidity source only
+INFO:AssemblyRecoveryPipeline:GeneratedSlithIRSSA internal temporary file
+INFO:AssemblyRecoveryPipeline:GeneratedVariablesOrder internal temporary file
+INFO:AssemblyRecoveryPipeline:Assembly blocks 2
+INFO:AssemblyRecoveryPipeline:Note output is a semantic view; source is not modified and output is not compiled
+
+Contract PipelineCase4
+	Function PipelineCase4.f
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase4.f#0
+			SourceRange: line 6:9 to line 14:9
+		Original Assembly:
+		```solidity
+		assembly {
+		            let p := mload(0x40)
+		            calldatacopy(p, 4, 32)
+		            mstore(add(p, 32), claims.slot)
+		            let slot := keccak256(p, 64)
+		            if iszero(sload(slot)) {
+		                revert(0, 0)
+		            }
+		        }
+		```
+		Processed Assembly View After Memory + Storage + Revert Recovery:
+		```solidity
+		assembly /* recovered semantic view */ {
+		    p = memory[0x40]; // yul: let p := mload(0x40)
+		    memory[p + 0 : + 32] = calldata[4:4+32]; // yul: calldatacopy(p, 4, 32)
+		    memory[p + 32] = claims.slot; // yul: mstore(add(p, 32), claims.slot)
+		    slot = slot(claims[calldata[4:4+32]]); // yul: let slot := keccak256(p, 64)
+		    require(claims[calldata[4:4+32]] != 0); // yul: revert(0, 0)
+		}
+		```
+		Recovered Revert Summary:
+			[5] require(claims[calldata[4:4+32]] != 0); control=iszero(sload(slot))
+		Recovered Storage Summary:
+			[3] SLOT slot := claims[calldata[4:4+32]]
+			[4] READ read claims[calldata[4:4+32]]; control=none
+
+	Function PipelineCase4.f
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase4.f#1
+			SourceRange: line 15:9 to line 19:9
+		Original Assembly:
+		```solidity
+		assembly {
+		            let p := mload(0x40)
+		            let h := keccak256(p, 32)
+		            sstore(marker.slot, h)
+		        }
+		```
+		Processed Assembly View After Memory + Storage + Revert Recovery:
+		```solidity
+		assembly /* recovered semantic view */ {
+		    p = memory[0x40]; // yul: let p := mload(0x40)
+		    h = keccak256(unknown); // yul: let h := keccak256(p, 32)
+		    marker = h; // yul: sstore(marker.slot, h)
+		}
+		```
+		Recovered Revert Summary:
+			No revert(0, 0) recovery entries.
+		Recovered Storage Summary:
+			[2] WRITE: marker = h; control=none
+
+----- Full Storage IR -----
+INFO:AssemblyStorageIR:Source /tmp/pipeline_cases/PipelineCase4.sol
+INFO:AssemblyStorageIR:SlithIR-SSA /tmp/assembly_pipeline_f5djlc0w/slithir_ssa.generated.txt
+INFO:AssemblyStorageIR:VariablesOrder /tmp/assembly_pipeline_f5djlc0w/variables_order.generated.txt
+INFO:AssemblyStorageIR:Assembly blocks 2
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result.
+
+Contract PipelineCase4
+	Function PipelineCase4.f()
+		Parameters: none
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase4.f#0
+			SourceRange: line 6:9 to line 14:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[3] MAPPING_SLOT: slot := claims[calldata[4:4+32]]
+				Key: calldata[4:4+32]
+				Base: claims.slot
+				StateVariable: claims
+				ResolvedInputs: [0: calldata[4:4+32], 32: claims.slot]
+				ControlPath: none
+				Yul: let slot := keccak256(p, 64)
+		Storage Reads:
+			[4] INLINE_MAPPING_READ: _ := claims[calldata[4:4+32]]
+				Slot: slot
+				StateVariable: claims
+				SolidityLike: read claims[calldata[4:4+32]];
+				ControlPath: none
+				Yul: if iszero(sload(slot))
+		Storage Writes:
+			No storage writes recovered.
+		Storage Semantic Replacement View:
+			slot = slot(claims[calldata[4:4+32]]); // yul: let slot := keccak256(p, 64)
+			read claims[calldata[4:4+32]]; // yul: if iszero(sload(slot))
+
+	Function PipelineCase4.f()
+		Parameters: none
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase4.f#1
+			SourceRange: line 15:9 to line 19:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			No slot computations recovered.
+		Storage Reads:
+			No storage reads recovered.
+		Storage Writes:
+			[2] STATE_VARIABLE_WRITE: marker := h
+				Slot: marker.slot
+				StateVariable: marker
+				SolidityLike: marker = h;
+				ControlPath: none
+				Yul: sstore(marker.slot, h)
+		Storage Semantic Replacement View:
+			marker = h; // yul: sstore(marker.slot, h)

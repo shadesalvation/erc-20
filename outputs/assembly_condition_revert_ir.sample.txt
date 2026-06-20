@@ -1,0 +1,192 @@
+INFO:AssemblyConditionRevertIR:Source TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol
+INFO:AssemblyConditionRevertIR:SlithIR-SSA /tmp/condition_revert_39670dpj/slithir_ssa.generated.txt
+INFO:AssemblyConditionRevertIR:VariablesOrder /tmp/condition_revert_39670dpj/variables_order.generated.txt
+INFO:AssemblyConditionRevertIR:Assembly blocks 3
+INFO:AssemblyConditionRevertIR:Note Only revert(0, 0) is converted to require-like semantics. Opaque predicate analysis is intentionally skipped.
+
+Contract Token
+	Function Token._transfer
+		Visibility: internal
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._transfer#0
+			SourceRange: line 66:9 to line 104:9
+		Conditions:
+			[0] CONDITION iszero(_from)
+				ControlPath: none
+				Yul: if iszero(_from)
+			[2] CONDITION iszero(_to)
+				ControlPath: none
+				Yul: if iszero(_to)
+			[7] CONDITION iszero(xor(bfo228g, bfo228g))
+				ControlPath: none
+				Yul: if iszero(xor(bfo228g, bfo228g))
+			[14] CONDITION iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+				ControlPath: none
+				Yul: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+			[17] CONDITION iszero(eq(Fpzy, YvIh))
+				ControlPath: none
+				Yul: if iszero(eq(Fpzy, YvIh))
+			[18] CONDITION lt(qVPd, _amount)
+				ControlPath: iszero(eq(Fpzy, YvIh))
+				Yul: if lt(qVPd, _amount)
+			[20] CONDITION eq(tfe9zci, mul(tfe9zci, 1))
+				ControlPath: iszero(eq(Fpzy, YvIh)) -> lt(qVPd, _amount)
+				Yul: if eq(tfe9zci, mul(tfe9zci, 1))
+		Revert To Require:
+			[1] REVERT args(0, 0)
+				NearestCondition: iszero(_from)
+				MergedConditions: iszero(_from)
+				RequireLike: require(_from != address(0));
+				ControlPath: iszero(_from)
+				Yul: revert(0, 0)
+			[3] REVERT args(0, 0)
+				NearestCondition: iszero(_to)
+				MergedConditions: iszero(_to)
+				RequireLike: require(_to != address(0));
+				ControlPath: iszero(_to)
+				Yul: revert(0, 0)
+			[15] REVERT args(0, 0)
+				NearestCondition: iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+				MergedConditions: iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+				RequireLike: require(staticcall(gas(), 2, bbwz, 20, bbwz, 32));
+				ControlPath: iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+				Yul: revert(0, 0)
+			[21] REVERT args(0, 0)
+				NearestCondition: eq(tfe9zci, mul(tfe9zci, 1))
+				MergedConditions: eq(tfe9zci, mul(tfe9zci, 1))
+				RequireLike: require(!(tfe9zci == tfe9zci * 1));
+				ControlPath: iszero(eq(Fpzy, YvIh)) -> lt(qVPd, _amount) -> eq(tfe9zci, mul(tfe9zci, 1))
+				Yul: revert(0, 0)
+		Processed Assembly View After Revert Recovery:
+		```solidity
+		assembly /* revert-to-require semantic view */ {
+		    require(_from != address(0)); // yul: revert(0, 0)
+		    require(_to != address(0)); // yul: revert(0, 0)
+		    bbwz = memory[0x40]; // yul: let bbwz := mload(0x40)
+		    bfo228g = basefee(); // yul: let bfo228g := basefee()
+		    nezy9b8 = number(); // yul: let nezy9b8 := number()
+		    if (iszero(xor(bfo228g, bfo228g))) // yul: if iszero(xor(bfo228g, bfo228g))
+		        memory[bbwz + 0] = _from; // yul: mstore(bbwz, _from)
+		        memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+		    XCUz = keccak256(_from, 0); // yul: let XCUz := keccak256(bbwz, 64)
+		    qVPd = sload(XCUz); // yul: let qVPd := sload(XCUz)
+		    Fpzy = sload(sSgI.slot); // yul: let Fpzy := sload(sSgI.slot)
+		    memory[bbwz + 0] = shl(96, caller()); // yul: mstore(bbwz, shl(96, caller()))
+		    require(staticcall(gas(), 2, bbwz, 20, bbwz, 32)); // yul: revert(0, 0)
+		    YvIh = memory[bbwz]; // yul: let YvIh := mload(bbwz)
+		    if (iszero(eq(Fpzy, YvIh))) // yul: if iszero(eq(Fpzy, YvIh))
+		        if (lt(qVPd, _amount)) // yul: if lt(qVPd, _amount)
+		            tfe9zci = timestamp(); // yul: let tfe9zci := timestamp()
+		            require(!(tfe9zci == tfe9zci * 1)); // yul: revert(0, 0)
+		    sstore(XCUz, sub(qVPd, _amount)); // yul: sstore(XCUz, sub(qVPd, _amount))
+		    memory[bbwz + 0] = _to; // yul: mstore(bbwz, _to)
+		    memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+		    iLho = keccak256(_to, 0); // yul: let iLho := keccak256(bbwz, 64)
+		    bXFg = sload(iLho); // yul: let bXFg := sload(iLho)
+		    sstore(iLho, add(bXFg, _amount)); // yul: sstore(iLho, add(bXFg, _amount))
+		    memory[bbwz + 0] = _amount; // yul: mstore(bbwz, _amount)
+		    log3(data=['bbwz', '32'], topics=['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', '_from', '_to']); // yul: log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+		}
+		```
+
+	Function Token.approve
+		Visibility: public
+		ReachableFromERC20: approve
+		AssemblyBlock Token.approve#1
+			SourceRange: line 108:9 to line 119:9
+		Conditions:
+			No conditions found.
+		Revert To Require:
+			No revert(0, 0) found.
+		Processed Assembly View After Revert Recovery:
+		```solidity
+		assembly /* revert-to-require semantic view */ {
+		    bbwz = memory[0x40]; // yul: let bbwz := mload(0x40)
+		    memory[bbwz + 0] = caller(); // yul: mstore(bbwz, caller())
+		    memory[bbwz + 32] = wZHA.slot; // yul: mstore(add(bbwz, 0x20), wZHA.slot)
+		    ZFHJ = keccak256(caller(), wZHA.slot); // yul: let ZFHJ := keccak256(bbwz, 0x40)
+		    memory[bbwz + 0] = _spender; // yul: mstore(bbwz, _spender)
+		    memory[bbwz + 32] = ZFHJ; // yul: mstore(add(bbwz, 0x20), ZFHJ)
+		    akRJ = keccak256(_spender, ZFHJ); // yul: let akRJ := keccak256(bbwz, 0x40)
+		    sstore(akRJ, _amount); // yul: sstore(akRJ, _amount)
+		    log3(data=['bbwz', '0x20'], topics=['0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0', 'caller()', '_spender']); // yul: log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+		    memory[bbwz + 0] = _amount; // yul: mstore(bbwz, _amount)
+		}
+		```
+
+	Function Token._spendAllowance
+		Visibility: internal
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._spendAllowance#2
+			SourceRange: line 124:9 to line 165:9
+		Conditions:
+			[6] CONDITION eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+				ControlPath: none
+				Yul: if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+			[12] CONDITION and(zfPf, iszero(_amount))
+				ControlPath: none
+				Yul: if and(zfPf, iszero(_amount))
+			[14] CONDITION iszero(zfPf)
+				ControlPath: none
+				Yul: if iszero(zfPf)
+			[24] CONDITION eq(gbj1enk, and(gbj1enk, gbj1enk))
+				ControlPath: none
+				Yul: if eq(gbj1enk, and(gbj1enk, gbj1enk))
+			[26] CONDITION iszero(eq(zfPf, not(0)))
+				ControlPath: none
+				Yul: if iszero(eq(zfPf, not(0)))
+			[27] CONDITION lt(zfPf, _amount)
+				ControlPath: iszero(eq(zfPf, not(0)))
+				Yul: if lt(zfPf, _amount)
+			[31] CONDITION eq(bf51h1a, and(bf51h1a, bf51h1a))
+				ControlPath: iszero(eq(zfPf, not(0)))
+				Yul: if eq(bf51h1a, and(bf51h1a, bf51h1a))
+		Revert To Require:
+			[13] REVERT args(0, 0)
+				NearestCondition: and(zfPf, iszero(_amount))
+				MergedConditions: and(zfPf, iszero(_amount))
+				RequireLike: require(!(zfPf & !(_amount)));
+				ControlPath: and(zfPf, iszero(_amount))
+				Yul: revert(0, 0)
+			[28] REVERT args(0, 0)
+				NearestCondition: lt(zfPf, _amount)
+				MergedConditions: lt(zfPf, _amount)
+				RequireLike: require(!(zfPf < _amount));
+				ControlPath: iszero(eq(zfPf, not(0))) -> lt(zfPf, _amount)
+				Yul: revert(0, 0)
+		Processed Assembly View After Revert Recovery:
+		```solidity
+		assembly /* revert-to-require semantic view */ {
+		    bbwz = memory[0x40]; // yul: let bbwz := mload(0x40)
+		    memory[bbwz + 0] = sload(qBQC.slot); // yul: mstore(bbwz, sload(qBQC.slot))
+		    memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+		    uAnE = keccak256(sload(qBQC.slot), 1); // yul: let uAnE := keccak256(bbwz, 64)
+		    bcw8ayf = basefee(); // yul: let bcw8ayf := basefee()
+		    ncwupwx = number(); // yul: let ncwupwx := number()
+		    if (eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) // yul: if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+		        memory[bbwz + 0] = _owner; // yul: mstore(bbwz, _owner)
+		        memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+		    Jfwv = keccak256(_owner, uAnE); // yul: let Jfwv := keccak256(bbwz, 64)
+		    CCkU = sload(Jfwv); // yul: let CCkU := sload(Jfwv)
+		    zfPf = CCkU; // yul: let zfPf := CCkU
+		    require(!(zfPf & !(_amount))); // yul: revert(0, 0)
+		    if (iszero(zfPf)) // yul: if iszero(zfPf)
+		        memory[bbwz + 0] = _owner; // yul: mstore(bbwz, _owner)
+		        memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+		        uAnE = keccak256(_owner, 1); // yul: uAnE := keccak256(bbwz, 64)
+		        memory[bbwz + 0] = _spender; // yul: mstore(bbwz, _spender)
+		        memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+		        Jfwv = keccak256(_spender, uAnE); // yul: Jfwv := keccak256(bbwz, 64)
+		        zfPf = add(sload(Jfwv), CCkU); // yul: zfPf := add(sload(Jfwv), CCkU)
+		    gbj1enk = gas(); // yul: let gbj1enk := gas()
+		    pop(0); // yul: pop(0)
+		    if (eq(gbj1enk, and(gbj1enk, gbj1enk))) // yul: if eq(gbj1enk, and(gbj1enk, gbj1enk))
+		        zfPf = sub(zfPf, CCkU); // yul: zfPf := sub(zfPf, CCkU)
+		    if (iszero(eq(zfPf, not(0)))) // yul: if iszero(eq(zfPf, not(0)))
+		        require(!(zfPf < _amount)); // yul: revert(0, 0)
+		        bf51h1a = basefee(); // yul: let bf51h1a := basefee()
+		        pop(0); // yul: pop(0)
+		        if (eq(bf51h1a, and(bf51h1a, bf51h1a))) // yul: if eq(bf51h1a, and(bf51h1a, bf51h1a))
+		            sstore(Jfwv, sub(zfPf, _amount)); // yul: sstore(Jfwv, sub(zfPf, _amount))
+		}
+		```

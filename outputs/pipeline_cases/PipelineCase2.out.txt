@@ -1,0 +1,106 @@
+INFO:AssemblyRecoveryPipeline:Source /tmp/pipeline_cases/PipelineCase2.sol
+INFO:AssemblyRecoveryPipeline:Input Solidity source only
+INFO:AssemblyRecoveryPipeline:GeneratedSlithIRSSA internal temporary file
+INFO:AssemblyRecoveryPipeline:GeneratedVariablesOrder internal temporary file
+INFO:AssemblyRecoveryPipeline:Assembly blocks 1
+INFO:AssemblyRecoveryPipeline:Note output is a semantic view; source is not modified and output is not compiled
+
+Contract PipelineCase2
+	Function PipelineCase2.f
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase2.f#0
+			SourceRange: line 5:9 to line 20:9
+		Original Assembly:
+		```solidity
+		assembly {
+		            let p := mload(0x40)
+		            mstore(p, owner)
+		            mstore(add(p, 32), allow.slot)
+		            let ownerSlot := keccak256(p, 64)
+		            mstore(p, spender)
+		            mstore(add(p, 32), ownerSlot)
+		            let allowSlot := keccak256(p, 64)
+		            let current := sload(allowSlot)
+		            if iszero(eq(current, not(0))) {
+		                if lt(current, amount) {
+		                    revert(0, 0)
+		                }
+		                sstore(allowSlot, sub(current, amount))
+		            }
+		        }
+		```
+		Processed Assembly View After Memory + Storage + Revert Recovery:
+		```solidity
+		assembly /* recovered semantic view */ {
+		    p = memory[0x40]; // yul: let p := mload(0x40)
+		    memory[p + 0] = owner; // yul: mstore(p, owner)
+		    memory[p + 32] = allow.slot; // yul: mstore(add(p, 32), allow.slot)
+		    ownerSlot = slot(allow[owner]); // yul: let ownerSlot := keccak256(p, 64)
+		    memory[p + 0] = spender; // yul: mstore(p, spender)
+		    memory[p + 32] = ownerSlot; // yul: mstore(add(p, 32), ownerSlot)
+		    allowSlot = slot(allow[owner][spender]); // yul: let allowSlot := keccak256(p, 64)
+		    current = allow[owner][spender]; // yul: let current := sload(allowSlot)
+		    if (iszero(eq(current, not(0)))) // yul: if iszero(eq(current, not(0)))
+		        require(!(current < amount)); // yul: revert(0, 0)
+		        unchecked { allow[owner][spender] = current - amount; } // yul: sstore(allowSlot, sub(current, amount))
+		}
+		```
+		Recovered Revert Summary:
+			[10] require(!(current < amount)); control=iszero(eq(current, not(0))) -> lt(current, amount)
+		Recovered Storage Summary:
+			[3] SLOT ownerSlot := allow[owner]
+			[6] SLOT allowSlot := allow[owner][spender]
+			[7] READ current = allow[owner][spender]; control=none
+			[11] WRITE unchecked: unchecked { allow[owner][spender] = current - amount; } control=iszero(eq(current, not(0)))
+
+----- Full Storage IR -----
+INFO:AssemblyStorageIR:Source /tmp/pipeline_cases/PipelineCase2.sol
+INFO:AssemblyStorageIR:SlithIR-SSA /tmp/assembly_pipeline_r6p27w0f/slithir_ssa.generated.txt
+INFO:AssemblyStorageIR:VariablesOrder /tmp/assembly_pipeline_r6p27w0f/variables_order.generated.txt
+INFO:AssemblyStorageIR:Assembly blocks 1
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result.
+
+Contract PipelineCase2
+	Function PipelineCase2.f(address,address,uint256)
+		Parameters: address owner, address spender, uint256 amount
+		Visibility: public
+		ReachableFromERC20: no
+		AssemblyBlock PipelineCase2.f#0
+			SourceRange: line 5:9 to line 20:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			[3] MAPPING_SLOT: ownerSlot := allow[owner]
+				Key: owner
+				Base: allow.slot
+				StateVariable: allow
+				ResolvedInputs: [0: owner, 32: allow.slot]
+				ControlPath: none
+				Yul: let ownerSlot := keccak256(p, 64)
+			[6] NESTED_MAPPING_SLOT: allowSlot := allow[owner][spender]
+				Key: spender
+				Base: ownerSlot
+				StateVariable: allow
+				ResolvedInputs: [0: spender, 32: ownerSlot]
+				ControlPath: none
+				Yul: let allowSlot := keccak256(p, 64)
+		Storage Reads:
+			[7] NESTED_MAPPING_READ: current := allow[owner][spender]
+				Slot: allowSlot
+				StateVariable: allow
+				SolidityLike: current = allow[owner][spender];
+				ControlPath: none
+				Yul: let current := sload(allowSlot)
+		Storage Writes:
+			[11] NESTED_MAPPING_WRITE: allow[owner][spender] := current - amount
+				Slot: allowSlot
+				StateVariable: allow
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { allow[owner][spender] = current - amount; }
+				ControlPath: iszero(eq(current, not(0)))
+				Yul: sstore(allowSlot, sub(current, amount))
+		Storage Semantic Replacement View:
+			ownerSlot = slot(allow[owner]); // yul: let ownerSlot := keccak256(p, 64)
+			allowSlot = slot(allow[owner][spender]); // yul: let allowSlot := keccak256(p, 64)
+			current = allow[owner][spender]; // yul: let current := sload(allowSlot)
+			unchecked { allow[owner][spender] = current - amount; } // yul: sstore(allowSlot, sub(current, amount))
