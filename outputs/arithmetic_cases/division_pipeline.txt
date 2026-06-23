@@ -1,0 +1,95 @@
+INFO:AssemblyRecoveryPipeline:Source outputs/arithmetic_cases/DivisionCase.sol
+INFO:AssemblyRecoveryPipeline:Input Solidity source only
+INFO:AssemblyRecoveryPipeline:GeneratedSlithIRSSA internal temporary file
+INFO:AssemblyRecoveryPipeline:GeneratedVariablesOrder internal temporary file
+INFO:AssemblyRecoveryPipeline:Assembly blocks 1
+INFO:AssemblyRecoveryPipeline:Note output is a semantic view; source is not modified and output is not compiled
+
+Contract DivisionCase
+	Function DivisionCase.divide
+		Visibility: external
+		ReachableFromERC20: no
+		AssemblyBlock DivisionCase.divide#0
+			SourceRange: line 6:9 to line 12:9
+		Original Assembly:
+		```solidity
+		assembly {
+		            let quotient := div(a, b)
+		            if lt(quotient, 2) {
+		                revert(0, 0)
+		            }
+		            sstore(result.slot, mod(a, b))
+		        }
+		```
+		Processed Assembly View After Memory + Storage + Revert + Event + Arithmetic/Comparison Recovery:
+		```solidity
+		assembly /* recovered semantic view */ {
+		    require(b != 0); // inserted for Solidity division semantics
+		    quotient = (a / b); // yul: let quotient := div(a, b)
+		    require(!((quotient < 2))); // yul: revert(0, 0)
+		    require(b != 0); // inserted for Solidity division semantics
+		    result = a % b; // yul: sstore(result.slot, mod(a, b))
+		}
+		```
+		Recovered Revert Summary:
+			[2] require(!((quotient < 2))); control=lt(quotient__ssa1, 2)
+		Recovered Event Summary:
+			No log/event operations.
+		Recovered Arithmetic/Comparison Summary:
+			[0] quotient = (a / b); guards=require(b != 0);
+			[1] if (quotient < 2)
+			[3] mod(a, b) guards=require(b != 0);
+		Recovered Storage Summary:
+			[3] WRITE: result = a % b; control=none
+
+----- Full Storage IR -----
+INFO:AssemblyStorageIR:Source outputs/arithmetic_cases/DivisionCase.sol
+INFO:AssemblyStorageIR:SlithIR-SSA /tmp/assembly_pipeline_keyckk9n/slithir_ssa.generated.txt
+INFO:AssemblyStorageIR:VariablesOrder /tmp/assembly_pipeline_keyckk9n/variables_order.generated.txt
+INFO:AssemblyStorageIR:Assembly blocks 1
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result.
+
+Contract DivisionCase
+	Function DivisionCase.divide(uint256,uint256)
+		Parameters: uint256 a, uint256 b
+		Visibility: external
+		ReachableFromERC20: no
+		AssemblyBlock DivisionCase.divide#0
+			SourceRange: line 6:9 to line 12:9
+			MemoryTrackerScope: assembly_block_isolated
+		Storage Slot Computations:
+			No slot computations recovered.
+		Storage Reads:
+			No storage reads recovered.
+		Storage Writes:
+			[3] STATE_VARIABLE_WRITE: result := a % b
+				Slot: result.slot
+				StateVariable: result
+				SolidityLike: result = a % b;
+				ControlPath: none
+				Yul: sstore(result.slot, mod(a, b))
+		Storage Semantic Replacement View:
+			result = a % b; // yul: sstore(result.slot, mod(a, b))
+
+----- Full Arithmetic/Comparison IR -----
+INFO:AssemblyArithmeticCompareIR:Source outputs/arithmetic_cases/DivisionCase.sol
+INFO:AssemblyArithmeticCompareIR:Expressions are parsed as ASTs before Solidity-like rendering
+INFO:AssemblyArithmeticCompareIR:Dynamic div/mod operands add require(denominator != 0)
+INFO:AssemblyArithmeticCompareIR:Assembly blocks 1
+
+Contract DivisionCase
+	Function DivisionCase.divide
+		[0] ASSIGNMENT context=value
+			AST: div(a, b)
+			SolidityLike: quotient = (a / b);
+			DivisionGuards: require(b != 0);
+			Yul: let quotient := div(a, b)
+		[1] CONDITION context=condition
+			AST: lt(quotient, 2)
+			SolidityLike: if (quotient < 2)
+			Yul: if lt(quotient, 2)
+		[3] STORAGE_WRITE context=value
+			AST: mod(a, b)
+			SolidityLike: None
+			DivisionGuards: require(b != 0);
+			Yul: sstore(result.slot, mod(a, b))

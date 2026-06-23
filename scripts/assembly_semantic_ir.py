@@ -273,13 +273,84 @@ def yul_body_to_statements(body: str) -> list[tuple[str, list[str]]]:
     return statements
 
 
-class MemoryTracker:
-    def __init__(self) -> None:
-        self.memory: dict[str, list[dict[str, Any]]] = {}
+class CFGPathTracker:
+    """Structured Yul CFG state traversal equivalent to IF/END_IF edges."""
 
-    def write(self, address_expr: str, value: str, size: int = MEMORY_WORD_BYTES) -> dict[str, Any]:
+    def __init__(self) -> None:
+        self._next_branch_id = 1
+        self.frames: list[dict[str, Any]] = []
+        self.active_states: list[tuple[tuple[int, bool], ...]] = [()]
+
+    def reconcile(self, target_conditions: list[str]) -> None:
+        common = 0
+        while common < len(self.frames) and common < len(target_conditions):
+            if self.frames[common]["condition"] != target_conditions[common]:
+                break
+            common += 1
+
+        while len(self.frames) > common:
+            frame = self.frames.pop()
+            self.active_states = frame["true_states"] + frame["false_states"]
+
+        while len(self.frames) < len(target_conditions):
+            condition = target_conditions[len(self.frames)]
+            branch_id = self._next_branch_id
+            self._next_branch_id += 1
+            parent_states = self.active_states
+            true_states = [state + ((branch_id, True),) for state in parent_states]
+            false_states = [state + ((branch_id, False),) for state in parent_states]
+            self.frames.append({
+                "condition": condition,
+                "branch_id": branch_id,
+                "true_states": true_states,
+                "false_states": false_states,
+            })
+            self.active_states = true_states
+
+    @staticmethod
+    def format_state(state: tuple[tuple[int, bool], ...]) -> str:
+        return "/".join(f"b{branch}:{'T' if value else 'F'}" for branch, value in state) or "entry"
+
+    def formatted_active_states(self) -> list[str]:
+        return [self.format_state(state) for state in self.active_states]
+
+
+class MemoryTracker:
+    """Path-sensitive virtual memory for one inline assembly block.
+
+    A write carries the SSA control path active when it occurred. A later read
+    can use that write exactly only when the write path dominates the read path.
+    Writes from optional prior branches become explicit merge candidates.
+    """
+
+    def __init__(self, scope: str = "assembly_block") -> None:
+        self.scope = scope
+        self.memory: dict[str, list[dict[str, Any]]] = {}
+        self.versions: dict[tuple[str, str], int] = {}
+
+    @staticmethod
+    def _path_text(control_path: list[str] | None) -> str:
+        return " -> ".join(strip_ssa(part) or part for part in (control_path or [])) or "root"
+
+    @staticmethod
+    def _visible(entry_path: list[str], read_path: list[str]) -> bool:
+        return len(entry_path) <= len(read_path) and entry_path == read_path[:len(entry_path)]
+
+    def _new_mssa(self, address: dict[str, Any]) -> str:
+        base = re.sub(r"[^A-Za-z0-9_]", "_", str(address["base"]))
+        offset = re.sub(r"[^A-Za-z0-9_]", "_", offset_key(address))
+        key = (str(address["base"]), offset_key(address))
+        version = self.versions.get(key, 0) + 1
+        self.versions[key] = version
+        return f"mem_{base}_{offset}__mssa{version}"
+
+    def _append(self, address: dict[str, Any], entry: dict[str, Any]) -> None:
+        entry["memory_ssa"] = self._new_mssa(address)
+        self.memory.setdefault(str(address["base"]), []).append(entry)
+
+    def write(self, address_expr: str, value: str, size: int = MEMORY_WORD_BYTES, control_path: list[str] | None = None, path_states: list[tuple[tuple[int, bool], ...]] | None = None) -> dict[str, Any]:
         address = parse_memory_address(address_expr)
-        base = address["base"]
+        base = str(address["base"])
         entry = {
             "kind": "word",
             "offset": address.get("offset"),
@@ -287,17 +358,22 @@ class MemoryTracker:
             "size": size,
             "value": value.strip(),
             "source": "mstore",
+            "control_path": list(control_path or []),
+            "cfg_path_states": list(path_states or [()]),
         }
-        self.memory.setdefault(base, []).append(entry)
+        self._append(address, entry)
         return {
             "address": address,
             "value": value.strip(),
+            "memory_ssa": entry["memory_ssa"],
+            "control_path": entry["control_path"],
+            "tracker_scope": self.scope,
             "memory_after": self.snapshot_for_base(base),
         }
 
-    def copy(self, op: str, dst_expr: str, src_expr: str, size_expr: str) -> dict[str, Any]:
+    def copy(self, op: str, dst_expr: str, src_expr: str, size_expr: str, control_path: list[str] | None = None, path_states: list[tuple[tuple[int, bool], ...]] | None = None) -> dict[str, Any]:
         address = parse_memory_address(dst_expr)
-        base = address["base"]
+        base = str(address["base"])
         size = parse_int_literal(size_expr)
         src = src_expr.strip()
         if op == "calldatacopy":
@@ -315,86 +391,173 @@ class MemoryTracker:
             "value": source,
             "source": op,
             "source_offset": src,
+            "control_path": list(control_path or []),
+            "cfg_path_states": list(path_states or [()]),
         }
-        self.memory.setdefault(base, []).append(entry)
+        self._append(address, entry)
         return {
             "address": address,
             "source": source,
             "size": size,
             "size_expr": size_expr.strip(),
+            "memory_ssa": entry["memory_ssa"],
+            "control_path": entry["control_path"],
+            "tracker_scope": self.scope,
             "memory_after": self.snapshot_for_base(base),
         }
 
-    def read(self, address_expr: str, length_expr: str | None = None) -> dict[str, Any]:
+    def read(self, address_expr: str, length_expr: str | None = None, control_path: list[str] | None = None, path_states: list[tuple[tuple[int, bool], ...]] | None = None) -> dict[str, Any]:
         address = parse_memory_address(address_expr)
-        base = address["base"]
+        base = str(address["base"])
         start = address.get("offset")
         start_expr = address.get("offset_expr")
         length = parse_int_literal(length_expr or "") if length_expr is not None else None
+        path = list(control_path or [])
         resolved_words = []
         if start is not None and length is not None and length > 0:
             word_count = (length + MEMORY_WORD_BYTES - 1) // MEMORY_WORD_BYTES
             for idx in range(word_count):
                 word_offset = start + idx * MEMORY_WORD_BYTES
-                resolved_words.append(self.resolve_word(base, word_offset))
+                resolved_words.append(self.resolve_word(base, word_offset, path, path_states))
         elif start is not None:
-            resolved_words.append(self.resolve_word(base, start))
+            resolved_words.append(self.resolve_word(base, start, path, path_states))
         else:
             resolved_words.append({
                 "offset": None,
                 "offset_expr": start_expr,
-                "value": self.resolve_symbolic(base, start_expr),
+                "value": self.resolve_symbolic(base, start_expr, path),
+                "control_path": path,
             })
         return {
             "address": address,
             "length": length,
+            "control_path": path,
+            "tracker_scope": self.scope,
             "resolved_words": resolved_words,
         }
 
-    def resolve_word(self, base: str, offset: int) -> dict[str, Any]:
-        entries = self.memory.get(base, [])
-        newer_symbolic_candidates: list[str] = []
-        for entry in reversed(entries):
+    def _candidate(self, entry: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "value": entry["value"],
+            "memory_ssa": entry.get("memory_ssa"),
+            "control_path": entry.get("control_path", []),
+            "path": self._path_text(entry.get("control_path", [])),
+            "source": entry.get("source"),
+        }
+
+    def _unknown_word(self, offset: int, candidates: list[dict[str, Any]], fallback: dict[str, Any] | None = None) -> dict[str, Any]:
+        result: dict[str, Any] = {
+            "offset": offset,
+            "offset_expr": str(offset),
+            "value": "unknown",
+            "branch_candidates": candidates,
+        }
+        if fallback is not None:
+            result["exact_fallback"] = fallback["value"]
+            result["memory_ssa"] = fallback.get("memory_ssa")
+            result["control_path"] = fallback.get("control_path", [])
+        return result
+
+    def resolve_word(self, base: str, offset: int, control_path: list[str] | None = None, path_states: list[tuple[tuple[int, bool], ...]] | None = None) -> dict[str, Any]:
+        if path_states:
+            return self.resolve_word_cfg(base, offset, path_states)
+        path = list(control_path or [])
+        candidates: list[dict[str, Any]] = []
+        for entry in reversed(self.memory.get(base, [])):
+            entry_path = entry.get("control_path", [])
+            visible = self._visible(entry_path, path)
             entry_offset = entry.get("offset")
             if entry_offset is None:
-                newer_symbolic_candidates.append(self.entry_text(entry))
+                candidates.append(self._candidate(entry))
                 continue
-            if entry["kind"] == "word" and entry_offset == offset:
-                if newer_symbolic_candidates:
-                    return {
-                        "offset": offset,
-                        "offset_expr": str(offset),
-                        "value": "unknown",
-                        "exact_fallback": entry["value"],
-                        "symbolic_candidates": newer_symbolic_candidates,
-                    }
-                return {"offset": offset, "offset_expr": str(offset), "value": entry["value"]}
-            if entry["kind"] == "range" and entry_offset is not None:
+            matches = entry["kind"] == "word" and entry_offset == offset
+            if entry["kind"] == "range":
                 size = entry.get("size")
-                if size is not None and ranges_overlap(entry_offset, size, offset, MEMORY_WORD_BYTES):
-                    source_value = self.slice_range_source(entry, offset - entry_offset)
-                    if newer_symbolic_candidates:
-                        return {
-                            "offset": offset,
-                            "offset_expr": str(offset),
-                            "value": "unknown",
-                            "exact_fallback": source_value,
-                            "symbolic_candidates": newer_symbolic_candidates,
-                        }
-                    return {"offset": offset, "offset_expr": str(offset), "value": source_value}
-        if newer_symbolic_candidates:
+                matches = size is not None and ranges_overlap(entry_offset, size, offset, MEMORY_WORD_BYTES)
+            if not matches:
+                continue
+            if not visible:
+                candidates.append(self._candidate(entry))
+                continue
+            if candidates:
+                return self._unknown_word(offset, candidates, entry)
+            if entry["kind"] == "range":
+                value = self.slice_range_source(entry, offset - entry_offset)
+            else:
+                value = entry["value"]
             return {
                 "offset": offset,
                 "offset_expr": str(offset),
-                "value": "unknown",
-                "symbolic_candidates": newer_symbolic_candidates,
+                "value": value,
+                "memory_ssa": entry.get("memory_ssa"),
+                "control_path": entry_path,
             }
+        if candidates:
+            return self._unknown_word(offset, candidates)
         return {"offset": offset, "offset_expr": str(offset), "value": None}
 
-    def resolve_symbolic(self, base: str, offset_expr: str | None) -> str | None:
+    @staticmethod
+    def _cfg_prefix(write_state: tuple[tuple[int, bool], ...], read_state: tuple[tuple[int, bool], ...]) -> bool:
+        return len(write_state) <= len(read_state) and write_state == read_state[:len(write_state)]
+
+    def _resolve_word_cfg_state(self, base: str, offset: int, state: tuple[tuple[int, bool], ...]) -> dict[str, Any]:
         for entry in reversed(self.memory.get(base, [])):
-            if entry.get("offset") is None and entry.get("offset_expr") == offset_expr:
-                return entry["value"]
+            states = entry.get("cfg_path_states", [()])
+            if not any(self._cfg_prefix(tuple(write_state), state) for write_state in states):
+                continue
+            entry_offset = entry.get("offset")
+            if entry_offset is None:
+                return self._unknown_word(offset, [self._candidate(entry)])
+            matches = entry["kind"] == "word" and entry_offset == offset
+            if entry["kind"] == "range":
+                size = entry.get("size")
+                matches = size is not None and ranges_overlap(entry_offset, size, offset, MEMORY_WORD_BYTES)
+            if not matches:
+                continue
+            value = self.slice_range_source(entry, offset - entry_offset) if entry["kind"] == "range" else entry["value"]
+            return {
+                "offset": offset,
+                "offset_expr": str(offset),
+                "value": value,
+                "memory_ssa": entry.get("memory_ssa"),
+                "control_path": entry.get("control_path", []),
+                "cfg_path_state": CFGPathTracker.format_state(state),
+            }
+        return {"offset": offset, "offset_expr": str(offset), "value": None, "cfg_path_state": CFGPathTracker.format_state(state)}
+
+    def resolve_word_cfg(self, base: str, offset: int, path_states: list[tuple[tuple[int, bool], ...]]) -> dict[str, Any]:
+        per_path = [self._resolve_word_cfg_state(base, offset, tuple(state)) for state in path_states]
+        values = [item.get("value") for item in per_path]
+        known_values = {value for value in values if value not in {None, "unknown"}}
+        mssa_inputs = [item.get("memory_ssa") for item in per_path if item.get("memory_ssa")]
+        if len(known_values) == 1 and all(value not in {None, "unknown"} for value in values):
+            result = dict(per_path[0])
+            if len(set(mssa_inputs)) > 1:
+                result["memory_phi"] = f"phi({', '.join(dict.fromkeys(mssa_inputs))})"
+            result["cfg_path_states"] = [item["cfg_path_state"] for item in per_path]
+            return result
+        candidates = [
+            {
+                "value": item.get("value"),
+                "memory_ssa": item.get("memory_ssa"),
+                "path": item.get("cfg_path_state"),
+                "source": "cfg_path",
+            }
+            for item in per_path
+        ]
+        result = self._unknown_word(offset, candidates)
+        result["cfg_path_states"] = [item["cfg_path_state"] for item in per_path]
+        return result
+
+    def resolve_symbolic(self, base: str, offset_expr: str | None, control_path: list[str] | None = None) -> str | None:
+        path = list(control_path or [])
+        candidates = []
+        for entry in reversed(self.memory.get(base, [])):
+            if entry.get("offset") is not None or entry.get("offset_expr") != offset_expr:
+                continue
+            if self._visible(entry.get("control_path", []), path):
+                return entry["value"] if not candidates else None
+            candidates.append(entry)
         return None
 
     def slice_range_source(self, entry: dict[str, Any], relative_offset: int) -> str:
@@ -412,7 +575,7 @@ class MemoryTracker:
         offset = entry.get("offset")
         offset_text = str(offset) if offset is not None else entry.get("offset_expr", "unknown")
         size = entry.get("size") if entry.get("size") is not None else entry.get("size_expr", "unknown")
-        return f"{offset_text}/size {size}: {entry['value']}"
+        return f"{offset_text}/size {size}: {entry['value']} [{entry.get('memory_ssa', 'unknown')} path={self._path_text(entry.get('control_path', []))}]"
 
     def snapshot_for_base(self, base: str) -> list[dict[str, Any]]:
         return [
@@ -423,12 +586,14 @@ class MemoryTracker:
                 "size_expr": entry.get("size_expr"),
                 "value": entry.get("value"),
                 "source": entry.get("source"),
+                "memory_ssa": entry.get("memory_ssa"),
+                "control_path": entry.get("control_path", []),
+                "cfg_path_states": [CFGPathTracker.format_state(tuple(state)) for state in entry.get("cfg_path_states", [()])],
             }
             for entry in self.memory.get(base, [])
         ]
 
-
-def semantic_for_statement(statement: str, memory: MemoryTracker) -> tuple[str, dict[str, Any]]:
+def semantic_for_statement(statement: str, memory: MemoryTracker, control_path: list[str] | None = None, path_states: list[tuple[tuple[int, bool], ...]] | None = None) -> tuple[str, dict[str, Any]]:
     target, expr = split_assignment(statement)
     call = parse_call(expr)
 
@@ -449,7 +614,7 @@ def semantic_for_statement(statement: str, memory: MemoryTracker) -> tuple[str, 
 
     op, args = call
     if op == "mload" and len(args) == 1:
-        read = memory.read(args[0])
+        read = memory.read(args[0], control_path=control_path, path_states=path_states)
         solidity_like = f"{target} = memory[{args[0]}];" if target else f"memory[{args[0]}]"
         return "memory_read", {
             "op": op,
@@ -460,7 +625,7 @@ def semantic_for_statement(statement: str, memory: MemoryTracker) -> tuple[str, 
         }
 
     if op == "mstore" and len(args) == 2:
-        write = memory.write(args[0], args[1])
+        write = memory.write(args[0], args[1], control_path=control_path, path_states=path_states)
         address = write["address"]
         offset_text = address["offset"] if address.get("offset") is not None else address.get("offset_expr")
         solidity_like = f"memory[{address['base']} + {offset_text}] = {args[1]};"
@@ -473,7 +638,7 @@ def semantic_for_statement(statement: str, memory: MemoryTracker) -> tuple[str, 
         }
 
     if op == "keccak256" and len(args) == 2:
-        read = memory.read(args[0], args[1])
+        read = memory.read(args[0], args[1], control_path=control_path, path_states=path_states)
         words = [word["value"] for word in read["resolved_words"]]
         words_text = ", ".join(value if value is not None else "unknown" for value in words)
         solidity_like = f"{target} = keccak256({words_text});" if target else f"keccak256({words_text})"
@@ -508,7 +673,7 @@ def semantic_for_statement(statement: str, memory: MemoryTracker) -> tuple[str, 
         topic_count = int(op[3:])
         data_args = args[:2]
         topic_args = args[2:]
-        read = memory.read(data_args[0], data_args[1]) if len(data_args) == 2 else None
+        read = memory.read(data_args[0], data_args[1], control_path=control_path, path_states=path_states) if len(data_args) == 2 else None
         return "event_log", {
             "op": op,
             "topic_count": topic_count,
@@ -519,7 +684,7 @@ def semantic_for_statement(statement: str, memory: MemoryTracker) -> tuple[str, 
         }
 
     if op in {"calldatacopy", "codecopy", "returndatacopy"} and len(args) == 3:
-        copied = memory.copy(op, args[0], args[1], args[2])
+        copied = memory.copy(op, args[0], args[1], args[2], control_path=control_path, path_states=path_states)
         address = copied["address"]
         offset_text = address["offset"] if address.get("offset") is not None else address.get("offset_expr")
         return "memory_copy", {
@@ -554,18 +719,20 @@ def semantic_for_statement(statement: str, memory: MemoryTracker) -> tuple[str, 
     }
 
 
-def build_source_semantic_ir(assembly_snippet: str) -> tuple[list[dict[str, Any]], list[str]]:
+def build_source_semantic_ir(assembly_snippet: str, memory_scope: str = "assembly_block") -> tuple[list[dict[str, Any]], list[str]]:
     body = strip_assembly_wrapper(assembly_snippet)
     raw_statements = yul_body_to_statements(body)
-    memory = MemoryTracker()
+    memory = MemoryTracker(memory_scope)
     ssa = SSAEnv()
+    cfg_paths = CFGPathTracker()
     ops: list[dict[str, Any]] = []
     replacement_lines: list[str] = []
 
     for index, (statement, control_path) in enumerate(raw_statements):
         ssa_control_path = ssa.transform_control_path(control_path)
+        cfg_paths.reconcile(ssa_control_path)
         ssa_statement = ssa.transform_statement(statement)
-        kind, semantic = semantic_for_statement(ssa_statement, memory)
+        kind, semantic = semantic_for_statement(ssa_statement, memory, ssa_control_path, cfg_paths.active_states)
         op = YulStatement(
             index=index,
             kind=kind,
@@ -576,6 +743,7 @@ def build_source_semantic_ir(assembly_snippet: str) -> tuple[list[dict[str, Any]
         op_dict = asdict(op)
         op_dict["ssa_text"] = ssa_statement
         op_dict["raw_control_path"] = control_path
+        op_dict["cfg_path_states"] = cfg_paths.formatted_active_states()
         ops.append(op_dict)
 
         indent = "  " * len(control_path)
@@ -712,7 +880,7 @@ def build_report(source_path: Path, slithir_path: Path | None) -> dict[str, Any]
 
     report_blocks = []
     for block_index, block in enumerate(blocks):
-        source_ops, replacement_lines = build_source_semantic_ir(block.assembly_snippet)
+        source_ops, replacement_lines = build_source_semantic_ir(block.assembly_snippet, f"{block.contract}.{block.function}#{block_index}")
         slithir_key = f"{block.contract}.{block.function}"
         slithir_view = slithir_functions.get(slithir_key)
         report_blocks.append({
@@ -741,7 +909,7 @@ def build_report(source_path: Path, slithir_path: Path | None) -> dict[str, Any]
     return {
         "source_file": str(source_path),
         "slithir_ssa": str(slithir_path) if slithir_path else None,
-        "ir_note": "This IR is a semantic replacement view only. It is not compiled and does not modify the source.",
+        "ir_note": "This IR is a semantic replacement view only. It is not compiled and does not modify the source. Memory is tracked per function-context assembly block with path-sensitive SSA writes.",
         "assembly_blocks": report_blocks,
     }
 
@@ -768,6 +936,18 @@ def memory_words_text(words: list[dict[str, Any]]) -> str:
         value_text = strip_ssa(value) if value is not None else "unknown"
         if word.get("symbolic_candidates"):
             value_text += " candidates=" + repr([strip_ssa(candidate) for candidate in word["symbolic_candidates"]])
+        if word.get("branch_candidates"):
+            candidates = [
+                {
+                    "value": strip_ssa(candidate.get("value")) or candidate.get("value"),
+                    "path": candidate.get("path", "root"),
+                    "mssa": candidate.get("memory_ssa"),
+                }
+                for candidate in word["branch_candidates"]
+            ]
+            value_text += " branch_candidates=" + repr(candidates)
+        if word.get("memory_ssa"):
+            value_text += f" mssa={word['memory_ssa']}"
         size = word.get("size") or word.get("size_expr")
         if size is not None:
             parts.append(f"{offset_text}/size {size}: {value_text}")
@@ -862,7 +1042,7 @@ def format_text_ir(report: dict[str, Any]) -> str:
             f"\t\tAssemblyBlock {block['block_id']}",
             f"\t\t\tSourceRange: line {pos['start_line']}:{pos['start_column']} to line {pos['end_line']}:{pos['end_column']}",
             f"\t\t\tOffsetRange: {pos['start_offset']}:{pos['end_offset']}",
-            "\t\t\tMemoryTrackerScope: assembly_block_isolated",
+            "\t\t\tMemoryTrackerScope: assembly_block_isolated + branch_sensitive_memory_ssa",
             "\t\tSemantic IRs:",
         ])
 

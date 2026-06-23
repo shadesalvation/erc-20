@@ -1,0 +1,58 @@
+AssemblyBlock 1: SingleBranch.read(address user, address alternate, bool chooseAlternate)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+MemoryDefinitions:
+  mem_1 = mstore(p, user) origin=N3 src=312:15:0
+  mem_2 = mstore(add(p,32), balances.slot) origin=N4 src=340:33:0
+  mem_3 = mstore(p, alternate) origin=N7 src=423:20:0
+ValueDefinitions:
+  p__ssa1 = mload(0x40) origin=N2 src=279:20:0
+  slot__ssa2 = keccak256(p, 64) origin=N8 src=470:28:0
+  slot__ssa3 = keccak256(p, 64) origin=N8 src=470:28:0
+  result__ssa4 = sload(slot) origin=N9 src=511:21:0
+  result__ssa5 = sload(slot) origin=N9 src=511:21:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[!(chooseAlternate)] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1, result=result__ssa4, slot=slot__ssa2]
+    in:  path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_3] values=[p=p__ssa1, result=result__ssa5, slot=slot__ssa3]
+    out: path=[!(chooseAlternate)] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1, result=result__ssa4, slot=slot__ssa2]
+    out: path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_3] values=[p=p__ssa1, result=result__ssa5, slot=slot__ssa3]
+  N2 [statement] let p := mload(0x40)
+    effect: value defs: p__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[p=p__ssa1]
+  N3 [statement] mstore(p, user)
+    effect: mem_1: mstore(p, user)
+    in:  path=[entry] memory=[-] values=[p=p__ssa1]
+    out: path=[entry] memory=[p=mem_1] values=[p=p__ssa1]
+  N4 [statement] mstore(add(p, 32), balances.slot)
+    effect: mem_2: mstore(add(p,32), balances.slot)
+    in:  path=[entry] memory=[p=mem_1] values=[p=p__ssa1]
+    out: path=[entry] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1]
+  N5 [condition] if chooseAlternate
+    in:  path=[entry] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1]
+    out: path=[entry] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1]
+  N6 [merge] if merge
+    in:  path=[!(chooseAlternate)] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1]
+    in:  path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_3] values=[p=p__ssa1]
+    out: path=[!(chooseAlternate)] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1]
+    out: path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_3] values=[p=p__ssa1]
+  N7 [statement] mstore(p, alternate)
+    effect: mem_3: mstore(p, alternate)
+    in:  path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1]
+    out: path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_3] values=[p=p__ssa1]
+  N8 [statement] let slot := keccak256(p, 64)
+    effect: value defs: slot__ssa3
+    in:  path=[!(chooseAlternate)] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1]
+    in:  path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_3] values=[p=p__ssa1]
+    out: path=[!(chooseAlternate)] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1, slot=slot__ssa2]
+    out: path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_3] values=[p=p__ssa1, slot=slot__ssa3]
+  N9 [statement] result := sload(slot)
+    effect: value defs: result__ssa5
+    in:  path=[!(chooseAlternate)] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1, slot=slot__ssa2]
+    in:  path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_3] values=[p=p__ssa1, slot=slot__ssa3]
+    out: path=[!(chooseAlternate)] memory=[add(p,32)=mem_2, p=mem_1] values=[p=p__ssa1, result=result__ssa4, slot=slot__ssa2]
+    out: path=[chooseAlternate] memory=[add(p,32)=mem_2, p=mem_3] values=[p=p__ssa1, result=result__ssa5, slot=slot__ssa3]

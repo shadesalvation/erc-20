@@ -1,0 +1,31 @@
+INFO:BranchMaterialization:input Solidity source only
+INFO:BranchMaterialization:output Branch-expanded Yul IR; source is not modified
+
+AssemblyBlock 1: NestedBranch.read(address user, address alternate, address overrideUser, bool first, bool second)
+ConditionalMaterialization: sink=N12 target=result
+  baseline path: !(first)
+  baseline slot: slot=keccak256(p=mem_1:user,add(p,32)=mem_2:balances.slot)
+  BranchExpandedYulIR:
+    let p := mload(0x40); // origin: N2
+    mstore(p, user); // origin: N3
+    mstore(add(p, 32), balances.slot); // origin: N4
+    let slot := keccak256(p, 64); // origin: N11
+    result := sload(slot); // origin: N12
+    // path: first && !(second)
+    if first {
+        if !(second) {
+            mstore(p, alternate); // origin: N7
+            let slot := keccak256(p, 64); // origin: N11
+            result := sload(slot); // origin: N12
+        }
+    }
+    // path: first && second
+    if first {
+        if second {
+            mstore(p, overrideUser); // origin: N10
+            let slot := keccak256(p, 64); // origin: N11
+            result := sload(slot); // origin: N12
+        }
+    }
+  OriginSummary: shared=[2, 4] cloned=[3, 7, 10, 11, 12]
+

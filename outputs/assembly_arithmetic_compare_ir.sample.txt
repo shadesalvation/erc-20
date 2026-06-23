@@ -1,0 +1,98 @@
+INFO:AssemblyArithmeticCompareIR:Source TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol
+INFO:AssemblyArithmeticCompareIR:Expressions are parsed as ASTs before Solidity-like rendering
+INFO:AssemblyArithmeticCompareIR:Dynamic div/mod operands add require(denominator != 0)
+INFO:AssemblyArithmeticCompareIR:Assembly blocks 3
+
+Contract Token
+	Function Token._transfer
+		[0] CONDITION context=condition
+			AST: iszero(_from)
+			SolidityLike: if (_from == address(0))
+			Yul: if iszero(_from)
+		[2] CONDITION context=condition
+			AST: iszero(_to)
+			SolidityLike: if (_to == address(0))
+			Yul: if iszero(_to)
+		[7] CONDITION context=condition
+			AST: iszero(xor(bfo228g, bfo228g))
+			SolidityLike: if (yulXor(bfo228g, bfo228g) == 0)
+			Helpers: yulXor
+			Yul: if iszero(xor(bfo228g, bfo228g))
+		[13] MEMORY_WRITE context=value
+			AST: shl(96, caller())
+			SolidityLike: memory[bbwz + 0] = yulShl(96, caller());
+			Helpers: yulShl
+			Yul: mstore(bbwz, shl(96, caller()))
+		[14] CONDITION context=condition
+			AST: iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+			SolidityLike: if (staticcall(gas(), 2, bbwz, 20, bbwz, 32) == 0)
+			Yul: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+		[17] CONDITION context=condition
+			AST: iszero(eq(Fpzy, YvIh))
+			SolidityLike: if (!(Fpzy == YvIh))
+			Yul: if iszero(eq(Fpzy, YvIh))
+		[18] CONDITION context=condition
+			AST: lt(qVPd, _amount)
+			SolidityLike: if (qVPd < _amount)
+			Yul: if lt(qVPd, _amount)
+		[20] CONDITION context=condition
+			AST: eq(tfe9zci, mul(tfe9zci, 1))
+			SolidityLike: if (tfe9zci == (tfe9zci * 1))
+			Yul: if eq(tfe9zci, mul(tfe9zci, 1))
+		[22] STORAGE_WRITE context=value
+			AST: sub(qVPd, _amount)
+			SolidityLike: None
+			Yul: sstore(XCUz, sub(qVPd, _amount))
+		[27] STORAGE_WRITE context=value
+			AST: add(bXFg, _amount)
+			SolidityLike: None
+			Yul: sstore(iLho, add(bXFg, _amount))
+
+	Function Token.approve
+		No arithmetic/comparison recovery entries.
+
+	Function Token._spendAllowance
+		[6] CONDITION context=condition
+			AST: eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+			SolidityLike: if ((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))
+			Yul: if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+		[12] CONDITION context=condition
+			AST: and(zfPf, iszero(_amount))
+			SolidityLike: if (yulAnd(zfPf, yulIszero(_amount)) != 0)
+			Helpers: yulAnd
+			Yul: if and(zfPf, iszero(_amount))
+		[14] CONDITION context=condition
+			AST: iszero(zfPf)
+			SolidityLike: if (zfPf == 0)
+			Yul: if iszero(zfPf)
+		[21] ASSIGNMENT context=value
+			AST: add(sload(Jfwv), CCkU)
+			SolidityLike: zfPf = (sload(Jfwv) + CCkU);
+			Yul: zfPf := add(sload(Jfwv), CCkU)
+		[24] CONDITION context=condition
+			AST: eq(gbj1enk, and(gbj1enk, gbj1enk))
+			SolidityLike: if (gbj1enk == yulAnd(gbj1enk, gbj1enk))
+			Helpers: yulAnd
+			Yul: if eq(gbj1enk, and(gbj1enk, gbj1enk))
+		[25] ASSIGNMENT context=value
+			AST: sub(zfPf, CCkU)
+			SolidityLike: zfPf = (zfPf - CCkU);
+			Yul: zfPf := sub(zfPf, CCkU)
+		[26] CONDITION context=condition
+			AST: iszero(eq(zfPf, not(0)))
+			SolidityLike: if (!(zfPf == yulNot(0)))
+			Helpers: yulNot
+			Yul: if iszero(eq(zfPf, not(0)))
+		[27] CONDITION context=condition
+			AST: lt(zfPf, _amount)
+			SolidityLike: if (zfPf < _amount)
+			Yul: if lt(zfPf, _amount)
+		[31] CONDITION context=condition
+			AST: eq(bf51h1a, and(bf51h1a, bf51h1a))
+			SolidityLike: if (bf51h1a == yulAnd(bf51h1a, bf51h1a))
+			Helpers: yulAnd
+			Yul: if eq(bf51h1a, and(bf51h1a, bf51h1a))
+		[32] STORAGE_WRITE context=value
+			AST: sub(zfPf, _amount)
+			SolidityLike: None
+			Yul: sstore(Jfwv, sub(zfPf, _amount))
