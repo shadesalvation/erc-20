@@ -14,7 +14,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterator
 
-from assembly_arithmetic_compare_ir import Call, Expr, ParseError, parse_yul_expression
+from assembly_arithmetic_compare_ir import Call, Expr, ParseError, parse_yul_expression, render_yul_expression
+from assembly_memory_ssa import normalize_expression
 from assembly_semantic_ir import build_report, parse_int_literal, parse_memory_address, split_assignment, strip_ssa
 
 
@@ -29,7 +30,13 @@ PRECOMPILES = {
     7: "bn256ScalarMul",
     8: "bn256Pairing",
     9: "blake2f",
+    10: "kzgPointEvaluation",
 }
+
+# These precompiles have Solidity global functions whose return values match a
+# single 32-byte EVM output word. The remaining precompiles use byte-level
+# protocols with no Solidity intrinsic, so their low-level call stays explicit.
+NATIVE_STATIC_PRECOMPILES = {"ecrecover", "sha256", "ripemd160", "identity"}
 
 
 @dataclass
@@ -138,6 +145,74 @@ class CallDataTracker:
         return result
 
 
+def memory_ssa_snapshot(block: dict[str, Any], op: dict[str, Any], ptr: str, size: str) -> dict[str, Any] | None:
+    memory_ssa = block.get("_memory_ssa_result")
+    node_id = op.get("cfg_node_id")
+    if memory_ssa is None or node_id is None:
+        return None
+
+    address = parse_memory_address(strip_ssa(ptr) or ptr)
+    start = address.get("offset")
+    length = parse_int_literal(strip_ssa(size) or size)
+    if start is None or length is None or length < 0:
+        return None
+
+    base = str(address.get("base", ""))
+    keys = []
+    for offset in range(0, length, 32):
+        key = base if offset == 0 else f"add({base}, {offset})"
+        keys.append(normalize_expression(key))
+
+    states = memory_ssa.states_at(node_id)
+    if any(any(key.startswith("<unknown") for key in state.memory) for state in states):
+        return None
+    words = []
+    for index, key in enumerate(keys):
+        definitions = [state.memory.get(key) for state in states]
+        values = {definition.value if definition else "unknown" for definition in definitions}
+        if len(values) != 1 or "unknown" in values:
+            return None
+        value = next(iter(values))
+        versions = [definition.version for definition in definitions if definition]
+        words.append({
+            "value": value,
+            "size": min(32, length - index * 32),
+            "memory_ssa": versions[0] if versions else None,
+        })
+
+    pointer = strip_ssa(ptr) or ptr
+    size_text = strip_ssa(size) or size
+    return {
+        "ptr": ptr,
+        "size": size,
+        "base": base,
+        "start": start,
+        "length": length,
+        "raw_range": f"memory[{pointer} : {pointer} + {size_text}]",
+        "selector": None,
+        "arguments": [],
+        "complete_static_abi": False,
+        "source_writes": [],
+        "words": words,
+        "complete_memory_ssa": True,
+    }
+
+
+def render_memory_word(value: str, size: int) -> str:
+    try:
+        expr = parse_yul_expression(value)
+    except ParseError:
+        return strip_ssa(value) or value
+
+    if isinstance(expr, Call) and expr.name == "shl" and len(expr.args) == 2:
+        shift = literal_value(expr.args[0])
+        if shift is not None and shift % 8 == 0 and 0 < size <= 32:
+            inner = render_yul_expression(expr_to_text(expr.args[1])).text
+            if shift == (32 - size) * 8:
+                return f"bytes{size}({inner})"
+    return render_yul_expression(value).text
+
+
 def selector_from_word(value: str) -> str | None:
     try:
         expr = parse_yul_expression(value)
@@ -210,7 +285,11 @@ def call_arguments(call: Call) -> dict[str, str] | None:
 
 def expr_to_text(expr: Expr) -> str:
     if isinstance(expr, Call):
-        return f"{expr.name}({', '.join(expr_to_text(arg) for arg in expr.args)})"
+        raw = f"{expr.name}({', '.join(expr_to_text(arg) for arg in expr.args)})"
+        try:
+            return render_yul_expression(raw).text
+        except ParseError:
+            return raw
     value = getattr(expr, "value", None)
     if isinstance(value, str):
         return strip_ssa(value) or value
@@ -234,23 +313,115 @@ def payload_text(snapshot: dict[str, Any]) -> str:
         args = ", ".join(argument for argument in arguments if argument is not None)
         suffix = f", {args}" if args else ""
         return f"abi.encodeWithSelector(bytes4({selector}){suffix})"
-    return f"yulMemorySlice({strip_ssa(snapshot['ptr']) or snapshot['ptr']}, {strip_ssa(snapshot['size']) or snapshot['size']})"
+    if snapshot.get("complete_memory_ssa"):
+        values = [
+            render_memory_word(word["value"], word["size"])
+            for word in snapshot.get("words", [])
+        ]
+        return f"abi.encodePacked({', '.join(values)})"
+    return "abi.encodePacked(yulMemoryWordUnknown())"
 
 
-def call_solidity_like(kind: str, args: dict[str, str], snapshot: dict[str, Any], success: str | None) -> tuple[str, str | None]:
+def native_precompile_call(
+    precompile: str | None,
+    kind: str,
+    args: dict[str, str],
+    snapshot: dict[str, Any],
+    op_index: int,
+) -> dict[str, Any] | None:
+    """Lift a deterministic one-word STATICCALL to a Solidity intrinsic.
+
+    CALL-family operations expose a success bit and write bytes into memory.
+    Native Solidity intrinsics expose neither, so this is limited to complete
+    MemorySSA input snapshots and an exactly 32-byte output. The pipeline can
+    then replace a following mload(outputPtr) using output_word_expression.
+    """
+
+    if precompile not in NATIVE_STATIC_PRECOMPILES or kind != "staticcall":
+        return None
+    if not snapshot.get("complete_memory_ssa"):
+        return None
+    if parse_int_literal(strip_ssa(args["output_size"]) or args["output_size"]) != 32:
+        return None
+
+    payload = payload_text(snapshot)
+    suffix = f"_{op_index}"
+    words = snapshot.get("words", [])
+
+    if precompile == "sha256":
+        result = f"sha256_result{suffix}"
+        return {
+            "solidity_like": f"bytes32 {result} = sha256({payload});",
+            "output_word_expression": f"uint256({result})",
+            "result_name": result,
+            "elides_success_check": True,
+        }
+
+    if precompile == "ripemd160":
+        result = f"ripemd160_result{suffix}"
+        return {
+            "solidity_like": f"bytes32 {result} = bytes32(ripemd160({payload}));",
+            "output_word_expression": f"uint256({result})",
+            "result_name": result,
+            "elides_success_check": True,
+        }
+
+    if precompile == "identity":
+        if parse_int_literal(strip_ssa(args["input_size"]) or args["input_size"]) != 32 or len(words) != 1:
+            return None
+        result = f"identity_result{suffix}"
+        value = render_yul_expression(words[0]["value"]).text
+        return {
+            "solidity_like": f"uint256 {result} = {value};",
+            "output_word_expression": result,
+            "result_name": result,
+            "elides_success_check": True,
+        }
+
+    # Invalid signatures become address(0), matching the precompile output.
+    # Native ecrecover accepts uint8 v, so do not silently truncate a dynamic
+    # 256-bit precompile input whose range cannot be proven.
+    if len(words) != 4 or parse_int_literal(strip_ssa(args["input_size"]) or args["input_size"]) != 128:
+        return None
+    v = parse_int_literal(strip_ssa(words[1]["value"]) or words[1]["value"])
+    if v not in {27, 28}:
+        return None
+    rendered = [render_yul_expression(word["value"]).text for word in words]
+    result = f"ecrecover_result{suffix}"
+    return {
+        "solidity_like": (
+            f"address {result} = ecrecover(bytes32({rendered[0]}), uint8({rendered[1]}), "
+            f"bytes32({rendered[2]}), bytes32({rendered[3]}));"
+        ),
+        "output_word_expression": f"uint256(uint160({result}))",
+        "result_name": result,
+        "elides_success_check": True,
+    }
+
+
+def call_solidity_like(
+    kind: str,
+    args: dict[str, str],
+    snapshot: dict[str, Any],
+    success: str | None,
+    op_index: int,
+) -> tuple[str, str | None, dict[str, Any] | None]:
     target, precompile = format_target(args["target"])
+    native = native_precompile_call(precompile, kind, args, snapshot, op_index)
+    if native:
+        return native["solidity_like"], precompile, native
     payload = payload_text(snapshot)
     success_name = strip_ssa(success) if success else None
     binding = f"(bool {success_name}, bytes memory returndata) = " if success_name else "(bool success, bytes memory returndata) = "
     gas = strip_ssa(args["gas"]) or args["gas"]
     if kind == "call":
         value = strip_ssa(args["value"]) or args["value"]
-        return f"{binding}{target}.call{{gas: {gas}, value: {value}}}({payload});", precompile
+        return f"{binding}{target}.call{{gas: {gas}, value: {value}}}({payload});", precompile, None
     if kind == "staticcall":
-        return f"{binding}{target}.staticcall{{gas: {gas}}}({payload});", precompile
+        return f"{binding}{target}.staticcall{{gas: {gas}}}({payload});", precompile, None
     if kind == "delegatecall":
-        return f"{binding}{target}.delegatecall{{gas: {gas}}}({payload});", precompile
-    return f"{binding}yulCallcode({target}, {gas}, {strip_ssa(args['value']) or args['value']}, {payload});", precompile
+        return f"{binding}{target}.delegatecall{{gas: {gas}}}({payload});", precompile, None
+    return f"{binding}yulCallcode({target}, {gas}, {strip_ssa(args['value']) or args['value']}, {payload});", precompile, None
 
 
 def recover_external_calls_for_block(block: dict[str, Any]) -> dict[str, Any]:
@@ -270,9 +441,13 @@ def recover_external_calls_for_block(block: dict[str, Any]) -> dict[str, Any]:
             args = call_arguments(call)
             if args is None:
                 continue
-            snapshot = tracker.snapshot(args["input_ptr"], args["input_size"])
+            snapshot = memory_ssa_snapshot(block, op, args["input_ptr"], args["input_size"]) or tracker.snapshot(args["input_ptr"], args["input_size"])
             direct_result = assignment_target if parent is None and isinstance(root, Call) and root.name == call.name else None
-            solidity_like, precompile = call_solidity_like(call.name, args, snapshot, direct_result)
+            condition_success = f"{call.name}_success_{op['index']}" if usage in {"condition", "loop"} else None
+            success_result = direct_result or condition_success
+            solidity_like, precompile, native_precompile = call_solidity_like(
+                call.name, args, snapshot, success_result, op["index"]
+            )
             calls.append({
                 "op_index": op["index"],
                 "call_kind": call.name,
@@ -283,10 +458,11 @@ def recover_external_calls_for_block(block: dict[str, Any]) -> dict[str, Any]:
                 "value": strip_ssa(args["value"]) or args["value"],
                 "input": snapshot,
                 "output_range": f"memory[{strip_ssa(args['output_ptr']) or args['output_ptr']} : {strip_ssa(args['output_ptr']) or args['output_ptr']} + {strip_ssa(args['output_size']) or args['output_size']}]",
-                "success_result": strip_ssa(direct_result) if direct_result else None,
+                "success_result": strip_ssa(success_result) if success_result else None,
                 "success_usage": "condition" if usage in {"condition", "loop"} else "assigned" if direct_result else "nested_expression",
                 "parent_expression": expr_to_text(parent) if parent else None,
                 "solidity_like": solidity_like,
+                "native_precompile": native_precompile,
                 "selector": snapshot.get("selector"),
                 "arguments": snapshot.get("arguments", []),
                 "complete_static_abi": snapshot.get("complete_static_abi", False),

@@ -1,0 +1,39 @@
+INFO:BranchMaterialization:input Solidity source only
+INFO:BranchMaterialization:output Branch-expanded Yul IR; source is not modified
+
+AssemblyBlock 1: Token._transfer(address _from, address _to, uint256 _amount)
+ConditionalMaterialization: sink=N16 target=qVPd mode=linearized
+  baseline path: !(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g))
+  baseline slot: XCUz=keccak256(bbwz=_from,add(bbwz,32)=0)
+  DiscardedUnknownPaths: 1
+  BranchExpandedYulIR:
+    let bbwz := mload(0x40); // origin: N8
+    mstore(bbwz, _from); // origin: N13
+    mstore(add(bbwz, 32), 0); // origin: N14
+    let XCUz := keccak256(bbwz, 64); // origin: N15
+    let qVPd := sload(XCUz); // origin: N16
+  OriginSummary: shared=[8, 13, 14, 15] cloned=[16]
+
+AssemblyBlock 2: Token.approve(address _spender, uint256 _amount)
+  No path-divergent materializable sload sink.
+
+AssemblyBlock 3: Token._spendAllowance(address _owner, address _spender, uint256 _amount)
+ConditionalMaterialization: sink=N13 target=CCkU mode=conditional
+  baseline path: !(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))
+  baseline slot: Jfwv=keccak256(bbwz=sload(qBQC.slot),add(bbwz,32)=1)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    let bbwz := mload(0x40); // origin: N2
+    mstore(bbwz, sload(qBQC.slot)); // origin: N3
+    mstore(add(bbwz, 32), 1); // origin: N4
+    let Jfwv := keccak256(bbwz, 64); // origin: N12
+    let CCkU := sload(Jfwv); // origin: N13
+    // path: eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+    if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
+        mstore(bbwz, _owner); // origin: N10
+        mstore(add(bbwz, 32), uAnE); // origin: N11
+        let Jfwv := keccak256(bbwz, 64); // origin: N12
+        let CCkU := sload(Jfwv); // origin: N13
+    }
+  OriginSummary: shared=[2] cloned=[3, 4, 10, 11, 12, 13]
+

@@ -31,16 +31,34 @@ DIRECT_ARITHMETIC = {
 }
 COMPARISONS = {"eq": "==", "lt": "<", "gt": ">", "slt": "<", "sgt": ">"}
 DIVISION_OPS = {"div", "mod", "sdiv", "smod"}
+BITWISE_BINARY = {
+    "and": "&",
+    "or": "|",
+    "xor": "^",
+}
+ENVIRONMENT_OPS = {
+    "address": "address(this)",
+    "caller": "msg.sender",
+    "callvalue": "msg.value",
+    "origin": "tx.origin",
+    "gasprice": "tx.gasprice",
+    "coinbase": "block.coinbase",
+    "timestamp": "block.timestamp",
+    "number": "block.number",
+    "difficulty": "block.prevrandao",
+    "prevrandao": "block.prevrandao",
+    "gaslimit": "block.gaslimit",
+    "chainid": "block.chainid",
+    "selfbalance": "address(this).balance",
+    "basefee": "block.basefee",
+    "gas": "gasleft()",
+    "calldatasize": "msg.data.length",
+}
+
 HELPER_OPS = {
     "sdiv": "yulSdiv",
     "smod": "yulSmod",
     "exp": "yulExp",
-    "and": "yulAnd",
-    "or": "yulOr",
-    "xor": "yulXor",
-    "not": "yulNot",
-    "shl": "yulShl",
-    "shr": "yulShr",
     "sar": "yulSar",
     "signextend": "yulSignextend",
     "byte": "yulByte",
@@ -143,6 +161,8 @@ def ast_text(expr: Expr) -> str:
 def expression_uses_supported_op(expr: Expr) -> bool:
     if isinstance(expr, (Literal, Identifier)):
         return False
+    if expr.name in ENVIRONMENT_OPS and not expr.args:
+        return True
     if expr.name in DIRECT_ARITHMETIC or expr.name in COMPARISONS or expr.name == "iszero":
         return True
     if expr.name in HELPER_OPS or expr.name in {"addmod", "mulmod"}:
@@ -175,12 +195,22 @@ def render_value(expr: Expr, type_env: dict[str, str] | None = None) -> str:
         return strip_ssa(expr.name) or expr.name
 
     args = [render_value(arg, type_env) for arg in expr.args]
+    if expr.name in ENVIRONMENT_OPS and not args:
+        return ENVIRONMENT_OPS[expr.name]
     if expr.name in DIRECT_ARITHMETIC and len(args) == 2:
         return f"({args[0]} {DIRECT_ARITHMETIC[expr.name]} {args[1]})"
     if expr.name in COMPARISONS and len(args) == 2:
-        return f"yul{expr.name.title()}({args[0]}, {args[1]})"
+        return f"({args[0]} {COMPARISONS[expr.name]} {args[1]})"
     if expr.name == "iszero" and len(args) == 1:
-        return f"yulIszero({args[0]})"
+        return f"({args[0]} == 0)"
+    if expr.name in BITWISE_BINARY and len(args) == 2:
+        return f"({args[0]} {BITWISE_BINARY[expr.name]} {args[1]})"
+    if expr.name == "not" and len(args) == 1:
+        return f"(~{args[0]})"
+    if expr.name == "shl" and len(args) == 2:
+        return f"({args[1]} << {args[0]})"
+    if expr.name == "shr" and len(args) == 2:
+        return f"({args[1]} >> {args[0]})"
     if expr.name in {"addmod", "mulmod"} and len(args) == 3:
         return f"{expr.name}({', '.join(args)})"
     if expr.name in HELPER_OPS:

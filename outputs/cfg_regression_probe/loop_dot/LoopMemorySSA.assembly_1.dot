@@ -1,0 +1,28 @@
+digraph yul_cfg {
+  rankdir=TB;
+  graph [fontname="monospace", label="Assembly block 1: LoopMemorySSA.probe(uint256 count)", labelloc=t];
+  node [fontname="monospace", shape=box];
+  edge [fontname="monospace"];
+  N0 [shape=oval, label="N0 [entry]\\nentry"];
+  N1 [shape=oval, label="N1 [exit]\\nexit"];
+  N2 [shape=box, label="N2 [statement]\\nlet p := 0x80\\n157:13:0 (line 6:13)"];
+  N3 [shape=box, label="N3 [statement]\\nmstore(p, 0)\\n183:12:0 (line 7:13)"];
+  N4 [shape=box, label="N4 [statement]\\nlet i := 0\\n215:10:0 (line 9:19)"];
+  N5 [shape=diamond, label="N5 [loop-condition]\\nfor condition lt(i, count)\\n209:110:0 (line 9:13)"];
+  N6 [shape=circle, label="N6 [loop-merge]\\nfor exit\\n209:110:0 (line 9:13)"];
+  N7 [shape=box, label="N7 [loop-post]\\nfor post\\n209:110:0 (line 9:13)"];
+  N8 [shape=box, label="N8 [statement]\\nmstore(p, add(mload(p), 1))\\n278:27:0 (line 10:17)"];
+  N9 [shape=box, label="N9 [statement]\\ni := add(i, 1)\\n243:14:0 (line 9:47)"];
+  N10 [shape=box, label="N10 [statement]\\nresult := mload(p)\\n333:18:0 (line 13:13)"];
+  N0 -> N2 [label="next"];
+  N2 -> N3 [label="next"];
+  N3 -> N4 [label="next"];
+  N4 -> N5 [label="next"];
+  N5 -> N8 [label="true: lt(i, count)"];
+  N8 -> N7 [label="next"];
+  N7 -> N9 [label="next"];
+  N9 -> N5 [label="loop back"];
+  N5 -> N6 [label="loop exit: !(lt(i, count))"];
+  N6 -> N10 [label="next"];
+  N10 -> N1 [label="next"];
+}

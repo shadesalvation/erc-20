@@ -2,10 +2,9 @@
 """
 Recover storage slot computations, storage reads, and storage writes from inline assembly.
 
-This module keeps the MemoryTracker model from assembly_semantic_ir indirectly:
-all keccak256 slot recovery uses the per-assembly-block memory recovery already
-attached to MEMORY_HASH operations. It then applies static Solidity storage rules
-and optional Slither variables_order metadata.
+All keccak256 slot recovery consumes CFG path-sensitive MemorySSA facts through
+assembly_cfg_memory_adapter. It then applies static Solidity storage rules and
+optional Slither variables_order metadata.
 """
 
 from __future__ import annotations
@@ -16,8 +15,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from assembly_cfg_memory_adapter import build_cfg_memory_report
+from assembly_arithmetic_compare_ir import ParseError, render_yul_expression
 from assembly_semantic_ir import (
-    build_report,
     memory_words_text,
     parse_call,
     parse_int_literal,
@@ -122,7 +122,11 @@ def parse_variables_order(path: Path | None) -> StateLayout:
 
 
 def yul_expr_to_solidity(expr: str) -> str:
-    expr = expr.strip()
+    expr = re.sub(r"__ssa\d+", "", expr.strip())
+    try:
+        return render_yul_expression(expr).text
+    except ParseError:
+        pass
     call = parse_call(expr)
     if not call:
         return strip_ssa(expr) or expr
@@ -238,14 +242,14 @@ def recover_storage_for_block(block: dict[str, Any], layout: StateLayout) -> dic
         if base_state:
             state_var = base_state["name"]
             if base_state["is_mapping"] and key is not None:
-                expression = f"{state_var}[{strip_ssa(key)}]"
+                expression = f"{state_var}[{yul_expr_to_solidity(key or 'unknown')}]"
                 slot_kind = "mapping_slot"
             else:
-                expression = f"keccak256({strip_ssa(key) or 'unknown'}, {base_state['name']}.slot)"
+                expression = f"keccak256({yul_expr_to_solidity(key or 'unknown')}, {base_state['name']}.slot)"
                 slot_kind = "hash_with_state_base"
         elif parent and key is not None:
             state_var = parent.get("state_variable")
-            expression = f"{parent['expression']}[{strip_ssa(key)}]"
+            expression = f"{parent['expression']}[{yul_expr_to_solidity(key or 'unknown')}]"
             slot_kind = "nested_mapping_slot"
             parent_target = base
 
@@ -355,13 +359,13 @@ def recover_storage_for_block(block: dict[str, Any], layout: StateLayout) -> dic
     }
 
 
-def build_storage_report(source_path: Path, slithir_path: Path | None, variables_order_path: Path | None) -> dict[str, Any]:
-    base_report = build_report(source_path, slithir_path)
+def build_storage_report(source_path: Path, slithir_path: Path | None, variables_order_path: Path | None, solc_bin: str | None = None) -> dict[str, Any]:
+    base_report = build_cfg_memory_report(source_path, slithir_path, solc_bin)
     layout = parse_variables_order(variables_order_path)
     for block in base_report["assembly_blocks"]:
         block["storage_recovery"] = recover_storage_for_block(block, layout)
     base_report["variables_order"] = str(variables_order_path) if variables_order_path else None
-    base_report["storage_note"] = "Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local MemoryTracker result."
+    base_report["storage_note"] = "Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local CFG MemorySSA result."
     return base_report
 
 

@@ -1,0 +1,72 @@
+AssemblyBlock 1: LoopMemorySSA.probe(uint256 count)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(p, 0) origin=N3 src=183:12:0
+  mem_2 = mstore(p, add(mload(p), 1)) origin=N8 src=278:27:0
+  mem_3 = loop_phi(p, unknown(loop-carried-memory)) origin=N5 src=209:110:0
+  mem_4 = mstore(p, add(mload(p), 1)) origin=N8 src=278:27:0
+ValueDefinitions:
+  p__ssa1 = 0x80 origin=N2 src=157:13:0
+  i__ssa2 = 0 origin=N4 src=215:10:0
+  result__ssa3 = mload(p) origin=N10 src=333:18:0
+  i__ssa4 = add(i, 1) origin=N9 src=243:14:0
+  i__ssa5 = loop_phi(i) origin=N5 src=209:110:0
+  result__ssa6 = mload(p) origin=N10 src=333:18:0
+  i__ssa7 = add(i, 1) origin=N9 src=243:14:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1, result=result__ssa3]
+    in:  path=[entry] memory=[p=mem_3] values=[i=i__ssa5, p=p__ssa1, result=result__ssa6]
+    out: path=[entry] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1, result=result__ssa3]
+    out: path=[entry] memory=[p=mem_3] values=[i=i__ssa5, p=p__ssa1, result=result__ssa6]
+  N2 [statement] let p := 0x80
+    effect: value defs: p__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[p=p__ssa1]
+  N3 [statement] mstore(p, 0)
+    effect: mem_1: mstore(p, 0)
+    in:  path=[entry] memory=[-] values=[p=p__ssa1]
+    out: path=[entry] memory=[p=mem_1] values=[p=p__ssa1]
+  N4 [statement] let i := 0
+    effect: value defs: i__ssa2
+    in:  path=[entry] memory=[p=mem_1] values=[p=p__ssa1]
+    out: path=[entry] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1]
+  N5 [loop-condition] for condition lt(i, count)
+    in:  path=[entry] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1]
+    in:  path=[entry] memory=[p=mem_3] values=[i=i__ssa5, p=p__ssa1]
+    out: path=[entry] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1]
+    out: path=[entry] memory=[p=mem_3] values=[i=i__ssa5, p=p__ssa1]
+  N6 [loop-merge] for exit
+    in:  path=[entry] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1]
+    in:  path=[entry] memory=[p=mem_3] values=[i=i__ssa5, p=p__ssa1]
+    out: path=[entry] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1]
+    out: path=[entry] memory=[p=mem_3] values=[i=i__ssa5, p=p__ssa1]
+  N7 [loop-post] for post
+    in:  path=[lt(i, count)] memory=[p=mem_2] values=[i=i__ssa2, p=p__ssa1]
+    in:  path=[lt(i, count)] memory=[p=mem_4] values=[i=i__ssa5, p=p__ssa1]
+    out: path=[lt(i, count)] memory=[p=mem_2] values=[i=i__ssa2, p=p__ssa1]
+    out: path=[lt(i, count)] memory=[p=mem_4] values=[i=i__ssa5, p=p__ssa1]
+  N8 [statement] mstore(p, add(mload(p), 1))
+    effect: mem_4: mstore(p, add(mload(p), 1))
+    in:  path=[lt(i, count)] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1]
+    in:  path=[lt(i, count)] memory=[p=mem_3] values=[i=i__ssa5, p=p__ssa1]
+    out: path=[lt(i, count)] memory=[p=mem_2] values=[i=i__ssa2, p=p__ssa1]
+    out: path=[lt(i, count)] memory=[p=mem_4] values=[i=i__ssa5, p=p__ssa1]
+  N9 [statement] i := add(i, 1)
+    effect: value defs: i__ssa7
+    in:  path=[lt(i, count)] memory=[p=mem_2] values=[i=i__ssa2, p=p__ssa1]
+    in:  path=[lt(i, count)] memory=[p=mem_4] values=[i=i__ssa5, p=p__ssa1]
+    out: path=[lt(i, count)] memory=[p=mem_2] values=[i=i__ssa4, p=p__ssa1]
+    out: path=[lt(i, count)] memory=[p=mem_4] values=[i=i__ssa7, p=p__ssa1]
+  N10 [statement] result := mload(p)
+    effect: value defs: result__ssa6
+    in:  path=[entry] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1]
+    in:  path=[entry] memory=[p=mem_3] values=[i=i__ssa5, p=p__ssa1]
+    out: path=[entry] memory=[p=mem_1] values=[i=i__ssa2, p=p__ssa1, result=result__ssa3]
+    out: path=[entry] memory=[p=mem_3] values=[i=i__ssa5, p=p__ssa1, result=result__ssa6]

@@ -77,11 +77,38 @@ class CFGEdge:
 
 
 @dataclass
+class CFGFunctionCall:
+    caller_node_id: int
+    function_name: str
+    arguments: tuple[str, ...]
+    src: str
+
+
+@dataclass
+class YulScope:
+    scope_id: int
+    parent_id: int | None
+    kind: str
+    src: str
+    bindings: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class YulScopeAnalysis:
+    scopes: dict[int, YulScope]
+    node_scopes: dict[str, int]
+    declaration_bindings: dict[str, dict[str, str]]
+
+
+@dataclass
 class YulCFG:
     nodes: list[CFGNode]
     edges: list[CFGEdge]
     entry: int
     exit: int
+    function_cfgs: dict[str, "YulCFG"] = field(default_factory=dict)
+    function_calls: list[CFGFunctionCall] = field(default_factory=list)
+    scope_analysis: YulScopeAnalysis | None = None
 
 
 def discover_solc(explicit: str | None) -> str | None:
@@ -113,6 +140,9 @@ def line_column(source: str, offset: int) -> tuple[int, int]:
 
 def compile_source_ast(source: Path, solc_bin: str) -> Json:
     source = source.resolve()
+    candidate = Path(solc_bin)
+    if not candidate.is_absolute() and candidate.is_file():
+        solc_bin = str(candidate.resolve())
     compiler_input = {
         "language": "Solidity",
         "sources": {source.name: {"content": source.read_text(encoding="utf-8")}},
@@ -288,7 +318,7 @@ def yul_statement_text(node: Json) -> str:
         return f"switch {yul_expression(node.get('expression'))}"
     if node_type == "YulCase":
         value = node.get("value")
-        return "default" if value is None else f"case {yul_expression(value)}"
+        return "default" if value is None or value == "default" else f"case {yul_expression(value)}"
     if node_type == "YulForLoop":
         return "for"
     if node_type == "YulFunctionDefinition":
@@ -340,6 +370,109 @@ def yul_children(node: Json) -> list[Json]:
     return children
 
 
+def build_yul_scope_analysis(root: Json) -> YulScopeAnalysis:
+    """Record lexical Yul scopes and stable bindings without rewriting text."""
+    scopes: dict[int, YulScope] = {}
+    node_scopes: dict[str, int] = {}
+    declaration_bindings: dict[str, dict[str, str]] = {}
+    next_scope_id = 0
+
+    def new_scope(parent_id: int | None, kind: str, node: Json | None) -> int:
+        nonlocal next_scope_id
+        scope_id = next_scope_id
+        next_scope_id += 1
+        scopes[scope_id] = YulScope(scope_id, parent_id, kind, str((node or {}).get("src", "")))
+        return scope_id
+
+    def bind(scope_id: int, names: list[Json], src: str) -> None:
+        bindings: dict[str, str] = {}
+        for item in names:
+            name = item.get("name")
+            if not name:
+                continue
+            canonical = f"{name}__scope{scope_id}"
+            scopes[scope_id].bindings[str(name)] = canonical
+            bindings[str(name)] = canonical
+        if bindings:
+            declaration_bindings[src] = bindings
+
+    def visit_block(block: Json | None, parent_id: int, kind: str) -> None:
+        if not isinstance(block, dict):
+            return
+        scope_id = new_scope(parent_id, kind, block)
+        for statement in block.get("statements", []):
+            visit_statement(statement, scope_id)
+
+    def visit_statement(statement: Json, scope_id: int) -> None:
+        node_type = statement.get("nodeType")
+        src = str(statement.get("src", ""))
+        node_scopes[src] = scope_id
+        if node_type == "YulVariableDeclaration":
+            bind(scope_id, list(statement.get("variables", [])), src)
+            return
+        if node_type == "YulIf":
+            visit_block(statement.get("body"), scope_id, "if")
+            return
+        if node_type == "YulSwitch":
+            for case in statement.get("cases", []):
+                node_scopes[str(case.get("src", ""))] = scope_id
+                visit_block(case.get("body"), scope_id, "switch-case")
+            return
+        if node_type == "YulForLoop":
+            loop_scope = new_scope(scope_id, "for", statement)
+            node_scopes[src] = loop_scope
+            pre = statement.get("pre")
+            if isinstance(pre, dict):
+                for nested in pre.get("statements", []):
+                    visit_statement(nested, loop_scope)
+            condition = statement.get("condition")
+            if isinstance(condition, dict):
+                node_scopes[str(condition.get("src", ""))] = loop_scope
+            visit_block(statement.get("body"), loop_scope, "for-body")
+            visit_block(statement.get("post"), loop_scope, "for-post")
+            return
+        if node_type == "YulFunctionDefinition":
+            function_scope = new_scope(scope_id, "function", statement)
+            bind(function_scope, list(statement.get("parameters", [])), src)
+            bind(function_scope, list(statement.get("returnVariables", [])), src)
+            visit_block(statement.get("body"), function_scope, "function-body")
+
+    root_scope = new_scope(None, "assembly", root)
+    for statement in root.get("statements", []):
+        visit_statement(statement, root_scope)
+    return YulScopeAnalysis(scopes, node_scopes, declaration_bindings)
+
+
+def statement_direct_call(node: Json) -> tuple[str | None, tuple[str, ...]]:
+    if node.get("nodeType") == "YulExpressionStatement":
+        expression = node.get("expression")
+    elif node.get("nodeType") in {"YulVariableDeclaration", "YulAssignment"}:
+        expression = node.get("value")
+    else:
+        expression = None
+    if not isinstance(expression, dict) or expression.get("nodeType") != "YulFunctionCall":
+        return None, ()
+    function = expression.get("functionName")
+    if not isinstance(function, dict) or function.get("nodeType") != "YulIdentifier":
+        return None, ()
+    return str(function.get("name", "")), tuple(yul_expression(argument) for argument in expression.get("arguments", []))
+
+
+def yul_function_definitions(root: Json) -> list[Json]:
+    """Collect local Yul functions without treating their bodies as outer flow."""
+    definitions: list[Json] = []
+
+    def visit(node: Json) -> None:
+        for child in yul_children(node):
+            if child.get("nodeType") == "YulFunctionDefinition":
+                definitions.append(child)
+                continue
+            visit(child)
+
+    visit(root)
+    return definitions
+
+
 def format_yul_ast(root: Json, max_depth: int = 5) -> list[str]:
     lines: list[str] = []
 
@@ -359,10 +492,13 @@ def format_yul_ast(root: Json, max_depth: int = 5) -> list[str]:
 
 
 class YulCFGBuilder:
-    def __init__(self) -> None:
+    def __init__(self, is_yul_function: bool = False, local_function_names: set[str] | None = None) -> None:
         self.nodes: list[CFGNode] = []
         self.edges: list[CFGEdge] = []
         self._edge_keys: set[tuple[int, int, str]] = set()
+        self.is_yul_function = is_yul_function
+        self.local_function_names = set(local_function_names or ())
+        self.function_calls: list[CFGFunctionCall] = []
         self.entry = self.add_node("entry", "entry", "")
         self.exit = self.add_node("exit", "exit", "")
 
@@ -384,7 +520,7 @@ class YulCFGBuilder:
     def build(self, root: Json) -> YulCFG:
         exits = self.build_block(root, [self.entry], "next", None)
         self.connect(exits, self.exit)
-        return YulCFG(self.nodes, self.edges, self.entry, self.exit)
+        return YulCFG(self.nodes, self.edges, self.entry, self.exit, function_calls=self.function_calls)
 
     def build_block(
         self,
@@ -431,11 +567,20 @@ class YulCFGBuilder:
             self.connect(predecessors, switch_id, entry_label)
             merge_id = self.add_node("merge", "switch merge", str(node.get("src", "")))
             cases = node.get("cases", [])
+            case_values = [
+                yul_expression(case.get("value"))
+                for case in cases
+                if isinstance(case, dict) and case.get("value") is not None and case.get("value") != "default"
+            ]
             if not cases:
                 self.edge(switch_id, merge_id, "no cases")
             for case in cases:
                 value = case.get("value")
-                label = "default" if value is None else f"case: {yul_expression(value)}"
+                if value is None or value == "default":
+                    exclusions = " && ".join(f"!({expression} == {case_value})" for case_value in case_values)
+                    label = f"default: {exclusions or 'true'}"
+                else:
+                    label = f"case: {expression} == {yul_expression(value)}"
                 case_exits = self.build_block(case.get("body"), [switch_id], label, loop_targets)
                 self.connect(case_exits, merge_id)
             return [merge_id]
@@ -454,9 +599,9 @@ class YulCFGBuilder:
                 (after_id, post_dispatch),
             )
             self.connect(body_exits, post_dispatch)
-            post_exits = self.build_block(node.get("post"), [post_dispatch], "next", loop_targets)
+            post_exits = self.build_block(node.get("post"), [post_dispatch], "next", (after_id, post_dispatch))
             self.connect(post_exits, condition_id, "loop back")
-            self.edge(condition_id, after_id, f"false: !({condition})")
+            self.edge(condition_id, after_id, f"loop exit: !({condition})")
             return [after_id]
 
         if node_type == "YulBreak":
@@ -480,8 +625,14 @@ class YulCFGBuilder:
         if node_type == "YulLeave":
             node_id = self.add_node("leave", "leave", str(node.get("src", "")))
             self.connect(predecessors, node_id, entry_label)
-            self.edge(node_id, self.exit, "leave")
+            label = "leave: function exit" if self.is_yul_function else "invalid leave"
+            self.edge(node_id, self.exit, label)
             return []
+
+        if node_type == "YulFunctionDefinition":
+            # A definition is not executed at its textual position. Its body is
+            # represented by a separate CFG; calls are handled interprocedurally.
+            return predecessors
 
         terminator = terminating_yul_builtin(node)
         if terminator:
@@ -493,11 +644,31 @@ class YulCFGBuilder:
         kind = "function-definition" if node_type == "YulFunctionDefinition" else "statement"
         node_id = self.add_node(kind, yul_statement_text(node), str(node.get("src", "")))
         self.connect(predecessors, node_id, entry_label)
+        call_name, arguments = statement_direct_call(node)
+        if call_name in self.local_function_names:
+            self.function_calls.append(CFGFunctionCall(node_id, call_name, arguments, str(node.get("src", ""))))
         return [node_id]
 
 
 def build_yul_cfg(yul_ast: Json) -> YulCFG:
-    return YulCFGBuilder().build(yul_ast)
+    definitions = {str(definition.get("name", "<anonymous>")): definition for definition in yul_function_definitions(yul_ast)}
+    cfg = YulCFGBuilder(local_function_names=set(definitions)).build(yul_ast)
+    cfg.function_cfgs = {
+        name: build_yul_function_cfg(definition, set(definitions))
+        for name, definition in definitions.items()
+    }
+    cfg.scope_analysis = build_yul_scope_analysis(yul_ast)
+    return cfg
+
+
+def build_yul_function_cfg(definition: Json, local_function_names: set[str] | None = None) -> YulCFG:
+    body = definition.get("body")
+    if not isinstance(body, dict):
+        body = {"nodeType": "YulBlock", "statements": []}
+    cfg = YulCFGBuilder(is_yul_function=True, local_function_names=local_function_names).build(body)
+    scope_root = {"nodeType": "YulBlock", "src": str(body.get("src", "")), "statements": [definition]}
+    cfg.scope_analysis = build_yul_scope_analysis(scope_root)
+    return cfg
 
 
 def format_cfg(cfg: YulCFG, source: str) -> list[str]:
@@ -508,10 +679,26 @@ def format_cfg(cfg: YulCFG, source: str) -> list[str]:
         if node.src:
             line, column = line_column(source, start)
             position = f" @ {node.src} (line {line}:{column})"
-        lines.append(f"  N{node.node_id} [{node.kind}] {node.text}{position}")
+        scope = cfg.scope_analysis.node_scopes.get(node.src) if cfg.scope_analysis else None
+        scope_text = f" scope=S{scope}" if scope is not None else ""
+        lines.append(f"  N{node.node_id} [{node.kind}{scope_text}] {node.text}{position}")
     lines.append("Edges:")
     for edge in cfg.edges:
         lines.append(f"  N{edge.source} --[{edge.label}]--> N{edge.target}")
+    if cfg.scope_analysis:
+        lines.append("YulScopes:")
+        for scope in cfg.scope_analysis.scopes.values():
+            parent = f"S{scope.parent_id}" if scope.parent_id is not None else "none"
+            bindings = ", ".join(f"{name}->{binding}" for name, binding in scope.bindings.items()) or "-"
+            lines.append(f"  S{scope.scope_id} kind={scope.kind} parent={parent} bindings={bindings}")
+    if cfg.function_calls:
+        lines.append("YulLocalFunctionCalls:")
+        for call in cfg.function_calls:
+            arguments = ", ".join(call.arguments)
+            lines.append(f"  N{call.caller_node_id} -> {call.function_name}({arguments}) @ {call.src}")
+    for name, function_cfg in cfg.function_cfgs.items():
+        lines.append(f"YulFunctionCFG {name}:")
+        lines.extend(f"  {line}" for line in format_cfg(function_cfg, source))
     return lines
 
 
@@ -567,6 +754,12 @@ def write_dot_files(blocks: list[AssemblyAstBlock], dot_dir: Path) -> list[Path]
         graph_label = f"Assembly block {block.block_id}: {block.context.label()}"
         output.write_text(format_cfg_dot(cfg, block.source, graph_label), encoding="utf-8")
         outputs.append(output)
+        for name, function_cfg in cfg.function_cfgs.items():
+            safe_name = "".join(char if char.isalnum() or char in {"_", "-"} else "_" for char in name)
+            function_output = dot_dir / f"{block.source_path.stem}.assembly_{block.block_id}.function_{safe_name}.dot"
+            function_label = f"Assembly block {block.block_id}, Yul function {name}: {block.context.label()}"
+            function_output.write_text(format_cfg_dot(function_cfg, block.source, function_label), encoding="utf-8")
+            outputs.append(function_output)
     return outputs
 
 

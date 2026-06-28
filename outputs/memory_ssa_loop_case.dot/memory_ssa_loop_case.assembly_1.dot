@@ -1,0 +1,30 @@
+digraph yul_cfg {
+  rankdir=TB;
+  graph [fontname="monospace", label="Assembly block 1: AssemblyMemorySsaLoopCase.buildAndHash(uint256 words)", labelloc=t];
+  node [fontname="monospace", shape=box];
+  edge [fontname="monospace"];
+  N0 [shape=oval, label="N0 [entry]\\nentry"];
+  N1 [shape=oval, label="N1 [exit]\\nexit"];
+  N2 [shape=box, label="N2 [statement]\\nlet ptr := mload(0x40)\\n233:22:0 (line 7:13)"];
+  N3 [shape=box, label="N3 [statement]\\nlet size := mul(words, 0x20)\\n268:28:0 (line 8:13)"];
+  N4 [shape=box, label="N4 [statement]\\nlet i := 0\\n315:10:0 (line 9:19)"];
+  N5 [shape=diamond, label="N5 [loop-condition]\\nfor condition lt(i, size)\\n309:115:0 (line 9:13)"];
+  N6 [shape=circle, label="N6 [loop-merge]\\nfor exit\\n309:115:0 (line 9:13)"];
+  N7 [shape=box, label="N7 [loop-post]\\nfor post\\n309:115:0 (line 9:13)"];
+  N8 [shape=box, label="N8 [statement]\\nmstore(add(ptr, i), add(i, 1))\\n380:30:0 (line 10:17)"];
+  N9 [shape=box, label="N9 [statement]\\ni := add(i, 0x20)\\n342:17:0 (line 9:46)"];
+  N10 [shape=box, label="N10 [statement]\\nlastWord := mload(add(ptr, sub(size, 0x20)))\\n437:44:0 (line 12:13)"];
+  N11 [shape=box, label="N11 [statement]\\ndigest := keccak256(ptr, size)\\n494:30:0 (line 13:13)"];
+  N0 -> N2 [label="next"];
+  N2 -> N3 [label="next"];
+  N3 -> N4 [label="next"];
+  N4 -> N5 [label="next"];
+  N5 -> N8 [label="true: lt(i, size)"];
+  N8 -> N7 [label="next"];
+  N7 -> N9 [label="next"];
+  N9 -> N5 [label="loop back"];
+  N5 -> N6 [label="loop exit: !(lt(i, size))"];
+  N6 -> N10 [label="next"];
+  N10 -> N11 [label="next"];
+  N11 -> N1 [label="next"];
+}

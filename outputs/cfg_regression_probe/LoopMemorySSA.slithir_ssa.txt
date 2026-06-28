@@ -1,0 +1,41 @@
+'.venv/bin/solc --version' running
+'.venv/bin/solc outputs/cfg_regression_probe/LoopMemorySSA.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes --allow-paths .,/home/ubuntu/erc-20/outputs/cfg_regression_probe' running
+Compilation warnings/errors on outputs/cfg_regression_probe/LoopMemorySSA.sol:
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> outputs/cfg_regression_probe/LoopMemorySSA.sol
+
+
+INFO:Printers:Contract LoopMemorySSA
+	Function LoopMemorySSA.probe(uint256)
+		Expression: p_probe_asm_0 = 0x80
+		IRs:
+			p_probe_asm_0_1(uint256) := 128(uint256)
+		Expression: mstore(uint256,uint256)(p_probe_asm_0,0)
+		IRs:
+			TMP_0(None) = SOLIDITY_CALL mstore(uint256,uint256)(p_probe_asm_0_1,0)
+		Expression: i_probe_asm_0 = 0
+		IRs:
+			i_probe_asm_0_1(uint256) := 0(uint256)
+		Expression: i_probe_asm_0 < count
+		IRs:
+			i_probe_asm_0_2(uint256) := ϕ(['i_probe_asm_0_3', 'i_probe_asm_0_1'])
+			TMP_1(bool) = i_probe_asm_0_2 < count_1
+			CONDITION TMP_1
+		Expression: mstore(uint256,uint256)(p_probe_asm_0,mload(uint256)(p_probe_asm_0) + 1)
+		IRs:
+			TMP_2(uint256) = SOLIDITY_CALL mload(uint256)(p_probe_asm_0_1)
+			TMP_3(uint256) = TMP_2 + 1
+			TMP_4(None) = SOLIDITY_CALL mstore(uint256,uint256)(p_probe_asm_0_1,TMP_3)
+		Expression: i_probe_asm_0 = i_probe_asm_0 + 1
+		IRs:
+			TMP_5(uint256) = i_probe_asm_0_2 + 1
+			i_probe_asm_0_3(uint256) := TMP_5(uint256)
+		Expression: result = mload(uint256)(p_probe_asm_0)
+		IRs:
+			TMP_6(uint256) = SOLIDITY_CALL mload(uint256)(p_probe_asm_0_1)
+			result_1(uint256) := TMP_6(uint256)
+		Expression: result
+		IRs:
+			RETURN result_1
+
+INFO:Slither:outputs/cfg_regression_probe/LoopMemorySSA.sol analyzed (1 contracts)

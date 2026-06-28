@@ -1,0 +1,105 @@
+INFO:AssemblyAstCfg:Input Solidity source only
+INFO:AssemblyAstCfg:InlineAssembly blocks 1
+
+AssemblyBlock 1
+  Contract: AssemblyMemorySsaLoopCase
+  Function: buildAndHash(uint256 words)
+  Visibility: external
+  SoliditySourceRange: 210:324:0 (line 6:9 to 14:9)
+  YulRoot: YulBlock [219:315:0]
+  SoliditySnippet:
+    assembly {
+                let ptr := mload(0x40)
+                let size := mul(words, 0x20)
+                for { let i := 0 } lt(i, size) { i := add(i, 0x20) } {
+                    mstore(add(ptr, i), add(i, 1))
+                }
+                lastWord := mload(add(ptr, sub(size, 0x20)))
+                digest := keccak256(ptr, size)
+            }
+  YulAst:
+    - YulBlock: YulBlock [219:315:0]
+      - YulVariableDeclaration: let ptr := mload(0x40) [233:22:0]
+        - YulTypedName: YulTypedName [237:3:0]
+        - YulFunctionCall: YulFunctionCall [244:11:0]
+          - YulIdentifier: YulIdentifier [244:5:0]
+          - YulLiteral: YulLiteral [250:4:0]
+      - YulVariableDeclaration: let size := mul(words, 0x20) [268:28:0]
+        - YulTypedName: YulTypedName [272:4:0]
+        - YulFunctionCall: YulFunctionCall [280:16:0]
+          - YulIdentifier: YulIdentifier [280:3:0]
+          - YulIdentifier: YulIdentifier [284:5:0]
+          - YulLiteral: YulLiteral [291:4:0]
+      - YulForLoop: for [309:115:0]
+        - YulBlock: YulBlock [313:14:0]
+          - YulVariableDeclaration: let i := 0 [315:10:0]
+            - YulTypedName: YulTypedName [319:1:0]
+            - YulLiteral: YulLiteral [324:1:0]
+        - YulFunctionCall: YulFunctionCall [328:11:0]
+          - YulIdentifier: YulIdentifier [328:2:0]
+          - YulIdentifier: YulIdentifier [331:1:0]
+          - YulIdentifier: YulIdentifier [334:4:0]
+        - YulBlock: YulBlock [362:62:0]
+          - YulExpressionStatement: mstore(add(ptr, i), add(i, 1)) [380:30:0]
+            - YulFunctionCall: YulFunctionCall [380:30:0]
+              - YulIdentifier: YulIdentifier [380:6:0]
+              - YulFunctionCall: YulFunctionCall [387:11:0]
+                - ...
+              - YulFunctionCall: YulFunctionCall [400:9:0]
+                - ...
+        - YulBlock: YulBlock [340:21:0]
+          - YulAssignment: i := add(i, 0x20) [342:17:0]
+            - YulIdentifier: YulIdentifier [342:1:0]
+            - YulFunctionCall: YulFunctionCall [347:12:0]
+              - YulIdentifier: YulIdentifier [347:3:0]
+              - YulIdentifier: YulIdentifier [351:1:0]
+              - YulLiteral: YulLiteral [354:4:0]
+      - YulAssignment: lastWord := mload(add(ptr, sub(size, 0x20))) [437:44:0]
+        - YulIdentifier: YulIdentifier [437:8:0]
+        - YulFunctionCall: YulFunctionCall [449:32:0]
+          - YulIdentifier: YulIdentifier [449:5:0]
+          - YulFunctionCall: YulFunctionCall [455:25:0]
+            - YulIdentifier: YulIdentifier [455:3:0]
+            - YulIdentifier: YulIdentifier [459:3:0]
+            - YulFunctionCall: YulFunctionCall [464:15:0]
+              - YulIdentifier: YulIdentifier [464:3:0]
+              - YulIdentifier: YulIdentifier [468:4:0]
+              - YulLiteral: YulLiteral [474:4:0]
+      - YulAssignment: digest := keccak256(ptr, size) [494:30:0]
+        - YulIdentifier: YulIdentifier [494:6:0]
+        - YulFunctionCall: YulFunctionCall [504:20:0]
+          - YulIdentifier: YulIdentifier [504:9:0]
+          - YulIdentifier: YulIdentifier [514:3:0]
+          - YulIdentifier: YulIdentifier [519:4:0]
+  LocalCFG:
+    Nodes:
+      N0 [entry] entry
+      N1 [exit] exit
+      N2 [statement scope=S0] let ptr := mload(0x40) @ 233:22:0 (line 7:13)
+      N3 [statement scope=S0] let size := mul(words, 0x20) @ 268:28:0 (line 8:13)
+      N4 [statement scope=S1] let i := 0 @ 315:10:0 (line 9:19)
+      N5 [loop-condition scope=S1] for condition lt(i, size) @ 309:115:0 (line 9:13)
+      N6 [loop-merge scope=S1] for exit @ 309:115:0 (line 9:13)
+      N7 [loop-post scope=S1] for post @ 309:115:0 (line 9:13)
+      N8 [statement scope=S2] mstore(add(ptr, i), add(i, 1)) @ 380:30:0 (line 10:17)
+      N9 [statement scope=S3] i := add(i, 0x20) @ 342:17:0 (line 9:46)
+      N10 [statement scope=S0] lastWord := mload(add(ptr, sub(size, 0x20))) @ 437:44:0 (line 12:13)
+      N11 [statement scope=S0] digest := keccak256(ptr, size) @ 494:30:0 (line 13:13)
+    Edges:
+      N0 --[next]--> N2
+      N2 --[next]--> N3
+      N3 --[next]--> N4
+      N4 --[next]--> N5
+      N5 --[true: lt(i, size)]--> N8
+      N8 --[next]--> N7
+      N7 --[next]--> N9
+      N9 --[loop back]--> N5
+      N5 --[loop exit: !(lt(i, size))]--> N6
+      N6 --[next]--> N10
+      N10 --[next]--> N11
+      N11 --[next]--> N1
+    YulScopes:
+      S0 kind=assembly parent=none bindings=ptr->ptr__scope0, size->size__scope0
+      S1 kind=for parent=S0 bindings=i->i__scope1
+      S2 kind=for-body parent=S1 bindings=-
+      S3 kind=for-post parent=S1 bindings=-

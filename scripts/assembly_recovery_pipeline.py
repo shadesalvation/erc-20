@@ -60,6 +60,20 @@ def run_slither_printer(source: Path, printer: str, slither_bin: str, solc_bin: 
     return proc.stdout
 
 
+def build_branch_expanded_source(source: Path, solc_bin: str, destination: Path) -> tuple[Path, str, int]:
+    from assembly_ast_cfg import compile_source_ast, extract_inline_assembly_blocks
+    from assembly_branch_materialization import format_branch_report, rewrite_source_with_expansions
+    from assembly_memory_ssa import analyze_block
+
+    ast = compile_source_ast(source, solc_bin)
+    blocks = extract_inline_assembly_blocks(ast, source)
+    results = [analyze_block(block) for block in blocks]
+    rewritten, rewrite_count = rewrite_source_with_expansions(source.read_text(encoding="utf-8"), results)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(rewritten, encoding="utf-8")
+    return destination, format_branch_report(results), rewrite_count
+
+
 def generate_slither_inputs(source: Path, slither_bin: str, solc_bin: str | None, workdir: Path, out_dir: Path) -> tuple[Path, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     slithir_text = run_slither_printer(source, "slithir-ssa", slither_bin, solc_bin, workdir)
@@ -114,6 +128,52 @@ def require_replacements_by_op(block: dict[str, Any]) -> dict[int, dict[str, Any
     }
 
 
+def external_require_replacements_by_op(block: dict[str, Any]) -> dict[int, dict[str, Any]]:
+    recovery = block.get("condition_revert_recovery", {})
+    conditions = {
+        op["index"]: op["semantic"].get("condition")
+        for op in block["source_yul_semantic_ir"]
+        if op.get("kind") == "condition"
+    }
+    replacements: dict[int, dict[str, Any]] = {}
+    for call in block.get("external_call_recovery", {}).get("calls", []):
+        if call.get("success_usage") != "condition" or not call.get("success_result"):
+            continue
+        condition = conditions.get(call["op_index"])
+        if not condition:
+            continue
+        for revert in recovery.get("reverts", []):
+            if revert.get("nearest_condition") == condition and condition.startswith("iszero("):
+                replacements[revert["op_index"]] = call
+    return replacements
+
+
+def external_output_replacements_by_op(block: dict[str, Any]) -> dict[int, str]:
+    """Map mload(outputPtr) to a native precompile result until that word changes."""
+    from assembly_memory_ssa import normalize_expression
+
+    def normalized_pointer(pointer: str) -> str:
+        return normalize_expression(strip_ssa(pointer) or pointer)
+
+    replacements: dict[int, str] = {}
+    ops = block["source_yul_semantic_ir"]
+    for call in block.get("external_call_recovery", {}).get("calls", []):
+        native = call.get("native_precompile")
+        if not native or not native.get("output_word_expression"):
+            continue
+        output_ptr = normalized_pointer(call["output_range"].split(":", 1)[0].removeprefix("memory[").strip())
+        for op in ops:
+            if op["index"] <= call["op_index"]:
+                continue
+            semantic = op.get("semantic", {})
+            if op.get("kind") == "memory_write" and normalized_pointer(str(semantic.get("ptr", ""))) == output_ptr:
+                break
+            if op.get("kind") == "memory_read" and normalized_pointer(str(semantic.get("ptr", ""))) == output_ptr:
+                target = strip_ssa(semantic.get("target")) or semantic.get("target") or "_"
+                replacements[op["index"]] = f"{target} = {native['output_word_expression']};"
+    return replacements
+
+
 def event_replacements_by_op(block: dict[str, Any]) -> dict[int, dict[str, Any]]:
     from assembly_event_ir import event_replacements_by_op as collect_event_replacements
 
@@ -142,6 +202,8 @@ def build_processed_block_view(block: dict[str, Any]) -> list[str]:
     storage_replacements = storage_replacements_by_op(block)
     require_replacements = require_replacements_by_op(block)
     event_replacements = event_replacements_by_op(block)
+    external_require_replacements = external_require_replacements_by_op(block)
+    external_output_replacements = external_output_replacements_by_op(block)
     arithmetic_replacements = arithmetic_replacements_by_op(block)
     skip_conditions = skipped_condition_indices(block)
     inline_substitutions = inline_read_substitutions_by_op(block)
@@ -157,7 +219,13 @@ def build_processed_block_view(block: dict[str, Any]) -> list[str]:
             require_indent = "    " + "    " * require_indent_level
             for guard in require_item.get("division_guards", []):
                 lines.append(f"{require_indent}{guard} // inserted for Solidity division semantics")
-            lines.append(f"{require_indent}{require_item['require_like']} // yul: {op['text']}")
+            external_call = external_require_replacements.get(op["index"])
+            if external_call:
+                lines.append(f"{require_indent}{external_call['solidity_like']} // yul: {external_call['yul']}")
+                if not external_call.get("native_precompile", {}).get("elides_success_check"):
+                    lines.append(f"{require_indent}require({external_call['success_result']}); // yul: {op['text']}")
+            else:
+                lines.append(f"{require_indent}{require_item['require_like']} // yul: {op['text']}")
             continue
         arithmetic_item = arithmetic_replacements.get(op["index"])
         if arithmetic_item:
@@ -167,6 +235,9 @@ def build_processed_block_view(block: dict[str, Any]) -> list[str]:
             event_item = event_replacements[op["index"]]
             note = f" /* confidence={event_item['confidence']} */" if event_item.get("confidence") != "high" else ""
             lines.append(f"{indent}{event_item['emit_like']}{note} // yul: {op['text']}")
+            continue
+        if op["index"] in external_output_replacements:
+            lines.append(f"{indent}{external_output_replacements[op['index']]} // yul: {op['text']}")
             continue
         chosen = storage_replacements.get(op["index"])
         if chosen:
@@ -190,6 +261,12 @@ def attach_arithmetic_recovery(report: dict[str, Any]) -> None:
     attach(report)
 
 
+def attach_external_call_recovery(report: dict[str, Any]) -> None:
+    from assembly_external_call_ir import attach_external_call_recovery as attach
+
+    attach(report)
+
+
 def attach_condition_revert_recovery(report: dict[str, Any]) -> None:
     from assembly_condition_revert_ir import recover_reverts_for_block
 
@@ -203,16 +280,43 @@ def attach_event_recovery(report: dict[str, Any], source: Path) -> None:
     attach(report, source)
 
 
+def attach_branch_materialization(report: dict[str, Any]) -> None:
+    from assembly_branch_materialization import find_expansions, format_expansion
+
+    for block in report["assembly_blocks"]:
+        memory_ssa = block.get("_memory_ssa_result")
+        if memory_ssa is None:
+            block["branch_materialization"] = {"lines": [], "count": 0}
+            continue
+        expansions = find_expansions(memory_ssa)
+        lines: list[str] = []
+        for expansion in expansions:
+            lines.extend(format_expansion(memory_ssa, expansion))
+        block["branch_materialization"] = {"lines": lines, "count": len(expansions)}
+
+
 def format_pipeline_report(report: dict[str, Any], slithir_path: Path, variables_path: Path, keep_generated: bool) -> str:
     lines = [
-        f"INFO:AssemblyRecoveryPipeline:Source {report['source_file']}",
+        f"INFO:AssemblyRecoveryPipeline:OriginalSource {report.get('original_source', report['source_file'])}",
+        f"INFO:AssemblyRecoveryPipeline:AnalysisSource {report['source_file']}",
+        f"INFO:AssemblyRecoveryPipeline:BranchExpandedSource {report.get('branch_expanded_source', 'not generated')}",
+        f"INFO:AssemblyRecoveryPipeline:BranchAssemblyRewrites {report.get('branch_rewrite_count', 0)}",
         "INFO:AssemblyRecoveryPipeline:Input Solidity source only",
         f"INFO:AssemblyRecoveryPipeline:GeneratedSlithIRSSA {slithir_path if keep_generated else 'internal temporary file'}",
         f"INFO:AssemblyRecoveryPipeline:GeneratedVariablesOrder {variables_path if keep_generated else 'internal temporary file'}",
         f"INFO:AssemblyRecoveryPipeline:Assembly blocks {len(report['assembly_blocks'])}",
+        "INFO:AssemblyRecoveryPipeline:Workflow solc AST -> per-InlineAssembly Yul CFG -> CFG MemorySSA -> Branch Materialization -> storage/event/revert/arithmetic recovery",
         "INFO:AssemblyRecoveryPipeline:Note output is a semantic view; source is not modified and output is not compiled",
         "",
     ]
+    branch_report = report.get("branch_materialization_report")
+    if branch_report:
+        lines.extend([
+            "----- Branch Materialization Before Recompilation -----",
+            branch_report,
+            "----- Recompiled Analysis Source -----",
+            "",
+        ])
 
     current_contract: str | None = None
     for block in report["assembly_blocks"]:
@@ -235,6 +339,15 @@ def format_pipeline_report(report: dict[str, Any], slithir_path: Path, variables
             lines.append(f"\t\t{line}")
         lines.extend([
             "\t\t```",
+            "\t\tCFG MemorySSA + Branch-expanded Yul IR:",
+        ])
+        branch = block.get("branch_materialization", {})
+        if not branch.get("lines"):
+            lines.append("\t\t\tNo path-divergent materializable sload sink.")
+        else:
+            for branch_line in branch["lines"]:
+                lines.append(f"\t\t\t{branch_line}")
+        lines.extend([
             "\t\tProcessed Assembly View After Memory + Storage + Revert + Event + Arithmetic/Comparison Recovery:",
             "\t\t```solidity",
         ])
@@ -242,8 +355,18 @@ def format_pipeline_report(report: dict[str, Any], slithir_path: Path, variables
             lines.append(f"\t\t{line}")
         lines.extend([
             "\t\t```",
-            "\t\tRecovered Revert Summary:",
+            "\t\tRecovered External Call Summary:",
         ])
+        external_recovery = block.get("external_call_recovery", {})
+        if not external_recovery.get("calls"):
+            lines.append("\t\t\tNo CALL-family operations.")
+        for item in external_recovery.get("calls", []):
+            precompile = f" precompile={item['precompile']}" if item.get("precompile") else ""
+            native = item.get("native_precompile") or {}
+            success = "intrinsic" if native.get("elides_success_check") else item["success_result"] or "inline"
+            lines.append(f"\t\t\t[{item['op_index']}] {item['call_kind']} target={item['target_solidity']}{precompile} gas={item['gas']} value={item['value']} input={item['input']['raw_range']} output={item['output_range']} success={success}")
+            lines.append(f"\t\t\t\t{item['solidity_like']}")
+        lines.append("\t\tRecovered Revert Summary:")
         revert_recovery = block.get("condition_revert_recovery", {})
         if not revert_recovery.get("reverts"):
             lines.append("\t\t\tNo revert(0, 0) recovery entries.")
@@ -325,20 +448,34 @@ def main() -> int:
 
     if args.keep_generated:
         generated_dir = output.parent / f"{output.stem}.slither"
-        slithir_path, variables_path = generate_slither_inputs(source, slither_bin, solc_bin, workdir, generated_dir)
-        report = build_storage_report(source, slithir_path, variables_path)
+        branch_source = output.parent / f"{output.stem}.branch_expanded.sol"
+        analysis_source, branch_report, rewrite_count = build_branch_expanded_source(source, solc_bin, branch_source)
+        slithir_path, variables_path = generate_slither_inputs(analysis_source, slither_bin, solc_bin, workdir, generated_dir)
+        report = build_storage_report(analysis_source, slithir_path, variables_path, solc_bin)
+        report["original_source"] = str(source)
+        report["branch_expanded_source"] = str(analysis_source)
+        report["branch_rewrite_count"] = rewrite_count
+        report["branch_materialization_report"] = branch_report
         attach_arithmetic_recovery(report)
+        attach_external_call_recovery(report)
         attach_condition_revert_recovery(report)
-        attach_event_recovery(report, source)
+        attach_event_recovery(report, analysis_source)
         output.write_text(format_pipeline_report(report, slithir_path, variables_path, True), encoding="utf-8")
     else:
         with tempfile.TemporaryDirectory(prefix="assembly_pipeline_") as tmp:
             tmp_dir = Path(tmp)
-            slithir_path, variables_path = generate_slither_inputs(source, slither_bin, solc_bin, workdir, tmp_dir)
-            report = build_storage_report(source, slithir_path, variables_path)
+            branch_source = tmp_dir / source.name
+            analysis_source, branch_report, rewrite_count = build_branch_expanded_source(source, solc_bin, branch_source)
+            slithir_path, variables_path = generate_slither_inputs(analysis_source, slither_bin, solc_bin, workdir, tmp_dir)
+            report = build_storage_report(analysis_source, slithir_path, variables_path, solc_bin)
+            report["original_source"] = str(source)
+            report["branch_expanded_source"] = "internal temporary source"
+            report["branch_rewrite_count"] = rewrite_count
+            report["branch_materialization_report"] = branch_report
             attach_arithmetic_recovery(report)
+            attach_external_call_recovery(report)
             attach_condition_revert_recovery(report)
-            attach_event_recovery(report, source)
+            attach_event_recovery(report, analysis_source)
             output.write_text(format_pipeline_report(report, slithir_path, variables_path, False), encoding="utf-8")
 
     print(f"Wrote assembly recovery pipeline report: {output}")

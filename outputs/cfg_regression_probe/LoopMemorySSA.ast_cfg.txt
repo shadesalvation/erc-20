@@ -1,0 +1,88 @@
+INFO:AssemblyAstCfg:Input Solidity source only
+INFO:AssemblyAstCfg:InlineAssembly blocks 1
+
+AssemblyBlock 1
+  Contract: LoopMemorySSA
+  Function: probe(uint256 count)
+  Visibility: external
+  SoliditySourceRange: 134:227:0 (line 5:9 to 14:9)
+  YulRoot: YulBlock [143:218:0]
+  SoliditySnippet:
+    assembly {
+                let p := 0x80
+                mstore(p, 0)
+    
+                for { let i := 0 } lt(i, count) { i := add(i, 1) } {
+                    mstore(p, add(mload(p), 1))
+                }
+    
+                result := mload(p)
+            }
+  YulAst:
+    - YulBlock: YulBlock [143:218:0]
+      - YulVariableDeclaration: let p := 0x80 [157:13:0]
+        - YulTypedName: YulTypedName [161:1:0]
+        - YulLiteral: YulLiteral [166:4:0]
+      - YulExpressionStatement: mstore(p, 0) [183:12:0]
+        - YulFunctionCall: YulFunctionCall [183:12:0]
+          - YulIdentifier: YulIdentifier [183:6:0]
+          - YulIdentifier: YulIdentifier [190:1:0]
+          - YulLiteral: YulLiteral [193:1:0]
+      - YulForLoop: for [209:110:0]
+        - YulBlock: YulBlock [213:14:0]
+          - YulVariableDeclaration: let i := 0 [215:10:0]
+            - YulTypedName: YulTypedName [219:1:0]
+            - YulLiteral: YulLiteral [224:1:0]
+        - YulFunctionCall: YulFunctionCall [228:12:0]
+          - YulIdentifier: YulIdentifier [228:2:0]
+          - YulIdentifier: YulIdentifier [231:1:0]
+          - YulIdentifier: YulIdentifier [234:5:0]
+        - YulBlock: YulBlock [260:59:0]
+          - YulExpressionStatement: mstore(p, add(mload(p), 1)) [278:27:0]
+            - YulFunctionCall: YulFunctionCall [278:27:0]
+              - YulIdentifier: YulIdentifier [278:6:0]
+              - YulIdentifier: YulIdentifier [285:1:0]
+              - YulFunctionCall: YulFunctionCall [288:16:0]
+                - ...
+        - YulBlock: YulBlock [241:18:0]
+          - YulAssignment: i := add(i, 1) [243:14:0]
+            - YulIdentifier: YulIdentifier [243:1:0]
+            - YulFunctionCall: YulFunctionCall [248:9:0]
+              - YulIdentifier: YulIdentifier [248:3:0]
+              - YulIdentifier: YulIdentifier [252:1:0]
+              - YulLiteral: YulLiteral [255:1:0]
+      - YulAssignment: result := mload(p) [333:18:0]
+        - YulIdentifier: YulIdentifier [333:6:0]
+        - YulFunctionCall: YulFunctionCall [343:8:0]
+          - YulIdentifier: YulIdentifier [343:5:0]
+          - YulIdentifier: YulIdentifier [349:1:0]
+  LocalCFG:
+    Nodes:
+      N0 [entry] entry
+      N1 [exit] exit
+      N2 [statement scope=S0] let p := 0x80 @ 157:13:0 (line 6:13)
+      N3 [statement scope=S0] mstore(p, 0) @ 183:12:0 (line 7:13)
+      N4 [statement scope=S1] let i := 0 @ 215:10:0 (line 9:19)
+      N5 [loop-condition scope=S1] for condition lt(i, count) @ 209:110:0 (line 9:13)
+      N6 [loop-merge scope=S1] for exit @ 209:110:0 (line 9:13)
+      N7 [loop-post scope=S1] for post @ 209:110:0 (line 9:13)
+      N8 [statement scope=S2] mstore(p, add(mload(p), 1)) @ 278:27:0 (line 10:17)
+      N9 [statement scope=S3] i := add(i, 1) @ 243:14:0 (line 9:47)
+      N10 [statement scope=S0] result := mload(p) @ 333:18:0 (line 13:13)
+    Edges:
+      N0 --[next]--> N2
+      N2 --[next]--> N3
+      N3 --[next]--> N4
+      N4 --[next]--> N5
+      N5 --[true: lt(i, count)]--> N8
+      N8 --[next]--> N7
+      N7 --[next]--> N9
+      N9 --[loop back]--> N5
+      N5 --[loop exit: !(lt(i, count))]--> N6
+      N6 --[next]--> N10
+      N10 --[next]--> N1
+    YulScopes:
+      S0 kind=assembly parent=none bindings=p->p__scope0
+      S1 kind=for parent=S0 bindings=i->i__scope1
+      S2 kind=for-body parent=S1 bindings=-
+      S3 kind=for-post parent=S1 bindings=-

@@ -1,0 +1,603 @@
+INFO:AssemblyRecoveryPipeline:OriginalSource TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol
+INFO:AssemblyRecoveryPipeline:AnalysisSource outputs/assembly_recovery_pipeline.precompile_native.branch_expanded.sol
+INFO:AssemblyRecoveryPipeline:BranchExpandedSource outputs/assembly_recovery_pipeline.precompile_native.branch_expanded.sol
+INFO:AssemblyRecoveryPipeline:BranchAssemblyRewrites 2
+INFO:AssemblyRecoveryPipeline:Input Solidity source only
+INFO:AssemblyRecoveryPipeline:GeneratedSlithIRSSA outputs/assembly_recovery_pipeline.precompile_native.slither/slithir_ssa.generated.txt
+INFO:AssemblyRecoveryPipeline:GeneratedVariablesOrder outputs/assembly_recovery_pipeline.precompile_native.slither/variables_order.generated.txt
+INFO:AssemblyRecoveryPipeline:Assembly blocks 3
+INFO:AssemblyRecoveryPipeline:Workflow solc AST -> per-InlineAssembly Yul CFG -> CFG MemorySSA -> Branch Materialization -> storage/event/revert/arithmetic recovery
+INFO:AssemblyRecoveryPipeline:Note output is a semantic view; source is not modified and output is not compiled
+
+----- Branch Materialization Before Recompilation -----
+INFO:BranchMaterialization:input Solidity source only
+INFO:BranchMaterialization:output Branch-expanded Yul IR; source is not modified
+
+AssemblyBlock 1: Token._transfer(address _from, address _to, uint256 _amount)
+ConditionalMaterialization: sink=N16 target=qVPd mode=linearized
+  baseline path: !(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g))
+  baseline slot: XCUz=keccak256(bbwz=_from,add(bbwz,32)=0)
+  DiscardedUnknownPaths: 1
+  BranchExpandedYulIR:
+    let bbwz := mload(0x40); // origin: N8
+    mstore(bbwz, _from); // origin: N13
+    mstore(add(bbwz, 32), 0); // origin: N14
+    let XCUz := keccak256(bbwz, 64); // origin: N15
+    let qVPd := sload(XCUz); // origin: N16
+  OriginSummary: shared=[8, 13, 14, 15] cloned=[16]
+
+AssemblyBlock 2: Token.approve(address _spender, uint256 _amount)
+  No path-divergent materializable sload sink.
+
+AssemblyBlock 3: Token._spendAllowance(address _owner, address _spender, uint256 _amount)
+ConditionalMaterialization: sink=N13 target=CCkU mode=conditional
+  baseline path: !(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))
+  baseline slot: Jfwv=keccak256(bbwz=sload(qBQC.slot),add(bbwz,32)=1)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    let bbwz := mload(0x40); // origin: N2
+    mstore(bbwz, sload(qBQC.slot)); // origin: N3
+    mstore(add(bbwz, 32), 1); // origin: N4
+    let Jfwv := keccak256(bbwz, 64); // origin: N12
+    let CCkU := sload(Jfwv); // origin: N13
+    // path: eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+    if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
+        mstore(bbwz, _owner); // origin: N10
+        mstore(add(bbwz, 32), uAnE); // origin: N11
+        let Jfwv := keccak256(bbwz, 64); // origin: N12
+        let CCkU := sload(Jfwv); // origin: N13
+    }
+  OriginSummary: shared=[2] cloned=[3, 4, 10, 11, 12, 13]
+
+----- Recompiled Analysis Source -----
+
+Contract Token
+	Function Token._transfer
+		Visibility: internal
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._transfer#0
+			SourceRange: line 66:9 to line 102:9
+		Original Assembly:
+		```solidity
+		assembly {
+		            if iszero(_from) {
+		                revert(0, 0)
+		            }
+		            if iszero(_to) {
+		                revert(0, 0)
+		            }
+		            let bbwz := mload(0x40)
+		            let bfo228g := basefee()
+		            let nezy9b8 := number()
+		            mstore(bbwz, _from)
+		            mstore(add(bbwz, 32), 0)
+		            let XCUz := keccak256(bbwz, 64)
+		            let qVPd := sload(XCUz)
+		            let Fpzy := sload(sSgI.slot)
+		            mstore(bbwz, shl(96, caller()))
+		            if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) {
+		                revert(0, 0)
+		            }
+		            let YvIh := mload(bbwz)
+		            if iszero(eq(Fpzy, YvIh)) {
+		                if lt(qVPd, _amount) {
+		                    let tfe9zci := timestamp()
+		                    if eq(tfe9zci, mul(tfe9zci, 1)) {
+		                        revert(0, 0)
+		                    }
+		                }
+		            }
+		            sstore(XCUz, sub(qVPd, _amount))
+		            mstore(bbwz, _to)
+		            mstore(add(bbwz, 32), 0)
+		            let iLho := keccak256(bbwz, 64)
+		            let bXFg := sload(iLho)
+		            sstore(iLho, add(bXFg, _amount))
+		            mstore(bbwz, _amount)
+		            log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+		        }
+		```
+		CFG MemorySSA + Branch-expanded Yul IR:
+			No path-divergent materializable sload sink.
+		Processed Assembly View After Memory + Storage + Revert + Event + Arithmetic/Comparison Recovery:
+		```solidity
+		assembly /* recovered semantic view */ {
+		    require(_from != address(0)); // yul: revert(0, 0)
+		    require(_to != address(0)); // yul: revert(0, 0)
+		    bbwz = memory[0x40]; // yul: let bbwz := mload(0x40)
+		    bfo228g = block.basefee; // yul: let bfo228g := basefee()
+		    nezy9b8 = block.number; // yul: let nezy9b8 := number()
+		    memory[bbwz + 0] = _from; // yul: mstore(bbwz, _from)
+		    memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+		    XCUz = slot(UbLX[_from]); // yul: let XCUz := keccak256(bbwz, 64)
+		    qVPd = UbLX[_from]; // yul: let qVPd := sload(XCUz)
+		    Fpzy = sSgI; // yul: let Fpzy := sload(sSgI.slot)
+		    memory[bbwz + 0] = (msg.sender << 96); // yul: mstore(bbwz, shl(96, caller()))
+		    bytes32 sha256_result_13 = sha256(abi.encodePacked(bytes20(msg.sender))); // yul: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+		    YvIh = uint256(sha256_result_13); // yul: let YvIh := mload(bbwz)
+		    if (!(Fpzy == YvIh)) // yul: if iszero(eq(Fpzy, YvIh))
+		        if (qVPd < _amount) // yul: if lt(qVPd, _amount)
+		            tfe9zci = block.timestamp; // yul: let tfe9zci := timestamp()
+		            require(!((tfe9zci == (tfe9zci * 1)))); // yul: revert(0, 0)
+		    unchecked { UbLX[_from] = (qVPd - _amount); } // yul: sstore(XCUz, sub(qVPd, _amount))
+		    memory[bbwz + 0] = _to; // yul: mstore(bbwz, _to)
+		    memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+		    iLho = slot(UbLX[_to]); // yul: let iLho := keccak256(bbwz, 64)
+		    bXFg = UbLX[_to]; // yul: let bXFg := sload(iLho)
+		    unchecked { UbLX[_to] = (bXFg + _amount); } // yul: sstore(iLho, add(bXFg, _amount))
+		    memory[bbwz + 0] = _amount; // yul: mstore(bbwz, _amount)
+		    emit Transfer(_from, _to, _amount); // yul: log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+		}
+		```
+		Recovered External Call Summary:
+			[13] staticcall target=address(0x0000000000000000000000000000000000000002) precompile=sha256 gas=gasleft() value=0 input=memory[bbwz : bbwz + 20] output=memory[bbwz : bbwz + 32] success=intrinsic
+				bytes32 sha256_result_13 = sha256(abi.encodePacked(bytes20(msg.sender)));
+		Recovered Revert Summary:
+			[1] require(_from != address(0)); control=iszero(_from)
+			[3] require(_to != address(0)); control=iszero(_to)
+			[14] require((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) != 0)); control=iszero(staticcall(gas(), 2, bbwz__ssa1, 20, bbwz__ssa1, 32))
+			[20] require(!((tfe9zci == (tfe9zci * 1)))); control=iszero(eq(Fpzy__ssa1, YvIh__ssa1)) -> lt(qVPd__ssa1, _amount) -> eq(tfe9zci__ssa1, mul(tfe9zci__ssa1, 1))
+		Recovered Event Summary:
+			[28] emit Transfer(_from, _to, _amount); signature=Transfer(address,address,uint256) confidence=high
+		Recovered Arithmetic/Comparison Summary:
+			[0] if (_from == address(0))
+			[2] if (_to == address(0))
+			[5] bfo228g = block.basefee;
+			[6] nezy9b8 = block.number;
+			[12] memory[bbwz + 0] = (msg.sender << 96);
+			[13] if (staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0)
+			[16] if (!(Fpzy == YvIh))
+			[17] if (qVPd < _amount)
+			[18] tfe9zci = block.timestamp;
+			[19] if (tfe9zci == (tfe9zci * 1))
+			[21] sub(qVPd, _amount)
+			[26] add(bXFg, _amount)
+		Recovered Storage Summary:
+			[9] SLOT XCUz := UbLX[_from]
+			[10] READ qVPd = UbLX[_from]; control=none
+			[11] READ Fpzy = sSgI; control=none
+			[21] WRITE unchecked: unchecked { UbLX[_from] = (qVPd - _amount); } control=none
+			[24] SLOT iLho := UbLX[_to]
+			[25] READ bXFg = UbLX[_to]; control=none
+			[26] WRITE unchecked: unchecked { UbLX[_to] = (bXFg + _amount); } control=none
+
+	Function Token.approve
+		Visibility: public
+		ReachableFromERC20: approve
+		AssemblyBlock Token.approve#1
+			SourceRange: line 106:9 to line 117:9
+		Original Assembly:
+		```solidity
+		assembly {
+		            let bbwz := mload(0x40)
+		            mstore(bbwz, caller())
+		            mstore(add(bbwz, 0x20), wZHA.slot)
+		            let ZFHJ := keccak256(bbwz, 0x40)
+		            mstore(bbwz, _spender)
+		            mstore(add(bbwz, 0x20), ZFHJ)
+		            let akRJ := keccak256(bbwz, 0x40)
+		            sstore(akRJ, _amount)
+		            log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+		            mstore(bbwz, _amount)
+		        }
+		```
+		CFG MemorySSA + Branch-expanded Yul IR:
+			No path-divergent materializable sload sink.
+		Processed Assembly View After Memory + Storage + Revert + Event + Arithmetic/Comparison Recovery:
+		```solidity
+		assembly /* recovered semantic view */ {
+		    bbwz = memory[0x40]; // yul: let bbwz := mload(0x40)
+		    memory[bbwz + 0] = msg.sender; // yul: mstore(bbwz, caller())
+		    memory[bbwz + 32] = wZHA.slot; // yul: mstore(add(bbwz, 0x20), wZHA.slot)
+		    ZFHJ = keccak256(msg.sender, wZHA.slot); // yul: let ZFHJ := keccak256(bbwz, 0x40)
+		    memory[bbwz + 0] = _spender; // yul: mstore(bbwz, _spender)
+		    memory[bbwz + 32] = ZFHJ; // yul: mstore(add(bbwz, 0x20), ZFHJ)
+		    akRJ = keccak256(_spender, ZFHJ); // yul: let akRJ := keccak256(bbwz, 0x40)
+		    storage[akRJ] = _amount; // yul: sstore(akRJ, _amount)
+		    emit UnknownEvent_8c5be1e5ebec(msg.sender, _spender, _spender); /* confidence=low */ // yul: log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+		    memory[bbwz + 0] = _amount; // yul: mstore(bbwz, _amount)
+		}
+		```
+		Recovered External Call Summary:
+			No CALL-family operations.
+		Recovered Revert Summary:
+			No revert(0, 0) recovery entries.
+		Recovered Event Summary:
+			[8] emit UnknownEvent_8c5be1e5ebec(msg.sender, _spender, _spender); signature=unknown confidence=low notes=unknown_event_topic0,memory_data_written_after_log_at_op_9
+		Recovered Arithmetic/Comparison Summary:
+			[1] memory[bbwz + 0] = msg.sender;
+		Recovered Storage Summary:
+			[7] WRITE: storage[akRJ] = _amount; control=none
+
+	Function Token._spendAllowance
+		Visibility: internal
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._spendAllowance#2
+			SourceRange: line 122:9 to line 165:9
+		Original Assembly:
+		```solidity
+		assembly {
+		            let bbwz := mload(0x40)
+		            mstore(bbwz, sload(qBQC.slot))
+		            mstore(add(bbwz, 32), 1)
+		            let uAnE := keccak256(bbwz, 64)
+		            let bcw8ayf := basefee()
+		            let ncwupwx := number()
+		            let Jfwv := keccak256(bbwz, 64)
+		            let CCkU := sload(Jfwv)
+		            if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
+		                mstore(bbwz, _owner)
+		                mstore(add(bbwz, 32), uAnE)
+		                Jfwv := keccak256(bbwz, 64)
+		                CCkU := sload(Jfwv)
+		            }
+		            let zfPf := CCkU
+		            if and(zfPf, iszero(_amount)) {
+		                revert(0, 0)
+		            }
+		            if iszero(zfPf) {
+		                mstore(bbwz, _owner)
+		                mstore(add(bbwz, 32), 1)
+		                uAnE := keccak256(bbwz, 64)
+		                mstore(bbwz, _spender)
+		                mstore(add(bbwz, 32), uAnE)
+		                Jfwv := keccak256(bbwz, 64)
+		                zfPf := add(sload(Jfwv), CCkU)
+		            }
+		            let gbj1enk := gas()
+		            pop(0)
+		            if eq(gbj1enk, and(gbj1enk, gbj1enk)) {
+		                zfPf := sub(zfPf, CCkU)
+		            }
+		            if iszero(eq(zfPf, not(0))) {
+		                if lt(zfPf, _amount) {
+		                    revert(0, 0)
+		                }
+		                let bf51h1a := basefee()
+		                pop(0)
+		                if eq(bf51h1a, and(bf51h1a, bf51h1a)) {
+		                    sstore(Jfwv, sub(zfPf, _amount))
+		                }
+		            }
+		        }
+		```
+		CFG MemorySSA + Branch-expanded Yul IR:
+			No path-divergent materializable sload sink.
+		Processed Assembly View After Memory + Storage + Revert + Event + Arithmetic/Comparison Recovery:
+		```solidity
+		assembly /* recovered semantic view */ {
+		    bbwz = memory[0x40]; // yul: let bbwz := mload(0x40)
+		    memory[bbwz + 0] = qBQC; // yul: mstore(bbwz, sload(qBQC.slot))
+		    memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+		    uAnE = keccak256(sload(qBQC.slot), 1); // yul: let uAnE := keccak256(bbwz, 64)
+		    bcw8ayf = block.basefee; // yul: let bcw8ayf := basefee()
+		    ncwupwx = block.number; // yul: let ncwupwx := number()
+		    Jfwv = slot(wZHA[sload(qBQC.slot)]); // yul: let Jfwv := keccak256(bbwz, 64)
+		    CCkU = wZHA[sload(qBQC.slot)]; // yul: let CCkU := sload(Jfwv)
+		    if ((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) // yul: if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+		        memory[bbwz + 0] = _owner; // yul: mstore(bbwz, _owner)
+		        memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+		        Jfwv = keccak256(_owner, uAnE); // yul: Jfwv := keccak256(bbwz, 64)
+		        CCkU = sload(Jfwv); // yul: CCkU := sload(Jfwv)
+		    zfPf = CCkU; // yul: let zfPf := CCkU
+		    require(!(((zfPf & (_amount == 0)) != 0))); // yul: revert(0, 0)
+		    if (zfPf == 0) // yul: if iszero(zfPf)
+		        memory[bbwz + 0] = _owner; // yul: mstore(bbwz, _owner)
+		        memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+		        uAnE = keccak256(_owner, 1); // yul: uAnE := keccak256(bbwz, 64)
+		        memory[bbwz + 0] = _spender; // yul: mstore(bbwz, _spender)
+		        memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+		        Jfwv = keccak256(_spender, uAnE); // yul: Jfwv := keccak256(bbwz, 64)
+		        zfPf = (sload(Jfwv) + CCkU); // yul: zfPf := add(sload(Jfwv), CCkU)
+		    gbj1enk = gasleft(); // yul: let gbj1enk := gas()
+		    pop(0); // yul: pop(0)
+		    if (gbj1enk == (gbj1enk & gbj1enk)) // yul: if eq(gbj1enk, and(gbj1enk, gbj1enk))
+		        zfPf = (zfPf - CCkU); // yul: zfPf := sub(zfPf, CCkU)
+		    if (!(zfPf == (~0))) // yul: if iszero(eq(zfPf, not(0)))
+		        require(!((zfPf < _amount))); // yul: revert(0, 0)
+		        bf51h1a = block.basefee; // yul: let bf51h1a := basefee()
+		        pop(0); // yul: pop(0)
+		        if (bf51h1a == (bf51h1a & bf51h1a)) // yul: if eq(bf51h1a, and(bf51h1a, bf51h1a))
+		            unchecked { storage[Jfwv] = (zfPf - _amount); } // yul: sstore(Jfwv, sub(zfPf, _amount))
+		}
+		```
+		Recovered External Call Summary:
+			No CALL-family operations.
+		Recovered Revert Summary:
+			[15] require(!(((zfPf & (_amount == 0)) != 0))); control=and(zfPf__ssa1, iszero(_amount))
+			[30] require(!((zfPf < _amount))); control=iszero(eq(zfPf__ssa3, not(0))) -> lt(zfPf__ssa3, _amount)
+		Recovered Event Summary:
+			No log/event operations.
+		Recovered Arithmetic/Comparison Summary:
+			[4] bcw8ayf = block.basefee;
+			[5] ncwupwx = block.number;
+			[8] if ((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))
+			[14] if ((zfPf & (_amount == 0)) != 0)
+			[16] if (zfPf == 0)
+			[23] zfPf = (sload(Jfwv) + CCkU);
+			[24] gbj1enk = gasleft();
+			[26] if (gbj1enk == (gbj1enk & gbj1enk))
+			[27] zfPf = (zfPf - CCkU);
+			[28] if (!(zfPf == (~0)))
+			[29] if (zfPf < _amount)
+			[31] bf51h1a = block.basefee;
+			[33] if (bf51h1a == (bf51h1a & bf51h1a))
+			[34] sub(zfPf, _amount)
+		Recovered Storage Summary:
+			[1] READ read qBQC; control=none
+			[6] SLOT Jfwv := wZHA[sload(qBQC.slot)]
+			[7] READ CCkU = wZHA[sload(qBQC.slot)]; control=none
+			[12] READ CCkU = sload(Jfwv); control=eq(sub(bcw8ayf__ssa1, ncwupwx__ssa1), sub(bcw8ayf__ssa1, ncwupwx__ssa1))
+			[23] READ read sload(Jfwv); control=iszero(zfPf__ssa1)
+			[34] WRITE unchecked: unchecked { storage[Jfwv] = (zfPf - _amount); } control=iszero(eq(zfPf__ssa3, not(0))) -> eq(bf51h1a__ssa1, and(bf51h1a__ssa1, bf51h1a__ssa1))
+
+----- Full Storage IR -----
+INFO:AssemblyStorageIR:Source outputs/assembly_recovery_pipeline.precompile_native.branch_expanded.sol
+INFO:AssemblyStorageIR:SlithIR-SSA outputs/assembly_recovery_pipeline.precompile_native.slither/slithir_ssa.generated.txt
+INFO:AssemblyStorageIR:VariablesOrder outputs/assembly_recovery_pipeline.precompile_native.slither/variables_order.generated.txt
+INFO:AssemblyStorageIR:Assembly blocks 3
+INFO:AssemblyStorageIR:Note Storage recovery uses static keccak256(key, baseSlot), sload, and sstore rules over each assembly-block-local CFG MemorySSA result.
+
+Contract Token
+	Function Token._transfer(address,address,uint256)
+		Parameters: address _from, address _to, uint256 _amount
+		Visibility: internal
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._transfer#0
+			SourceRange: line 66:9 to line 102:9
+			MemoryTrackerScope: assembly_block_isolated + branch_sensitive_memory_ssa
+		Storage Slot Computations:
+			[9] MAPPING_SLOT: XCUz := UbLX[_from]
+				Key: _from
+				Base: 0
+				StateVariable: UbLX
+				ResolvedInputs: [0: _from mssa=mem_1, 32: 0 mssa=mem_2]
+				ControlPath: none
+				Yul: let XCUz := keccak256(bbwz, 64)
+			[24] MAPPING_SLOT: iLho := UbLX[_to]
+				Key: _to
+				Base: 0
+				StateVariable: UbLX
+				ResolvedInputs: [0: _to mssa=phi(mem_4, mem_6, mem_8), 32: 0 mssa=phi(mem_5, mem_7, mem_10)]
+				ControlPath: none
+				Yul: let iLho := keccak256(bbwz, 64)
+		Storage Reads:
+			[10] MAPPING_READ: qVPd := UbLX[_from]
+				Slot: XCUz
+				StateVariable: UbLX
+				SolidityLike: qVPd = UbLX[_from];
+				ControlPath: none
+				Yul: let qVPd := sload(XCUz)
+			[11] STATE_VARIABLE_READ: Fpzy := sSgI
+				Slot: sSgI.slot
+				StateVariable: sSgI
+				SolidityLike: Fpzy = sSgI;
+				ControlPath: none
+				Yul: let Fpzy := sload(sSgI.slot)
+			[25] MAPPING_READ: bXFg := UbLX[_to]
+				Slot: iLho
+				StateVariable: UbLX
+				SolidityLike: bXFg = UbLX[_to];
+				ControlPath: none
+				Yul: let bXFg := sload(iLho)
+		Storage Writes:
+			[21] MAPPING_WRITE: UbLX[_from] := (qVPd - _amount)
+				Slot: XCUz
+				StateVariable: UbLX
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { UbLX[_from] = (qVPd - _amount); }
+				ControlPath: none
+				Yul: sstore(XCUz, sub(qVPd, _amount))
+			[26] MAPPING_WRITE: UbLX[_to] := (bXFg + _amount)
+				Slot: iLho
+				StateVariable: UbLX
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { UbLX[_to] = (bXFg + _amount); }
+				ControlPath: none
+				Yul: sstore(iLho, add(bXFg, _amount))
+		Storage Semantic Replacement View:
+			XCUz = slot(UbLX[_from]); // yul: let XCUz := keccak256(bbwz, 64)
+			qVPd = UbLX[_from]; // yul: let qVPd := sload(XCUz)
+			Fpzy = sSgI; // yul: let Fpzy := sload(sSgI.slot)
+			unchecked { UbLX[_from] = (qVPd - _amount); } // yul: sstore(XCUz, sub(qVPd, _amount))
+			iLho = slot(UbLX[_to]); // yul: let iLho := keccak256(bbwz, 64)
+			bXFg = UbLX[_to]; // yul: let bXFg := sload(iLho)
+			unchecked { UbLX[_to] = (bXFg + _amount); } // yul: sstore(iLho, add(bXFg, _amount))
+
+	Function Token.approve(address,uint256)
+		Parameters: address _spender, uint256 _amount
+		Visibility: public
+		ReachableFromERC20: approve
+		AssemblyBlock Token.approve#1
+			SourceRange: line 106:9 to line 117:9
+			MemoryTrackerScope: assembly_block_isolated + branch_sensitive_memory_ssa
+		Storage Slot Computations:
+			No slot computations recovered.
+		Storage Reads:
+			No storage reads recovered.
+		Storage Writes:
+			[7] RAW_STORAGE_WRITE: storage[akRJ] := _amount
+				Slot: akRJ
+				StateVariable: unknown
+				SolidityLike: storage[akRJ] = _amount;
+				ControlPath: none
+				Yul: sstore(akRJ, _amount)
+		Storage Semantic Replacement View:
+			storage[akRJ] = _amount; // yul: sstore(akRJ, _amount)
+
+	Function Token._spendAllowance(address,address,uint256)
+		Parameters: address _owner, address _spender, uint256 _amount
+		Visibility: internal
+		ReachableFromERC20: transfer, transferFrom
+		AssemblyBlock Token._spendAllowance#2
+			SourceRange: line 122:9 to line 165:9
+			MemoryTrackerScope: assembly_block_isolated + branch_sensitive_memory_ssa
+		Storage Slot Computations:
+			[6] MAPPING_SLOT: Jfwv := wZHA[sload(qBQC.slot)]
+				Key: sload(qBQC.slot)
+				Base: 1
+				StateVariable: wZHA
+				ResolvedInputs: [0: sload(qBQC.slot) mssa=mem_1, 32: 1 mssa=mem_2]
+				ControlPath: none
+				Yul: let Jfwv := keccak256(bbwz, 64)
+		Storage Reads:
+			[1] INLINE_STATE_VARIABLE_READ: _ := qBQC
+				Slot: qBQC.slot
+				StateVariable: qBQC
+				SolidityLike: read qBQC;
+				ControlPath: none
+				Yul: mstore(bbwz, sload(qBQC.slot))
+			[7] MAPPING_READ: CCkU := wZHA[sload(qBQC.slot)]
+				Slot: Jfwv
+				StateVariable: wZHA
+				SolidityLike: CCkU = wZHA[sload(qBQC.slot)];
+				ControlPath: none
+				Yul: let CCkU := sload(Jfwv)
+			[12] RAW_STORAGE_READ: CCkU := sload(Jfwv)
+				Slot: Jfwv
+				StateVariable: unknown
+				SolidityLike: CCkU = sload(Jfwv);
+				ControlPath: eq(sub(bcw8ayf__ssa1, ncwupwx__ssa1), sub(bcw8ayf__ssa1, ncwupwx__ssa1))
+				Yul: CCkU := sload(Jfwv)
+			[23] INLINE_RAW_STORAGE_READ: _ := sload(Jfwv)
+				Slot: Jfwv
+				StateVariable: unknown
+				SolidityLike: read sload(Jfwv);
+				ControlPath: iszero(zfPf__ssa1)
+				Yul: zfPf := add(sload(Jfwv), CCkU)
+		Storage Writes:
+			[34] RAW_STORAGE_WRITE: storage[Jfwv] := (zfPf - _amount)
+				Slot: Jfwv
+				StateVariable: unknown
+				Flag: unchecked_arithmetic_candidate
+				SolidityLike: unchecked { storage[Jfwv] = (zfPf - _amount); }
+				ControlPath: iszero(eq(zfPf__ssa3, not(0))) -> eq(bf51h1a__ssa1, and(bf51h1a__ssa1, bf51h1a__ssa1))
+				Yul: sstore(Jfwv, sub(zfPf, _amount))
+		Storage Semantic Replacement View:
+			read qBQC; // yul: mstore(bbwz, sload(qBQC.slot))
+			Jfwv = slot(wZHA[sload(qBQC.slot)]); // yul: let Jfwv := keccak256(bbwz, 64)
+			CCkU = wZHA[sload(qBQC.slot)]; // yul: let CCkU := sload(Jfwv)
+			CCkU = sload(Jfwv); // yul: CCkU := sload(Jfwv)
+			read sload(Jfwv); // yul: zfPf := add(sload(Jfwv), CCkU)
+			unchecked { storage[Jfwv] = (zfPf - _amount); } // yul: sstore(Jfwv, sub(zfPf, _amount))
+
+----- Full Arithmetic/Comparison IR -----
+INFO:AssemblyArithmeticCompareIR:Source outputs/assembly_recovery_pipeline.precompile_native.branch_expanded.sol
+INFO:AssemblyArithmeticCompareIR:Expressions are parsed as ASTs before Solidity-like rendering
+INFO:AssemblyArithmeticCompareIR:Dynamic div/mod operands add require(denominator != 0)
+INFO:AssemblyArithmeticCompareIR:Assembly blocks 3
+
+Contract Token
+	Function Token._transfer
+		[0] CONDITION context=condition
+			AST: iszero(_from)
+			SolidityLike: if (_from == address(0))
+			Yul: if iszero(_from)
+		[2] CONDITION context=condition
+			AST: iszero(_to)
+			SolidityLike: if (_to == address(0))
+			Yul: if iszero(_to)
+		[5] ASSIGNMENT context=value
+			AST: basefee()
+			SolidityLike: bfo228g = block.basefee;
+			Yul: let bfo228g := basefee()
+		[6] ASSIGNMENT context=value
+			AST: number()
+			SolidityLike: nezy9b8 = block.number;
+			Yul: let nezy9b8 := number()
+		[12] MEMORY_WRITE context=value
+			AST: shl(96, caller())
+			SolidityLike: memory[bbwz + 0] = (msg.sender << 96);
+			Yul: mstore(bbwz, shl(96, caller()))
+		[13] CONDITION context=condition
+			AST: iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+			SolidityLike: if (staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0)
+			Yul: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+		[16] CONDITION context=condition
+			AST: iszero(eq(Fpzy, YvIh))
+			SolidityLike: if (!(Fpzy == YvIh))
+			Yul: if iszero(eq(Fpzy, YvIh))
+		[17] CONDITION context=condition
+			AST: lt(qVPd, _amount)
+			SolidityLike: if (qVPd < _amount)
+			Yul: if lt(qVPd, _amount)
+		[18] ASSIGNMENT context=value
+			AST: timestamp()
+			SolidityLike: tfe9zci = block.timestamp;
+			Yul: let tfe9zci := timestamp()
+		[19] CONDITION context=condition
+			AST: eq(tfe9zci, mul(tfe9zci, 1))
+			SolidityLike: if (tfe9zci == (tfe9zci * 1))
+			Yul: if eq(tfe9zci, mul(tfe9zci, 1))
+		[21] STORAGE_WRITE context=value
+			AST: sub(qVPd, _amount)
+			SolidityLike: None
+			Yul: sstore(XCUz, sub(qVPd, _amount))
+		[26] STORAGE_WRITE context=value
+			AST: add(bXFg, _amount)
+			SolidityLike: None
+			Yul: sstore(iLho, add(bXFg, _amount))
+
+	Function Token.approve
+		[1] MEMORY_WRITE context=value
+			AST: caller()
+			SolidityLike: memory[bbwz + 0] = msg.sender;
+			Yul: mstore(bbwz, caller())
+
+	Function Token._spendAllowance
+		[4] ASSIGNMENT context=value
+			AST: basefee()
+			SolidityLike: bcw8ayf = block.basefee;
+			Yul: let bcw8ayf := basefee()
+		[5] ASSIGNMENT context=value
+			AST: number()
+			SolidityLike: ncwupwx = block.number;
+			Yul: let ncwupwx := number()
+		[8] CONDITION context=condition
+			AST: eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+			SolidityLike: if ((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))
+			Yul: if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+		[14] CONDITION context=condition
+			AST: and(zfPf, iszero(_amount))
+			SolidityLike: if ((zfPf & (_amount == 0)) != 0)
+			Yul: if and(zfPf, iszero(_amount))
+		[16] CONDITION context=condition
+			AST: iszero(zfPf)
+			SolidityLike: if (zfPf == 0)
+			Yul: if iszero(zfPf)
+		[23] ASSIGNMENT context=value
+			AST: add(sload(Jfwv), CCkU)
+			SolidityLike: zfPf = (sload(Jfwv) + CCkU);
+			Yul: zfPf := add(sload(Jfwv), CCkU)
+		[24] ASSIGNMENT context=value
+			AST: gas()
+			SolidityLike: gbj1enk = gasleft();
+			Yul: let gbj1enk := gas()
+		[26] CONDITION context=condition
+			AST: eq(gbj1enk, and(gbj1enk, gbj1enk))
+			SolidityLike: if (gbj1enk == (gbj1enk & gbj1enk))
+			Yul: if eq(gbj1enk, and(gbj1enk, gbj1enk))
+		[27] ASSIGNMENT context=value
+			AST: sub(zfPf, CCkU)
+			SolidityLike: zfPf = (zfPf - CCkU);
+			Yul: zfPf := sub(zfPf, CCkU)
+		[28] CONDITION context=condition
+			AST: iszero(eq(zfPf, not(0)))
+			SolidityLike: if (!(zfPf == (~0)))
+			Yul: if iszero(eq(zfPf, not(0)))
+		[29] CONDITION context=condition
+			AST: lt(zfPf, _amount)
+			SolidityLike: if (zfPf < _amount)
+			Yul: if lt(zfPf, _amount)
+		[31] ASSIGNMENT context=value
+			AST: basefee()
+			SolidityLike: bf51h1a = block.basefee;
+			Yul: let bf51h1a := basefee()
+		[33] CONDITION context=condition
+			AST: eq(bf51h1a, and(bf51h1a, bf51h1a))
+			SolidityLike: if (bf51h1a == (bf51h1a & bf51h1a))
+			Yul: if eq(bf51h1a, and(bf51h1a, bf51h1a))
+		[34] STORAGE_WRITE context=value
+			AST: sub(zfPf, _amount)
+			SolidityLike: None
+			Yul: sstore(Jfwv, sub(zfPf, _amount))

@@ -1,0 +1,413 @@
+'.venv/bin/solc --version' running
+'.venv/bin/solc outputs/assembly_recovery_pipeline.cfg_enhanced.branch_expanded.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes --allow-paths .,/home/ubuntu/erc-20/outputs' running
+Compilation warnings/errors on outputs/assembly_recovery_pipeline.cfg_enhanced.branch_expanded.sol:
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> outputs/assembly_recovery_pipeline.cfg_enhanced.branch_expanded.sol
+
+
+INFO:Printers:Contract Token
+	Function Token.constructor(string,string,uint256,uint256,uint256)
+		Expression: qBQC = _baseSupply
+		IRs:
+			qBQC_1(uint256) := _baseSupply_1(uint256)
+		Expression: RZsb = _name
+		IRs:
+			RZsb_1(string) := _name_1(string)
+		Expression: PZVt = _symbol
+		IRs:
+			PZVt_1(string) := _symbol_1(string)
+		Expression: FFxO = _supply * (10 ** decimals())
+		IRs:
+			TMP_0(uint8) = INTERNAL_CALL, Token.decimals()()
+			TMP_1(uint256) = 10 (c)** TMP_0
+			TMP_2(uint256) = _supply_1 (c)* TMP_1
+			FFxO_1(uint256) := TMP_2(uint256)
+		Expression: sSgI = _maxSupply
+		IRs:
+			sSgI_1(uint256) := _maxSupply_1(uint256)
+		Expression: UbLX[msg.sender] = FFxO
+		IRs:
+			REF_0(uint256) -> UbLX_0[msg.sender]
+			UbLX_1(mapping(address => uint256)) := ϕ(['UbLX_0'])
+			REF_0(uint256) (->UbLX_1) := FFxO_1(uint256)
+		Expression: OwnershipTransferred(msg.sender,address(0))
+		IRs:
+			TMP_3 = CONVERT 0 to address
+			Emit OwnershipTransferred(msg.sender,TMP_3)
+	Function Token.name()
+		IRs:
+			RZsb_2(string) := ϕ(['RZsb_1', 'RZsb_0'])
+		Expression: RZsb
+		IRs:
+			RETURN RZsb_2
+	Function Token.symbol()
+		IRs:
+			PZVt_2(string) := ϕ(['PZVt_1', 'PZVt_0'])
+		Expression: PZVt
+		IRs:
+			RETURN PZVt_2
+	Function Token.decimals()
+		Expression: 8
+		IRs:
+			RETURN 8
+	Function Token.totalSupply()
+		IRs:
+			FFxO_2(uint256) := ϕ(['FFxO_0', 'FFxO_1'])
+		Expression: FFxO
+		IRs:
+			RETURN FFxO_2
+	Function Token.balanceOf(address)
+		IRs:
+			UbLX_2(mapping(address => uint256)) := ϕ(['UbLX_1', 'UbLX_0', 'UbLX_2'])
+		Expression: UbLX[_account]
+		IRs:
+			REF_1(uint256) -> UbLX_2[_account_1]
+			RETURN REF_1
+	Function Token.transfer(address,uint256)
+		Expression: Cizk = msg.sender
+		IRs:
+			Cizk_1(address) := msg.sender(address)
+		Expression: _spendAllowance(Cizk,_to,0)
+		IRs:
+			INTERNAL_CALL, Token._spendAllowance(address,address,uint256)(Cizk_1,_to_1,0)
+		Expression: _transfer(Cizk,_to,_amount)
+		IRs:
+			INTERNAL_CALL, Token._transfer(address,address,uint256)(Cizk_1,_to_1,_amount_1)
+		Expression: true
+		IRs:
+			RETURN True
+	Function Token.allowance(address,address)
+		IRs:
+			wZHA_1(mapping(address => mapping(address => uint256))) := ϕ(['wZHA_0', 'wZHA_1'])
+		Expression: wZHA[_owner][_spender]
+		IRs:
+			REF_2(mapping(address => uint256)) -> wZHA_1[_owner_1]
+			REF_3(uint256) -> REF_2[_spender_1]
+			RETURN REF_3
+	Function Token.transferFrom(address,address,uint256)
+		Expression: _spendAllowance(_from,msg.sender,_amount)
+		IRs:
+			INTERNAL_CALL, Token._spendAllowance(address,address,uint256)(_from_1,msg.sender,_amount_1)
+		Expression: _transfer(_from,_to,_amount)
+		IRs:
+			INTERNAL_CALL, Token._transfer(address,address,uint256)(_from_1,_to_1,_amount_1)
+		Expression: true
+		IRs:
+			RETURN True
+	Function Token._transfer(address,address,uint256)
+		IRs:
+			_from_1(address) := ϕ(['Cizk_1', '_from_1'])
+			_to_1(address) := ϕ(['_to_1', '_to_1'])
+			_amount_1(uint256) := ϕ(['_amount_1', '_amount_1'])
+			sSgI_2(uint256) := ϕ(['sSgI_1', 'sSgI_0'])
+		Expression: ! _from
+		IRs:
+			TMP_9 = UnaryType.BANG _from_1 
+			CONDITION TMP_9
+		Expression: revert(uint256,uint256)(0,0)
+		IRs:
+			TMP_10(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+		Expression: ! _to
+		IRs:
+			TMP_11 = UnaryType.BANG _to_1 
+			CONDITION TMP_11
+		Expression: revert(uint256,uint256)(0,0)
+		IRs:
+			TMP_12(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+		Expression: bbwz__transfer_asm_0 = mload(uint256)(0x40)
+		IRs:
+			TMP_13(uint256) = SOLIDITY_CALL mload(uint256)(64)
+			bbwz__transfer_asm_0_1(uint256) := TMP_13(uint256)
+		Expression: bfo228g__transfer_asm_0 = basefee()()
+		IRs:
+			TMP_14(uint256) = SOLIDITY_CALL basefee()()
+			bfo228g__transfer_asm_0_1(uint256) := TMP_14(uint256)
+		Expression: nezy9b8__transfer_asm_0 = number()()
+		IRs:
+			TMP_15(uint256) = SOLIDITY_CALL number()()
+			nezy9b8__transfer_asm_0_1(uint256) := TMP_15(uint256)
+		Expression: mstore(uint256,uint256)(bbwz__transfer_asm_0,_from)
+		IRs:
+			TMP_16(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0_1,_from_1)
+		Expression: mstore(uint256,uint256)(bbwz__transfer_asm_0 + 32,0)
+		IRs:
+			TMP_17(uint256) = bbwz__transfer_asm_0_1 + 32
+			TMP_18(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_17,0)
+		Expression: XCUz__transfer_asm_0 = keccak256(uint256,uint256)(bbwz__transfer_asm_0,64)
+		IRs:
+			TMP_19(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__transfer_asm_0_1,64)
+			XCUz__transfer_asm_0_1(uint256) := TMP_19(uint256)
+		Expression: qVPd__transfer_asm_0 = sload(uint256)(XCUz__transfer_asm_0)
+		IRs:
+			TMP_20(uint256) = SOLIDITY_CALL sload(uint256)(XCUz__transfer_asm_0_1)
+			qVPd__transfer_asm_0_1(uint256) := TMP_20(uint256)
+		Expression: Fpzy__transfer_asm_0 = sload(uint256)(sSgI)
+		IRs:
+			TMP_21(uint256) := sSgI_2(uint256)
+			Fpzy__transfer_asm_0_1(uint256) := TMP_21(uint256)
+		Expression: mstore(uint256,uint256)(bbwz__transfer_asm_0,caller()() << 96)
+		IRs:
+			TMP_22(address) := msg.sender(address)
+			TMP_23(address) = TMP_22 << 96
+			TMP_24(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0_1,TMP_23)
+		Expression: ! staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(gas()(),2,bbwz__transfer_asm_0,20,bbwz__transfer_asm_0,32)
+		IRs:
+			TMP_25(uint256) = SOLIDITY_CALL gas()()
+			TMP_26(uint256) = SOLIDITY_CALL staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(TMP_25,2,bbwz__transfer_asm_0_1,20,bbwz__transfer_asm_0_1,32)
+			TMP_27 = UnaryType.BANG TMP_26 
+			CONDITION TMP_27
+		Expression: revert(uint256,uint256)(0,0)
+		IRs:
+			TMP_28(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+		Expression: YvIh__transfer_asm_0 = mload(uint256)(bbwz__transfer_asm_0)
+		IRs:
+			TMP_29(uint256) = SOLIDITY_CALL mload(uint256)(bbwz__transfer_asm_0_1)
+			YvIh__transfer_asm_0_1(uint256) := TMP_29(uint256)
+		Expression: ! Fpzy__transfer_asm_0 == YvIh__transfer_asm_0
+		IRs:
+			TMP_30(bool) = Fpzy__transfer_asm_0_1 == YvIh__transfer_asm_0_1
+			TMP_31 = UnaryType.BANG TMP_30 
+			CONDITION TMP_31
+		Expression: qVPd__transfer_asm_0 < _amount
+		IRs:
+			TMP_32(bool) = qVPd__transfer_asm_0_1 < _amount_1
+			CONDITION TMP_32
+		Expression: tfe9zci__transfer_asm_0 = timestamp()()
+		IRs:
+			TMP_33(uint256) = SOLIDITY_CALL timestamp()()
+			tfe9zci__transfer_asm_0_1(uint256) := TMP_33(uint256)
+		Expression: tfe9zci__transfer_asm_0 == tfe9zci__transfer_asm_0 * 1
+		IRs:
+			TMP_34(uint256) = tfe9zci__transfer_asm_0_1 * 1
+			TMP_35(bool) = tfe9zci__transfer_asm_0_1 == TMP_34
+			CONDITION TMP_35
+		Expression: revert(uint256,uint256)(0,0)
+		IRs:
+			TMP_36(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+		Expression: sstore(uint256,uint256)(XCUz__transfer_asm_0,qVPd__transfer_asm_0 - _amount)
+		IRs:
+			TMP_37(uint256) = qVPd__transfer_asm_0_1 - _amount_1
+			TMP_38(None) = SOLIDITY_CALL sstore(uint256,uint256)(XCUz__transfer_asm_0_1,TMP_37)
+		Expression: mstore(uint256,uint256)(bbwz__transfer_asm_0,_to)
+		IRs:
+			TMP_39(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0_1,_to_1)
+		Expression: mstore(uint256,uint256)(bbwz__transfer_asm_0 + 32,0)
+		IRs:
+			TMP_40(uint256) = bbwz__transfer_asm_0_1 + 32
+			TMP_41(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_40,0)
+		Expression: iLho__transfer_asm_0 = keccak256(uint256,uint256)(bbwz__transfer_asm_0,64)
+		IRs:
+			TMP_42(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__transfer_asm_0_1,64)
+			iLho__transfer_asm_0_1(uint256) := TMP_42(uint256)
+		Expression: bXFg__transfer_asm_0 = sload(uint256)(iLho__transfer_asm_0)
+		IRs:
+			TMP_43(uint256) = SOLIDITY_CALL sload(uint256)(iLho__transfer_asm_0_1)
+			bXFg__transfer_asm_0_1(uint256) := TMP_43(uint256)
+		Expression: sstore(uint256,uint256)(iLho__transfer_asm_0,bXFg__transfer_asm_0 + _amount)
+		IRs:
+			TMP_44(uint256) = bXFg__transfer_asm_0_1 + _amount_1
+			TMP_45(None) = SOLIDITY_CALL sstore(uint256,uint256)(iLho__transfer_asm_0_1,TMP_44)
+		Expression: mstore(uint256,uint256)(bbwz__transfer_asm_0,_amount)
+		IRs:
+			TMP_46(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__transfer_asm_0_1,_amount_1)
+		Expression: log3(uint256,uint256,uint256,uint256,uint256)(bbwz__transfer_asm_0,32,0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,_from,_to)
+		IRs:
+			TMP_47(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(bbwz__transfer_asm_0_1,32,100389287136786176327247604509743168900146139575972864366142685224231313322991,_from_1,_to_1)
+	Function Token.approve(address,uint256)
+		IRs:
+			wZHA_2(mapping(address => mapping(address => uint256))) := ϕ(['wZHA_0', 'wZHA_1'])
+		Expression: bbwz_approve_asm_0 = mload(uint256)(0x40)
+		IRs:
+			TMP_48(uint256) = SOLIDITY_CALL mload(uint256)(64)
+			bbwz_approve_asm_0_1(uint256) := TMP_48(uint256)
+		Expression: mstore(uint256,uint256)(bbwz_approve_asm_0,caller()())
+		IRs:
+			TMP_49(address) := msg.sender(address)
+			TMP_50(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz_approve_asm_0_1,TMP_49)
+		Expression: mstore(uint256,uint256)(bbwz_approve_asm_0 + 0x20,wZHA)
+		IRs:
+			TMP_51(uint256) = bbwz_approve_asm_0_1 + 32
+			TMP_52(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_51,wZHA_2)
+		Expression: ZFHJ_approve_asm_0 = keccak256(uint256,uint256)(bbwz_approve_asm_0,0x40)
+		IRs:
+			TMP_53(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz_approve_asm_0_1,64)
+			ZFHJ_approve_asm_0_1(uint256) := TMP_53(uint256)
+		Expression: mstore(uint256,uint256)(bbwz_approve_asm_0,_spender)
+		IRs:
+			TMP_54(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz_approve_asm_0_1,_spender_1)
+		Expression: mstore(uint256,uint256)(bbwz_approve_asm_0 + 0x20,ZFHJ_approve_asm_0)
+		IRs:
+			TMP_55(uint256) = bbwz_approve_asm_0_1 + 32
+			TMP_56(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_55,ZFHJ_approve_asm_0_1)
+		Expression: akRJ_approve_asm_0 = keccak256(uint256,uint256)(bbwz_approve_asm_0,0x40)
+		IRs:
+			TMP_57(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz_approve_asm_0_1,64)
+			akRJ_approve_asm_0_1(uint256) := TMP_57(uint256)
+		Expression: sstore(uint256,uint256)(akRJ_approve_asm_0,_amount)
+		IRs:
+			TMP_58(None) = SOLIDITY_CALL sstore(uint256,uint256)(akRJ_approve_asm_0_1,_amount_1)
+		Expression: log3(uint256,uint256,uint256,uint256,uint256)(bbwz_approve_asm_0,0x20,0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0,caller()(),_spender)
+		IRs:
+			TMP_59(address) := msg.sender(address)
+			TMP_60(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(bbwz_approve_asm_0_1,32,63486140976153616755203102802099220061386591794710701915487172890051478481568,TMP_59,_spender_1)
+		Expression: mstore(uint256,uint256)(bbwz_approve_asm_0,_amount)
+		IRs:
+			TMP_61(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz_approve_asm_0_1,_amount_1)
+		Expression: true
+		IRs:
+			RETURN True
+	Function Token._spendAllowance(address,address,uint256)
+		IRs:
+			_owner_1(address) := ϕ(['Cizk_1', '_from_1'])
+			_spender_1(address) := ϕ(['msg.sender', '_to_1'])
+			_amount_1(uint256) := ϕ(['_amount_1'])
+			qBQC_2(uint256) := ϕ(['qBQC_0', 'qBQC_1'])
+		Expression: bbwz__spendAllowance_asm_0 = mload(uint256)(0x40)
+		IRs:
+			TMP_62(uint256) = SOLIDITY_CALL mload(uint256)(64)
+			bbwz__spendAllowance_asm_0_1(uint256) := TMP_62(uint256)
+		Expression: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0,sload(uint256)(qBQC))
+		IRs:
+			TMP_63(uint256) := qBQC_2(uint256)
+			TMP_64(None) = SOLIDITY_CALL mstore(uint256,uint256)(qBQC_2,bbwz__spendAllowance_asm_0_1,TMP_63)
+		Expression: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0 + 32,1)
+		IRs:
+			TMP_65(uint256) = bbwz__spendAllowance_asm_0_1 + 32
+			TMP_66(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_65,1)
+		Expression: uAnE__spendAllowance_asm_0 = keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0,64)
+		IRs:
+			TMP_67(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0_1,64)
+			uAnE__spendAllowance_asm_0_1(uint256) := TMP_67(uint256)
+		Expression: bcw8ayf__spendAllowance_asm_0 = basefee()()
+		IRs:
+			TMP_68(uint256) = SOLIDITY_CALL basefee()()
+			bcw8ayf__spendAllowance_asm_0_1(uint256) := TMP_68(uint256)
+		Expression: ncwupwx__spendAllowance_asm_0 = number()()
+		IRs:
+			TMP_69(uint256) = SOLIDITY_CALL number()()
+			ncwupwx__spendAllowance_asm_0_1(uint256) := TMP_69(uint256)
+		Expression: Jfwv__spendAllowance_asm_0 = keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0,64)
+		IRs:
+			TMP_70(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0_1,64)
+			Jfwv__spendAllowance_asm_0_1(uint256) := TMP_70(uint256)
+		Expression: CCkU__spendAllowance_asm_0 = sload(uint256)(Jfwv__spendAllowance_asm_0)
+		IRs:
+			TMP_71(uint256) = SOLIDITY_CALL sload(uint256)(Jfwv__spendAllowance_asm_0_1)
+			CCkU__spendAllowance_asm_0_1(uint256) := TMP_71(uint256)
+		Expression: bcw8ayf__spendAllowance_asm_0 - ncwupwx__spendAllowance_asm_0 == bcw8ayf__spendAllowance_asm_0 - ncwupwx__spendAllowance_asm_0
+		IRs:
+			TMP_72(uint256) = bcw8ayf__spendAllowance_asm_0_1 - ncwupwx__spendAllowance_asm_0_1
+			TMP_73(uint256) = bcw8ayf__spendAllowance_asm_0_1 - ncwupwx__spendAllowance_asm_0_1
+			TMP_74(bool) = TMP_72 == TMP_73
+			CONDITION TMP_74
+		IRs:
+			CCkU__spendAllowance_asm_0_3(uint256) := ϕ(['CCkU__spendAllowance_asm_0_1', 'CCkU__spendAllowance_asm_0_2'])
+		Expression: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0,_owner)
+		IRs:
+			TMP_75(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__spendAllowance_asm_0_1,_owner_1)
+		Expression: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0 + 32,uAnE__spendAllowance_asm_0)
+		IRs:
+			TMP_76(uint256) = bbwz__spendAllowance_asm_0_1 + 32
+			TMP_77(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_76,uAnE__spendAllowance_asm_0_1)
+		Expression: Jfwv__spendAllowance_asm_0 = keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0,64)
+		IRs:
+			TMP_78(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0_1,64)
+			Jfwv__spendAllowance_asm_0_2(uint256) := TMP_78(uint256)
+		Expression: CCkU__spendAllowance_asm_0 = sload(uint256)(Jfwv__spendAllowance_asm_0)
+		IRs:
+			TMP_79(uint256) = SOLIDITY_CALL sload(uint256)(Jfwv__spendAllowance_asm_0_2)
+			CCkU__spendAllowance_asm_0_2(uint256) := TMP_79(uint256)
+		Expression: zfPf__spendAllowance_asm_0 = CCkU__spendAllowance_asm_0
+		IRs:
+			zfPf__spendAllowance_asm_0_1(uint256) := CCkU__spendAllowance_asm_0_3(uint256)
+		Expression: zfPf__spendAllowance_asm_0 & ! _amount
+		IRs:
+			TMP_80 = UnaryType.BANG _amount_1 
+			TMP_81(uint256) = zfPf__spendAllowance_asm_0_1 & TMP_80
+			CONDITION TMP_81
+		Expression: revert(uint256,uint256)(0,0)
+		IRs:
+			TMP_82(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+		Expression: ! zfPf__spendAllowance_asm_0
+		IRs:
+			TMP_83 = UnaryType.BANG zfPf__spendAllowance_asm_0_1 
+			CONDITION TMP_83
+		IRs:
+			Jfwv__spendAllowance_asm_0_4(uint256) := ϕ(['Jfwv__spendAllowance_asm_0_1', 'Jfwv__spendAllowance_asm_0_3'])
+			zfPf__spendAllowance_asm_0_3(uint256) := ϕ(['zfPf__spendAllowance_asm_0_2', 'zfPf__spendAllowance_asm_0_1'])
+		Expression: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0,_owner)
+		IRs:
+			TMP_84(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__spendAllowance_asm_0_1,_owner_1)
+		Expression: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0 + 32,1)
+		IRs:
+			TMP_85(uint256) = bbwz__spendAllowance_asm_0_1 + 32
+			TMP_86(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_85,1)
+		Expression: uAnE__spendAllowance_asm_0 = keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0,64)
+		IRs:
+			TMP_87(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0_1,64)
+			uAnE__spendAllowance_asm_0_2(uint256) := TMP_87(uint256)
+		Expression: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0,_spender)
+		IRs:
+			TMP_88(None) = SOLIDITY_CALL mstore(uint256,uint256)(bbwz__spendAllowance_asm_0_1,_spender_1)
+		Expression: mstore(uint256,uint256)(bbwz__spendAllowance_asm_0 + 32,uAnE__spendAllowance_asm_0)
+		IRs:
+			TMP_89(uint256) = bbwz__spendAllowance_asm_0_1 + 32
+			TMP_90(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_89,uAnE__spendAllowance_asm_0_2)
+		Expression: Jfwv__spendAllowance_asm_0 = keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0,64)
+		IRs:
+			TMP_91(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(bbwz__spendAllowance_asm_0_1,64)
+			Jfwv__spendAllowance_asm_0_3(uint256) := TMP_91(uint256)
+		Expression: zfPf__spendAllowance_asm_0 = sload(uint256)(Jfwv__spendAllowance_asm_0) + CCkU__spendAllowance_asm_0
+		IRs:
+			TMP_92(uint256) = SOLIDITY_CALL sload(uint256)(Jfwv__spendAllowance_asm_0_3)
+			TMP_93(uint256) = TMP_92 + CCkU__spendAllowance_asm_0_3
+			zfPf__spendAllowance_asm_0_2(uint256) := TMP_93(uint256)
+		Expression: gbj1enk__spendAllowance_asm_0 = gas()()
+		IRs:
+			TMP_94(uint256) = SOLIDITY_CALL gas()()
+			gbj1enk__spendAllowance_asm_0_1(uint256) := TMP_94(uint256)
+		Expression: pop(uint256)(0)
+		IRs:
+			TMP_95(None) = SOLIDITY_CALL pop(uint256)(0)
+		Expression: gbj1enk__spendAllowance_asm_0 == gbj1enk__spendAllowance_asm_0 & gbj1enk__spendAllowance_asm_0
+		IRs:
+			TMP_96(uint256) = gbj1enk__spendAllowance_asm_0_1 & gbj1enk__spendAllowance_asm_0_1
+			TMP_97(bool) = gbj1enk__spendAllowance_asm_0_1 == TMP_96
+			CONDITION TMP_97
+		IRs:
+			zfPf__spendAllowance_asm_0_5(uint256) := ϕ(['zfPf__spendAllowance_asm_0_1', 'zfPf__spendAllowance_asm_0_4'])
+		Expression: zfPf__spendAllowance_asm_0 = zfPf__spendAllowance_asm_0 - CCkU__spendAllowance_asm_0
+		IRs:
+			TMP_98(uint256) = zfPf__spendAllowance_asm_0_3 - CCkU__spendAllowance_asm_0_3
+			zfPf__spendAllowance_asm_0_4(uint256) := TMP_98(uint256)
+		Expression: ! zfPf__spendAllowance_asm_0 == ~ 0
+		IRs:
+			TMP_99 = UnaryType.TILD 0 
+			TMP_100(bool) = zfPf__spendAllowance_asm_0_5 == TMP_99
+			TMP_101 = UnaryType.BANG TMP_100 
+			CONDITION TMP_101
+		Expression: zfPf__spendAllowance_asm_0 < _amount
+		IRs:
+			TMP_102(bool) = zfPf__spendAllowance_asm_0_5 < _amount_1
+			CONDITION TMP_102
+		Expression: revert(uint256,uint256)(0,0)
+		IRs:
+			TMP_103(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)
+		Expression: bf51h1a__spendAllowance_asm_0 = basefee()()
+		IRs:
+			TMP_104(uint256) = SOLIDITY_CALL basefee()()
+			bf51h1a__spendAllowance_asm_0_1(uint256) := TMP_104(uint256)
+		Expression: pop(uint256)(0)
+		IRs:
+			TMP_105(None) = SOLIDITY_CALL pop(uint256)(0)
+		Expression: bf51h1a__spendAllowance_asm_0 == bf51h1a__spendAllowance_asm_0 & bf51h1a__spendAllowance_asm_0
+		IRs:
+			TMP_106(uint256) = bf51h1a__spendAllowance_asm_0_1 & bf51h1a__spendAllowance_asm_0_1
+			TMP_107(bool) = bf51h1a__spendAllowance_asm_0_1 == TMP_106
+			CONDITION TMP_107
+		Expression: sstore(uint256,uint256)(Jfwv__spendAllowance_asm_0,zfPf__spendAllowance_asm_0 - _amount)
+		IRs:
+			TMP_108(uint256) = zfPf__spendAllowance_asm_0_5 - _amount_1
+			TMP_109(None) = SOLIDITY_CALL sstore(uint256,uint256)(Jfwv__spendAllowance_asm_0_4,TMP_108)
+
+INFO:Slither:outputs/assembly_recovery_pipeline.cfg_enhanced.branch_expanded.sol analyzed (1 contracts)

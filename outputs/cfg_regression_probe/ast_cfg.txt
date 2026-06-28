@@ -1,0 +1,163 @@
+INFO:AssemblyAstCfg:Input Solidity source only
+INFO:AssemblyAstCfg:InlineAssembly blocks 1
+
+AssemblyBlock 1
+  Contract: ControlFlowProbe
+  Function: probe(uint256 x)
+  Visibility: external
+  SoliditySourceRange: 132:492:0 (line 4:9 to 19:9)
+  YulRoot: YulBlock [141:483:0]
+  SoliditySnippet:
+    assembly {
+                let total := 0
+                switch x
+                case 0 { total := 1 }
+                default { total := 2 }
+                for { let i := 0 } lt(i, x) { i := add(i, 1) } {
+                    if eq(i, 2) { continue }
+                    if eq(i, 3) { break }
+                    total := add(total, i)
+                }
+                function adjust(v) -> out {
+                    if iszero(v) { leave }
+                    out := add(v, 1)
+                }
+                result := adjust(total)
+            }
+  YulAst:
+    - YulBlock: YulBlock [141:483:0]
+      - YulVariableDeclaration: let total := 0 [155:14:0]
+        - YulTypedName: YulTypedName [159:5:0]
+        - YulLiteral: YulLiteral [168:1:0]
+      - YulSwitch: switch x [182:77:0]
+        - YulIdentifier: YulIdentifier [189:1:0]
+        - YulCase: case 0 [203:21:0]
+          - YulLiteral: YulLiteral [208:1:0]
+          - YulBlock: YulBlock [210:14:0]
+            - YulAssignment: total := 1 [212:10:0]
+              - YulIdentifier: YulIdentifier [212:5:0]
+              - YulLiteral: YulLiteral [221:1:0]
+        - YulCase: default [237:22:0]
+          - YulBlock: YulBlock [245:14:0]
+            - YulAssignment: total := 2 [247:10:0]
+              - YulIdentifier: YulIdentifier [247:5:0]
+              - YulLiteral: YulLiteral [256:1:0]
+      - YulForLoop: for [272:180:0]
+        - YulBlock: YulBlock [276:14:0]
+          - YulVariableDeclaration: let i := 0 [278:10:0]
+            - YulTypedName: YulTypedName [282:1:0]
+            - YulLiteral: YulLiteral [287:1:0]
+        - YulFunctionCall: YulFunctionCall [291:8:0]
+          - YulIdentifier: YulIdentifier [291:2:0]
+          - YulIdentifier: YulIdentifier [294:1:0]
+          - YulIdentifier: YulIdentifier [297:1:0]
+        - YulBlock: YulBlock [319:133:0]
+          - YulIf: if eq(i, 2) [337:24:0]
+            - YulFunctionCall: YulFunctionCall [340:8:0]
+              - YulIdentifier: YulIdentifier [340:2:0]
+              - YulIdentifier: YulIdentifier [343:1:0]
+              - YulLiteral: YulLiteral [346:1:0]
+            - YulBlock: YulBlock [349:12:0]
+              - YulContinue: continue [351:8:0]
+          - YulIf: if eq(i, 3) [378:21:0]
+            - YulFunctionCall: YulFunctionCall [381:8:0]
+              - YulIdentifier: YulIdentifier [381:2:0]
+              - YulIdentifier: YulIdentifier [384:1:0]
+              - YulLiteral: YulLiteral [387:1:0]
+            - YulBlock: YulBlock [390:9:0]
+              - YulBreak: break [392:5:0]
+          - YulAssignment: total := add(total, i) [416:22:0]
+            - YulIdentifier: YulIdentifier [416:5:0]
+            - YulFunctionCall: YulFunctionCall [425:13:0]
+              - YulIdentifier: YulIdentifier [425:3:0]
+              - YulIdentifier: YulIdentifier [429:5:0]
+              - YulIdentifier: YulIdentifier [436:1:0]
+        - YulBlock: YulBlock [300:18:0]
+          - YulAssignment: i := add(i, 1) [302:14:0]
+            - YulIdentifier: YulIdentifier [302:1:0]
+            - YulFunctionCall: YulFunctionCall [307:9:0]
+              - YulIdentifier: YulIdentifier [307:3:0]
+              - YulIdentifier: YulIdentifier [311:1:0]
+              - YulLiteral: YulLiteral [314:1:0]
+      - YulFunctionDefinition: function adjust [465:113:0]
+        - YulTypedName: YulTypedName [481:1:0]
+        - YulTypedName: YulTypedName [487:3:0]
+        - YulBlock: YulBlock [491:87:0]
+          - YulIf: if iszero(v) [509:22:0]
+            - YulFunctionCall: YulFunctionCall [512:9:0]
+              - YulIdentifier: YulIdentifier [512:6:0]
+              - YulIdentifier: YulIdentifier [519:1:0]
+            - YulBlock: YulBlock [522:9:0]
+              - YulLeave: leave [524:5:0]
+          - YulAssignment: out := add(v, 1) [548:16:0]
+            - YulIdentifier: YulIdentifier [548:3:0]
+            - YulFunctionCall: YulFunctionCall [555:9:0]
+              - YulIdentifier: YulIdentifier [555:3:0]
+              - YulIdentifier: YulIdentifier [559:1:0]
+              - YulLiteral: YulLiteral [562:1:0]
+      - YulAssignment: result := adjust(total) [591:23:0]
+        - YulIdentifier: YulIdentifier [591:6:0]
+        - YulFunctionCall: YulFunctionCall [601:13:0]
+          - YulIdentifier: YulIdentifier [601:6:0]
+          - YulIdentifier: YulIdentifier [608:5:0]
+  LocalCFG:
+    Nodes:
+      N0 [entry] entry
+      N1 [exit] exit
+      N2 [statement] let total := 0 @ 155:14:0 (line 5:13)
+      N3 [switch] switch x @ 182:77:0 (line 6:13)
+      N4 [merge] switch merge @ 182:77:0 (line 6:13)
+      N5 [statement] total := 1 @ 212:10:0 (line 7:22)
+      N6 [statement] total := 2 @ 247:10:0 (line 8:23)
+      N7 [statement] let i := 0 @ 278:10:0 (line 9:19)
+      N8 [loop-condition] for condition lt(i, x) @ 272:180:0 (line 9:13)
+      N9 [loop-merge] for exit @ 272:180:0 (line 9:13)
+      N10 [loop-post] for post @ 272:180:0 (line 9:13)
+      N11 [condition] if eq(i, 2) @ 337:24:0 (line 10:17)
+      N12 [merge] if merge @ 337:24:0 (line 10:17)
+      N13 [continue] continue @ 351:8:0 (line 10:31)
+      N14 [condition] if eq(i, 3) @ 378:21:0 (line 11:17)
+      N15 [merge] if merge @ 378:21:0 (line 11:17)
+      N16 [break] break @ 392:5:0 (line 11:31)
+      N17 [statement] total := add(total, i) @ 416:22:0 (line 12:17)
+      N18 [statement] i := add(i, 1) @ 302:14:0 (line 9:43)
+      N19 [statement] result := adjust(total) @ 591:23:0 (line 18:13)
+    Edges:
+      N0 --[next]--> N2
+      N2 --[next]--> N3
+      N3 --[case: x == 0]--> N5
+      N5 --[next]--> N4
+      N3 --[default: !(x == 0)]--> N6
+      N6 --[next]--> N4
+      N4 --[next]--> N7
+      N7 --[next]--> N8
+      N8 --[true: lt(i, x)]--> N11
+      N11 --[true: eq(i, 2)]--> N13
+      N13 --[continue]--> N10
+      N11 --[false: !(eq(i, 2))]--> N12
+      N12 --[next]--> N14
+      N14 --[true: eq(i, 3)]--> N16
+      N16 --[break]--> N9
+      N14 --[false: !(eq(i, 3))]--> N15
+      N15 --[next]--> N17
+      N17 --[next]--> N10
+      N10 --[next]--> N18
+      N18 --[loop back]--> N8
+      N8 --[loop exit: !(lt(i, x))]--> N9
+      N9 --[next]--> N19
+      N19 --[next]--> N1
+    YulFunctionCFG adjust:
+      Nodes:
+        N0 [entry] entry
+        N1 [exit] exit
+        N2 [condition] if iszero(v) @ 509:22:0 (line 15:17)
+        N3 [merge] if merge @ 509:22:0 (line 15:17)
+        N4 [leave] leave @ 524:5:0 (line 15:32)
+        N5 [statement] out := add(v, 1) @ 548:16:0 (line 16:17)
+      Edges:
+        N0 --[next]--> N2
+        N2 --[true: iszero(v)]--> N4
+        N4 --[leave: function exit]--> N1
+        N2 --[false: !(iszero(v))]--> N3
+        N3 --[next]--> N5
+        N5 --[next]--> N1

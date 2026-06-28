@@ -1,0 +1,80 @@
+AssemblyBlock 1: AssemblyMemorySsaLoopCase.buildAndHash(uint256 words)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(add(ptr,i), add(i, 1)) origin=N8 src=380:30:0
+  mem_2 = loop_phi(add(ptr,i), unknown(loop-carried-memory)) origin=N5 src=309:115:0
+  mem_3 = mstore(add(ptr,i), add(i, 1)) origin=N8 src=380:30:0
+ValueDefinitions:
+  ptr__ssa1 = mload(0x40) origin=N2 src=233:22:0
+  size__ssa2 = mul(words, 0x20) origin=N3 src=268:28:0
+  i__ssa3 = 0 origin=N4 src=315:10:0
+  lastWord__ssa4 = mload(add(ptr, sub(size, 0x20))) origin=N10 src=437:44:0
+  i__ssa5 = add(i, 0x20) origin=N9 src=342:17:0
+  i__ssa6 = loop_phi(i) origin=N5 src=309:115:0
+  digest__ssa7 = keccak256(ptr, size) origin=N11 src=494:30:0
+  lastWord__ssa8 = mload(add(ptr, sub(size, 0x20))) origin=N10 src=437:44:0
+  i__ssa9 = add(i, 0x20) origin=N9 src=342:17:0
+  digest__ssa10 = keccak256(ptr, size) origin=N11 src=494:30:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[-] values=[digest=digest__ssa7, i=i__ssa3, lastWord=lastWord__ssa4, ptr=ptr__ssa1, size=size__ssa2]
+    in:  path=[entry] memory=[add(ptr,i)=mem_2] values=[digest=digest__ssa10, i=i__ssa6, lastWord=lastWord__ssa8, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[-] values=[digest=digest__ssa7, i=i__ssa3, lastWord=lastWord__ssa4, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[add(ptr,i)=mem_2] values=[digest=digest__ssa10, i=i__ssa6, lastWord=lastWord__ssa8, ptr=ptr__ssa1, size=size__ssa2]
+  N2 [statement] let ptr := mload(0x40)
+    effect: value defs: ptr__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[ptr=ptr__ssa1]
+  N3 [statement] let size := mul(words, 0x20)
+    effect: value defs: size__ssa2
+    in:  path=[entry] memory=[-] values=[ptr=ptr__ssa1]
+    out: path=[entry] memory=[-] values=[ptr=ptr__ssa1, size=size__ssa2]
+  N4 [statement] let i := 0
+    effect: value defs: i__ssa3
+    in:  path=[entry] memory=[-] values=[ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[-] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+  N5 [loop-condition] for condition lt(i, size)
+    in:  path=[entry] memory=[-] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    in:  path=[entry] memory=[add(ptr,i)=mem_2] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[-] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[add(ptr,i)=mem_2] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+  N6 [loop-merge] for exit
+    in:  path=[entry] memory=[-] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    in:  path=[entry] memory=[add(ptr,i)=mem_2] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[-] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[add(ptr,i)=mem_2] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+  N7 [loop-post] for post
+    in:  path=[lt(i, size)] memory=[add(ptr,i)=mem_1] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    in:  path=[lt(i, size)] memory=[add(ptr,i)=mem_3] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[lt(i, size)] memory=[add(ptr,i)=mem_1] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[lt(i, size)] memory=[add(ptr,i)=mem_3] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+  N8 [statement] mstore(add(ptr, i), add(i, 1))
+    effect: mem_3: mstore(add(ptr,i), add(i, 1))
+    in:  path=[lt(i, size)] memory=[-] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    in:  path=[lt(i, size)] memory=[add(ptr,i)=mem_2] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[lt(i, size)] memory=[add(ptr,i)=mem_1] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[lt(i, size)] memory=[add(ptr,i)=mem_3] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+  N9 [statement] i := add(i, 0x20)
+    effect: value defs: i__ssa9
+    in:  path=[lt(i, size)] memory=[add(ptr,i)=mem_1] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    in:  path=[lt(i, size)] memory=[add(ptr,i)=mem_3] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[lt(i, size)] memory=[add(ptr,i)=mem_1] values=[i=i__ssa5, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[lt(i, size)] memory=[add(ptr,i)=mem_3] values=[i=i__ssa9, ptr=ptr__ssa1, size=size__ssa2]
+  N10 [statement] lastWord := mload(add(ptr, sub(size, 0x20)))
+    effect: value defs: lastWord__ssa8
+    in:  path=[entry] memory=[-] values=[i=i__ssa3, ptr=ptr__ssa1, size=size__ssa2]
+    in:  path=[entry] memory=[add(ptr,i)=mem_2] values=[i=i__ssa6, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[-] values=[i=i__ssa3, lastWord=lastWord__ssa4, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[add(ptr,i)=mem_2] values=[i=i__ssa6, lastWord=lastWord__ssa8, ptr=ptr__ssa1, size=size__ssa2]
+  N11 [statement] digest := keccak256(ptr, size)
+    effect: value defs: digest__ssa10
+    in:  path=[entry] memory=[-] values=[i=i__ssa3, lastWord=lastWord__ssa4, ptr=ptr__ssa1, size=size__ssa2]
+    in:  path=[entry] memory=[add(ptr,i)=mem_2] values=[i=i__ssa6, lastWord=lastWord__ssa8, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[-] values=[digest=digest__ssa7, i=i__ssa3, lastWord=lastWord__ssa4, ptr=ptr__ssa1, size=size__ssa2]
+    out: path=[entry] memory=[add(ptr,i)=mem_2] values=[digest=digest__ssa10, i=i__ssa6, lastWord=lastWord__ssa8, ptr=ptr__ssa1, size=size__ssa2]

@@ -11,6 +11,7 @@ can query the state at a semantic sink.
 from __future__ import annotations
 
 import argparse
+import re
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -27,6 +28,8 @@ from assembly_ast_cfg import (
     yul_children,
     yul_expression,
     yul_statement_text,
+    yul_function_definitions,
+    parse_src,
 )
 
 
@@ -39,6 +42,7 @@ HARD_SINKS = {
     "selfdestruct", "create", "create2",
 }
 MAX_PATH_STATES = 256
+MAX_LOOP_JOIN_STATES = 8
 
 
 @dataclass(frozen=True)
@@ -68,10 +72,20 @@ class PathState:
     predicates: tuple[str, ...] = ()
     memory: dict[str, MemoryDefinition] = field(default_factory=dict)
     values: dict[str, ValueDefinition] = field(default_factory=dict)
+    loop_bases: dict[int, tuple[tuple[str, ...], dict[str, MemoryDefinition], dict[str, ValueDefinition]]] = field(default_factory=dict)
     trace: tuple[int, ...] = ()
 
     def clone(self) -> "PathState":
-        return PathState(self.predicates, dict(self.memory), dict(self.values), self.trace)
+        return PathState(
+            self.predicates,
+            dict(self.memory),
+            dict(self.values),
+            {
+                node_id: (predicates, dict(memory), dict(values))
+                for node_id, (predicates, memory, values) in self.loop_bases.items()
+            },
+            self.trace,
+        )
 
     def fingerprint(self) -> tuple[Any, ...]:
         return (
@@ -92,6 +106,100 @@ class NodeObservation:
     effect: str | None = None
 
 
+@dataclass(frozen=True)
+class LocalFunctionSummary:
+    name: str
+    parameters: tuple[str, ...]
+    return_names: tuple[str, ...]
+    memory_writes: tuple[tuple[str, str], ...] = ()
+    return_expression: str | None = None
+    hard_sinks: tuple[str, ...] = ()
+    unknown_memory_effect: bool = False
+    has_control_flow: bool = False
+
+
+def yul_typed_names(items: list[Json]) -> tuple[str, ...]:
+    return tuple(str(item.get("name")) for item in items if item.get("name"))
+
+
+def substitute_yul_text(text: str, bindings: dict[str, str]) -> str:
+    if not bindings:
+        return text
+    pattern = r"\b(" + "|".join(re.escape(name) for name in sorted(bindings, key=len, reverse=True)) + r")\b"
+    return re.sub(pattern, lambda match: bindings[match.group(1)], text)
+
+
+def summarize_local_function(definition: Json, local_names: set[str]) -> LocalFunctionSummary:
+    name = str(definition.get("name", "<anonymous>"))
+    parameters = yul_typed_names(list(definition.get("parameters", [])))
+    return_names = yul_typed_names(list(definition.get("returnVariables", [])))
+    writes: list[tuple[str, str]] = []
+    hard_sinks: set[str] = set()
+    return_expression: str | None = None
+    unknown_memory = False
+    has_control_flow = False
+
+    def visit_block(block: Json | None, controlled: bool = False) -> None:
+        nonlocal return_expression, unknown_memory, has_control_flow
+        if not isinstance(block, dict):
+            return
+        for statement in block.get("statements", []):
+            node_type = statement.get("nodeType")
+            if node_type == "YulFunctionDefinition":
+                continue
+            if node_type in {"YulIf", "YulSwitch", "YulForLoop", "YulBreak", "YulContinue", "YulLeave"}:
+                has_control_flow = True
+                if node_type == "YulIf":
+                    visit_block(statement.get("body"), True)
+                elif node_type == "YulSwitch":
+                    for case in statement.get("cases", []):
+                        visit_block(case.get("body"), True)
+                elif node_type == "YulForLoop":
+                    visit_block(statement.get("pre"), True)
+                    visit_block(statement.get("body"), True)
+                    visit_block(statement.get("post"), True)
+                continue
+
+            expression = statement_expression(statement)
+            call_name, arguments = direct_call(expression)
+            if call_name in MEMORY_WRITES and len(arguments) >= 2:
+                if controlled:
+                    unknown_memory = True
+                else:
+                    writes.append((yul_expression(arguments[0]), yul_expression(arguments[1])))
+            elif call_name in MEMORY_COPIES:
+                unknown_memory = True
+            elif call_name in HARD_SINKS:
+                hard_sinks.add(str(call_name))
+            elif call_name in local_names:
+                unknown_memory = True
+
+            if node_type == "YulAssignment" and not controlled:
+                assigned = assigned_names(statement)
+                if len(assigned) == 1 and assigned[0] in return_names and expression is not None:
+                    return_expression = yul_expression(expression)
+
+    visit_block(definition.get("body"))
+    if has_control_flow:
+        return_expression = None
+    return LocalFunctionSummary(
+        name=name,
+        parameters=parameters,
+        return_names=return_names,
+        memory_writes=tuple(writes),
+        return_expression=return_expression,
+        hard_sinks=tuple(sorted(hard_sinks)),
+        unknown_memory_effect=unknown_memory,
+        has_control_flow=has_control_flow,
+    )
+
+
+def build_local_function_summaries(root: Json) -> dict[str, LocalFunctionSummary]:
+    definitions = yul_function_definitions(root)
+    names = {str(definition.get("name", "<anonymous>")) for definition in definitions}
+    return {str(definition.get("name", "<anonymous>")): summarize_local_function(definition, names) for definition in definitions}
+
+
 @dataclass
 class MemorySSAResult:
     block: AssemblyAstBlock
@@ -100,6 +208,7 @@ class MemorySSAResult:
     observations: dict[int, NodeObservation]
     memory_definitions: dict[str, MemoryDefinition]
     value_definitions: dict[str, ValueDefinition]
+    function_summaries: dict[str, LocalFunctionSummary] = field(default_factory=dict)
     truncated: bool = False
 
     def states_at(self, node_id: int) -> list[PathState]:
@@ -158,8 +267,10 @@ def predicate_for_edge(edge: CFGEdge) -> str | None:
         return label.removeprefix("true: ").strip()
     if label.startswith("false: "):
         return label.removeprefix("false: ").strip()
-    if label.startswith("case: ") or label == "default":
-        return label
+    if label.startswith("case: "):
+        return label.removeprefix("case: ").strip()
+    if label.startswith("default: "):
+        return label.removeprefix("default: ").strip()
     return None
 
 
@@ -192,6 +303,12 @@ class MemorySSAAnalyzer:
         self.value_counter = 0
         self.memory_definitions: dict[str, MemoryDefinition] = {}
         self.value_definitions: dict[str, ValueDefinition] = {}
+        self.loop_memory_phis: dict[tuple[int, str], MemoryDefinition] = {}
+        self.loop_value_phis: dict[tuple[int, str], ValueDefinition] = {}
+        self.loop_join_memory_phis: dict[tuple[int, str], MemoryDefinition] = {}
+        self.loop_join_value_phis: dict[tuple[int, str], ValueDefinition] = {}
+        self.loop_join_states: dict[int, PathState] = {}
+        self.function_summaries = build_local_function_summaries(block.yul_ast)
         self.observations = {
             node.node_id: NodeObservation(node.node_id, node.kind, node.text, node.src)
             for node in self.cfg.nodes
@@ -244,6 +361,175 @@ class MemorySSAAnalyzer:
         self.value_definitions[definition.version] = definition
         return definition
 
+    def widen_loop_node(self, node_id: int, state: PathState) -> PathState:
+        """Join excessive loop-path states without inventing a concrete value."""
+        cached = self.loop_join_states.get(node_id)
+        if cached is not None:
+            return cached.clone()
+
+        joined = state.clone()
+        joined.predicates = ()
+        joined_memory: dict[str, MemoryDefinition] = {}
+        for address in state.memory:
+            key = (node_id, address)
+            phi = self.loop_join_memory_phis.get(key)
+            if phi is None:
+                phi = self.new_memory_definition(
+                    node_id,
+                    address,
+                    "unknown(loop-path-join)",
+                    "loop_phi",
+                    self.cfg.nodes[node_id].src,
+                    state.memory,
+                )
+                self.loop_join_memory_phis[key] = phi
+            joined_memory[address] = phi
+
+        joined_values: dict[str, ValueDefinition] = {}
+        for name in state.values:
+            key = (node_id, name)
+            phi = self.loop_join_value_phis.get(key)
+            if phi is None:
+                phi = self.new_value_definition(
+                    node_id,
+                    name,
+                    {"nodeType": "YulIdentifier", "name": f"loop_join({name})"},
+                    self.cfg.nodes[node_id].src,
+                    state,
+                )
+                self.loop_join_value_phis[key] = phi
+            joined_values[name] = phi
+        joined.memory = joined_memory
+        joined.values = joined_values
+        self.loop_join_states[node_id] = joined.clone()
+        return joined
+
+    def apply_local_function_summary(
+        self,
+        node_id: int,
+        name: str,
+        arguments: list[Json],
+        state: PathState,
+        observation: NodeObservation,
+    ) -> LocalFunctionSummary | None:
+        summary = self.function_summaries.get(name)
+        if summary is None:
+            return None
+        bindings = {
+            parameter: yul_expression(argument)
+            for parameter, argument in zip(summary.parameters, arguments)
+        }
+        effects: list[str] = []
+        for pointer, value in summary.memory_writes:
+            address = normalize_expression(substitute_yul_text(pointer, bindings))
+            resolved_value = substitute_yul_text(value, bindings)
+            definition = self.new_memory_definition(
+                node_id,
+                address,
+                resolved_value,
+                f"local:{name}",
+                self.cfg.nodes[node_id].src,
+                state.memory,
+            )
+            state.memory[address] = definition
+            effects.append(definition.version)
+        if summary.unknown_memory_effect:
+            definition = self.new_memory_definition(
+                node_id,
+                "<unknown-local-function-write>",
+                f"unknown({name})",
+                f"local:{name}",
+                self.cfg.nodes[node_id].src,
+                state.memory,
+            )
+            state.memory[definition.address] = definition
+            effects.append(definition.version)
+        details = f"local {name} summary"
+        if effects:
+            details += ": " + ", ".join(effects)
+        if summary.hard_sinks:
+            details += " sinks=" + ",".join(summary.hard_sinks)
+        observation.effect = details
+        return summary
+
+    def record_loop_base(self, header_id: int, state: PathState) -> None:
+        if header_id not in state.loop_bases:
+            state.loop_bases[header_id] = (
+                state.predicates,
+                dict(state.memory),
+                dict(state.values),
+            )
+
+    def nested_loop_headers(self, header_id: int) -> set[int]:
+        outer_start, outer_end = parse_src(self.cfg.nodes[header_id].src)
+        nested: set[int] = set()
+        for node in self.cfg.nodes:
+            if node.kind != "loop-condition" or node.node_id == header_id:
+                continue
+            start, end = parse_src(node.src)
+            if outer_start <= start and end <= outer_end and (start != outer_start or end != outer_end):
+                nested.add(node.node_id)
+        return nested
+
+    def widen_loop_back(self, header_id: int, state: PathState) -> None:
+        """Conservatively converge a loop-carried state at its header."""
+        base = state.loop_bases.get(header_id)
+        if base is None:
+            state.predicates = ()
+            state.memory = {}
+            state.values = {}
+            return
+
+        base_predicates, base_memory, base_values = base
+        # Entering a new outer iteration must rebuild nested-loop bases from
+        # the widened outer state instead of reusing the prior iteration.
+        for nested_header in self.nested_loop_headers(header_id):
+            state.loop_bases.pop(nested_header, None)
+        state.predicates = base_predicates
+        widened_memory: dict[str, MemoryDefinition] = {}
+        for address in set(base_memory) | set(state.memory):
+            before = base_memory.get(address)
+            after = state.memory.get(address)
+            if before is not None and after is not None and before.version == after.version:
+                widened_memory[address] = before
+                continue
+            key = (header_id, address)
+            phi = self.loop_memory_phis.get(key)
+            if phi is None:
+                phi = self.new_memory_definition(
+                    header_id,
+                    address,
+                    "unknown(loop-carried-memory)",
+                    "loop_phi",
+                    self.cfg.nodes[header_id].src,
+                    base_memory,
+                )
+                self.loop_memory_phis[key] = phi
+            widened_memory[address] = phi
+
+        widened_values: dict[str, ValueDefinition] = {}
+        for name in set(base_values) | set(state.values):
+            before = base_values.get(name)
+            after = state.values.get(name)
+            if before is not None and after is not None and before.version == after.version:
+                widened_values[name] = before
+                continue
+            key = (header_id, name)
+            phi = self.loop_value_phis.get(key)
+            if phi is None:
+                phi = self.new_value_definition(
+                    header_id,
+                    name,
+                    {"nodeType": "YulIdentifier", "name": f"loop_phi({name})"},
+                    self.cfg.nodes[header_id].src,
+                    state,
+                )
+                self.loop_value_phis[key] = phi
+            widened_values[name] = phi
+
+        state.memory = widened_memory
+        state.values = widened_values
+
     def transfer(self, node_id: int, incoming: PathState) -> PathState:
         state = incoming.clone()
         state.trace = state.trace + (node_id,)
@@ -254,6 +540,7 @@ class MemorySSAAnalyzer:
 
         expression = statement_expression(ast_node)
         call_name, arguments = direct_call(expression)
+        local_summary = self.apply_local_function_summary(node_id, str(call_name), arguments, state, observation) if call_name in self.function_summaries else None
         if call_name in MEMORY_WRITES and len(arguments) >= 2:
             address = address_key(arguments[0])
             value = yul_expression(arguments[1])
@@ -285,13 +572,20 @@ class MemorySSAAnalyzer:
             return state
 
         names = assigned_names(ast_node)
-        if names and isinstance(expression, dict):
+        value_expression = expression
+        if local_summary and local_summary.return_expression and len(names) == 1:
+            bindings = {
+                parameter: yul_expression(argument)
+                for parameter, argument in zip(local_summary.parameters, arguments)
+            }
+            value_expression = {"nodeType": "YulIdentifier", "name": substitute_yul_text(local_summary.return_expression, bindings)}
+        if names and isinstance(value_expression, dict):
             versions = []
             for name in names:
                 definition = self.new_value_definition(
                     node_id,
                     name,
-                    expression,
+                    value_expression,
                     str(ast_node.get("src", "")),
                     state,
                 )
@@ -309,6 +603,9 @@ class MemorySSAAnalyzer:
 
         while queue:
             node_id, incoming = queue.popleft()
+            node = self.cfg.nodes[node_id]
+            if node.kind in {"loop-post", "loop-condition", "loop-merge"} and len(self.observations[node_id].incoming) >= MAX_LOOP_JOIN_STATES:
+                incoming = self.widen_loop_node(node_id, incoming)
             fingerprint = (node_id, incoming.fingerprint())
             if fingerprint in seen:
                 continue
@@ -325,6 +622,11 @@ class MemorySSAAnalyzer:
 
             for edge in self.edges_by_source.get(node_id, []):
                 next_state = outgoing.clone()
+                target = self.cfg.nodes[edge.target]
+                if target.kind == "loop-condition" and edge.label != "loop back":
+                    self.record_loop_base(edge.target, next_state)
+                if edge.label == "loop back":
+                    self.widen_loop_back(edge.target, next_state)
                 predicate = predicate_for_edge(edge)
                 if predicate and predicate not in next_state.predicates:
                     next_state.predicates = next_state.predicates + (predicate,)
@@ -337,7 +639,8 @@ class MemorySSAAnalyzer:
             self.observations,
             self.memory_definitions,
             self.value_definitions,
-            self.truncated,
+            function_summaries=self.function_summaries,
+            truncated=self.truncated,
         )
 
 
@@ -358,8 +661,19 @@ def format_memory_ssa(result: MemorySSAResult) -> str:
         f"AssemblyBlock {block.block_id}: {block.context.label()}",
         "MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa",
         f"PathStateTruncated: {result.truncated}",
-        "MemoryDefinitions:",
+        "LocalFunctionSummaries:",
     ]
+    if not result.function_summaries:
+        lines.append("  none")
+    for summary in result.function_summaries.values():
+        writes = ", ".join(f"mstore({ptr}, {value})" for ptr, value in summary.memory_writes) or "none"
+        returns = summary.return_expression or "unknown"
+        sinks = ",".join(summary.hard_sinks) or "none"
+        lines.append(
+            f"  {summary.name}: writes={writes} return={returns} sinks={sinks} "
+            f"unknown_memory={summary.unknown_memory_effect} control_flow={summary.has_control_flow}"
+        )
+    lines.append("MemoryDefinitions:")
     for definition in result.memory_definitions.values():
         lines.append(
             f"  {definition.version} = {definition.kind}({definition.address}, {definition.value}) "

@@ -1,0 +1,18 @@
+digraph yul_cfg {
+  rankdir=TB;
+  graph [fontname="monospace", label="Assembly block 1, Yul function adjust: ControlFlowProbe.probe(uint256 x)", labelloc=t];
+  node [fontname="monospace", shape=box];
+  edge [fontname="monospace"];
+  N0 [shape=oval, label="N0 [entry]\\nentry"];
+  N1 [shape=oval, label="N1 [exit]\\nexit"];
+  N2 [shape=diamond, label="N2 [condition]\\nif iszero(v)\\n509:22:0 (line 15:17)"];
+  N3 [shape=circle, label="N3 [merge]\\nif merge\\n509:22:0 (line 15:17)"];
+  N4 [shape=octagon, label="N4 [leave]\\nleave\\n524:5:0 (line 15:32)"];
+  N5 [shape=box, label="N5 [statement]\\nout := add(v, 1)\\n548:16:0 (line 16:17)"];
+  N0 -> N2 [label="next"];
+  N2 -> N4 [label="true: iszero(v)"];
+  N4 -> N1 [label="leave: function exit"];
+  N2 -> N3 [label="false: !(iszero(v))"];
+  N3 -> N5 [label="next"];
+  N5 -> N1 [label="next"];
+}
