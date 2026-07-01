@@ -7,7 +7,7 @@ from assembly_arithmetic_compare_ir import attach_arithmetic_recovery
 from assembly_condition_revert_ir import recover_reverts_for_block
 from assembly_event_ir import attach_event_recovery
 from assembly_external_call_ir import attach_external_call_recovery
-from assembly_recovery_pipeline import discover_binary, generate_slither_inputs, build_branch_expanded_source, attach_branch_materialization
+from assembly_recovery_pipeline import discover_binary, generate_slither_inputs, build_branch_expanded_source, attach_branch_materialization, external_output_replacements_by_op
 from assembly_semantic_ir import strip_ssa
 from assembly_storage_ir import build_storage_report
 from s_seir_id import IdAllocator
@@ -41,7 +41,7 @@ class LegacyRecoveryAdapter:
         effects=[]; overlays=[]; facts=[]
         for ord,b in enumerate(self.blocks_by_function.get((unit.contract,unit.function),[])):
             lookup=self.statement_refs_for_block(unit,ord); facts.append({'kind':'LegacyRecoveryBlock','legacy_block_id':b.get('block_id'),'contract':unit.contract,'function':unit.function,'ordinal':ord,'branch_materialization':b.get('branch_materialization',{})})
-            self.storage_nodes(b,lookup,effects,overlays); self.require_nodes(b,lookup,effects,overlays); self.event_nodes(b,lookup,effects,overlays); self.external_nodes(b,lookup,effects,overlays); self.arith_nodes(b,lookup,effects,overlays)
+            self.storage_nodes(b,lookup,effects,overlays); self.require_nodes(b,lookup,effects,overlays); self.event_nodes(b,lookup,effects,overlays); self.external_nodes(b,lookup,effects,overlays); self.external_output_nodes(b,lookup,effects,overlays); self.arith_nodes(b,lookup,effects,overlays)
         return effects,overlays,facts
     @staticmethod
     def statement_refs_for_block(unit,ord):
@@ -68,7 +68,7 @@ class LegacyRecoveryAdapter:
                 e=self.eff('StorageWrite',refs,self.clean(it)); effects.append(e); overlays.append(self.ov('MappingWrite' if 'mapping' in it.get('kind','') else 'StateVariableWrite',e,{'access':self.clean(it.get('access')),'value':self.clean(it.get('value_solidity')),'state_variable':it.get('state_variable'),'slot':self.clean(it.get('slot')),'solidity_like':self.clean(it.get('solidity_like')),'unchecked_arithmetic_candidate':it.get('unchecked_arithmetic_candidate',False),'control_path':self.clean(it.get('control_path',[])),'yul':it.get('yul')}))
     def require_nodes(self,b,l,effects,overlays):
         for it in b.get('condition_revert_recovery',{}).get('reverts',[]):
-            e=self.eff('Require',self.refs(l,it.get('op_index')),self.clean(it)); effects.append(e); overlays.append(self.ov('RequireOverlay',e,{'require_like':self.clean(it.get('require_like')),'nearest_condition':self.clean(it.get('nearest_condition')),'merged_conditions':self.clean(it.get('merged_conditions',[])),'division_guards':it.get('division_guards',[]),'control_path':self.clean(it.get('control_path',[])),'yul':it.get('yul')}))
+            e=self.eff('Require',self.refs(l,it.get('op_index')),self.clean(it)); effects.append(e); overlays.append(self.ov('RequireOverlay',e,{'require_like':self.clean(it.get('require_like')),'nearest_condition':self.clean(it.get('nearest_condition')),'merged_conditions':self.clean(it.get('merged_conditions',[])),'division_guards':it.get('division_guards',[]),'control_path':self.clean(it.get('control_path',[])),'yul':it.get('yul'),'elided_by_native_precompile': self.require_elided_by_native_precompile(b,it)}))
     def event_nodes(self,b,l,effects,overlays):
         rec=b.get('event_recovery',{})
         for it in rec.get('events',[]):
@@ -80,6 +80,22 @@ class LegacyRecoveryAdapter:
             e=self.eff('ExternalCall',self.refs(l,it.get('op_index')),self.clean(it)); effects.append(e)
             kind='PrecompileCall' if it.get('native_precompile') or it.get('precompile') else {'delegatecall':'DelegateCallOverlay','staticcall':'StaticCallOverlay'}.get(it.get('call_kind'),'LowLevelCall')
             overlays.append(self.ov(kind,e,{'call_kind':it.get('call_kind'),'target':it.get('target'),'target_solidity':it.get('target_solidity'),'precompile':it.get('precompile'),'native_precompile':self.clean(it.get('native_precompile')),'gas':it.get('gas'),'value':it.get('value'),'input':self.clean(it.get('input')),'output_range':it.get('output_range'),'success_result':it.get('success_result'),'selector':it.get('selector'),'arguments':self.clean(it.get('arguments',[])),'complete_static_abi':it.get('complete_static_abi',False),'solidity_like':self.clean(it.get('solidity_like')),'yul':it.get('yul')}))
+
+    def require_elided_by_native_precompile(self,b,it):
+        nearest=it.get('nearest_condition')
+        if not nearest: return False
+        conds={op['index']:op.get('semantic',{}).get('condition') for op in b.get('source_yul_semantic_ir',[]) if op.get('kind')=='condition'}
+        for call in b.get('external_call_recovery',{}).get('calls',[]):
+            native=call.get('native_precompile') or {}
+            if native.get('elides_success_check') and conds.get(call.get('op_index'))==nearest:
+                return True
+        return False
+
+    def external_output_nodes(self,b,l,effects,overlays):
+        for op_index,line in external_output_replacements_by_op(b).items():
+            e=self.eff('ExternalOutputRead',self.refs(l,op_index),{'op_index':op_index,'solidity_like':line})
+            effects.append(e)
+            overlays.append(self.ov('PrecompileOutputRead',e,{'solidity_like':line,'op_index':op_index}))
     def arith_nodes(self,b,l,effects,overlays):
         for it in b.get('arithmetic_compare_recovery',{}).get('entries',[]):
             e=self.eff('ExpressionNormalization',self.refs(l,it.get('op_index')),self.clean(it)); effects.append(e); overlays.append(self.ov('ExpressionNormalization',e,{'target':it.get('target'),'context':it.get('context'),'expression':self.clean(it.get('expression')),'solidity_like':self.clean(it.get('solidity_like')),'division_guards':it.get('division_guards',[]),'helpers':it.get('helpers',[]),'control_path':self.clean(it.get('control_path',[])),'yul':it.get('yul')}))

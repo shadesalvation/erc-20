@@ -1,0 +1,101 @@
+S-SEIR vs Legacy Pipeline Comparison
+Source: TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol
+
+Legacy pipeline output:
+  outputs/0x0068e979c72bbb31373ea8cb47eaefb44978566e.legacy_pipeline.txt
+S-SEIR output:
+  outputs/0x0068e979c72bbb31373ea8cb47eaefb44978566e.sseir.txt
+
+Coverage summary:
+
+1. _transfer(address,address,uint256)
+   Legacy storage:
+     SLOT XCUz := UbLX[_from]
+     READ qVPd = UbLX[_from]
+     READ Fpzy = sSgI
+     WRITE UbLX[_from] = qVPd - _amount
+     SLOT iLho := UbLX[_to]
+     READ bXFg = UbLX[_to]
+     WRITE UbLX[_to] = bXFg + _amount
+   S-SEIR coverage:
+     MappingSlot/MappingRead/StateVariableRead/MappingWrite overlays all present.
+
+   Legacy revert:
+     require(_from != address(0))
+     require(_to != address(0))
+     require(staticcall(...) != 0)
+     require(!(tfe9zci == tfe9zci * 1))
+   S-SEIR coverage:
+     RequireOverlay entries all present.
+     The staticcall require is marked projection=false with reason=require_elided_by_native_precompile, matching legacy processed view where native sha256 elides the success check.
+
+   Legacy event:
+     emit Transfer(_from, _to, _amount)
+   S-SEIR coverage:
+     EventEmit Transfer present.
+
+   Legacy external/precompile:
+     bytes32 sha256_result_13 = sha256(abi.encodePacked(bytes20(msg.sender)))
+     YvIh = uint256(sha256_result_13)
+   S-SEIR coverage:
+     PrecompileCall present.
+     PrecompileOutputRead present.
+
+   Legacy arithmetic/env:
+     basefee, number, caller, gasleft, timestamp, add/sub/eq/lt/iszero normalized.
+   S-SEIR coverage:
+     ExpressionNormalization overlays present.
+
+2. approve(address,uint256)
+   Legacy storage:
+     WRITE storage[akRJ] = _amount
+   S-SEIR coverage:
+     StateVariableWrite/raw storage write overlay present.
+
+   Legacy event:
+     emit UnknownEvent_8c5be1e5ebec(msg.sender, _spender, _spender)
+     notes=unknown_event_topic0,memory_data_written_after_log_at_op_9
+   S-SEIR coverage:
+     EventEmit unknown event present.
+     ProjectionPolicy marks it semantic_comment with reason=unknown_event_log.
+
+   Legacy arithmetic/env:
+     caller() -> msg.sender memory write.
+   S-SEIR coverage:
+     ExpressionNormalization present.
+
+3. _spendAllowance(address,address,uint256)
+   Legacy storage:
+     READ qBQC
+     SLOT Jfwv := wZHA[sload(qBQC.slot)]
+     READ CCkU = wZHA[sload(qBQC.slot)]
+     READ CCkU = sload(Jfwv)
+     READ sload(Jfwv)
+     WRITE storage[Jfwv] = zfPf - _amount
+   S-SEIR coverage:
+     StateVariableRead/MappingSlot/MappingRead/StateVariableWrite overlays present.
+
+   Legacy revert:
+     require(!(((zfPf & (_amount == 0)) != 0)))
+     require(!(zfPf < _amount))
+   S-SEIR coverage:
+     RequireOverlay entries present.
+
+   Legacy arithmetic/env:
+     basefee, number, gasleft, add/sub/and/not/eq/lt normalized.
+   S-SEIR coverage:
+     ExpressionNormalization overlays present.
+
+Branch materialization:
+   Legacy report has ConditionalMaterialization entries for _transfer and _spendAllowance.
+   S-SEIR stores them in AnalysisFacts under LegacyRecoveryBlock.branch_materialization.
+
+Omissions found during comparison:
+   1. Missing native precompile output read overlay for YvIh = uint256(sha256_result_13).
+      Fixed by adding PrecompileOutputRead.
+   2. Native precompile success-check require was initially projected as Solidity require.
+      Fixed by marking it projection=false / semantic_comment with reason=require_elided_by_native_precompile.
+
+Current conclusion:
+   No remaining legacy pipeline recovery category is missing from S-SEIR for this sample.
+   S-SEIR now preserves legacy recovery facts as structured effects/overlays/policies instead of only text view.
