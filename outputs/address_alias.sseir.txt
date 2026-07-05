@@ -1,0 +1,117 @@
+Function AddressAliasMemory.simpleAlias()
+  function_id: AddressAliasMemory.simpleAlias()
+  SourceStatements:
+    asm_s_1 [yul] let base0 := mload(0x40)
+    asm_s_2 [yul] let base1 := add(base0, 4)
+    asm_s_3 [yul] mstore(add(base1, 4), 0x11)
+    asm_s_4 [yul] x := mload(add(base0, 8))
+  Control:
+    blocks: 8
+    edges: 7
+    note: function_level_cfg_from_slither
+    note: assembly_subgraph_embedded_from_assembly_ast_cfg
+    note: slither_assembly_nodes_replaced_by_local_yul_cfg
+    note: slither_nodes=10
+    note: assembly_blocks=1
+    note: assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors
+  ExpressionRoles:
+    expr_1 free_memory_pointer: 0x40 -> 0x40 @ asm_s_1
+  Effects:
+    eff_1 MemoryWrite refs=['asm_s_3'] attrs={"address": "add(base1,4)", "value": "0x11", "memory_version": "mem_1", "origin_node": "N4", "write_kind": "mstore", "aliases": [{"key": "add(base1,4)", "base": "base1", "offset": 4, "expression": "add(base1, 4)", "source": "identifier"}, {"key": "add(base0,8)", "base": "base0", "offset": 8, "expression": "add(base0, 8)", "source": "value:base1__ssa2"}]}
+    eff_2 MemoryRead refs=['asm_s_1'] attrs={"read_from": "0x40", "value": "base0", "cfg_node_id": 2, "memory_read": {"query_kind": "MemoryReadResult", "tracker_scope": "assembly_block_cfg_memory_ssa_unified_query", "node_id": 2, "reason": "mload", "pointer": "0x40", "length": null, "normalized_pointer": "0x40", "address": {"base": "0x40", "offset": 0, "offset_expr": "0", "expr": "0x40"}, "path_states": ["entry"], "words": [{"offset": 0, "offset_expr": "0", "address_key": "0x40", "cfg_path_states": ["entry"], "value": "unknown"}], "complete": false, "has_unknown": true, "has_phi": false, "loop_facts": [], "top_facts": []}}
+    eff_3 MemoryRead refs=['asm_s_4'] attrs={"read_from": "add(base0, 8)", "value": "x", "cfg_node_id": 5, "memory_read": {"query_kind": "MemoryReadResult", "tracker_scope": "assembly_block_cfg_memory_ssa_unified_query", "node_id": 5, "reason": "mload", "pointer": "add(base0, 8)", "length": null, "normalized_pointer": "add(base0, 8)", "address": {"base": "base0", "offset": 8, "offset_expr": "8", "expr": "add(base0, 8)"}, "path_states": ["entry"], "words": [{"offset": 8, "offset_expr": "8", "address_key": "add(base0,8)", "cfg_path_states": ["entry"], "value": "0x11", "memory_ssa": "mem_1", "definitions": [{"version": "mem_1", "node_id": 4, "address": "add(base1,4)", "value": "0x11", "kind": "mstore", "origin_src": "258:27:0", "aliases": [{"key": "add(base1,4)", "base": "base1", "offset": 4, "expression": "add(base1, 4)", "source": "identifier"}, {"key": "add(base0,8)", "base": "base0", "offset": 8, "expression": "add(base0, 8)", "source": "value:base1__ssa2"}]}], "aliases": [{"key": "add(base1,4)", "base": "base1", "offset": 4, "expression": "add(base1, 4)", "source": "identifier"}, {"key": "add(base0,8)", "base": "base0", "offset": 8, "expression": "add(base0, 8)", "source": "value:base1__ssa2"}]}], "complete": true, "has_unknown": false, "has_phi": false, "loop_facts": [], "top_facts": []}}
+    legacy_eff_1 ExpressionNormalization refs=['asm_s_2'] attrs={"op_index": 1, "kind": "assignment", "context": "value", "target": "base1", "expression": "add(base0, 4)", "ast": "add(base0, 4)", "solidity_like": "base1 = (base0 + 4);", "division_guards": [], "helpers": [], "control_path": [], "yul": "let base1 := add(base0, 4)"}
+    legacy_eff_2 ExpressionNormalization refs=['asm_s_4'] attrs={"op_index": 3, "kind": "memory_read", "context": "value", "target": "x", "expression": "mload(add(base0, 8))", "ast": "mload(add(base0, 8))", "solidity_like": "x = mload((base0 + 8));", "division_guards": [], "helpers": [], "control_path": [], "yul": "x := mload(add(base0, 8))"}
+  SemanticOverlays:
+    legacy_ov_1 ExpressionNormalization effects=['legacy_eff_1'] attrs={"target": "base1", "context": "value", "expression": "add(base0, 4)", "solidity_like": "base1 = (base0 + 4);", "division_guards": [], "helpers": [], "control_path": [], "yul": "let base1 := add(base0, 4)"}
+    legacy_ov_2 ExpressionNormalization effects=['legacy_eff_2'] attrs={"target": "x", "context": "value", "expression": "mload(add(base0, 8))", "solidity_like": "x = mload((base0 + 8));", "division_guards": [], "helpers": [], "control_path": [], "yul": "x := mload(add(base0, 8))"}
+  ProjectionPolicies:
+    pol_1 target=legacy_ov_1 exact=True output=solidity_expression reason=yul_expression_normalized
+    pol_2 target=legacy_ov_2 exact=True output=solidity_expression reason=yul_expression_normalized
+  AnalysisFacts:
+    {"kind": "MemorySSAQueryLayer", "assembly_block": 1, "scope": "assembly_block_cfg_memory_ssa_unified_query", "features": ["path_states", "linear_aliases", "branch_candidates", "loop_phi_facts", "range_summary_facts", "memory_top_facts"]}
+    {"kind": "LegacyRecoveryBlock", "legacy_block_id": "AddressAliasMemory.simpleAlias#0", "contract": "AddressAliasMemory", "function": "simpleAlias", "ordinal": 0, "branch_materialization": {"lines": [], "count": 0}}
+
+Function AddressAliasMemory.loopAlias()
+  function_id: AddressAliasMemory.loopAlias()
+  SourceStatements:
+    asm_s_1 [yul] let base0 := mload(0x40)
+    asm_s_2 [yul] let i := 0
+    asm_s_3 [yul] for
+    asm_s_4 [yul] let base1 := add(base0, 4)
+    asm_s_5 [yul] mstore(add(base1, 4), i)
+    asm_s_6 [yul] i := add(i, 1)
+    asm_s_7 [yul] x := mload(add(base0, 8))
+  Control:
+    blocks: 13
+    edges: 13
+    note: function_level_cfg_from_slither
+    note: assembly_subgraph_embedded_from_assembly_ast_cfg
+    note: slither_assembly_nodes_replaced_by_local_yul_cfg
+    note: slither_nodes=16
+    note: assembly_blocks=1
+    note: assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors
+  ExpressionRoles:
+    expr_1 free_memory_pointer: 0x40 -> 0x40 @ asm_s_1
+  Effects:
+    eff_1 MemoryWrite refs=['asm_s_5'] attrs={"address": "add(base1,4)", "value": "i", "memory_version": "mem_1", "origin_node": "N8", "write_kind": "mstore", "aliases": [{"key": "add(base1,4)", "base": "base1", "offset": 4, "expression": "add(base1, 4)", "source": "identifier"}, {"key": "add(base0,8)", "base": "base0", "offset": 8, "expression": "add(base0, 8)", "source": "value:base1__ssa3"}]}
+    eff_2 MemoryWrite refs=['asm_s_3'] attrs={"address": "add(base0,8)", "value": "unknown(loop-carried-memory)", "memory_version": "mem_2", "origin_node": "N4", "write_kind": "loop_phi", "aliases": []}
+    eff_3 MemoryWrite refs=['asm_s_3'] attrs={"address": "add(base1,4)", "value": "unknown(loop-carried-memory)", "memory_version": "mem_3", "origin_node": "N4", "write_kind": "loop_phi", "aliases": []}
+    eff_4 MemoryWrite refs=['asm_s_5'] attrs={"address": "add(base1,4)", "value": "i", "memory_version": "mem_4", "origin_node": "N8", "write_kind": "mstore", "aliases": [{"key": "add(base1,4)", "base": "base1", "offset": 4, "expression": "add(base1, 4)", "source": "identifier"}, {"key": "add(base0,8)", "base": "base0", "offset": 8, "expression": "add(base0, 8)", "source": "value:base1__ssa8"}]}
+    eff_5 MemoryRead refs=['asm_s_1'] attrs={"read_from": "0x40", "value": "base0", "cfg_node_id": 2, "memory_read": {"query_kind": "MemoryReadResult", "tracker_scope": "assembly_block_cfg_memory_ssa_unified_query", "node_id": 2, "reason": "mload", "pointer": "0x40", "length": null, "normalized_pointer": "0x40", "address": {"base": "0x40", "offset": 0, "offset_expr": "0", "expr": "0x40"}, "path_states": ["entry"], "words": [{"offset": 0, "offset_expr": "0", "address_key": "0x40", "cfg_path_states": ["entry"], "value": "unknown"}], "complete": false, "has_unknown": true, "has_phi": false, "loop_facts": [], "top_facts": []}}
+    eff_6 MemoryRead refs=['asm_s_7'] attrs={"read_from": "add(base0, 8)", "value": "x", "cfg_node_id": 10, "memory_read": {"query_kind": "MemoryReadResult", "tracker_scope": "assembly_block_cfg_memory_ssa_unified_query", "node_id": 10, "reason": "mload", "pointer": "add(base0, 8)", "length": null, "normalized_pointer": "add(base0, 8)", "address": {"base": "base0", "offset": 8, "offset_expr": "8", "expr": "add(base0, 8)"}, "path_states": ["entry", "entry"], "words": [{"offset": 8, "offset_expr": "8", "address_key": "add(base0,8)", "cfg_path_states": ["entry", "entry"], "value": "unknown", "branch_candidates": [{"value": "unknown", "memory_ssa": null, "path": "entry", "source": "uninitialized", "definition": null, "aliases": []}, {"value": "unknown(loop-carried-memory)", "memory_ssa": "mem_2", "path": "entry", "source": "loop_phi", "definition": {"version": "mem_2", "node_id": 4, "address": "add(base0,8)", "value": "unknown(loop-carried-memory)", "kind": "loop_phi", "origin_src": "493:135:0", "aliases": []}, "aliases": []}]}], "complete": false, "has_unknown": true, "has_phi": false, "loop_facts": [], "top_facts": []}}
+    legacy_eff_3 ExpressionNormalization refs=['asm_s_3'] attrs={"op_index": 2, "kind": "loop", "context": "condition", "target": null, "expression": "lt(i, 3)", "ast": "lt(i, 3)", "solidity_like": "for (i < 3)", "division_guards": [], "helpers": [], "control_path": [], "yul": "for lt(i, 3)"}
+    legacy_eff_4 ExpressionNormalization refs=['asm_s_4'] attrs={"op_index": 3, "kind": "assignment", "context": "value", "target": "base1", "expression": "add(base0, 4)", "ast": "add(base0, 4)", "solidity_like": "base1 = (base0 + 4);", "division_guards": [], "helpers": [], "control_path": ["for lt(i, 3)"], "yul": "let base1 := add(base0, 4)"}
+    legacy_eff_5 ExpressionNormalization refs=['asm_s_6'] attrs={"op_index": 5, "kind": "assignment", "context": "value", "target": "i", "expression": "add(i, 1)", "ast": "add(i, 1)", "solidity_like": "i = (i + 1);", "division_guards": [], "helpers": [], "control_path": ["for lt(i, 3)"], "yul": "i := add(i, 1)"}
+    legacy_eff_6 ExpressionNormalization refs=['asm_s_7'] attrs={"op_index": 6, "kind": "memory_read", "context": "value", "target": "x", "expression": "mload(add(base0, 8))", "ast": "mload(add(base0, 8))", "solidity_like": "x = mload((base0 + 8));", "division_guards": [], "helpers": [], "control_path": [], "yul": "x := mload(add(base0, 8))"}
+  SemanticOverlays:
+    legacy_ov_3 ExpressionNormalization effects=['legacy_eff_3'] attrs={"target": null, "context": "condition", "expression": "lt(i, 3)", "solidity_like": "for (i < 3)", "division_guards": [], "helpers": [], "control_path": [], "yul": "for lt(i, 3)"}
+    legacy_ov_4 ExpressionNormalization effects=['legacy_eff_4'] attrs={"target": "base1", "context": "value", "expression": "add(base0, 4)", "solidity_like": "base1 = (base0 + 4);", "division_guards": [], "helpers": [], "control_path": ["for lt(i, 3)"], "yul": "let base1 := add(base0, 4)"}
+    legacy_ov_5 ExpressionNormalization effects=['legacy_eff_5'] attrs={"target": "i", "context": "value", "expression": "add(i, 1)", "solidity_like": "i = (i + 1);", "division_guards": [], "helpers": [], "control_path": ["for lt(i, 3)"], "yul": "i := add(i, 1)"}
+    legacy_ov_6 ExpressionNormalization effects=['legacy_eff_6'] attrs={"target": "x", "context": "value", "expression": "mload(add(base0, 8))", "solidity_like": "x = mload((base0 + 8));", "division_guards": [], "helpers": [], "control_path": [], "yul": "x := mload(add(base0, 8))"}
+  ProjectionPolicies:
+    pol_1 target=legacy_ov_3 exact=True output=solidity_expression reason=yul_expression_normalized
+    pol_2 target=legacy_ov_4 exact=True output=solidity_expression reason=yul_expression_normalized
+    pol_3 target=legacy_ov_5 exact=True output=solidity_expression reason=yul_expression_normalized
+    pol_4 target=legacy_ov_6 exact=True output=solidity_expression reason=yul_expression_normalized
+  AnalysisFacts:
+    {"kind": "MemorySSAQueryLayer", "assembly_block": 2, "scope": "assembly_block_cfg_memory_ssa_unified_query", "features": ["path_states", "linear_aliases", "branch_candidates", "loop_phi_facts", "range_summary_facts", "memory_top_facts"]}
+    {"kind": "LegacyRecoveryBlock", "legacy_block_id": "AddressAliasMemory.loopAlias#1", "contract": "AddressAliasMemory", "function": "loopAlias", "ordinal": 0, "branch_materialization": {"lines": [], "count": 0}}
+
+Function AddressAliasMemory.subAlias()
+  function_id: AddressAliasMemory.subAlias()
+  SourceStatements:
+    asm_s_1 [yul] let base0 := mload(0x40)
+    asm_s_2 [yul] let base1 := add(base0, 0x20)
+    asm_s_3 [yul] let addr := sub(base1, 4)
+    asm_s_4 [yul] mstore(add(addr, 8), 0x22)
+    asm_s_5 [yul] x := mload(add(base0, 36))
+  Control:
+    blocks: 9
+    edges: 8
+    note: function_level_cfg_from_slither
+    note: assembly_subgraph_embedded_from_assembly_ast_cfg
+    note: slither_assembly_nodes_replaced_by_local_yul_cfg
+    note: slither_nodes=12
+    note: assembly_blocks=1
+    note: assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors
+  ExpressionRoles:
+    expr_1 free_memory_pointer: 0x40 -> 0x40 @ asm_s_1
+  Effects:
+    eff_1 MemoryWrite refs=['asm_s_4'] attrs={"address": "add(addr,8)", "value": "0x22", "memory_version": "mem_1", "origin_node": "N5", "write_kind": "mstore", "aliases": [{"key": "add(addr,8)", "base": "addr", "offset": 8, "expression": "add(addr, 8)", "source": "identifier"}, {"key": "add(base1,4)", "base": "base1", "offset": 4, "expression": "add(base1, 4)", "source": "value:addr__ssa3"}, {"key": "add(base0,36)", "base": "base0", "offset": 36, "expression": "add(base0, 36)", "source": "value:addr__ssa3"}, {"key": "add(sub(base1,4),8)", "base": "sub(base1, 4)", "offset": 8, "expression": "add(sub(base1, 4), 8)", "source": "value:addr__ssa3"}]}
+    eff_2 MemoryRead refs=['asm_s_1'] attrs={"read_from": "0x40", "value": "base0", "cfg_node_id": 2, "memory_read": {"query_kind": "MemoryReadResult", "tracker_scope": "assembly_block_cfg_memory_ssa_unified_query", "node_id": 2, "reason": "mload", "pointer": "0x40", "length": null, "normalized_pointer": "0x40", "address": {"base": "0x40", "offset": 0, "offset_expr": "0", "expr": "0x40"}, "path_states": ["entry"], "words": [{"offset": 0, "offset_expr": "0", "address_key": "0x40", "cfg_path_states": ["entry"], "value": "unknown"}], "complete": false, "has_unknown": true, "has_phi": false, "loop_facts": [], "top_facts": []}}
+    eff_3 MemoryRead refs=['asm_s_5'] attrs={"read_from": "add(base0, 36)", "value": "x", "cfg_node_id": 6, "memory_read": {"query_kind": "MemoryReadResult", "tracker_scope": "assembly_block_cfg_memory_ssa_unified_query", "node_id": 6, "reason": "mload", "pointer": "add(base0, 36)", "length": null, "normalized_pointer": "add(base0, 36)", "address": {"base": "base0", "offset": 36, "offset_expr": "36", "expr": "add(base0, 36)"}, "path_states": ["entry"], "words": [{"offset": 36, "offset_expr": "36", "address_key": "add(base0,36)", "cfg_path_states": ["entry"], "value": "0x22", "memory_ssa": "mem_1", "definitions": [{"version": "mem_1", "node_id": 5, "address": "add(addr,8)", "value": "0x22", "kind": "mstore", "origin_src": "892:26:0", "aliases": [{"key": "add(addr,8)", "base": "addr", "offset": 8, "expression": "add(addr, 8)", "source": "identifier"}, {"key": "add(base1,4)", "base": "base1", "offset": 4, "expression": "add(base1, 4)", "source": "value:addr__ssa3"}, {"key": "add(base0,36)", "base": "base0", "offset": 36, "expression": "add(base0, 36)", "source": "value:addr__ssa3"}, {"key": "add(sub(base1,4),8)", "base": "sub(base1, 4)", "offset": 8, "expression": "add(sub(base1, 4), 8)", "source": "value:addr__ssa3"}]}], "aliases": [{"key": "add(addr,8)", "base": "addr", "offset": 8, "expression": "add(addr, 8)", "source": "identifier"}, {"key": "add(base1,4)", "base": "base1", "offset": 4, "expression": "add(base1, 4)", "source": "value:addr__ssa3"}, {"key": "add(base0,36)", "base": "base0", "offset": 36, "expression": "add(base0, 36)", "source": "value:addr__ssa3"}, {"key": "add(sub(base1,4),8)", "base": "sub(base1, 4)", "offset": 8, "expression": "add(sub(base1, 4), 8)", "source": "value:addr__ssa3"}]}], "complete": true, "has_unknown": false, "has_phi": false, "loop_facts": [], "top_facts": []}}
+    legacy_eff_7 ExpressionNormalization refs=['asm_s_2'] attrs={"op_index": 1, "kind": "assignment", "context": "value", "target": "base1", "expression": "add(base0, 0x20)", "ast": "add(base0, 0x20)", "solidity_like": "base1 = (base0 + 0x20);", "division_guards": [], "helpers": [], "control_path": [], "yul": "let base1 := add(base0, 0x20)"}
+    legacy_eff_8 ExpressionNormalization refs=['asm_s_3'] attrs={"op_index": 2, "kind": "assignment", "context": "value", "target": "addr", "expression": "sub(base1, 4)", "ast": "sub(base1, 4)", "solidity_like": "addr = (base1 - 4);", "division_guards": [], "helpers": [], "control_path": [], "yul": "let addr := sub(base1, 4)"}
+    legacy_eff_9 ExpressionNormalization refs=['asm_s_5'] attrs={"op_index": 4, "kind": "memory_read", "context": "value", "target": "x", "expression": "mload(add(base0, 36))", "ast": "mload(add(base0, 36))", "solidity_like": "x = mload((base0 + 36));", "division_guards": [], "helpers": [], "control_path": [], "yul": "x := mload(add(base0, 36))"}
+  SemanticOverlays:
+    legacy_ov_7 ExpressionNormalization effects=['legacy_eff_7'] attrs={"target": "base1", "context": "value", "expression": "add(base0, 0x20)", "solidity_like": "base1 = (base0 + 0x20);", "division_guards": [], "helpers": [], "control_path": [], "yul": "let base1 := add(base0, 0x20)"}
+    legacy_ov_8 ExpressionNormalization effects=['legacy_eff_8'] attrs={"target": "addr", "context": "value", "expression": "sub(base1, 4)", "solidity_like": "addr = (base1 - 4);", "division_guards": [], "helpers": [], "control_path": [], "yul": "let addr := sub(base1, 4)"}
+    legacy_ov_9 ExpressionNormalization effects=['legacy_eff_9'] attrs={"target": "x", "context": "value", "expression": "mload(add(base0, 36))", "solidity_like": "x = mload((base0 + 36));", "division_guards": [], "helpers": [], "control_path": [], "yul": "x := mload(add(base0, 36))"}
+  ProjectionPolicies:
+    pol_1 target=legacy_ov_7 exact=True output=solidity_expression reason=yul_expression_normalized
+    pol_2 target=legacy_ov_8 exact=True output=solidity_expression reason=yul_expression_normalized
+    pol_3 target=legacy_ov_9 exact=True output=solidity_expression reason=yul_expression_normalized
+  AnalysisFacts:
+    {"kind": "MemorySSAQueryLayer", "assembly_block": 3, "scope": "assembly_block_cfg_memory_ssa_unified_query", "features": ["path_states", "linear_aliases", "branch_candidates", "loop_phi_facts", "range_summary_facts", "memory_top_facts"]}
+    {"kind": "LegacyRecoveryBlock", "legacy_block_id": "AddressAliasMemory.subAlias#2", "contract": "AddressAliasMemory", "function": "subAlias", "ordinal": 0, "branch_materialization": {"lines": [], "count": 0}}

@@ -222,3 +222,168 @@ S-SEIR 已经开始统一承载旧模块结果，
 5. Memory-slot cleanup。
 6. ProjectionPolicy 精细化。
 7. 最终源码替换与编译验证。
+
+---
+
+## 追加：当前仍待解决的问题（2026-07-04）
+
+本节是在前文基础上的补充总结，用于区分“已经有模块雏形或局部实现”和“仍未真正闭环”的问题。
+
+### 1. Function-level CFG 融合仍未完成闭环
+
+当前思路已经明确：
+
+```text
+Solidity 层 CFG 复用 Slither
+Yul / inline assembly 内部 CFG 复用现有 assembly_ast_cfg
+```
+
+但仍需要完成：
+
+- 将 Slither function CFG block 与 assembly CFG subgraph 精确拼接。
+- 给 Solidity statement 与 Yul statement 统一分配 `stmt_id`。
+- 明确 assembly block 进入点、退出点、fallthrough、return、revert 与 Solidity 后继节点的关系。
+- 保留 Solidity loop / if / return 等控制结构，用于判断 assembly memory write 是否处于 loop 或 branch 中。
+
+### 2. MemorySSA 已有线性 alias 增强，但还未成为统一查询层
+
+目前 MemorySSA 已支持对 `mstore / mstore8 / copy` 地址做线性 alias 记录，例如：
+
+```text
+base1 = base0 + 4
+mstore(base1 + 4, v)
+```
+
+可以同时记录为：
+
+```text
+addr = base1 + 4
+addr = base0 + 8
+```
+
+但仍待解决：
+
+- alias 查询结果还需要稳定接入 storage/event/call/revert/return 等 overlay。
+- MemorySSA 的结果仍偏底层 facts，尚未形成 S-SEIR 内统一的 `MemoryReadResult` 查询接口。
+- loop 中 memory write 的 `LoopMemoryRecord / MemoryPhi / MemoryRangeSummary / MemoryTop` 需要和 alias 查询统一。
+- 当 memory write 位于 Solidity loop 包裹的 assembly block 中时，需要从 function-level CFG 识别 loop 上下文。
+
+### 3. Loop-aware Lazy MemorySSA 需要和 function-level CFG 对齐
+
+当前 loop-aware lazy 的核心规则仍然适用：
+
+```text
+前向阶段不无限展开循环
+只记录 loop summary
+语义终点读取 memory 时再 lazy materialize
+```
+
+但还缺少：
+
+- 基于 function-level CFG 识别 Solidity loop 包裹的 assembly write。
+- Yul loop 与 Solidity loop 使用统一的 loop 标记。
+- 对 loop body 中线性 alias 地址的范围摘要。
+- 将 lazy resolve 的结果直接提供给 S-SEIR Effect / Overlay，而不是只保存在调试文本中。
+
+### 4. S-SEIR Adapter 仍偏“结果搬运”，不是完整语义图
+
+当前 S-SEIR 已能承载旧模块输出，但很多内容仍是 adapter 导入的 facts。
+
+待完成：
+
+- 将旧模块文本结果升级为结构化 `EffectNode / OverlayNode`。
+- 建立 effect、overlay、expr role、source statement 之间的稳定引用。
+- 避免同一语义在多个模块中重复输出不同格式。
+- 让后续 LLM 只消费 S-SEIR，而不是再理解各模块自己的输出格式。
+
+### 5. Branch Materialization 尚未与 MemorySSA / Overlay 严格联动
+
+当前分支物化的规则已经明确：
+
+```text
+只有语义终点受分支 memory 写入影响时，才物化对应分支
+unknown memory 分支可保守丢弃
+```
+
+仍待解决：
+
+- 分支物化结果需要以结构化节点进入 S-SEIR。
+- 每个物化节点要记录 condition、受影响 sink、需要复制的 memory write、被丢弃分支原因。
+- 后续 storage/event/call/revert overlay 应消费物化后的路径结果。
+- 嵌套 if、loop 内 if、if 内 loop 的组合场景需要更多测试。
+
+### 6. Solidity 高级语义恢复仍缺少最终 cleanup
+
+当前 memory、slot、event、call 等模块可以恢复一部分高级语义，但最终输出仍会残留：
+
+```text
+memory[...]
+slot(...)
+临时 keccak 变量
+低层 helper 表达式
+unknown / MemoryTop
+```
+
+待完成：
+
+- 从状态变量读写、event emit、external call、return/revert 等语义终点反向追踪。
+- 删除只服务于 slot/hash/ABI 编码的 memory 写入。
+- 保留真正影响最终语义的局部变量。
+- 对无法删除的 memory chain 标注原因，而不是直接混入 Solidity-like 输出。
+
+### 7. Revert / Error 与 External Call 仍需增强
+
+Revert 侧待解决：
+
+- `Error(string)` 识别。
+- `Panic(uint256)` 识别。
+- custom error selector 识别。
+- `revert(ptr, size)` payload 从 MemorySSA 中 ABI 解码。
+- RawRevertBytes 与 Solidity 可表达 revert 的投影区分。
+
+External call 侧待解决：
+
+- 普通 call 的 selector、arguments、returndata 结构化恢复。
+- call success 与 require/revert 的关系建模。
+- low-level call 保守投影策略。
+- precompile 可提升为 Solidity 内置函数的规则表继续完善。
+
+### 8. ProjectionPolicy 仍不能驱动最终源码替换
+
+当前 ProjectionPolicy 只能做初步分类，仍需判断：
+
+- 哪些 overlay 可无损恢复为 Solidity statement。
+- 哪些只能保留 low-level call。
+- 哪些必须保留 assembly。
+- 哪些只能输出 semantic comment。
+- 哪些因 `unknown / MemoryTop / dynamic alias` 不能源码替换。
+
+这一步完成后，才能可靠进入最终源码替换。
+
+### 9. 测试体系需要从模块样例升级到流水线样例
+
+当前已有若干模块级测试和样例输出，但还需要：
+
+- function-level CFG 融合测试。
+- 跨 assembly block 的保守处理测试。
+- Solidity loop 包裹 assembly write 的测试。
+- 线性 alias 与 slot/event/call 的联动测试。
+- branch materialization 后再跑 memory/storage/call/revert 的端到端测试。
+- S-SEIR JSON/TXT 输出稳定性测试。
+
+### 当前最关键的下一步
+
+短期最关键的问题不是新增更多恢复规则，而是把已有规则统一接到同一个结构化分析链路中：
+
+```text
+Function-level CFG
+  -> SourceStatementTable
+  -> MemorySSA / LoopSummary / Alias facts
+  -> Effect Layer
+  -> Overlay Layer
+  -> ProjectionPolicy
+  -> Solidity-like semantic view
+```
+
+只有这一链路稳定后，后续新增规则才不会继续变成分散模块。
+

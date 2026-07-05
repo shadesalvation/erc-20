@@ -1,29 +1,18 @@
 #!/usr/bin/env python3
+"""Compatibility wrapper for scripts/s_seir/s_seir_control_builder.py."""
 from __future__ import annotations
-from assembly_ast_cfg import build_yul_cfg
-from s_seir_model import FunctionUnit
-class ControlBuilder:
-    def build(self,unit:FunctionUnit)->dict:
-        blocks=[]; edges=[]; notes=['function_level_control_skeleton','yul_cfg_embedded_from_assembly_ast_cfg','precise_solidity_cfg_adapter_pending']
-        sol=[s for s in unit.source_statements if s.lang=='solidity']
-        prev=None
-        for i,stmt in enumerate(sol):
-            bid=f'bb_sol_{i+1}'; term=self.term(stmt.text); blocks.append({'block_id':bid,'kind':'solidity','stmts':[stmt.stmt_id],'terminator':term})
-            if prev: edges.append({'from':prev,'to':bid,'kind':'fallthrough'})
-            prev=bid
-        for ab in unit.assembly_blocks:
-            cfg=build_yul_cfg(ab.yul_ast); label=f'asm_block_{ab.block_id}'
-            for n in cfg.nodes:
-                blocks.append({'block_id':f'bb_asm{ab.block_id}_n{n.node_id}','kind':'yul','stmts':self.refs(unit,label,n.text),'terminator':{'kind':'YulNode','text':n.text,'node_kind':n.kind}})
-            for e in cfg.edges:
-                edges.append({'from':f'bb_asm{ab.block_id}_n{e.source}','to':f'bb_asm{ab.block_id}_n{e.target}','kind':e.label})
-        return {'blocks':blocks,'edges':edges,'notes':notes}
-    @staticmethod
-    def refs(unit,label,text): return [s.stmt_id for s in unit.source_statements if s.lang=='yul' and s.block_id==label and s.text==text]
-    @staticmethod
-    def term(text):
-        t=text.strip()
-        if t.startswith('if'): return {'kind':'Branch','condition':t}
-        if t.startswith('return'): return {'kind':'Return'}
-        if t.startswith('revert'): return {'kind':'Revert'}
-        return {'kind':'Fallthrough'}
+
+from pathlib import Path
+import runpy
+import sys
+
+_ROOT = Path(__file__).resolve().parent
+for _path in (_ROOT / "legacy_yul", _ROOT / "s_seir"):
+    _text = str(_path)
+    if _text not in sys.path:
+        sys.path.insert(0, _text)
+
+if __name__ == "__main__":
+    runpy.run_path(str(_ROOT / "s_seir" / "s_seir_control_builder.py"), run_name="__main__")
+else:
+    from s_seir.s_seir_control_builder import *  # noqa: F401,F403

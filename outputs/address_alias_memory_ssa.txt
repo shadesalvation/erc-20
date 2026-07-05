@@ -1,0 +1,152 @@
+AssemblyBlock 1: AddressAliasMemory.simpleAlias()
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(add(base1,4), 0x11) aliases=[add(base1, 4)[identifier], add(base0, 8)[value:base1__ssa2]] origin=N4 src=258:27:0
+ValueDefinitions:
+  base0__ssa1 = mload(0x40) origin=N2 src=182:24:0
+  base1__ssa2 = add(base0, 4) origin=N3 src=219:26:0
+  x__ssa3 = mload(add(base0, 8)) origin=N5 src=298:25:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa2, x=x__ssa3]
+    out: path=[entry] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa2, x=x__ssa3]
+  N2 [statement] let base0 := mload(0x40)
+    effect: value defs: base0__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1]
+  N3 [statement] let base1 := add(base0, 4)
+    effect: value defs: base1__ssa2
+    in:  path=[entry] memory=[-] values=[base0=base0__ssa1]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1, base1=base1__ssa2]
+  N4 [statement] mstore(add(base1, 4), 0x11)
+    effect: mem_1: mstore(add(base1,4), 0x11) aliases=[add(base1,4), add(base0,8)]
+    in:  path=[entry] memory=[-] values=[base0=base0__ssa1, base1=base1__ssa2]
+    out: path=[entry] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa2]
+  N5 [statement] x := mload(add(base0, 8))
+    effect: value defs: x__ssa3
+    in:  path=[entry] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa2]
+    out: path=[entry] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa2, x=x__ssa3]
+
+AssemblyBlock 2: AddressAliasMemory.loopAlias()
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(add(base1,4), i) aliases=[add(base1, 4)[identifier], add(base0, 8)[value:base1__ssa3]] origin=N8 src=590:24:0
+  mem_2 = loop_phi(add(base1,4), unknown(loop-carried-memory)) aliases=[add(base1,4)] origin=N4 src=493:135:0
+  mem_3 = loop_phi(add(base0,8), unknown(loop-carried-memory)) aliases=[add(base0,8)] origin=N4 src=493:135:0
+  mem_4 = mstore(add(base1,4), i) aliases=[add(base1, 4)[identifier], add(base0, 8)[value:base1__ssa8]] origin=N8 src=590:24:0
+ValueDefinitions:
+  base0__ssa1 = mload(0x40) origin=N2 src=433:24:0
+  i__ssa2 = 0 origin=N3 src=470:10:0
+  base1__ssa3 = add(base0, 4) origin=N7 src=547:26:0
+  x__ssa4 = mload(add(base0, 8)) origin=N10 src=641:25:0
+  i__ssa5 = add(i, 1) origin=N9 src=512:14:0
+  base1__ssa6 = loop_phi(base1) origin=N4 src=493:135:0
+  i__ssa7 = loop_phi(i) origin=N4 src=493:135:0
+  base1__ssa8 = add(base0, 4) origin=N7 src=547:26:0
+  x__ssa9 = mload(add(base0, 8)) origin=N10 src=641:25:0
+  i__ssa10 = add(i, 1) origin=N9 src=512:14:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[-] values=[base0=base0__ssa1, i=i__ssa2, x=x__ssa4]
+    in:  path=[entry] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa6, i=i__ssa7, x=x__ssa9]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1, i=i__ssa2, x=x__ssa4]
+    out: path=[entry] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa6, i=i__ssa7, x=x__ssa9]
+  N2 [statement] let base0 := mload(0x40)
+    effect: value defs: base0__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1]
+  N3 [statement] let i := 0
+    effect: value defs: i__ssa2
+    in:  path=[entry] memory=[-] values=[base0=base0__ssa1]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1, i=i__ssa2]
+  N4 [loop-condition] for condition lt(i, 3)
+    in:  path=[entry] memory=[-] values=[base0=base0__ssa1, i=i__ssa2]
+    in:  path=[entry] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa6, i=i__ssa7]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1, i=i__ssa2]
+    out: path=[entry] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa6, i=i__ssa7]
+  N5 [loop-merge] for exit
+    in:  path=[entry] memory=[-] values=[base0=base0__ssa1, i=i__ssa2]
+    in:  path=[entry] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa6, i=i__ssa7]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1, i=i__ssa2]
+    out: path=[entry] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa6, i=i__ssa7]
+  N6 [loop-post] for post
+    in:  path=[lt(i, 3)] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa3, i=i__ssa2]
+    in:  path=[lt(i, 3)] memory=[add(base0,8)=mem_4, add(base1,4)=mem_4] values=[base0=base0__ssa1, base1=base1__ssa8, i=i__ssa7]
+    out: path=[lt(i, 3)] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa3, i=i__ssa2]
+    out: path=[lt(i, 3)] memory=[add(base0,8)=mem_4, add(base1,4)=mem_4] values=[base0=base0__ssa1, base1=base1__ssa8, i=i__ssa7]
+  N7 [statement] let base1 := add(base0, 4)
+    effect: value defs: base1__ssa8
+    in:  path=[lt(i, 3)] memory=[-] values=[base0=base0__ssa1, i=i__ssa2]
+    in:  path=[lt(i, 3)] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa6, i=i__ssa7]
+    out: path=[lt(i, 3)] memory=[-] values=[base0=base0__ssa1, base1=base1__ssa3, i=i__ssa2]
+    out: path=[lt(i, 3)] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa8, i=i__ssa7]
+  N8 [statement] mstore(add(base1, 4), i)
+    effect: mem_4: mstore(add(base1,4), i) aliases=[add(base1,4), add(base0,8)]
+    in:  path=[lt(i, 3)] memory=[-] values=[base0=base0__ssa1, base1=base1__ssa3, i=i__ssa2]
+    in:  path=[lt(i, 3)] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa8, i=i__ssa7]
+    out: path=[lt(i, 3)] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa3, i=i__ssa2]
+    out: path=[lt(i, 3)] memory=[add(base0,8)=mem_4, add(base1,4)=mem_4] values=[base0=base0__ssa1, base1=base1__ssa8, i=i__ssa7]
+  N9 [statement] i := add(i, 1)
+    effect: value defs: i__ssa10
+    in:  path=[lt(i, 3)] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa3, i=i__ssa2]
+    in:  path=[lt(i, 3)] memory=[add(base0,8)=mem_4, add(base1,4)=mem_4] values=[base0=base0__ssa1, base1=base1__ssa8, i=i__ssa7]
+    out: path=[lt(i, 3)] memory=[add(base0,8)=mem_1, add(base1,4)=mem_1] values=[base0=base0__ssa1, base1=base1__ssa3, i=i__ssa5]
+    out: path=[lt(i, 3)] memory=[add(base0,8)=mem_4, add(base1,4)=mem_4] values=[base0=base0__ssa1, base1=base1__ssa8, i=i__ssa10]
+  N10 [statement] x := mload(add(base0, 8))
+    effect: value defs: x__ssa9
+    in:  path=[entry] memory=[-] values=[base0=base0__ssa1, i=i__ssa2]
+    in:  path=[entry] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa6, i=i__ssa7]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1, i=i__ssa2, x=x__ssa4]
+    out: path=[entry] memory=[add(base0,8)=mem_3, add(base1,4)=mem_2] values=[base0=base0__ssa1, base1=base1__ssa6, i=i__ssa7, x=x__ssa9]
+
+AssemblyBlock 3: AddressAliasMemory.subAlias()
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(add(addr,8), 0x22) aliases=[add(addr, 8)[identifier], add(base1, 4)[value:addr__ssa3], add(base0, 36)[value:addr__ssa3], add(sub(base1, 4), 8)[value:addr__ssa3]] origin=N5 src=892:26:0
+ValueDefinitions:
+  base0__ssa1 = mload(0x40) origin=N2 src=775:24:0
+  base1__ssa2 = add(base0, 0x20) origin=N3 src=812:29:0
+  addr__ssa3 = sub(base1, 4) origin=N4 src=854:25:0
+  x__ssa4 = mload(add(base0, 36)) origin=N6 src=931:26:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[add(addr,8)=mem_1, add(base0,36)=mem_1, add(base1,4)=mem_1, add(sub(base1,4),8)=mem_1] values=[addr=addr__ssa3, base0=base0__ssa1, base1=base1__ssa2, x=x__ssa4]
+    out: path=[entry] memory=[add(addr,8)=mem_1, add(base0,36)=mem_1, add(base1,4)=mem_1, add(sub(base1,4),8)=mem_1] values=[addr=addr__ssa3, base0=base0__ssa1, base1=base1__ssa2, x=x__ssa4]
+  N2 [statement] let base0 := mload(0x40)
+    effect: value defs: base0__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1]
+  N3 [statement] let base1 := add(base0, 0x20)
+    effect: value defs: base1__ssa2
+    in:  path=[entry] memory=[-] values=[base0=base0__ssa1]
+    out: path=[entry] memory=[-] values=[base0=base0__ssa1, base1=base1__ssa2]
+  N4 [statement] let addr := sub(base1, 4)
+    effect: value defs: addr__ssa3
+    in:  path=[entry] memory=[-] values=[base0=base0__ssa1, base1=base1__ssa2]
+    out: path=[entry] memory=[-] values=[addr=addr__ssa3, base0=base0__ssa1, base1=base1__ssa2]
+  N5 [statement] mstore(add(addr, 8), 0x22)
+    effect: mem_1: mstore(add(addr,8), 0x22) aliases=[add(addr,8), add(base1,4), add(base0,36), add(sub(base1,4),8)]
+    in:  path=[entry] memory=[-] values=[addr=addr__ssa3, base0=base0__ssa1, base1=base1__ssa2]
+    out: path=[entry] memory=[add(addr,8)=mem_1, add(base0,36)=mem_1, add(base1,4)=mem_1, add(sub(base1,4),8)=mem_1] values=[addr=addr__ssa3, base0=base0__ssa1, base1=base1__ssa2]
+  N6 [statement] x := mload(add(base0, 36))
+    effect: value defs: x__ssa4
+    in:  path=[entry] memory=[add(addr,8)=mem_1, add(base0,36)=mem_1, add(base1,4)=mem_1, add(sub(base1,4),8)=mem_1] values=[addr=addr__ssa3, base0=base0__ssa1, base1=base1__ssa2]
+    out: path=[entry] memory=[add(addr,8)=mem_1, add(base0,36)=mem_1, add(base1,4)=mem_1, add(sub(base1,4),8)=mem_1] values=[addr=addr__ssa3, base0=base0__ssa1, base1=base1__ssa2, x=x__ssa4]
