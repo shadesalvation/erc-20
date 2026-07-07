@@ -1,0 +1,389 @@
+{
+  "schema": "s-seir-assembly-llm-compact/v1",
+  "functions": [
+    {
+      "function_id": "Token.approve(address, uint256)",
+      "contract": "Token",
+      "function": "approve",
+      "signature": "approve(address, uint256)",
+      "recovery_task": "Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.",
+      "function_source": {
+        "src": "3463:611:0",
+        "text": "function approve(address _spender, uint256 _amount) virtual public returns (bool) {\n        assembly {\n            let bbwz := mload(0x40)\n            mstore(bbwz, caller())\n            mstore(add(bbwz, 0x20), wZHA.slot)\n            let ZFHJ := keccak256(bbwz, 0x40)\n            mstore(bbwz, _spender)\n            mstore(add(bbwz, 0x20), ZFHJ)\n            let akRJ := keccak256(bbwz, 0x40)\n            sstore(akRJ, _amount)\n            log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)\n            mstore(bbwz, _amount)\n        }\n        return true;\n    }"
+      },
+      "assembly_blocks": [
+        {
+          "block_id": "asm_block_2",
+          "src": "3555:492:0",
+          "text": "assembly {\n            let bbwz := mload(0x40)\n            mstore(bbwz, caller())\n            mstore(add(bbwz, 0x20), wZHA.slot)\n            let ZFHJ := keccak256(bbwz, 0x40)\n            mstore(bbwz, _spender)\n            mstore(add(bbwz, 0x20), ZFHJ)\n            let akRJ := keccak256(bbwz, 0x40)\n            sstore(akRJ, _amount)\n            log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)\n            mstore(bbwz, _amount)\n        }"
+        }
+      ],
+      "control_summary": {
+        "block_count": 14,
+        "edge_count": 13,
+        "assembly_cfg_block_count": 12,
+        "has_branch": false,
+        "has_loop": true,
+        "notes": [
+          "function_level_cfg_from_slither",
+          "assembly_subgraph_embedded_from_assembly_ast_cfg",
+          "slither_assembly_nodes_replaced_by_local_yul_cfg",
+          "slither_nodes=17",
+          "assembly_blocks=1",
+          "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors"
+        ],
+        "assembly_blocks": [
+          2
+        ]
+      },
+      "key_expression_roles": [
+        {
+          "expr_id": "expr_8",
+          "role": "storage_slot_expr",
+          "text": "akRJ",
+          "normalized": "akRJ",
+          "stmt_ref": "asm_s_8",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_9",
+          "role": "storage_write_value",
+          "text": "_amount",
+          "normalized": "_amount",
+          "stmt_ref": "asm_s_8"
+        },
+        {
+          "expr_id": "expr_12",
+          "role": "event_topic0",
+          "text": "0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0",
+          "normalized": "0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0",
+          "stmt_ref": "asm_s_9",
+          "type_hint": "bytes32"
+        },
+        {
+          "expr_id": "expr_13",
+          "role": "event_indexed_argument",
+          "text": "caller()",
+          "normalized": "msg.sender",
+          "stmt_ref": "asm_s_9"
+        },
+        {
+          "expr_id": "expr_14",
+          "role": "event_indexed_argument",
+          "text": "_spender",
+          "normalized": "_spender",
+          "stmt_ref": "asm_s_9"
+        },
+        {
+          "expr_id": "expr_15",
+          "role": "mapping_slot_expr",
+          "text": "wZHA[msg.sender]",
+          "normalized": "wZHA[msg.sender]",
+          "stmt_ref": "asm_s_4",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_16",
+          "role": "mapping_key_material",
+          "text": "msg.sender",
+          "normalized": "msg.sender",
+          "stmt_ref": "asm_s_4"
+        },
+        {
+          "expr_id": "expr_17",
+          "role": "mapping_slot_expr",
+          "text": "wZHA[msg.sender][_spender]",
+          "normalized": "wZHA[msg.sender][_spender]",
+          "stmt_ref": "asm_s_7",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_18",
+          "role": "mapping_key_material",
+          "text": "_spender",
+          "normalized": "_spender",
+          "stmt_ref": "asm_s_7"
+        },
+        {
+          "expr_id": "expr_19",
+          "role": "mapping_slot_expr",
+          "text": "akRJ",
+          "normalized": "wZHA[msg.sender][_spender]",
+          "stmt_ref": "asm_s_7",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_20",
+          "role": "state_access_expr",
+          "text": "wZHA[msg.sender][_spender]",
+          "normalized": "wZHA[msg.sender][_spender]",
+          "stmt_ref": "asm_s_7"
+        },
+        {
+          "expr_id": "expr_21",
+          "role": "abi_argument",
+          "text": "msg.sender",
+          "normalized": "msg.sender",
+          "stmt_ref": "asm_s_9"
+        },
+        {
+          "expr_id": "expr_22",
+          "role": "abi_argument",
+          "text": "_spender",
+          "normalized": "_spender",
+          "stmt_ref": "asm_s_9"
+        }
+      ],
+      "effect_summary": {
+        "counts": {
+          "MemoryWrite": 5,
+          "ValueDef": 3,
+          "MemoryRead": 1,
+          "MemoryHash": 2,
+          "StorageWrite": 1,
+          "EventLog": 1
+        },
+        "selected_effects": [
+          {
+            "effect_id": "eff_12",
+            "kind": "StorageWrite",
+            "stmt_refs": [
+              "asm_s_8"
+            ],
+            "slot": "akRJ",
+            "value": "_amount",
+            "path_states": [
+              "entry"
+            ]
+          },
+          {
+            "effect_id": "eff_13",
+            "kind": "EventLog",
+            "stmt_refs": [
+              "asm_s_9"
+            ],
+            "op": "log3",
+            "topics": [
+              "0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0",
+              "caller()",
+              "_spender"
+            ],
+            "path_states": [
+              "entry"
+            ]
+          }
+        ]
+      },
+      "semantic_overlays": [
+        {
+          "overlay_id": "ov_1",
+          "kind": "MappingSlot",
+          "effects": [
+            "eff_9"
+          ],
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "attrs": {
+            "target": "ZFHJ",
+            "target_key": "ZFHJ__ssa2",
+            "expression": "wZHA[msg.sender]",
+            "state_variable": "wZHA",
+            "key": "msg.sender",
+            "base": "wZHA.slot",
+            "slot_kind": "mapping_slot",
+            "activation": "storage_consumer",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_2",
+          "kind": "MappingSlot",
+          "effects": [
+            "eff_11"
+          ],
+          "stmt_refs": [
+            "asm_s_7"
+          ],
+          "attrs": {
+            "target": "akRJ",
+            "target_key": "akRJ__ssa3",
+            "expression": "wZHA[msg.sender][_spender]",
+            "state_variable": "wZHA",
+            "key": "_spender",
+            "base": "ZFHJ",
+            "slot_kind": "nested_mapping_slot",
+            "activation": "storage_consumer",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_3",
+          "kind": "MappingWrite",
+          "effects": [
+            "eff_11",
+            "eff_12"
+          ],
+          "stmt_refs": [
+            "asm_s_7",
+            "asm_s_8"
+          ],
+          "attrs": {
+            "access": "wZHA[msg.sender][_spender]",
+            "value": "_amount",
+            "value_yul": "_amount",
+            "state_variable": "wZHA",
+            "key": "_spender",
+            "slot": "akRJ",
+            "slot_key": "akRJ__ssa3",
+            "solidity_like": "wZHA[msg.sender][_spender] = _amount;",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_4",
+          "kind": "EventEmit",
+          "effects": [
+            "eff_13"
+          ],
+          "stmt_refs": [
+            "asm_s_9"
+          ],
+          "attrs": {
+            "event": "unknownEvent",
+            "signature": null,
+            "topic0": "0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0",
+            "args": [
+              "msg.sender",
+              "_spender",
+              "_spender"
+            ],
+            "topics": [
+              "0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0",
+              "msg.sender",
+              "_spender"
+            ]
+          }
+        },
+        {
+          "overlay_id": "ov_5",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_6"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "target": "bbwz",
+            "expression": "mload(0x40)",
+            "solidity_like": "bbwz = mload(0x40);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_6",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_8"
+          ],
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "attrs": {
+            "target": "ZFHJ",
+            "expression": "keccak256(bbwz, 0x40)",
+            "solidity_like": "ZFHJ = keccak256(bbwz, 0x40);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_7",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_10"
+          ],
+          "stmt_refs": [
+            "asm_s_7"
+          ],
+          "attrs": {
+            "target": "akRJ",
+            "expression": "keccak256(bbwz, 0x40)",
+            "solidity_like": "akRJ = keccak256(bbwz, 0x40);",
+            "context": "value",
+            "division_guards": []
+          }
+        }
+      ],
+      "unresolved_low_level_semantics": [],
+      "llm_projection_judgement": {
+        "function_recoverability": "fully_recoverable",
+        "rationale": "All semantic overlays either directly map to Solidity high-level constructs (MappingWrite, EventEmit) or are helper normalizations (ExpressionNormalization) that do not impede recovery. The storage write and event emit are fully expressible in Solidity using known state variable and event names. The only low-level operations (mload, mstore, keccak256) are used to compute storage slots and are fully captured by MappingSlot and MappingWrite overlays with valid solidity_like annotations. No raw EVM builtins appear in high-level contexts that would require preservation.",
+        "assembly_block_decisions": [
+          {
+            "block_id": "asm_block_2",
+            "decision": "fully_recoverable",
+            "reason": "All operations are covered by recoverable overlays: MappingWrite for storage update, EventEmit for log3, and ExpressionNormalization for intermediate computations. No unsafe or unknown low-level semantics remain uncovered."
+          }
+        ],
+        "overlay_projection_policies": [
+          {
+            "target_overlay": "ov_3",
+            "overlay_kind": "MappingWrite",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "The overlay explicitly provides a valid Solidity assignment: 'wZHA[msg.sender][_spender] = _amount;'. This matches the semantics of a standard ERC-20 approve pattern. No raw EVM operations are exposed in the candidate.",
+            "solidity_candidate": "wZHA[msg.sender][_spender] = _amount;",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_4",
+            "overlay_kind": "EventEmit",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "The event topic 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0 is the canonical keccak256 hash of 'Approval(address,address,uint256)', which is the standard ERC-20 Approval event. The indexed arguments are msg.sender and _spender, which are standard. The third argument (_spender) is duplicated in args but likely a semantic overlay error; the correct emit should be with _amount as the non-indexed value. However, since the event signature is known and the indexed args are valid, we can reconstruct the intended emit.",
+            "solidity_candidate": "emit Approval(msg.sender, _spender, _amount);",
+            "risks": [
+              "The third argument in the event args list is incorrectly listed as _spender twice; the non-indexed value should be _amount. This is likely a semantic overlay bug, but the topic0 and indexed args confirm the intended event is Approval."
+            ]
+          },
+          {
+            "target_overlay": "ov_5",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "ExpressionNormalization overlays are helper facts and not recoverable by themselves. The assignment 'bbwz = mload(0x40)' is used for memory management and cannot be meaningfully replaced in high-level Solidity without context. It is preserved as-is to maintain memory layout semantics.",
+            "solidity_candidate": "",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_6",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "The keccak256 computation for ZFHJ is an internal slot derivation step. While the result is used in a MappingSlot, the raw keccak256 call cannot be expressed as high-level Solidity without exposing low-level memory layout. It is preserved to maintain correctness of the nested mapping access.",
+            "solidity_candidate": "",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_7",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "The keccak256 for akRJ is an internal slot derivation for nested mapping. Even though the result is used in a MappingWrite, the raw keccak256 call is part of the low-level storage layout and cannot be abstracted away in Solidity. Must preserve to ensure correct storage key computation.",
+            "solidity_candidate": "",
+            "risks": []
+          }
+        ],
+        "recommended_recovery_plan": "Recover the function body as follows: 1. Replace the MappingWrite overlay (ov_3) with 'wZHA[msg.sender][_spender] = _amount;'. 2. Replace the EventEmit overlay (ov_4) with 'emit Approval(msg.sender, _spender, _amount);' (correcting the third argument from _spender to _amount). 3. Preserve the memory management and keccak256 computations (ov_5, ov_6, ov_7) as inline assembly, since they are necessary for correct storage slot derivation and cannot be expressed in high-level Solidity. 4. The return true; remains unchanged. The final recovered function will have a minimal assembly block containing only the slot derivation and memory setup, with the rest as high-level Solidity.",
+        "preserve_assembly_reasons": [
+          "mload(0x40) and mstore operations are required for memory management and cannot be abstracted in Solidity without risking memory layout corruption.",
+          "keccak256(bbwz, 0x40) is used to compute nested mapping storage slots and must be preserved because Solidity does not expose direct control over storage key derivation for nested mappings.",
+          "The assembly block is minimal and only contains necessary low-level operations for storage layout; preserving it ensures correctness and avoids semantic loss."
+        ]
+      }
+    }
+  ]
+}

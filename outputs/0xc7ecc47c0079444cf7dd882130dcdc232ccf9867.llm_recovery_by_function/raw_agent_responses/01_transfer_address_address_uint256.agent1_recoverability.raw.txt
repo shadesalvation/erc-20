@@ -1,0 +1,301 @@
+{
+  "function_recoverability": "partially_recoverable",
+  "rationale": "The function contains several high-level semantic overlays (RequireOverlay, MappingRead, MappingWrite, EventEmit, PrecompileCall) that can be translated to Solidity-like code. However, the staticcall to precompile address 2 (SHA-256) is incorrectly labeled as a solidity_like expression that implies a high-level ABI encoding and hash operation, which is not valid Solidity syntax. The condition in RequireOverlay ov_3 wraps a raw staticcall with memory pointers and gas(), making it unrecoverable as pure Solidity. Additionally, the use of mstore, shl, keccak256 on memory, and low-level storage access with computed slots cannot be fully abstracted without risking semantic loss. The event emit and mapping operations are recoverable, but the precompile interaction and memory manipulation require preservation.",
+  "assembly_block_decisions": [
+    {
+      "block_id": "asm_block_1",
+      "decision": "preserve_assembly",
+      "reason": "Contains multiple low-level memory operations, raw staticcall to precompile, and computed storage slots that cannot be safely expressed in high-level Solidity without loss of precision or incorrect semantics."
+    }
+  ],
+  "overlay_projection_policies": [
+    {
+      "target_overlay": "ov_1",
+      "overlay_kind": "RequireOverlay",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "Condition _from != address(0) is a standard guard expressible in Solidity. Revert payload is empty, matching require() semantics.",
+      "solidity_candidate": "require(_from != address(0));",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_2",
+      "overlay_kind": "RequireOverlay",
+      "exact_solidity_equivalent": false,
+      "output_kind": "semantic_comment",
+      "reason": "Condition is logically equivalent to _from != 0 && _to != 0, but the expression is inverted and convoluted. While recoverable in intent, the original form is unsafe to translate directly without risking misinterpretation of control flow.",
+      "solidity_candidate": "// require(_from != 0 && _to != 0);",
+      "risks": [
+        "Original condition is negated and nested; direct translation may invert logic."
+      ]
+    },
+    {
+      "target_overlay": "ov_3",
+      "overlay_kind": "RequireOverlay",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "Condition wraps raw staticcall with memory pointers, gas(), and fixed sizes. Solidity does not expose staticcall with arbitrary memory buffers in a high-level form. Even though ov_23 labels it as solidity_like, the candidate incorrectly implies abi.encodePacked and sha256, which is not what the assembly does.",
+      "solidity_candidate": "",
+      "risks": [
+        "Misrepresenting staticcall as sha256(abi.encodePacked(...)) is semantically incorrect. The assembly reads msg.sender from memory and calls precompile 2 directly."
+      ]
+    },
+    {
+      "target_overlay": "ov_4",
+      "overlay_kind": "RequireOverlay",
+      "exact_solidity_equivalent": false,
+      "output_kind": "semantic_comment",
+      "reason": "Condition (tfe9zci != tfe9zci * 1) is always false unless overflow occurs, which is impossible in Solidity uint256. This is likely a placeholder or obfuscation. Cannot be safely expressed as meaningful Solidity without inventing semantics.",
+      "solidity_candidate": "// require(block.timestamp != block.timestamp); // always false, likely obfuscated",
+      "risks": [
+        "This condition is logically tautological and may indicate a bug or obfuscation. Translating it as-is would mislead readers."
+      ]
+    },
+    {
+      "target_overlay": "ov_14",
+      "overlay_kind": "MappingRead",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "Mapping read from UbLX[_from] is clearly identified with resolved slot and key. Solidity_like candidate is valid and matches storage semantics.",
+      "solidity_candidate": "qVPd = UbLX[_from];",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_15",
+      "overlay_kind": "StateVariableRead",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "State variable sSgI is read directly. Solidity_like candidate is valid and matches storage access pattern.",
+      "solidity_candidate": "Fpzy = sSgI;",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_17",
+      "overlay_kind": "MappingWrite",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "Mapping write to UbLX[_from] with subtraction is a standard token transfer operation. Solidity_like candidate is valid.",
+      "solidity_candidate": "UbLX[_from] = qVPd - _amount;",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_19",
+      "overlay_kind": "MappingRead",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "Mapping read from UbLX[_to] is clearly identified. Solidity_like candidate is valid.",
+      "solidity_candidate": "bXFg = UbLX[_to];",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_21",
+      "overlay_kind": "MappingWrite",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "Mapping write to UbLX[_to] with addition is standard token receipt logic. Solidity_like candidate is valid.",
+      "solidity_candidate": "UbLX[_to] = bXFg + _amount;",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_22",
+      "overlay_kind": "EventEmit",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "Event Transfer with correct topic0 and indexed args matches ERC20 standard. Solidity emit is directly recoverable.",
+      "solidity_candidate": "emit Transfer(_from, _to, _amount);",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_23",
+      "overlay_kind": "PrecompileCall",
+      "exact_solidity_equivalent": false,
+      "output_kind": "low_level_call_statement",
+      "reason": "The staticcall to address 2 is a low-level precompile call. Although labeled solidity_like, the candidate 'sha256(abi.encodePacked(bytes20(msg.sender)))' is incorrect: the assembly does not encode msg.sender as ABI, but writes it to memory and calls staticcall with raw 20-byte input. This must be preserved as a low-level call.",
+      "solidity_candidate": "assembly { staticcall(gasleft(), 0x02, add(bbwz, 0), 20, bbwz, 32) }",
+      "risks": [
+        "The solidity_like candidate misrepresents the input encoding. Actual input is raw memory, not abi.encodePacked."
+      ]
+    },
+    {
+      "target_overlay": "ov_24",
+      "overlay_kind": "PrecompileOutputRead",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "Reading output from precompile via mload(bbwz) is low-level. The candidate 'uint256(sha256_result_19)' implies a high-level hash result, but the assembly does not interpret the output as a hash — it's raw bytes. This must remain in assembly.",
+      "solidity_candidate": "",
+      "risks": [
+        "Interpreting raw 32-byte output as a sha256 result is speculative and may be incorrect."
+      ]
+    },
+    {
+      "target_overlay": "ov_25",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "Normalization of iszero(_from) to (_from == 0) is safe and standard.",
+      "solidity_candidate": "if (_from == 0) revert();",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_26",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "Normalization of iszero(_to) to (_to == 0) is safe and standard.",
+      "solidity_candidate": "if (_to == 0) revert();",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_27",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "mload(0x40) is standard free memory pointer in Solidity.",
+      "solidity_candidate": "bbwz = mload(0x40);",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_28",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "basefee() maps directly to block.basefee.",
+      "solidity_candidate": "bfo228g = block.basefee;",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_29",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "number() maps directly to block.number.",
+      "solidity_candidate": "nezy9b8 = block.number;",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_30",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "iszero(xor(x,x)) is always true; this is a no-op condition. Safe to normalize.",
+      "solidity_candidate": "if (true) { ... }",
+      "risks": [
+        "This condition is always true — may indicate dead code or obfuscation. Should be preserved as-is in final recovery."
+      ]
+    },
+    {
+      "target_overlay": "ov_31",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "keccak256 on memory buffer is standard. The input is constructed from _from and 0, which is a valid slot computation.",
+      "solidity_candidate": "XCUz = keccak256(abi.encodePacked(_from, 0));",
+      "risks": [
+        "The assembly writes _from and 0 to memory manually; abi.encodePacked is equivalent but assumes ABI encoding. This is acceptable as a semantic approximation."
+      ]
+    },
+    {
+      "target_overlay": "ov_32",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "sload(XCUz) is a direct storage read. Safe to map.",
+      "solidity_candidate": "qVPd = sload(XCUz);",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_33",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "sload(sSgI.slot) is a direct state variable read. Safe to map.",
+      "solidity_candidate": "Fpzy = sload(sSgI.slot);",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_34",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "The condition wraps staticcall with memory pointers and gas(). Even though normalized, the underlying operation is low-level and cannot be expressed in Solidity without assembly.",
+      "solidity_candidate": "",
+      "risks": [
+        "Normalizing the condition does not make the staticcall recoverable."
+      ]
+    },
+    {
+      "target_overlay": "ov_35",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "mload(bbwz) reads the output of the staticcall. Safe to preserve as memory read.",
+      "solidity_candidate": "YvIh = mload(bbwz);",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_36",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "iszero(eq(Fpzy, YvIh)) is equivalent to Fpzy != YvIh. Safe to normalize.",
+      "solidity_candidate": "if (Fpzy != YvIh) { ... }",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_37",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "lt(qVPd, _amount) is standard qVPd < _amount.",
+      "solidity_candidate": "if (qVPd < _amount) { ... }",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_38",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "timestamp() maps to block.timestamp.",
+      "solidity_candidate": "tfe9zci = block.timestamp;",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_39",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": false,
+      "output_kind": "semantic_comment",
+      "reason": "eq(tfe9zci, mul(tfe9zci, 1)) is always true in Solidity unless overflow. This is likely a placeholder or obfuscation. Cannot be meaningfully expressed.",
+      "solidity_candidate": "// if (block.timestamp == block.timestamp) { ... } // always true",
+      "risks": [
+        "This condition is logically redundant. Translating it as-is may mislead."
+      ]
+    },
+    {
+      "target_overlay": "ov_40",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "keccak256 on _to and 0 is standard for mapping slot computation.",
+      "solidity_candidate": "iLho = keccak256(abi.encodePacked(_to, 0));",
+      "risks": [
+        "Assumes abi.encodePacked(_to, 0) is equivalent to manual mstore. Acceptable semantic approximation."
+      ]
+    },
+    {
+      "target_overlay": "ov_41",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "sload(iLho) is a direct storage read.",
+      "solidity_candidate": "bXFg = sload(iLho);",
+      "risks": []
+    }
+  ],
+  "recommended_recovery_plan": "Recover the function as Solidity with the following structure: 1) Use require() for _from and _to non-zero checks. 2) Use mload(0x40) for free memory pointer. 3) Use block.basefee and block.number for their respective values. 4) Use UbLX[_from] and UbLX[_to] for mapping reads/writes. 5) Use emit Transfer(...) for the event. 6) Preserve the staticcall to precompile 2 and its memory handling in inline assembly. 7) Preserve the tautological condition (tfe9zci == tfe9zci * 1) as a semantic comment. 8) Do not translate the staticcall as sha256(abi.encodePacked(...)) — it is incorrect.",
+  "preserve_assembly_reasons": [
+    "staticcall to precompile address 2 with raw memory input/output cannot be expressed in Solidity without semantic loss.",
+    "The condition in ov_3 and ov_34 wraps low-level memory and gas operations that are not representable in high-level Solidity.",
+    "The tautological condition (tfe9zci == tfe9zci * 1) is likely obfuscated or erroneous and should not be translated as valid logic.",
+    "Memory manipulation (mstore, shl, keccak256 on memory) is used to construct storage keys and inputs — these are implementation details that should remain in assembly for correctness."
+  ]
+}

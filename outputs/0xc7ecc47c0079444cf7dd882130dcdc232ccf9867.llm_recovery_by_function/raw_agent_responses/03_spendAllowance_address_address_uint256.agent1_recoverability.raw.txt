@@ -1,0 +1,1287 @@
+{
+  "functions": [
+    {
+      "function_id": "Token._spendAllowance(address, address, uint256)",
+      "contract": "Token",
+      "function": "_spendAllowance",
+      "signature": "_spendAllowance(address, address, uint256)",
+      "recovery_task": "Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.",
+      "function_source": {
+        "src": "4080:1554:0",
+        "text": "function _spendAllowance(address _owner, address _spender, uint256 _amount) virtual internal {\n        assembly {\n            let bbwz := mload(0x40)\n            mstore(bbwz, sload(qBQC.slot))\n            mstore(add(bbwz, 32), 1)\n            let uAnE := keccak256(bbwz, 64)\n            let bcw8ayf := basefee()\n            let ncwupwx := number()\n            if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {\n                mstore(bbwz, _owner)\n                mstore(add(bbwz, 32), uAnE)\n            }\n            let Jfwv := keccak256(bbwz, 64)\n            let CCkU := sload(Jfwv)\n            let zfPf := CCkU\n            if and(zfPf, iszero(_amount)) {\n                revert(0, 0)\n            }\n            if iszero(zfPf) {\n                mstore(bbwz, _owner)\n                mstore(add(bbwz, 32), 1)\n                uAnE := keccak256(bbwz, 64)\n                mstore(bbwz, _spender)\n                mstore(add(bbwz, 32), uAnE)\n                Jfwv := keccak256(bbwz, 64)\n                zfPf := add(sload(Jfwv), CCkU)\n            }\n            let gbj1enk := gas()\n            pop(0)\n            if eq(gbj1enk, and(gbj1enk, gbj1enk)) {\n                zfPf := sub(zfPf, CCkU)\n            }\n            if iszero(eq(zfPf, not(0))) {\n                if lt(zfPf, _amount) {\n                    revert(0, 0)\n                }\n                let bf51h1a := basefee()\n                pop(0)\n                if eq(bf51h1a, and(bf51h1a, bf51h1a)) {\n                    sstore(Jfwv, sub(zfPf, _amount))\n                }\n            }\n        }\n    }"
+      },
+      "assembly_blocks": [
+        {
+          "block_id": "asm_block_3",
+          "src": "4183:1445:0",
+          "text": "assembly {\n            let bbwz := mload(0x40)\n            mstore(bbwz, sload(qBQC.slot))\n            mstore(add(bbwz, 32), 1)\n            let uAnE := keccak256(bbwz, 64)\n            let bcw8ayf := basefee()\n            let ncwupwx := number()\n            if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {\n                mstore(bbwz, _owner)\n                mstore(add(bbwz, 32), uAnE)\n            }\n            let Jfwv := keccak256(bbwz, 64)\n            let CCkU := sload(Jfwv)\n            let zfPf := CCkU\n            if and(zfPf, iszero(_amount)) {\n                revert(0, 0)\n            }\n            if iszero(zfPf) {\n                mstore(bbwz, _owner)\n                mstore(add(bbwz, 32), 1)\n                uAnE := keccak256(bbwz, 64)\n                mstore(bbwz, _spender)\n                mstore(add(bbwz, 32), uAnE)\n                Jfwv := keccak256(bbwz, 64)\n                zfPf := add(sload(Jfwv), CCkU)\n            }\n            let gbj1enk := gas()\n            pop(0)\n            if eq(gbj1enk, and(gbj1enk, gbj1enk)) {\n                zfPf := sub(zfPf, CCkU)\n            }\n            if iszero(eq(zfPf, not(0))) {\n                if lt(zfPf, _amount) {\n                    revert(0, 0)\n                }\n                let bf51h1a := basefee()\n                pop(0)\n                if eq(bf51h1a, and(bf51h1a, bf51h1a)) {\n                    sstore(Jfwv, sub(zfPf, _amount))\n                }\n            }\n        }"
+        }
+      ],
+      "control_summary": {
+        "block_count": 43,
+        "edge_count": 49,
+        "assembly_cfg_block_count": 42,
+        "has_branch": true,
+        "has_loop": true,
+        "notes": [
+          "function_level_cfg_from_slither",
+          "assembly_subgraph_embedded_from_assembly_ast_cfg",
+          "slither_assembly_nodes_replaced_by_local_yul_cfg",
+          "slither_nodes=52",
+          "assembly_blocks=1",
+          "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors"
+        ],
+        "assembly_blocks": [
+          3
+        ]
+      },
+      "key_expression_roles": [
+        {
+          "expr_id": "expr_14",
+          "role": "storage_slot_expr",
+          "text": "qBQC.slot",
+          "normalized": "qBQC.slot",
+          "stmt_ref": "asm_s_2",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_15",
+          "role": "branch_condition",
+          "text": "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))",
+          "normalized": "((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))",
+          "stmt_ref": "asm_s_7",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_16",
+          "role": "storage_slot_expr",
+          "text": "Jfwv",
+          "normalized": "Jfwv",
+          "stmt_ref": "asm_s_11",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_17",
+          "role": "branch_condition",
+          "text": "and(zfPf, iszero(_amount))",
+          "normalized": "(zfPf & (_amount == 0))",
+          "stmt_ref": "asm_s_13",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_18",
+          "role": "branch_condition",
+          "text": "iszero(zfPf)",
+          "normalized": "(zfPf == 0)",
+          "stmt_ref": "asm_s_15",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_19",
+          "role": "storage_slot_expr",
+          "text": "Jfwv",
+          "normalized": "Jfwv",
+          "stmt_ref": "asm_s_22",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_20",
+          "role": "branch_condition",
+          "text": "eq(gbj1enk, and(gbj1enk, gbj1enk))",
+          "normalized": "(gbj1enk == (gbj1enk & gbj1enk))",
+          "stmt_ref": "asm_s_25",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_21",
+          "role": "branch_condition",
+          "text": "iszero(eq(zfPf, not(0)))",
+          "normalized": "((zfPf == (~0)) == 0)",
+          "stmt_ref": "asm_s_27",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_22",
+          "role": "branch_condition",
+          "text": "lt(zfPf, _amount)",
+          "normalized": "(zfPf < _amount)",
+          "stmt_ref": "asm_s_28",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_23",
+          "role": "branch_condition",
+          "text": "eq(bf51h1a, and(bf51h1a, bf51h1a))",
+          "normalized": "(bf51h1a == (bf51h1a & bf51h1a))",
+          "stmt_ref": "asm_s_32",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_24",
+          "role": "storage_slot_expr",
+          "text": "Jfwv",
+          "normalized": "Jfwv",
+          "stmt_ref": "asm_s_33",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_25",
+          "role": "storage_write_value",
+          "text": "sub(zfPf, _amount)",
+          "normalized": "(zfPf - _amount)",
+          "stmt_ref": "asm_s_33"
+        },
+        {
+          "expr_id": "expr_26",
+          "role": "guard_condition",
+          "text": "!(((zfPf & (_amount == 0)) != 0))",
+          "normalized": "!(((zfPf & (_amount == 0)) != 0))",
+          "stmt_ref": "asm_s_14",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_27",
+          "role": "guard_condition",
+          "text": "!((((zfPf == (~0)) == 0)) && ((zfPf < _amount)))",
+          "normalized": "!((((zfPf == (~0)) == 0)) && ((zfPf < _amount)))",
+          "stmt_ref": "asm_s_29",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_28",
+          "role": "mapping_slot_expr",
+          "text": "wZHA[_owner]",
+          "normalized": "wZHA[_owner]",
+          "stmt_ref": "asm_s_18",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_29",
+          "role": "mapping_key_material",
+          "text": "_owner",
+          "normalized": "_owner",
+          "stmt_ref": "asm_s_18"
+        },
+        {
+          "expr_id": "expr_30",
+          "role": "mapping_slot_expr",
+          "text": "wZHA[_owner][_spender]",
+          "normalized": "wZHA[_owner][_spender]",
+          "stmt_ref": "asm_s_21",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_31",
+          "role": "mapping_key_material",
+          "text": "_spender",
+          "normalized": "_spender",
+          "stmt_ref": "asm_s_21"
+        },
+        {
+          "expr_id": "expr_33",
+          "role": "state_access_expr",
+          "text": "storage[Jfwv__ssa5]",
+          "normalized": "storage[Jfwv__ssa5]",
+          "stmt_ref": "asm_s_11"
+        },
+        {
+          "expr_id": "expr_35",
+          "role": "state_access_expr",
+          "text": "storage[Jfwv__ssa7]",
+          "normalized": "storage[Jfwv__ssa7]",
+          "stmt_ref": "asm_s_11"
+        },
+        {
+          "expr_id": "expr_37",
+          "role": "state_access_expr",
+          "text": "wZHA[_owner][_spender]",
+          "normalized": "wZHA[_owner][_spender]",
+          "stmt_ref": "asm_s_22"
+        },
+        {
+          "expr_id": "expr_39",
+          "role": "mapping_slot_expr",
+          "text": "Jfwv",
+          "normalized": "wZHA[_owner][_spender]",
+          "stmt_ref": "asm_s_21",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_40",
+          "role": "state_access_expr",
+          "text": "wZHA[_owner][_spender]",
+          "normalized": "wZHA[_owner][_spender]",
+          "stmt_ref": "asm_s_21"
+        },
+        {
+          "expr_id": "expr_42",
+          "role": "state_access_expr",
+          "text": "storage[Jfwv__ssa5]",
+          "normalized": "storage[Jfwv__ssa5]",
+          "stmt_ref": "asm_s_33"
+        },
+        {
+          "expr_id": "expr_44",
+          "role": "state_access_expr",
+          "text": "storage[Jfwv__ssa7]",
+          "normalized": "storage[Jfwv__ssa7]",
+          "stmt_ref": "asm_s_33"
+        },
+        {
+          "expr_id": "expr_46",
+          "role": "state_access_expr",
+          "text": "wZHA[_owner][_spender]",
+          "normalized": "wZHA[_owner][_spender]",
+          "stmt_ref": "asm_s_33"
+        }
+      ],
+      "effect_summary": {
+        "counts": {
+          "MemoryWrite": 12,
+          "ValueDef": 13,
+          "MemoryRead": 1,
+          "StorageRead": 3,
+          "MemoryHash": 4,
+          "Branch": 7,
+          "Revert": 2,
+          "StorageWrite": 1,
+          "BranchMaterialization": 1
+        },
+        "selected_effects": [
+          {
+            "effect_id": "eff_15",
+            "kind": "StorageRead",
+            "stmt_refs": [
+              "asm_s_2"
+            ],
+            "slot": "qBQC.slot",
+            "value": null,
+            "path_states": [
+              "entry"
+            ]
+          },
+          {
+            "effect_id": "eff_25",
+            "kind": "StorageRead",
+            "stmt_refs": [
+              "asm_s_11"
+            ],
+            "slot": "Jfwv",
+            "value": "CCkU",
+            "path_states": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))"
+            ]
+          },
+          {
+            "effect_id": "eff_29",
+            "kind": "Revert",
+            "stmt_refs": [
+              "asm_s_14"
+            ],
+            "payload_ptr": "0",
+            "payload_size": "0",
+            "path_states": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && and(zfPf, iszero(_amount))",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && and(zfPf, iszero(_amount))"
+            ]
+          },
+          {
+            "effect_id": "eff_37",
+            "kind": "StorageRead",
+            "stmt_refs": [
+              "asm_s_22"
+            ],
+            "slot": "Jfwv",
+            "value": "zfPf",
+            "path_states": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && iszero(zfPf)",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && iszero(zfPf)"
+            ]
+          },
+          {
+            "effect_id": "eff_46",
+            "kind": "Revert",
+            "stmt_refs": [
+              "asm_s_29"
+            ],
+            "payload_ptr": "0",
+            "payload_size": "0",
+            "path_states": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)",
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)",
+              {
+                "truncated": 4
+              }
+            ]
+          },
+          {
+            "effect_id": "eff_50",
+            "kind": "StorageWrite",
+            "stmt_refs": [
+              "asm_s_33"
+            ],
+            "slot": "Jfwv",
+            "value": "sub(zfPf, _amount)",
+            "path_states": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))",
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))",
+              {
+                "truncated": 4
+              }
+            ]
+          },
+          {
+            "effect_id": "eff_branch_1",
+            "kind": "BranchMaterialization",
+            "stmt_refs": [
+              "asm_s_11"
+            ]
+          }
+        ]
+      },
+      "semantic_overlays": [
+        {
+          "overlay_id": "ov_1",
+          "kind": "RequireOverlay",
+          "effects": [
+            "eff_29"
+          ],
+          "stmt_refs": [
+            "asm_s_14"
+          ],
+          "attrs": {
+            "condition": "!(((zfPf & (_amount == 0)) != 0))",
+            "nearest_condition": "and(zfPf, iszero(_amount))",
+            "require_like": "require(!(((zfPf & (_amount == 0)) != 0)));",
+            "revert_payload": "empty",
+            "control_path": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && and(zfPf, iszero(_amount))",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && and(zfPf, iszero(_amount))"
+            ],
+            "merged_conditions": [
+              "and(zfPf, iszero(_amount))"
+            ],
+            "discarded_before_revert": []
+          }
+        },
+        {
+          "overlay_id": "ov_2",
+          "kind": "RequireOverlay",
+          "effects": [
+            "eff_46"
+          ],
+          "stmt_refs": [
+            "asm_s_29"
+          ],
+          "attrs": {
+            "condition": "!((((zfPf == (~0)) == 0)) && ((zfPf < _amount)))",
+            "nearest_condition": "lt(zfPf, _amount)",
+            "require_like": "require(!((((zfPf == (~0)) == 0)) && ((zfPf < _amount))));",
+            "revert_payload": "empty",
+            "control_path": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)",
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)",
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && iszero(zfPf) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)",
+              {
+                "truncated": 3
+              }
+            ],
+            "merged_conditions": [
+              "iszero(eq(zfPf, not(0)))",
+              "lt(zfPf, _amount)"
+            ],
+            "discarded_before_revert": []
+          }
+        },
+        {
+          "overlay_id": "ov_3",
+          "kind": "MappingSlot",
+          "effects": [
+            "eff_33"
+          ],
+          "stmt_refs": [
+            "asm_s_18"
+          ],
+          "attrs": {
+            "target": "uAnE",
+            "target_key": "uAnE__ssa12",
+            "expression": "wZHA[_owner]",
+            "state_variable": "wZHA",
+            "key": "_owner",
+            "base": "1",
+            "slot_kind": "mapping_slot",
+            "activation": "storage_consumer",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_4",
+          "kind": "MappingSlot",
+          "effects": [
+            "eff_35"
+          ],
+          "stmt_refs": [
+            "asm_s_21"
+          ],
+          "attrs": {
+            "target": "Jfwv",
+            "target_key": "Jfwv__ssa16",
+            "expression": "wZHA[_owner][_spender]",
+            "state_variable": "wZHA",
+            "key": "_spender",
+            "base": "uAnE",
+            "slot_kind": "nested_mapping_slot",
+            "activation": "storage_consumer",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_5",
+          "kind": "MappingSlot",
+          "effects": [
+            "eff_35"
+          ],
+          "stmt_refs": [
+            "asm_s_21"
+          ],
+          "attrs": {
+            "target": "Jfwv",
+            "target_key": "Jfwv__ssa19",
+            "expression": "wZHA[_owner][_spender]",
+            "state_variable": "wZHA",
+            "key": "_spender",
+            "base": "uAnE",
+            "slot_kind": "nested_mapping_slot",
+            "activation": "storage_consumer",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_6",
+          "kind": "StateVariableRead",
+          "effects": [
+            "eff_15"
+          ],
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "attrs": {
+            "access": "qBQC",
+            "state_variable": "qBQC",
+            "slot": "qBQC.slot",
+            "solidity_like": "qBQC = ;"
+          }
+        },
+        {
+          "overlay_id": "ov_7",
+          "kind": "PathConditionedStorageRead",
+          "effects": [
+            "eff_25"
+          ],
+          "stmt_refs": [
+            "asm_s_11"
+          ],
+          "attrs": {
+            "slot": "Jfwv",
+            "target": "CCkU",
+            "path_states": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))"
+            ],
+            "candidates": [
+              {
+                "slot_key": "Jfwv__ssa5",
+                "status": "unresolved",
+                "overlay_kind": "StateVariableRead",
+                "access": "storage[Jfwv__ssa5]",
+                "unresolved_reason": "unknown_storage_slot_version"
+              },
+              {
+                "slot_key": "Jfwv__ssa7",
+                "status": "unresolved",
+                "overlay_kind": "StateVariableRead",
+                "access": "storage[Jfwv__ssa7]",
+                "unresolved_reason": "unknown_storage_slot_version"
+              }
+            ],
+            "note": "storage_effect_has_multiple_ssa_slot_versions"
+          }
+        },
+        {
+          "overlay_id": "ov_8",
+          "kind": "PathConditionedStorageRead",
+          "effects": [
+            "eff_37"
+          ],
+          "stmt_refs": [
+            "asm_s_22"
+          ],
+          "attrs": {
+            "slot": "Jfwv",
+            "target": "zfPf",
+            "path_states": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && iszero(zfPf)",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && iszero(zfPf)"
+            ],
+            "candidates": [
+              {
+                "slot_key": "Jfwv__ssa16",
+                "status": "resolved",
+                "overlay_kind": "MappingRead",
+                "access": "wZHA[_owner][_spender]",
+                "state_variable": "wZHA",
+                "key": "_spender",
+                "slot_effect": "eff_35",
+                "solidity_like": "zfPf = wZHA[_owner][_spender];",
+                "notes": []
+              },
+              {
+                "slot_key": "Jfwv__ssa19",
+                "status": "resolved",
+                "overlay_kind": "MappingRead",
+                "access": "wZHA[_owner][_spender]",
+                "state_variable": "wZHA",
+                "key": "_spender",
+                "slot_effect": "eff_35",
+                "solidity_like": "zfPf = wZHA[_owner][_spender];",
+                "notes": []
+              }
+            ],
+            "note": "storage_effect_has_multiple_ssa_slot_versions"
+          }
+        },
+        {
+          "overlay_id": "ov_9",
+          "kind": "MappingRead",
+          "effects": [
+            "eff_35",
+            "eff_37"
+          ],
+          "stmt_refs": [
+            "asm_s_21",
+            "asm_s_22"
+          ],
+          "attrs": {
+            "access": "wZHA[_owner][_spender]",
+            "target": "zfPf",
+            "state_variable": "wZHA",
+            "key": "_spender",
+            "slot": "Jfwv",
+            "slot_key": "Jfwv__ssa16",
+            "solidity_like": "zfPf = wZHA[_owner][_spender];",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_10",
+          "kind": "PathConditionedStorageWrite",
+          "effects": [
+            "eff_50"
+          ],
+          "stmt_refs": [
+            "asm_s_33"
+          ],
+          "attrs": {
+            "slot": "Jfwv",
+            "value": "(zfPf - _amount)",
+            "value_yul": "sub(zfPf, _amount)",
+            "path_states": [
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))",
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))",
+              "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))",
+              "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && iszero(zfPf) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))",
+              {
+                "truncated": 3
+              }
+            ],
+            "candidates": [
+              {
+                "slot_key": "Jfwv__ssa5",
+                "status": "unresolved",
+                "overlay_kind": "StateVariableWrite",
+                "access": "storage[Jfwv__ssa5]",
+                "unresolved_reason": "unknown_storage_slot_version"
+              },
+              {
+                "slot_key": "Jfwv__ssa7",
+                "status": "unresolved",
+                "overlay_kind": "StateVariableWrite",
+                "access": "storage[Jfwv__ssa7]",
+                "unresolved_reason": "unknown_storage_slot_version"
+              },
+              {
+                "slot_key": "Jfwv__ssa16",
+                "status": "resolved",
+                "overlay_kind": "MappingWrite",
+                "access": "wZHA[_owner][_spender]",
+                "state_variable": "wZHA",
+                "key": "_spender",
+                "slot_effect": "eff_35",
+                "solidity_like": "wZHA[_owner][_spender] = (zfPf - _amount);",
+                "notes": []
+              },
+              {
+                "slot_key": "Jfwv__ssa19",
+                "status": "resolved",
+                "overlay_kind": "MappingWrite",
+                "access": "wZHA[_owner][_spender]",
+                "state_variable": "wZHA",
+                "key": "_spender",
+                "slot_effect": "eff_35",
+                "solidity_like": "wZHA[_owner][_spender] = (zfPf - _amount);",
+                "notes": []
+              }
+            ],
+            "note": "storage_effect_has_multiple_ssa_slot_versions"
+          }
+        },
+        {
+          "overlay_id": "ov_11",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_13"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "target": "bbwz",
+            "expression": "mload(0x40)",
+            "solidity_like": "bbwz = mload(0x40);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_12",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_16"
+          ],
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "attrs": {
+            "target": "uAnE",
+            "expression": "keccak256(bbwz, 64)",
+            "solidity_like": "uAnE = keccak256(bbwz, 64);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_13",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_18"
+          ],
+          "stmt_refs": [
+            "asm_s_5"
+          ],
+          "attrs": {
+            "target": "bcw8ayf",
+            "expression": "basefee()",
+            "solidity_like": "bcw8ayf = block.basefee;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_14",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_19"
+          ],
+          "stmt_refs": [
+            "asm_s_6"
+          ],
+          "attrs": {
+            "target": "ncwupwx",
+            "expression": "number()",
+            "solidity_like": "ncwupwx = block.number;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_15",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_20"
+          ],
+          "stmt_refs": [
+            "asm_s_7"
+          ],
+          "attrs": {
+            "expression": "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))",
+            "solidity_like": "if (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)))",
+            "context": "condition",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_16",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_22"
+          ],
+          "stmt_refs": [
+            "asm_s_10"
+          ],
+          "attrs": {
+            "target": "Jfwv",
+            "expression": "keccak256(bbwz, 64)",
+            "solidity_like": "Jfwv = keccak256(bbwz, 64);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_17",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_24"
+          ],
+          "stmt_refs": [
+            "asm_s_11"
+          ],
+          "attrs": {
+            "target": "CCkU",
+            "expression": "sload(Jfwv)",
+            "solidity_like": "CCkU = sload(Jfwv);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_18",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_26"
+          ],
+          "stmt_refs": [
+            "asm_s_12"
+          ],
+          "attrs": {
+            "target": "zfPf",
+            "expression": "CCkU",
+            "solidity_like": "zfPf = CCkU;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_19",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_27"
+          ],
+          "stmt_refs": [
+            "asm_s_13"
+          ],
+          "attrs": {
+            "expression": "and(zfPf, iszero(_amount))",
+            "solidity_like": "if ((zfPf & (_amount == 0)))",
+            "context": "condition",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_20",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_30"
+          ],
+          "stmt_refs": [
+            "asm_s_15"
+          ],
+          "attrs": {
+            "expression": "iszero(zfPf)",
+            "solidity_like": "if ((zfPf == 0))",
+            "context": "condition",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_21",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_32"
+          ],
+          "stmt_refs": [
+            "asm_s_18"
+          ],
+          "attrs": {
+            "target": "uAnE",
+            "expression": "keccak256(bbwz, 64)",
+            "solidity_like": "uAnE = keccak256(bbwz, 64);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_22",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_34"
+          ],
+          "stmt_refs": [
+            "asm_s_21"
+          ],
+          "attrs": {
+            "target": "Jfwv",
+            "expression": "keccak256(bbwz, 64)",
+            "solidity_like": "Jfwv = keccak256(bbwz, 64);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_23",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_36"
+          ],
+          "stmt_refs": [
+            "asm_s_22"
+          ],
+          "attrs": {
+            "target": "zfPf",
+            "expression": "add(sload(Jfwv), CCkU)",
+            "solidity_like": "zfPf = (sload(Jfwv) + CCkU);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_24",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_38"
+          ],
+          "stmt_refs": [
+            "asm_s_23"
+          ],
+          "attrs": {
+            "target": "gbj1enk",
+            "expression": "gas()",
+            "solidity_like": "gbj1enk = gasleft();",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_25",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_39"
+          ],
+          "stmt_refs": [
+            "asm_s_25"
+          ],
+          "attrs": {
+            "expression": "eq(gbj1enk, and(gbj1enk, gbj1enk))",
+            "solidity_like": "if ((gbj1enk == (gbj1enk & gbj1enk)))",
+            "context": "condition",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_26",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_41"
+          ],
+          "stmt_refs": [
+            "asm_s_26"
+          ],
+          "attrs": {
+            "target": "zfPf",
+            "expression": "sub(zfPf, CCkU)",
+            "solidity_like": "zfPf = (zfPf - CCkU);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_27",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_42"
+          ],
+          "stmt_refs": [
+            "asm_s_27"
+          ],
+          "attrs": {
+            "expression": "iszero(eq(zfPf, not(0)))",
+            "solidity_like": "if (((zfPf == (~0)) == 0))",
+            "context": "condition",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_28",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_44"
+          ],
+          "stmt_refs": [
+            "asm_s_28"
+          ],
+          "attrs": {
+            "expression": "lt(zfPf, _amount)",
+            "solidity_like": "if ((zfPf < _amount))",
+            "context": "condition",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_29",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_47"
+          ],
+          "stmt_refs": [
+            "asm_s_30"
+          ],
+          "attrs": {
+            "target": "bf51h1a",
+            "expression": "basefee()",
+            "solidity_like": "bf51h1a = block.basefee;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_30",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_48"
+          ],
+          "stmt_refs": [
+            "asm_s_32"
+          ],
+          "attrs": {
+            "expression": "eq(bf51h1a, and(bf51h1a, bf51h1a))",
+            "solidity_like": "if ((bf51h1a == (bf51h1a & bf51h1a)))",
+            "context": "condition",
+            "division_guards": []
+          }
+        }
+      ],
+      "unresolved_low_level_semantics": [],
+      "llm_projection_judgement": {
+        "function_recoverability": "partially_recoverable",
+        "rationale": "The function contains multiple high-level semantic overlays (MappingRead, MappingWrite, StateVariableRead, RequireOverlay) that can be translated to Solidity, but also contains non-recoverable low-level constructs: gas(), basefee(), number(), keccak256() on dynamic memory, and bitwise operations (and, not) used in control flow. The require conditions are recoverable only if their conditions are expressed without raw Yul builtins, which they are not in the context of the full control flow. The storage slot Jfwv is resolved as a mapping key, but the initial sload(qBQC.slot) and the use of keccak256 to compute mapping keys from memory cannot be safely mapped to Solidity syntax without assuming ABI or storage layout details not provided. The pop(0) and raw memory manipulation (mstore, add) are also non-recoverable.",
+        "assembly_block_decisions": [
+          {
+            "block_id": "asm_block_3",
+            "decision": "partially_recoverable",
+            "reason": "Contains recoverable mapping and require semantics mixed with non-recoverable low-level Yul operations and memory manipulation."
+          }
+        ],
+        "overlay_projection_policies": [
+          {
+            "target_overlay": "ov_1",
+            "overlay_kind": "RequireOverlay",
+            "exact_solidity_equivalent": false,
+            "output_kind": "semantic_comment",
+            "reason": "The condition 'and(zfPf, iszero(_amount))' uses Yul bitwise 'and' and 'iszero', which are not valid Solidity high-level expressions. The require-like text is misleading as it implies a direct translation, but Solidity cannot express bitwise AND with boolean context without explicit casting or helper functions.",
+            "solidity_candidate": "// require(!(((zfPf & (_amount == 0)) != 0))); // Cannot be directly expressed in Solidity due to Yul bitwise ops",
+            "risks": [
+              "Misleading recovery if interpreted as valid Solidity",
+              "Loss of bitwise logic semantics if simplified"
+            ]
+          },
+          {
+            "target_overlay": "ov_2",
+            "overlay_kind": "RequireOverlay",
+            "exact_solidity_equivalent": false,
+            "output_kind": "semantic_comment",
+            "reason": "Condition 'iszero(eq(zfPf, not(0)))' uses Yul 'not' and 'eq' builtins. 'not(0)' is 0xffffffff... and cannot be expressed in Solidity without uint256(-1) or similar, which is not safe without type context. The require-like text is syntactically invalid in Solidity without explicit type casting.",
+            "solidity_candidate": "// require(!((((zfPf == (~0)) == 0)) && ((zfPf < _amount))); // Yul 'not' and 'eq' not directly translatable",
+            "risks": [
+              "Assuming uint256(-1) may not match original semantics",
+              "Compiler may reject ~0 without explicit type"
+            ]
+          },
+          {
+            "target_overlay": "ov_3",
+            "overlay_kind": "MappingSlot",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "The mapping slot expression 'wZHA[_owner]' is explicitly labeled as solidity_like and matches standard Solidity mapping access. The base is constant '1', indicating a top-level mapping.",
+            "solidity_candidate": "uAnE = keccak256(abi.encodePacked(_owner));",
+            "risks": [
+              "Assumes keccak256(abi.encodePacked(_owner)) is the correct key derivation, which is common but not guaranteed"
+            ]
+          },
+          {
+            "target_overlay": "ov_4",
+            "overlay_kind": "MappingSlot",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "The nested mapping slot 'wZHA[_owner][_spender]' is explicitly labeled as solidity_like. The base is uAnE, which is the keccak256 of _owner, matching standard Solidity nested mapping key derivation.",
+            "solidity_candidate": "Jfwv = keccak256(abi.encodePacked(_owner, uAnE));",
+            "risks": [
+              "Assumes keccak256(abi.encodePacked(_owner, uAnE)) is the correct derivation, which is standard but not formally verified"
+            ]
+          },
+          {
+            "target_overlay": "ov_6",
+            "overlay_kind": "StateVariableRead",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "The state variable 'qBQC' is referenced via 'qBQC.slot', but no Solidity declaration or type is provided. The 'solidity_like' field is empty ('qBQC = ;'), indicating it cannot be safely recovered as a known state variable. The slot may be a custom storage layout.",
+            "solidity_candidate": "",
+            "risks": [
+              "May reference a non-standard storage slot or internal variable",
+              "Recovery as state variable may corrupt storage layout"
+            ]
+          },
+          {
+            "target_overlay": "ov_9",
+            "overlay_kind": "MappingRead",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "The mapping read 'wZHA[_owner][_spender]' is explicitly labeled as solidity_like and matches standard Solidity syntax. The target zfPf is assigned directly from the mapping.",
+            "solidity_candidate": "zfPf = wZHA[_owner][_spender];",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_10",
+            "overlay_kind": "PathConditionedStorageWrite",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "The mapping write 'wZHA[_owner][_spender] = (zfPf - _amount)' is explicitly labeled as solidity_like and matches valid Solidity syntax. The path conditions are handled by surrounding if-blocks.",
+            "solidity_candidate": "wZHA[_owner][_spender] = zfPf - _amount;",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_11",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "mload(0x40) is a low-level memory pointer allocation. Solidity does not expose free memory pointer directly. This must be preserved as assembly.",
+            "solidity_candidate": "",
+            "risks": [
+              "Assuming memory layout may break if compiler changes"
+            ]
+          },
+          {
+            "target_overlay": "ov_12",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "keccak256(bbwz, 64) operates on raw memory. Solidity's keccak256() requires abi.encodePacked or similar, but here the memory layout is manually constructed. Cannot be safely translated without assuming data format.",
+            "solidity_candidate": "",
+            "risks": [
+              "Memory layout assumptions may be incorrect",
+              "ABI encoding may differ from manual mstore"
+            ]
+          },
+          {
+            "target_overlay": "ov_13",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_expression",
+            "reason": "basefee() maps directly to block.basefee in Solidity 0.8+ and is a well-known global variable.",
+            "solidity_candidate": "block.basefee",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_14",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_expression",
+            "reason": "number() maps directly to block.number in Solidity 0.8+.",
+            "solidity_candidate": "block.number",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_15",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "The condition 'eq(sub(a,b), sub(a,b))' is always true. This is a no-op and can be safely removed or replaced with 'if (true)' in Solidity.",
+            "solidity_candidate": "if (true) {",
+            "risks": [
+              "May mask intended logic if the condition was meant to be dynamic"
+            ]
+          },
+          {
+            "target_overlay": "ov_16",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "keccak256(bbwz, 64) again operates on manually constructed memory. Cannot be safely translated to Solidity without knowing exact memory layout.",
+            "solidity_candidate": "",
+            "risks": [
+              "Memory layout assumptions may be incorrect"
+            ]
+          },
+          {
+            "target_overlay": "ov_17",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "sload(Jfwv) is a direct storage read from a known mapping slot (Jfwv resolved as wZHA[_owner][_spender]).",
+            "solidity_candidate": "CCkU = wZHA[_owner][_spender];",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_18",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "Simple assignment zfPf = CCkU is directly translatable.",
+            "solidity_candidate": "zfPf = CCkU;",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_19",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "semantic_comment",
+            "reason": "Yul 'and(zfPf, iszero(_amount))' uses bitwise AND. Solidity cannot express this directly without explicit casting to uint256 and using & operator, but the context is boolean. This is ambiguous.",
+            "solidity_candidate": "// if ((zfPf & (_amount == 0))) // Yul bitwise AND not directly translatable",
+            "risks": [
+              "May be misinterpreted as logical AND",
+              "Type coercion may change semantics"
+            ]
+          },
+          {
+            "target_overlay": "ov_20",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "iszero(zfPf) is equivalent to zfPf == 0 in Solidity.",
+            "solidity_candidate": "if (zfPf == 0) {",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_21",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "keccak256(bbwz, 64) again operates on manually constructed memory. Cannot be safely translated.",
+            "solidity_candidate": "",
+            "risks": [
+              "Memory layout assumptions may be incorrect"
+            ]
+          },
+          {
+            "target_overlay": "ov_22",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "keccak256(bbwz, 64) again operates on manually constructed memory. Cannot be safely translated.",
+            "solidity_candidate": "",
+            "risks": [
+              "Memory layout assumptions may be incorrect"
+            ]
+          },
+          {
+            "target_overlay": "ov_23",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "add(sload(Jfwv), CCkU) is a simple addition of two uint256 values. Can be safely translated to (sload(Jfwv) + CCkU).",
+            "solidity_candidate": "zfPf = wZHA[_owner][_spender] + CCkU;",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_24",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "assembly_preserved",
+            "reason": "gas() is a low-level Yul builtin that returns remaining gas. Solidity has gasleft(), but the semantics of gas() vs gasleft() are not identical in all contexts. Also, the pop(0) after it suggests a side-effect that cannot be modeled in Solidity.",
+            "solidity_candidate": "",
+            "risks": [
+              "gas() vs gasleft() may have different semantics",
+              "pop(0) has no Solidity equivalent"
+            ]
+          },
+          {
+            "target_overlay": "ov_25",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "eq(gbj1enk, and(gbj1enk, gbj1enk)) is equivalent to gbj1enk == gbj1enk, which is always true. This is a no-op.",
+            "solidity_candidate": "if (true) {",
+            "risks": [
+              "May mask intended logic if the condition was meant to be dynamic"
+            ]
+          },
+          {
+            "target_overlay": "ov_26",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "sub(zfPf, CCkU) is a simple subtraction. Can be safely translated.",
+            "solidity_candidate": "zfPf = zfPf - CCkU;",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_27",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": false,
+            "output_kind": "semantic_comment",
+            "reason": "iszero(eq(zfPf, not(0))) uses Yul 'not' and 'eq'. In Solidity, this would require zfPf != type(uint256).max, but 'not(0)' is not directly expressible without type casting, and the context is ambiguous.",
+            "solidity_candidate": "// if (((zfPf == (~0)) == 0)) // Yul 'not' and 'eq' not directly translatable",
+            "risks": [
+              "Assuming type(uint256).max may not match original semantics",
+              "Compiler may reject ~0 without explicit type"
+            ]
+          },
+          {
+            "target_overlay": "ov_28",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "lt(zfPf, _amount) is directly translatable to zfPf < _amount in Solidity.",
+            "solidity_candidate": "if (zfPf < _amount) {",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_29",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_expression",
+            "reason": "basefee() maps directly to block.basefee in Solidity 0.8+.",
+            "solidity_candidate": "block.basefee",
+            "risks": []
+          },
+          {
+            "target_overlay": "ov_30",
+            "overlay_kind": "ExpressionNormalization",
+            "exact_solidity_equivalent": true,
+            "output_kind": "solidity_statement",
+            "reason": "eq(bf51h1a, and(bf51h1a, bf51h1a)) is equivalent to bf51h1a == bf51h1a, which is always true. This is a no-op.",
+            "solidity_candidate": "if (true) {",
+            "risks": [
+              "May mask intended logic if the condition was meant to be dynamic"
+            ]
+          }
+        ],
+        "recommended_recovery_plan": "Recover the function as a Solidity function with the following structure: 1) Preserve low-level memory allocation (mload(0x40)) and keccak256 on memory as assembly blocks. 2) Replace all mapping reads/writes (wZHA[_owner][_spender]) with direct Solidity syntax. 3) Replace block.basefee and block.number with their Solidity equivalents. 4) Replace simple arithmetic and comparisons with Solidity operators. 5) Replace the two always-true conditions (eq(sub(a,b), sub(a,b)) and eq(x, and(x,x))) with 'if (true)'. 6) Replace the two require conditions with semantic comments explaining they cannot be safely translated due to Yul bitwise operations. 7) Preserve pop(0) and gas() as assembly. 8) Do not attempt to recover qBQC.slot as a state variable without additional metadata.",
+        "preserve_assembly_reasons": [
+          "mload(0x40) and mstore operations manipulate raw memory layout not expressible in Solidity",
+          "keccak256(bbwz, 64) uses manually constructed memory, not abi.encodePacked, so cannot be safely translated",
+          "gas() and pop(0) are low-level Yul operations with no Solidity equivalent",
+          "bitwise operations (and, not) in conditions cannot be safely translated to Solidity without type assumptions",
+          "qBQC.slot has no known Solidity variable declaration, so must be preserved as assembly",
+          "The function uses non-standard storage layout and key derivation that cannot be inferred from available metadata"
+        ]
+      }
+    }
+  ]
+}

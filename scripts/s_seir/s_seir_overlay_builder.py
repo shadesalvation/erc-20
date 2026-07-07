@@ -10,10 +10,12 @@ for _sseir_path in (_SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
 
 from typing import Any
 
-from assembly_event_ir import EventDecl, normalize_topic_value
+from assembly_event_ir import EventDecl, is_static_word_type, normalize_topic_value
+from assembly_external_call_ir import PRECOMPILES, native_precompile_call
+from assembly_semantic_ir import parse_int_literal, strip_ssa
 from s_seir_id import IdAllocator
 from s_seir_model import EffectNode, FunctionUnit, SemanticOverlay
-from s_seir_yul_normalize import abi_packed_word, division_guards, invert_condition, normalize_expr, words_from_memory_query
+from s_seir_yul_normalize import division_guards, invert_condition, normalize_expr, words_from_memory_query
 
 
 def hash_candidates_values(candidates: dict[str, tuple[EffectNode, dict[str, Any]]]) -> dict[str, dict[str, Any]]:
@@ -226,6 +228,19 @@ class SemanticOverlayBuilder:
             if e.kind not in {'StorageRead', 'StorageWrite'}:
                 continue
             slot = str(e.attrs.get('slot') or '')
+            version_keys = list(e.attrs.get('slot_versions') or [])
+            if len(version_keys) > 1:
+                path_overlay = self.path_conditioned_storage_overlay(e, type_env, version_keys, slot_expr_by_var, hash_effect_by_var)
+                if path_overlay:
+                    out.append(path_overlay)
+                    statuses = {candidate.get('status') for candidate in path_overlay.attrs.get('candidates', [])}
+                    resolved_accesses = {
+                        candidate.get('access')
+                        for candidate in path_overlay.attrs.get('candidates', [])
+                        if candidate.get('status') == 'resolved'
+                    }
+                    if 'unresolved' in statuses or len(resolved_accesses) > 1:
+                        continue
             slot_key = self.first_known_key(self.storage_slot_keys(e), slot_expr_by_var)
             value = e.attrs.get('value')
             direct_state = type_env.state_var_by_slot(slot)
@@ -265,6 +280,71 @@ class SemanticOverlayBuilder:
                 attrs = {'access': f'storage[{slot}]', 'target': value if e.kind == 'StorageRead' else None, 'value': normalize_expr(value) if e.kind == 'StorageWrite' else None, 'slot': slot, 'slot_versions': e.attrs.get('slot_versions'), 'unresolved_reason': 'unknown_storage_slot'}
                 out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
         return out
+
+    def path_conditioned_storage_overlay(
+        self,
+        effect: EffectNode,
+        type_env: Any,
+        version_keys: list[str],
+        slot_expr_by_var: dict[str, dict[str, Any]],
+        hash_effect_by_var: dict[str, EffectNode],
+    ) -> SemanticOverlay | None:
+        candidates: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        value = effect.attrs.get('value')
+        for key in version_keys:
+            if key in seen:
+                continue
+            seen.add(key)
+            slot_expr = slot_expr_by_var.get(key)
+            if slot_expr:
+                access = slot_expr['access']
+                kind = 'MappingRead' if effect.kind == 'StorageRead' else 'MappingWrite'
+                candidates.append(self.clean({
+                    'slot_key': key,
+                    'status': 'resolved',
+                    'overlay_kind': kind,
+                    'access': access,
+                    'state_variable': slot_expr.get('state_variable'),
+                    'key': slot_expr.get('key'),
+                    'slot_effect': hash_effect_by_var.get(key).effect_id if key in hash_effect_by_var else None,
+                    'solidity_like': self.storage_solidity_like(kind, access, value, effect),
+                    'notes': slot_expr.get('notes', []),
+                }))
+                continue
+            direct_state = type_env.state_var_by_slot(key)
+            if direct_state:
+                kind = 'StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite'
+                candidates.append(self.clean({
+                    'slot_key': key,
+                    'status': 'resolved',
+                    'overlay_kind': kind,
+                    'access': direct_state.name,
+                    'state_variable': direct_state.name,
+                    'solidity_like': f"{value} = {direct_state.name};" if effect.kind == 'StorageRead' and value else f"{direct_state.name} = {normalize_expr(value)};",
+                }))
+                continue
+            candidates.append({
+                'slot_key': key,
+                'status': 'unresolved',
+                'overlay_kind': 'StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite',
+                'access': f'storage[{key}]',
+                'unresolved_reason': 'unknown_storage_slot_version',
+            })
+        if not candidates:
+            return None
+        overlay_kind = 'PathConditionedStorageRead' if effect.kind == 'StorageRead' else 'PathConditionedStorageWrite'
+        attrs = self.clean({
+            'slot': effect.attrs.get('slot'),
+            'slot_versions': version_keys,
+            'target': value if effect.kind == 'StorageRead' else None,
+            'value': normalize_expr(value) if effect.kind == 'StorageWrite' else None,
+            'value_yul': value if effect.kind == 'StorageWrite' else None,
+            'path_states': effect.attrs.get('path_states'),
+            'candidates': candidates,
+            'note': 'storage_effect_has_multiple_ssa_slot_versions',
+        })
+        return self.ov(overlay_kind, effect.effect_id, effect.stmt_refs, attrs)
 
     def mapping_slot_expr(self, type_env: Any, effect: EffectNode, known: dict[str, dict[str, Any]]) -> dict[str, Any] | None:
         words = words_from_memory_query(effect.attrs.get('memory_read'))
@@ -354,6 +434,14 @@ class SemanticOverlayBuilder:
             event = self.match_event_name(e, evs)
             args, notes = self.event_args(event, e)
             name = event.name if event else 'unknownEvent'
+            data_size = parse_int_literal(str(e.attrs.get('data_size') or '').strip())
+            if event:
+                non_indexed = [param for param in event.params if not param.indexed]
+                expected = 32 * len(non_indexed)
+                if data_size is not None and data_size != expected:
+                    notes.append(f'data_length_{data_size}_does_not_match_expected_{expected}')
+                if any(not is_static_word_type(param.type) for param in non_indexed):
+                    notes.append('dynamic_non_indexed_data_not_decoded')
             out.append(self.ov('EventEmit', e.effect_id, e.stmt_refs, {
                 'event': name,
                 'signature': event.signature if event else None,
@@ -369,8 +457,16 @@ class SemanticOverlayBuilder:
     def event_args(self, event: EventDecl | None, effect: EffectNode) -> tuple[list[Any], list[str]]:
         topics = effect.attrs.get('topics', []) or []
         data_words = words_from_memory_query(effect.attrs.get('data_memory'))
-        data_values = [normalize_expr(w.get('value')) for w in data_words if w.get('value') not in {None, 'unknown'}]
+        data_values = []
         notes: list[str] = []
+        for word in data_words:
+            value = word.get('value')
+            if value in {None, 'unknown'}:
+                notes.append('data_word_unknown')
+                continue
+            if word.get('symbolic_candidates'):
+                notes.append('data_word_has_symbolic_overwrite_candidate')
+            data_values.append(normalize_expr(value))
         if not event:
             notes.append('unknown_event_topic0')
             return [normalize_expr(t) for t in topics[1:]] + data_values, notes
@@ -386,6 +482,9 @@ class SemanticOverlayBuilder:
                 data_index += 1
         if any(a is None for a in args):
             notes.append('incomplete_event_argument_recovery')
+        non_indexed_count = len([p for p in event.params if not p.indexed])
+        if len(data_words) < non_indexed_count:
+            notes.append('memory_data_words_incomplete')
         return args, notes
 
     def call_overlays(self, effects: list[EffectNode]) -> list[SemanticOverlay]:
@@ -407,19 +506,52 @@ class SemanticOverlayBuilder:
 
     def precompile(self, attrs: dict[str, Any]) -> dict[str, Any] | None:
         target = self.int_value(attrs.get('target'))
-        table = {1: 'ecrecover', 2: 'sha256', 3: 'ripemd160', 4: 'identity'}
-        if target not in table:
+        if target not in PRECOMPILES:
             return None
         words = words_from_memory_query(attrs.get('input_memory'))
-        input_size = attrs.get('input_size')
         word_values = [w.get('value') for w in words if w.get('value') not in {None, 'unknown'}]
-        native = {'precompile': table[target], 'input_words': [normalize_expr(v) for v in word_values], 'input_memory': attrs.get('input_memory')}
-        if target == 2 and len(word_values) == 1:
-            packed = abi_packed_word(str(word_values[0]), str(input_size))
-            result = f"sha256_result_{attrs.get('cfg_node_id', 'x')}"
-            native['native_precompile'] = {'solidity_like': f"bytes32 {result} = sha256({packed});", 'result_name': result, 'result_expression': f'sha256({packed})', 'output_word_expression': f'uint256({result})', 'elides_success_check': True}
-            native['solidity_like'] = native['native_precompile']['solidity_like']
+        native = {'precompile': PRECOMPILES[target], 'input_words': [normalize_expr(v) for v in word_values], 'input_memory': attrs.get('input_memory')}
+        snapshot = self.call_snapshot(attrs, words)
+        call_args = {
+            'gas': str(attrs.get('gas') or ''),
+            'target': str(attrs.get('target') or ''),
+            'value': str(attrs.get('value') or '0'),
+            'input_ptr': str(attrs.get('input_ptr') or ''),
+            'input_size': str(attrs.get('input_size') or ''),
+            'output_ptr': str(attrs.get('output_ptr') or ''),
+            'output_size': str(attrs.get('output_size') or ''),
+        }
+        lifted = native_precompile_call(PRECOMPILES[target], str(attrs.get('op') or ''), call_args, snapshot, self.int_node(attrs.get('cfg_node_id')) or 0)
+        if lifted:
+            native['native_precompile'] = lifted
+            native['solidity_like'] = lifted.get('solidity_like')
         return native
+
+    @staticmethod
+    def call_snapshot(attrs: dict[str, Any], words: list[dict[str, Any]]) -> dict[str, Any]:
+        input_size = parse_int_literal(strip_ssa(str(attrs.get('input_size') or '')) or str(attrs.get('input_size') or ''))
+        complete = bool(words) and not any(w.get('value') in {None, 'unknown'} for w in words)
+        rendered_words = []
+        for index, word in enumerate(words):
+            rendered_words.append({
+                'value': str(word.get('value')),
+                'size': min(32, max(0, (input_size or 32) - index * 32)),
+                'memory_ssa': word.get('memory_ssa'),
+            })
+        return {
+            'ptr': attrs.get('input_ptr'),
+            'size': attrs.get('input_size'),
+            'base': attrs.get('input_ptr'),
+            'start': 0,
+            'length': input_size,
+            'raw_range': f"memory[{attrs.get('input_ptr')} : {attrs.get('input_ptr')} + {attrs.get('input_size')}]",
+            'selector': None,
+            'arguments': [],
+            'complete_static_abi': False,
+            'source_writes': [],
+            'words': rendered_words,
+            'complete_memory_ssa': complete,
+        }
 
     def precompile_output_overlays(self, effects: list[EffectNode], call_overlays: list[SemanticOverlay]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []

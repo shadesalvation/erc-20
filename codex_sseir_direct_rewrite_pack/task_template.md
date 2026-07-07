@@ -1,0 +1,28 @@
+# Direct Rewrite Task Template
+
+请读取并遵守：
+
+```text
+codex_sseir_direct_rewrite_pack/prompt_direct_sseir_rewrite.md
+```
+
+原始源码：
+
+```text
+codex_sseir_direct_rewrite_pack/samples/0xc7ecc47c0079444cf7dd882130dcdc232ccf9867/Token.sol
+```
+
+S-SEIR compact 语义模型：
+
+```text
+codex_sseir_direct_rewrite_pack/samples/0xc7ecc47c0079444cf7dd882130dcdc232ccf9867/sseir_assembly_compact.json
+```
+
+如 compact 信息不足，可参考完整 S-SEIR：
+
+```text
+codex_sseir_direct_rewrite_pack/samples/0xc7ecc47c0079444cf7dd882130dcdc232ccf9867/sseir_full.json
+```
+
+请不要判断是否可恢复，直接根据 S-SEIR 语义重写 assembly 块，并输出完整 Solidity 源码。
+

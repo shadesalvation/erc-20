@@ -1,0 +1,295 @@
+{
+  "function_recoverability": "partially_recoverable",
+  "rationale": "The function contains several high-level semantic overlays (MappingRead, MappingWrite, StateVariableRead, EventEmit, PrecompileCall) that can be recovered as Solidity statements. However, the staticcall to precompile address 2 is incorrectly interpreted as sha256 in solidity_like, but the actual input (msg.sender << 96) and output usage do not match standard sha256 semantics. Additionally, the condition 'iszero(xor(bfo228g, bfo228g))' is always true and serves no logical purpose — it is likely a compiler artifact. The use of memory pointers (bbwz) for storage slot calculation and the reliance on assembly-local variables (e.g., XCUz, iLho) prevent full high-level recovery. The EventEmit is recoverable because the event topic matches a known Transfer event. The require overlays for zero-address checks are recoverable, but the require overlay for staticcall is not, because it wraps a low-level precompile call that cannot be expressed as valid Solidity without misrepresenting its semantics.",
+  "assembly_block_decisions": "preserve_assembly",
+  "overlay_projection_policies": [
+    {
+      "target_overlay": "ov_1",
+      "overlay_kind": "RequireOverlay",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "Condition _from != address(0) is a standard guard and directly maps to require(_from != address(0));",
+      "solidity_candidate": "require(_from != address(0));",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_2",
+      "overlay_kind": "RequireOverlay",
+      "exact_solidity_equivalent": false,
+      "output_kind": "semantic_comment",
+      "reason": "Condition !((!(iszero(_from))) && ((_to == 0))) is logically equivalent to (_from != 0) || (_to != 0), but since ov_1 already enforces _from != 0, this is redundant. The expression is convoluted and likely an artifact; cannot be safely reduced to clean Solidity without assumptions.",
+      "solidity_candidate": "// Redundant or artifact condition: !((!(iszero(_from))) && ((_to == 0)))",
+      "risks": [
+        "May mask intended logic if _to == 0 was meant to be restricted independently"
+      ]
+    },
+    {
+      "target_overlay": "ov_3",
+      "overlay_kind": "RequireOverlay",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "The condition wraps a staticcall to precompile address 2 with raw memory args. Even though ov_23 labels it as sha256, the input is (msg.sender << 96), which is not standard ABI-encoded data. Solidity has no built-in equivalent for this low-level precompile call with custom memory layout. Cannot be expressed as valid Solidity without misrepresentation.",
+      "solidity_candidate": "",
+      "risks": [
+        "Mislabeling as sha256 would be semantically incorrect; input is not ABI-encoded"
+      ]
+    },
+    {
+      "target_overlay": "ov_4",
+      "overlay_kind": "RequireOverlay",
+      "exact_solidity_equivalent": false,
+      "output_kind": "semantic_comment",
+      "reason": "Condition (tfe9zci != (tfe9zci * 1)) is always false because any number multiplied by 1 equals itself. This is a compiler artifact or dead code. Cannot be meaningfully recovered as Solidity without inventing logic.",
+      "solidity_candidate": "// Dead code: tfe9zci != (tfe9zci * 1) is always false",
+      "risks": [
+        "Might be intended as a timing or reentrancy guard, but current form is logically invalid"
+      ]
+    },
+    {
+      "target_overlay": "ov_14",
+      "overlay_kind": "MappingRead",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "MappingRead overlay for UbLX[_from] is well-defined with known state variable and key. The sload is correctly abstracted as a mapping access.",
+      "solidity_candidate": "qVPd = UbLX[_from];",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_15",
+      "overlay_kind": "StateVariableRead",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "StateVariableRead for sSgI is directly mapped to a storage variable read. The slot is explicitly named and matches Solidity storage access.",
+      "solidity_candidate": "Fpzy = sSgI;",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_17",
+      "overlay_kind": "MappingWrite",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "MappingWrite for UbLX[_from] = (qVPd - _amount) is a standard state update. The value is a simple arithmetic expression.",
+      "solidity_candidate": "UbLX[_from] = qVPd - _amount;",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_19",
+      "overlay_kind": "MappingRead",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "MappingRead for UbLX[_to] is well-defined with known state variable and key. The sload is correctly abstracted as a mapping access.",
+      "solidity_candidate": "bXFg = UbLX[_to];",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_21",
+      "overlay_kind": "MappingWrite",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "MappingWrite for UbLX[_to] = (bXFg + _amount) is a standard state update. The value is a simple arithmetic expression.",
+      "solidity_candidate": "UbLX[_to] = bXFg + _amount;",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_22",
+      "overlay_kind": "EventEmit",
+      "exact_solidity_equivalent": true,
+      "output_kind": "solidity_statement",
+      "reason": "EventEmit has known event name 'Transfer', correct signature, and indexed arguments matching standard ERC-20 Transfer event. Topic0 matches the canonical keccak256 of 'Transfer(address,address,uint256)'.",
+      "solidity_candidate": "emit Transfer(_from, _to, _amount);",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_23",
+      "overlay_kind": "PrecompileCall",
+      "exact_solidity_equivalent": false,
+      "output_kind": "low_level_call_statement",
+      "reason": "The staticcall to address 2 with input (msg.sender << 96) and output size 32 does not correspond to any standard Solidity precompile. The solidity_like claim of sha256 is incorrect because the input is not ABI-encoded. This is a custom low-level call that must be preserved as-is.",
+      "solidity_candidate": "assembly { staticcall(gasleft(), 0x02, bbwz, 20, bbwz, 32) }",
+      "risks": [
+        "May be a custom precompile or internal system call; misrepresenting as sha256 would be semantically wrong"
+      ]
+    },
+    {
+      "target_overlay": "ov_24",
+      "overlay_kind": "PrecompileOutputRead",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "This overlay depends on ov_23, which cannot be safely recovered. The output read from memory (mload(bbwz)) is tied to a low-level precompile whose semantics are not expressible in Solidity. Cannot be recovered independently.",
+      "solidity_candidate": "",
+      "risks": [
+        "Assuming uint256(sha256_result_19) is incorrect; input is not standard ABI data"
+      ]
+    },
+    {
+      "target_overlay": "ov_25",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for condition normalization. It does not represent a recoverable statement on its own. The condition is already covered by ov_1.",
+      "solidity_candidate": "// Normalized: iszero(_from) -> (_from == 0)",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_26",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for condition normalization. It does not represent a recoverable statement on its own. The condition is already covered by ov_2.",
+      "solidity_candidate": "// Normalized: iszero(_to) -> (_to == 0)",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_27",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "bbwz = mload(0x40) is a memory pointer assignment. This is low-level memory management and cannot be expressed in high-level Solidity without preserving the assembly block.",
+      "solidity_candidate": "",
+      "risks": [
+        "Memory pointer management is inherently low-level and not representable in Solidity"
+      ]
+    },
+    {
+      "target_overlay": "ov_28",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for block.basefee. It does not represent a recoverable statement on its own. The value is unused in any recoverable logic.",
+      "solidity_candidate": "// bfo228g = block.basefee; (unused)",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_29",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for block.number. It does not represent a recoverable statement on its own. The value is unused in any recoverable logic.",
+      "solidity_candidate": "// nezy9b8 = block.number; (unused)",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_30",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for a condition that is always true (xor(x,x)==0). It serves no purpose and should be preserved as a comment.",
+      "solidity_candidate": "// Always true: (bfo228g ^ bfo228g) == 0",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_31",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "XCUz = keccak256(bbwz, 64) computes a storage slot from memory. This is a low-level slot calculation and cannot be expressed in Solidity without preserving the assembly context.",
+      "solidity_candidate": "",
+      "risks": [
+        "Slot calculation depends on memory layout and pointer arithmetic"
+      ]
+    },
+    {
+      "target_overlay": "ov_32",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for sload(XCUz). It is already covered by the MappingRead overlay ov_14. Redundant for recovery.",
+      "solidity_candidate": "// Redundant: sload(XCUz) covered by UbLX[_from]",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_33",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for sload(sSgI.slot). It is already covered by the StateVariableRead overlay ov_15. Redundant for recovery.",
+      "solidity_candidate": "// Redundant: sload(sSgI.slot) covered by sSgI",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_34",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "This normalizes the staticcall condition, but the staticcall itself cannot be recovered. The normalization is tied to an unrecoverable low-level call.",
+      "solidity_candidate": "",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_35",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "YvIh = mload(bbwz) reads from memory after a precompile call. This is low-level memory access and cannot be expressed in Solidity without preserving the assembly context.",
+      "solidity_candidate": "",
+      "risks": [
+        "Memory read depends on precompile output, which is low-level"
+      ]
+    },
+    {
+      "target_overlay": "ov_36",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for (Fpzy == YvIh). It is already covered by the condition in the if-block. Redundant for recovery.",
+      "solidity_candidate": "// Normalized: (Fpzy == YvIh)",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_37",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for (qVPd < _amount). It is already covered by the if-block condition. Redundant for recovery.",
+      "solidity_candidate": "// Normalized: qVPd < _amount",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_38",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for block.timestamp. It does not represent a recoverable statement on its own. The value is used only in a dead condition.",
+      "solidity_candidate": "// tfe9zci = block.timestamp; (used in dead code)",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_39",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for a condition that is always false. It serves no purpose and should be preserved as a comment.",
+      "solidity_candidate": "// Always false: tfe9zci == (tfe9zci * 1)",
+      "risks": []
+    },
+    {
+      "target_overlay": "ov_40",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": false,
+      "output_kind": "assembly_preserved",
+      "reason": "iLho = keccak256(bbwz, 64) computes a storage slot from memory. This is a low-level slot calculation and cannot be expressed in Solidity without preserving the assembly context.",
+      "solidity_candidate": "",
+      "risks": [
+        "Slot calculation depends on memory layout and pointer arithmetic"
+      ]
+    },
+    {
+      "target_overlay": "ov_41",
+      "overlay_kind": "ExpressionNormalization",
+      "exact_solidity_equivalent": true,
+      "output_kind": "semantic_comment",
+      "reason": "This is a helper overlay for sload(iLho). It is already covered by the MappingRead overlay ov_19. Redundant for recovery.",
+      "solidity_candidate": "// Redundant: sload(iLho) covered by UbLX[_to]",
+      "risks": []
+    }
+  ],
+  "recommended_recovery_plan": "Preserve the entire assembly block as a single assembly { ... } construct. Use semantic comments to annotate the recoverable high-level operations: require(_from != address(0)); emit Transfer(_from, _to, _amount); UbLX[_from] = qVPd - _amount; UbLX[_to] = bXFg + _amount; and sSgI. All other operations — especially the staticcall to address 2, memory pointer management, and slot hashing — must remain in assembly. Do not attempt to reconstruct the staticcall as sha256; it is a custom low-level call. The redundant and dead conditions should be commented out for clarity.",
+  "preserve_assembly_reasons": [
+    "Memory pointer management (bbwz = mload(0x40)) is inherently low-level and not representable in Solidity.",
+    "Storage slot calculation via keccak256(bbwz, 64) depends on memory layout and cannot be abstracted to high-level mapping access without losing semantics.",
+    "Staticcall to precompile address 2 with custom input (msg.sender << 96) does not match any standard Solidity precompile and cannot be safely represented as sha256 or any other built-in.",
+    "Assembly-local variables (XCUz, iLho, bbwz) are used as intermediate storage and cannot be mapped to Solidity variables without introducing unsafe assumptions.",
+    "The condition 'iszero(xor(bfo228g, bfo228g))' is always true and serves no purpose — preserving assembly avoids misinterpretation.",
+    "The condition 'eq(tfe9zci, mul(tfe9zci, 1))' is always false — preserving assembly avoids false logic inference."
+  ]
+}

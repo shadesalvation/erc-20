@@ -1,0 +1,14 @@
+function approve(address _spender, uint256 _amount) virtual public returns (bool) {
+        assembly {
+            let bbwz := mload(0x40)
+            mstore(bbwz, caller())
+            mstore(add(bbwz, 0x20), wZHA.slot)
+            let ZFHJ := keccak256(bbwz, 0x40)
+            mstore(bbwz, _spender)
+            mstore(add(bbwz, 0x20), ZFHJ)
+            let akRJ := keccak256(bbwz, 0x40)
+        }
+        wZHA[msg.sender][_spender] = _amount;
+        emit Approval(msg.sender, _spender, _amount);
+        return true;
+    }

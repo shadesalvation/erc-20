@@ -1,0 +1,300 @@
+S-SEIR Assembly LLM Compact Input
+Schema: s-seir-assembly-llm-compact/v1
+
+Function Token._transfer(address, address, uint256)
+  Task: Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.
+  FunctionSource:
+    function _transfer(address _from, address _to, uint256 _amount) virtual internal {
+            assembly {
+                if iszero(_from) {
+                    revert(0, 0)
+                }
+                if iszero(_to) {
+                    revert(0, 0)
+                }
+                let bbwz := mload(0x40)
+                let bfo228g := basefee()
+                let nezy9b8 := number()
+                if iszero(xor(bfo228g, bfo228g)) {
+                    mstore(bbwz, _from)
+                    mstore(add(bbwz, 32), 0)
+                }
+                let XCUz := keccak256(bbwz, 64)
+                let qVPd := sload(XCUz)
+                let Fpzy := sload(sSgI.slot)
+                mstore(bbwz, shl(96, caller()))
+                if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) {
+                    revert(0, 0)
+                }
+                let YvIh := mload(bbwz)
+                if iszero(eq(Fpzy, YvIh)) {
+                    if lt(qVPd, _amount) {
+                        let tfe9zci := timestamp()
+                        if eq(tfe9zci, mul(tfe9zci, 1)) {
+                            revert(0, 0)
+                        }
+                    }
+                }
+                sstore(XCUz, sub(qVPd, _amount))
+                mstore(bbwz, _to)
+                mstore(add(bbwz, 32), 0)
+                let iLho := keccak256(bbwz, 64)
+                let bXFg := sload(iLho)
+                sstore(iLho, add(bXFg, _amount))
+                mstore(bbwz, _amount)
+                log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+            }
+        }
+  AssemblyBlocks:
+    asm_block_1 src=2079:1372:0
+      assembly {
+                  if iszero(_from) {
+                      revert(0, 0)
+                  }
+                  if iszero(_to) {
+                      revert(0, 0)
+                  }
+                  let bbwz := mload(0x40)
+                  let bfo228g := basefee()
+                  let nezy9b8 := number()
+                  if iszero(xor(bfo228g, bfo228g)) {
+                      mstore(bbwz, _from)
+                      mstore(add(bbwz, 32), 0)
+                  }
+                  let XCUz := keccak256(bbwz, 64)
+                  let qVPd := sload(XCUz)
+                  let Fpzy := sload(sSgI.slot)
+                  mstore(bbwz, shl(96, caller()))
+                  if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) {
+                      revert(0, 0)
+                  }
+                  let YvIh := mload(bbwz)
+                  if iszero(eq(Fpzy, YvIh)) {
+                      if lt(qVPd, _amount) {
+                          let tfe9zci := timestamp()
+                          if eq(tfe9zci, mul(tfe9zci, 1)) {
+                              revert(0, 0)
+                          }
+                      }
+                  }
+                  sstore(XCUz, sub(qVPd, _amount))
+                  mstore(bbwz, _to)
+                  mstore(add(bbwz, 32), 0)
+                  let iLho := keccak256(bbwz, 64)
+                  let bXFg := sload(iLho)
+                  sstore(iLho, add(bXFg, _amount))
+                  mstore(bbwz, _amount)
+                  log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+              }
+  ControlSummary: blocks=40 edges=46 asm_blocks=39 branch=True loop=True
+  EffectCounts: {"MemoryWrite": 22, "Branch": 7, "Revert": 4, "ValueDef": 10, "MemoryRead": 2, "MemoryHash": 2, "StorageRead": 3, "StaticCall": 1, "StorageWrite": 2, "EventLog": 1, "BranchMaterialization": 1}
+  SemanticOverlays:
+    ov_1 RequireOverlay refs=['asm_s_2'] attrs={"condition": "_from != address(0)", "nearest_condition": "iszero(_from)", "require_like": "require(_from != address(0));", "revert_payload": "empty", "control_path": ["iszero(_from)"], "merged_conditions": ["iszero(_from)"], "discarded_before_revert": []}
+    ov_2 RequireOverlay refs=['asm_s_4'] attrs={"condition": "!((!(iszero(_from))) && ((_to == 0)))", "nearest_condition": "iszero(_to)", "require_like": "require(!((!(iszero(_from))) && ((_to == 0))));", "revert_payload": "empty", "control_path": ["!(iszero(_from)) && iszero(_to)"], "merged_conditions": ["!(iszero(_from))", "iszero(_to)"], "discarded_before_revert": []}
+    ov_3 RequireOverlay refs=['asm_s_16'] attrs={"condition": "(staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) != 0)", "nearest_condition": "iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))", "require_like": "require((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) != 0));", "revert_payload": "empty", "control_path": ["!(iszero(_from)) && !(iszero(_to)) && !(iszero(xor(bfo228g, bfo228g))) && iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))", "!(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g)) && iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))"], "merged_conditions": ["iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))"], "discarded_before_revert": []}
+    ov_4 RequireOverlay refs=['asm_s_22'] attrs={"condition": "(tfe9zci != (tfe9zci * 1))", "nearest_condition": "eq(tfe9zci, mul(tfe9zci, 1))", "require_like": "require((tfe9zci != (tfe9zci * 1)));", "revert_payload": "empty", "control_path": ["!(iszero(_from)) && !(iszero(_to)) && !(iszero(xor(bfo228g, bfo228g))) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && iszero(eq(Fpzy, YvIh)) && lt(qVPd, _amount) && eq(tfe9zci, mul(tfe9zci, 1))", "!(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g)) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && iszero(eq(Fpzy, YvIh)) && lt(qVPd, _amount) && eq(tfe9zci, mul(tfe9zci, 1))"], "merged_conditions": ["eq(tfe9zci, mul(tfe9zci, 1))"], "discarded_before_revert": []}
+    ov_5 MappingSlot refs=['asm_s_11'] attrs={"target": "XCUz", "target_key": "XCUz__ssa4", "expression": "UbLX[_from]", "state_variable": "UbLX", "key": "_from", "base": "0", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": ["discarded_unknown_memory_branch", "discarded_unknown_memory_branch"]}
+    ov_6 MappingSlot refs=['asm_s_11'] attrs={"target": "XCUz", "target_key": "XCUz__ssa6", "expression": "UbLX[_from]", "state_variable": "UbLX", "key": "_from", "base": "0", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": ["discarded_unknown_memory_branch", "discarded_unknown_memory_branch"]}
+    ov_7 MappingSlot refs=['asm_s_26'] attrs={"target": "iLho", "target_key": "iLho__ssa14", "expression": "UbLX[_to]", "state_variable": "UbLX", "key": "_to", "base": "0", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_8 MappingSlot refs=['asm_s_26'] attrs={"target": "iLho", "target_key": "iLho__ssa16", "expression": "UbLX[_to]", "state_variable": "UbLX", "key": "_to", "base": "0", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_9 MappingSlot refs=['asm_s_26'] attrs={"target": "iLho", "target_key": "iLho__ssa17", "expression": "UbLX[_to]", "state_variable": "UbLX", "key": "_to", "base": "0", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_10 MappingSlot refs=['asm_s_26'] attrs={"target": "iLho", "target_key": "iLho__ssa20", "expression": "UbLX[_to]", "state_variable": "UbLX", "key": "_to", "base": "0", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_11 MappingSlot refs=['asm_s_26'] attrs={"target": "iLho", "target_key": "iLho__ssa22", "expression": "UbLX[_to]", "state_variable": "UbLX", "key": "_to", "base": "0", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_12 MappingSlot refs=['asm_s_26'] attrs={"target": "iLho", "target_key": "iLho__ssa24", "expression": "UbLX[_to]", "state_variable": "UbLX", "key": "_to", "base": "0", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_13 PathConditionedStorageRead refs=['asm_s_12'] attrs={"slot": "XCUz", "target": "qVPd", "path_states": ["!(iszero(_from)) && !(iszero(_to)) && !(iszero(xor(bfo228g, bfo228g)))", "!(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g))"], "candidates": [{"slot_key": "XCUz__ssa4", "status": "resolved", "overlay_kind": "MappingRead", "access": "UbLX[_from]", "state_variable": "UbLX", "key": "_from", "slot_effect": "eff_36", "solidity_like": "qVPd = UbLX[_from];", "notes": ["discarded_unknown_memory_branch", "discarded_unknown_memory_branch"]}, {"slot_key": "XCUz__ssa6", "status": "resolved", "overlay_kind": "MappingRead", "access": "UbLX[_from]", "state_variable": "UbLX", "key": "_from", "slot_effect": "eff_36", "solidity_like": "q...
+    ov_14 MappingRead refs=['asm_s_11', 'asm_s_12'] attrs={"access": "UbLX[_from]", "target": "qVPd", "state_variable": "UbLX", "key": "_from", "slot": "XCUz", "slot_key": "XCUz__ssa4", "solidity_like": "qVPd = UbLX[_from];", "notes": ["discarded_unknown_memory_branch", "discarded_unknown_memory_branch"]}
+    ov_15 StateVariableRead refs=['asm_s_13'] attrs={"access": "sSgI", "target": "Fpzy", "state_variable": "sSgI", "slot": "sSgI.slot", "solidity_like": "Fpzy = sSgI;"}
+    ov_16 PathConditionedStorageWrite refs=['asm_s_23'] attrs={"slot": "XCUz", "value": "(qVPd - _amount)", "value_yul": "sub(qVPd, _amount)", "path_states": ["!(iszero(_from)) && !(iszero(_to)) && !(iszero(xor(bfo228g, bfo228g))) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && !(iszero(eq(Fpzy, YvIh)))", "!(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g)) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && !(iszero(eq(Fpzy, YvIh)))", "!(iszero(_from)) && !(iszero(_to)) && !(iszero(xor(bfo228g, bfo228g))) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && iszero(eq(Fpzy, YvIh)) && !(lt(qVPd, _amount))", "!(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g)) && !(iszero(staticcall(gas(), 2, bbwz, ...
+    ov_17 MappingWrite refs=['asm_s_11', 'asm_s_23'] attrs={"access": "UbLX[_from]", "value": "(qVPd - _amount)", "value_yul": "sub(qVPd, _amount)", "state_variable": "UbLX", "key": "_from", "slot": "XCUz", "slot_key": "XCUz__ssa4", "solidity_like": "UbLX[_from] = (qVPd - _amount);", "notes": ["discarded_unknown_memory_branch", "discarded_unknown_memory_branch"]}
+    ov_18 PathConditionedStorageRead refs=['asm_s_27'] attrs={"slot": "iLho", "target": "bXFg", "path_states": ["!(iszero(_from)) && !(iszero(_to)) && !(iszero(xor(bfo228g, bfo228g))) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && !(iszero(eq(Fpzy, YvIh)))", "!(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g)) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && !(iszero(eq(Fpzy, YvIh)))", "!(iszero(_from)) && !(iszero(_to)) && !(iszero(xor(bfo228g, bfo228g))) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && iszero(eq(Fpzy, YvIh)) && !(lt(qVPd, _amount))", "!(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g)) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && iszero(eq(Fpzy, YvIh)) && !...
+    ov_19 MappingRead refs=['asm_s_26', 'asm_s_27'] attrs={"access": "UbLX[_to]", "target": "bXFg", "state_variable": "UbLX", "key": "_to", "slot": "iLho", "slot_key": "iLho__ssa14", "solidity_like": "bXFg = UbLX[_to];", "notes": []}
+    ov_20 PathConditionedStorageWrite refs=['asm_s_28'] attrs={"slot": "iLho", "value": "(bXFg + _amount)", "value_yul": "add(bXFg, _amount)", "path_states": ["!(iszero(_from)) && !(iszero(_to)) && !(iszero(xor(bfo228g, bfo228g))) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && !(iszero(eq(Fpzy, YvIh)))", "!(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g)) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && !(iszero(eq(Fpzy, YvIh)))", "!(iszero(_from)) && !(iszero(_to)) && !(iszero(xor(bfo228g, bfo228g))) && !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))) && iszero(eq(Fpzy, YvIh)) && !(lt(qVPd, _amount))", "!(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g)) && !(iszero(staticcall(gas(), 2, bbwz, ...
+    ov_21 MappingWrite refs=['asm_s_26', 'asm_s_28'] attrs={"access": "UbLX[_to]", "value": "(bXFg + _amount)", "value_yul": "add(bXFg, _amount)", "state_variable": "UbLX", "key": "_to", "slot": "iLho", "slot_key": "iLho__ssa14", "solidity_like": "UbLX[_to] = (bXFg + _amount);", "notes": []}
+    ov_22 EventEmit refs=['asm_s_30'] attrs={"event": "Transfer", "signature": "Transfer(address,address,uint256)", "topic0": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef", "args": ["_from", "_to", "_amount"], "topics": ["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef", "_from", "_to"]}
+    ov_23 PrecompileCall refs=['asm_s_15'] attrs={"op": "staticcall", "target": "2", "gas": "gasleft()", "input_size": "20", "output_size": "32", "solidity_like": "bytes32 sha256_result_19 = sha256(abi.encodePacked(bytes20(msg.sender)));"}
+    ov_24 PrecompileOutputRead refs=['asm_s_17'] attrs={"source_precompile_overlay": "ov_23", "target": "YvIh", "value": "uint256(sha256_result_19)", "solidity_like": "YvIh = uint256(sha256_result_19);"}
+    ov_25 ExpressionNormalization refs=['asm_s_1'] attrs={"expression": "iszero(_from)", "solidity_like": "if ((_from == 0))", "context": "condition", "division_guards": []}
+    ov_26 ExpressionNormalization refs=['asm_s_3'] attrs={"expression": "iszero(_to)", "solidity_like": "if ((_to == 0))", "context": "condition", "division_guards": []}
+    ov_27 ExpressionNormalization refs=['asm_s_5'] attrs={"target": "bbwz", "expression": "mload(0x40)", "solidity_like": "bbwz = mload(0x40);", "context": "value", "division_guards": []}
+    ov_28 ExpressionNormalization refs=['asm_s_6'] attrs={"target": "bfo228g", "expression": "basefee()", "solidity_like": "bfo228g = block.basefee;", "context": "value", "division_guards": []}
+    ov_29 ExpressionNormalization refs=['asm_s_7'] attrs={"target": "nezy9b8", "expression": "number()", "solidity_like": "nezy9b8 = block.number;", "context": "value", "division_guards": []}
+    ov_30 ExpressionNormalization refs=['asm_s_8'] attrs={"expression": "iszero(xor(bfo228g, bfo228g))", "solidity_like": "if (((bfo228g ^ bfo228g) == 0))", "context": "condition", "division_guards": []}
+    ov_31 ExpressionNormalization refs=['asm_s_11'] attrs={"target": "XCUz", "expression": "keccak256(bbwz, 64)", "solidity_like": "XCUz = keccak256(bbwz, 64);", "context": "value", "division_guards": []}
+    ov_32 ExpressionNormalization refs=['asm_s_12'] attrs={"target": "qVPd", "expression": "sload(XCUz)", "solidity_like": "qVPd = sload(XCUz);", "context": "value", "division_guards": []}
+    ov_33 ExpressionNormalization refs=['asm_s_13'] attrs={"target": "Fpzy", "expression": "sload(sSgI.slot)", "solidity_like": "Fpzy = sload(sSgI.slot);", "context": "value", "division_guards": []}
+    ov_34 ExpressionNormalization refs=['asm_s_15'] attrs={"expression": "iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))", "solidity_like": "if ((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0))", "context": "condition", "division_guards": []}
+    ov_35 ExpressionNormalization refs=['asm_s_17'] attrs={"target": "YvIh", "expression": "mload(bbwz)", "solidity_like": "YvIh = mload(bbwz);", "context": "value", "division_guards": []}
+    ov_36 ExpressionNormalization refs=['asm_s_18'] attrs={"expression": "iszero(eq(Fpzy, YvIh))", "solidity_like": "if (((Fpzy == YvIh) == 0))", "context": "condition", "division_guards": []}
+    ov_37 ExpressionNormalization refs=['asm_s_19'] attrs={"expression": "lt(qVPd, _amount)", "solidity_like": "if ((qVPd < _amount))", "context": "condition", "division_guards": []}
+    ov_38 ExpressionNormalization refs=['asm_s_20'] attrs={"target": "tfe9zci", "expression": "timestamp()", "solidity_like": "tfe9zci = block.timestamp;", "context": "value", "division_guards": []}
+    ov_39 ExpressionNormalization refs=['asm_s_21'] attrs={"expression": "eq(tfe9zci, mul(tfe9zci, 1))", "solidity_like": "if ((tfe9zci == (tfe9zci * 1)))", "context": "condition", "division_guards": []}
+    ov_40 ExpressionNormalization refs=['asm_s_26'] attrs={"target": "iLho", "expression": "keccak256(bbwz, 64)", "solidity_like": "iLho = keccak256(bbwz, 64);", "context": "value", "division_guards": []}
+    ov_41 ExpressionNormalization refs=['asm_s_27'] attrs={"target": "bXFg", "expression": "sload(iLho)", "solidity_like": "bXFg = sload(iLho);", "context": "value", "division_guards": []}
+
+Function Token.approve(address, uint256)
+  Task: Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.
+  FunctionSource:
+    function approve(address _spender, uint256 _amount) virtual public returns (bool) {
+            assembly {
+                let bbwz := mload(0x40)
+                mstore(bbwz, caller())
+                mstore(add(bbwz, 0x20), wZHA.slot)
+                let ZFHJ := keccak256(bbwz, 0x40)
+                mstore(bbwz, _spender)
+                mstore(add(bbwz, 0x20), ZFHJ)
+                let akRJ := keccak256(bbwz, 0x40)
+                sstore(akRJ, _amount)
+                log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+                mstore(bbwz, _amount)
+            }
+            return true;
+        }
+  AssemblyBlocks:
+    asm_block_2 src=3555:492:0
+      assembly {
+                  let bbwz := mload(0x40)
+                  mstore(bbwz, caller())
+                  mstore(add(bbwz, 0x20), wZHA.slot)
+                  let ZFHJ := keccak256(bbwz, 0x40)
+                  mstore(bbwz, _spender)
+                  mstore(add(bbwz, 0x20), ZFHJ)
+                  let akRJ := keccak256(bbwz, 0x40)
+                  sstore(akRJ, _amount)
+                  log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+                  mstore(bbwz, _amount)
+              }
+  ControlSummary: blocks=14 edges=13 asm_blocks=12 branch=False loop=True
+  EffectCounts: {"MemoryWrite": 5, "ValueDef": 3, "MemoryRead": 1, "MemoryHash": 2, "StorageWrite": 1, "EventLog": 1}
+  SemanticOverlays:
+    ov_1 MappingSlot refs=['asm_s_4'] attrs={"target": "ZFHJ", "target_key": "ZFHJ__ssa2", "expression": "wZHA[msg.sender]", "state_variable": "wZHA", "key": "msg.sender", "base": "wZHA.slot", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_2 MappingSlot refs=['asm_s_7'] attrs={"target": "akRJ", "target_key": "akRJ__ssa3", "expression": "wZHA[msg.sender][_spender]", "state_variable": "wZHA", "key": "_spender", "base": "ZFHJ", "slot_kind": "nested_mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_3 MappingWrite refs=['asm_s_7', 'asm_s_8'] attrs={"access": "wZHA[msg.sender][_spender]", "value": "_amount", "value_yul": "_amount", "state_variable": "wZHA", "key": "_spender", "slot": "akRJ", "slot_key": "akRJ__ssa3", "solidity_like": "wZHA[msg.sender][_spender] = _amount;", "notes": []}
+    ov_4 EventEmit refs=['asm_s_9'] attrs={"event": "unknownEvent", "signature": null, "topic0": "0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0", "args": ["msg.sender", "_spender", "_spender"], "topics": ["0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0", "msg.sender", "_spender"]}
+    ov_5 ExpressionNormalization refs=['asm_s_1'] attrs={"target": "bbwz", "expression": "mload(0x40)", "solidity_like": "bbwz = mload(0x40);", "context": "value", "division_guards": []}
+    ov_6 ExpressionNormalization refs=['asm_s_4'] attrs={"target": "ZFHJ", "expression": "keccak256(bbwz, 0x40)", "solidity_like": "ZFHJ = keccak256(bbwz, 0x40);", "context": "value", "division_guards": []}
+    ov_7 ExpressionNormalization refs=['asm_s_7'] attrs={"target": "akRJ", "expression": "keccak256(bbwz, 0x40)", "solidity_like": "akRJ = keccak256(bbwz, 0x40);", "context": "value", "division_guards": []}
+
+Function Token._spendAllowance(address, address, uint256)
+  Task: Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.
+  FunctionSource:
+    function _spendAllowance(address _owner, address _spender, uint256 _amount) virtual internal {
+            assembly {
+                let bbwz := mload(0x40)
+                mstore(bbwz, sload(qBQC.slot))
+                mstore(add(bbwz, 32), 1)
+                let uAnE := keccak256(bbwz, 64)
+                let bcw8ayf := basefee()
+                let ncwupwx := number()
+                if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
+                    mstore(bbwz, _owner)
+                    mstore(add(bbwz, 32), uAnE)
+                }
+                let Jfwv := keccak256(bbwz, 64)
+                let CCkU := sload(Jfwv)
+                let zfPf := CCkU
+                if and(zfPf, iszero(_amount)) {
+                    revert(0, 0)
+                }
+                if iszero(zfPf) {
+                    mstore(bbwz, _owner)
+                    mstore(add(bbwz, 32), 1)
+                    uAnE := keccak256(bbwz, 64)
+                    mstore(bbwz, _spender)
+                    mstore(add(bbwz, 32), uAnE)
+                    Jfwv := keccak256(bbwz, 64)
+                    zfPf := add(sload(Jfwv), CCkU)
+                }
+                let gbj1enk := gas()
+                pop(0)
+                if eq(gbj1enk, and(gbj1enk, gbj1enk)) {
+                    zfPf := sub(zfPf, CCkU)
+                }
+                if iszero(eq(zfPf, not(0))) {
+                    if lt(zfPf, _amount) {
+                        revert(0, 0)
+                    }
+                    let bf51h1a := basefee()
+                    pop(0)
+                    if eq(bf51h1a, and(bf51h1a, bf51h1a)) {
+                        sstore(Jfwv, sub(zfPf, _amount))
+                    }
+                }
+            }
+        }
+  AssemblyBlocks:
+    asm_block_3 src=4183:1445:0
+      assembly {
+                  let bbwz := mload(0x40)
+                  mstore(bbwz, sload(qBQC.slot))
+                  mstore(add(bbwz, 32), 1)
+                  let uAnE := keccak256(bbwz, 64)
+                  let bcw8ayf := basefee()
+                  let ncwupwx := number()
+                  if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
+                      mstore(bbwz, _owner)
+                      mstore(add(bbwz, 32), uAnE)
+                  }
+                  let Jfwv := keccak256(bbwz, 64)
+                  let CCkU := sload(Jfwv)
+                  let zfPf := CCkU
+                  if and(zfPf, iszero(_amount)) {
+                      revert(0, 0)
+                  }
+                  if iszero(zfPf) {
+                      mstore(bbwz, _owner)
+                      mstore(add(bbwz, 32), 1)
+                      uAnE := keccak256(bbwz, 64)
+                      mstore(bbwz, _spender)
+                      mstore(add(bbwz, 32), uAnE)
+                      Jfwv := keccak256(bbwz, 64)
+                      zfPf := add(sload(Jfwv), CCkU)
+                  }
+                  let gbj1enk := gas()
+                  pop(0)
+                  if eq(gbj1enk, and(gbj1enk, gbj1enk)) {
+                      zfPf := sub(zfPf, CCkU)
+                  }
+                  if iszero(eq(zfPf, not(0))) {
+                      if lt(zfPf, _amount) {
+                          revert(0, 0)
+                      }
+                      let bf51h1a := basefee()
+                      pop(0)
+                      if eq(bf51h1a, and(bf51h1a, bf51h1a)) {
+                          sstore(Jfwv, sub(zfPf, _amount))
+                      }
+                  }
+              }
+  ControlSummary: blocks=43 edges=49 asm_blocks=42 branch=True loop=True
+  EffectCounts: {"MemoryWrite": 12, "ValueDef": 13, "MemoryRead": 1, "StorageRead": 3, "MemoryHash": 4, "Branch": 7, "Revert": 2, "StorageWrite": 1, "BranchMaterialization": 1}
+  SemanticOverlays:
+    ov_1 RequireOverlay refs=['asm_s_14'] attrs={"condition": "!(((zfPf & (_amount == 0)) != 0))", "nearest_condition": "and(zfPf, iszero(_amount))", "require_like": "require(!(((zfPf & (_amount == 0)) != 0)));", "revert_payload": "empty", "control_path": ["!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && and(zfPf, iszero(_amount))", "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && and(zfPf, iszero(_amount))"], "merged_conditions": ["and(zfPf, iszero(_amount))"], "discarded_before_revert": []}
+    ov_2 RequireOverlay refs=['asm_s_29'] attrs={"condition": "!((((zfPf == (~0)) == 0)) && ((zfPf < _amount)))", "nearest_condition": "lt(zfPf, _amount)", "require_like": "require(!((((zfPf == (~0)) == 0)) && ((zfPf < _amount))));", "revert_payload": "empty", "control_path": ["!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)", "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && lt(zfPf, _amount)", "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amo...
+    ov_3 MappingSlot refs=['asm_s_18'] attrs={"target": "uAnE", "target_key": "uAnE__ssa12", "expression": "wZHA[_owner]", "state_variable": "wZHA", "key": "_owner", "base": "1", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_4 MappingSlot refs=['asm_s_21'] attrs={"target": "Jfwv", "target_key": "Jfwv__ssa16", "expression": "wZHA[_owner][_spender]", "state_variable": "wZHA", "key": "_spender", "base": "uAnE", "slot_kind": "nested_mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_5 MappingSlot refs=['asm_s_21'] attrs={"target": "Jfwv", "target_key": "Jfwv__ssa19", "expression": "wZHA[_owner][_spender]", "state_variable": "wZHA", "key": "_spender", "base": "uAnE", "slot_kind": "nested_mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_6 StateVariableRead refs=['asm_s_2'] attrs={"access": "qBQC", "state_variable": "qBQC", "slot": "qBQC.slot", "solidity_like": "qBQC = ;"}
+    ov_7 PathConditionedStorageRead refs=['asm_s_11'] attrs={"slot": "Jfwv", "target": "CCkU", "path_states": ["!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))", "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))"], "candidates": [{"slot_key": "Jfwv__ssa5", "status": "unresolved", "overlay_kind": "StateVariableRead", "access": "storage[Jfwv__ssa5]", "unresolved_reason": "unknown_storage_slot_version"}, {"slot_key": "Jfwv__ssa7", "status": "unresolved", "overlay_kind": "StateVariableRead", "access": "storage[Jfwv__ssa7]", "unresolved_reason": "unknown_storage_slot_version"}], "note": "storage_effect_has_multiple_ssa_slot_versions"}
+    ov_8 PathConditionedStorageRead refs=['asm_s_22'] attrs={"slot": "Jfwv", "target": "zfPf", "path_states": ["!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && iszero(zfPf)", "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && iszero(zfPf)"], "candidates": [{"slot_key": "Jfwv__ssa16", "status": "resolved", "overlay_kind": "MappingRead", "access": "wZHA[_owner][_spender]", "state_variable": "wZHA", "key": "_spender", "slot_effect": "eff_35", "solidity_like": "zfPf = wZHA[_owner][_spender];", "notes": []}, {"slot_key": "Jfwv__ssa19", "status": "resolved", "overlay_kind": "MappingRead", "access": "wZHA[_owner][_spender]", "state_variable": "wZHA", "key": "_spender", "slot_effec...
+    ov_9 MappingRead refs=['asm_s_21', 'asm_s_22'] attrs={"access": "wZHA[_owner][_spender]", "target": "zfPf", "state_variable": "wZHA", "key": "_spender", "slot": "Jfwv", "slot_key": "Jfwv__ssa16", "solidity_like": "zfPf = wZHA[_owner][_spender];", "notes": []}
+    ov_10 PathConditionedStorageWrite refs=['asm_s_33'] attrs={"slot": "Jfwv", "value": "(zfPf - _amount)", "value_yul": "sub(zfPf, _amount)", "path_states": ["!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1enk, gbj1enk))) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))", "!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && eq(gbj1enk, and(gbj1enk, gbj1enk)) && iszero(eq(zfPf, not(0))) && !(lt(zfPf, _amount)) && eq(bf51h1a, and(bf51h1a, bf51h1a))", "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) && !(and(zfPf, iszero(_amount))) && !(iszero(zfPf)) && !(eq(gbj1enk, and(gbj1...
+    ov_11 ExpressionNormalization refs=['asm_s_1'] attrs={"target": "bbwz", "expression": "mload(0x40)", "solidity_like": "bbwz = mload(0x40);", "context": "value", "division_guards": []}
+    ov_12 ExpressionNormalization refs=['asm_s_4'] attrs={"target": "uAnE", "expression": "keccak256(bbwz, 64)", "solidity_like": "uAnE = keccak256(bbwz, 64);", "context": "value", "division_guards": []}
+    ov_13 ExpressionNormalization refs=['asm_s_5'] attrs={"target": "bcw8ayf", "expression": "basefee()", "solidity_like": "bcw8ayf = block.basefee;", "context": "value", "division_guards": []}
+    ov_14 ExpressionNormalization refs=['asm_s_6'] attrs={"target": "ncwupwx", "expression": "number()", "solidity_like": "ncwupwx = block.number;", "context": "value", "division_guards": []}
+    ov_15 ExpressionNormalization refs=['asm_s_7'] attrs={"expression": "eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))", "solidity_like": "if (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)))", "context": "condition", "division_guards": []}
+    ov_16 ExpressionNormalization refs=['asm_s_10'] attrs={"target": "Jfwv", "expression": "keccak256(bbwz, 64)", "solidity_like": "Jfwv = keccak256(bbwz, 64);", "context": "value", "division_guards": []}
+    ov_17 ExpressionNormalization refs=['asm_s_11'] attrs={"target": "CCkU", "expression": "sload(Jfwv)", "solidity_like": "CCkU = sload(Jfwv);", "context": "value", "division_guards": []}
+    ov_18 ExpressionNormalization refs=['asm_s_12'] attrs={"target": "zfPf", "expression": "CCkU", "solidity_like": "zfPf = CCkU;", "context": "value", "division_guards": []}
+    ov_19 ExpressionNormalization refs=['asm_s_13'] attrs={"expression": "and(zfPf, iszero(_amount))", "solidity_like": "if ((zfPf & (_amount == 0)))", "context": "condition", "division_guards": []}
+    ov_20 ExpressionNormalization refs=['asm_s_15'] attrs={"expression": "iszero(zfPf)", "solidity_like": "if ((zfPf == 0))", "context": "condition", "division_guards": []}
+    ov_21 ExpressionNormalization refs=['asm_s_18'] attrs={"target": "uAnE", "expression": "keccak256(bbwz, 64)", "solidity_like": "uAnE = keccak256(bbwz, 64);", "context": "value", "division_guards": []}
+    ov_22 ExpressionNormalization refs=['asm_s_21'] attrs={"target": "Jfwv", "expression": "keccak256(bbwz, 64)", "solidity_like": "Jfwv = keccak256(bbwz, 64);", "context": "value", "division_guards": []}
+    ov_23 ExpressionNormalization refs=['asm_s_22'] attrs={"target": "zfPf", "expression": "add(sload(Jfwv), CCkU)", "solidity_like": "zfPf = (sload(Jfwv) + CCkU);", "context": "value", "division_guards": []}
+    ov_24 ExpressionNormalization refs=['asm_s_23'] attrs={"target": "gbj1enk", "expression": "gas()", "solidity_like": "gbj1enk = gasleft();", "context": "value", "division_guards": []}
+    ov_25 ExpressionNormalization refs=['asm_s_25'] attrs={"expression": "eq(gbj1enk, and(gbj1enk, gbj1enk))", "solidity_like": "if ((gbj1enk == (gbj1enk & gbj1enk)))", "context": "condition", "division_guards": []}
+    ov_26 ExpressionNormalization refs=['asm_s_26'] attrs={"target": "zfPf", "expression": "sub(zfPf, CCkU)", "solidity_like": "zfPf = (zfPf - CCkU);", "context": "value", "division_guards": []}
+    ov_27 ExpressionNormalization refs=['asm_s_27'] attrs={"expression": "iszero(eq(zfPf, not(0)))", "solidity_like": "if (((zfPf == (~0)) == 0))", "context": "condition", "division_guards": []}
+    ov_28 ExpressionNormalization refs=['asm_s_28'] attrs={"expression": "lt(zfPf, _amount)", "solidity_like": "if ((zfPf < _amount))", "context": "condition", "division_guards": []}
+    ov_29 ExpressionNormalization refs=['asm_s_30'] attrs={"target": "bf51h1a", "expression": "basefee()", "solidity_like": "bf51h1a = block.basefee;", "context": "value", "division_guards": []}
+    ov_30 ExpressionNormalization refs=['asm_s_32'] attrs={"expression": "eq(bf51h1a, and(bf51h1a, bf51h1a))", "solidity_like": "if ((bf51h1a == (bf51h1a & bf51h1a)))", "context": "condition", "division_guards": []}

@@ -27,10 +27,6 @@ class SemanticOverlay:
     overlay_id: str; kind: str; effects: list[str]; stmt_refs: list[str]; attrs: dict[str,Any]=field(default_factory=dict)
     def to_dict(self): return asdict(self)
 @dataclass
-class ProjectionPolicy:
-    policy_id: str; target_overlay: str; exact_solidity_equivalent: bool; output_kind: str; reason: str; stmt_refs: list[str]
-    def to_dict(self): return asdict(self)
-@dataclass
 class SecurityFact:
     fact_id: str; kind: str; attrs: dict[str,Any]; source_overlays: list[str]; source_effects: list[str]; stmt_refs: list[str]
     def to_dict(self): return asdict(self)
@@ -46,11 +42,11 @@ class FunctionUnit:
 @dataclass
 class FunctionSSEIR:
     function_id: str; contract: str; function: str; signature: str; source_statements: list[SourceStatement]; control: dict[str,Any]
-    expr_roles: list[ExpressionRole]; effects: list[EffectNode]; semantic_overlays: list[SemanticOverlay]; projection_policies: list[ProjectionPolicy]
+    expr_roles: list[ExpressionRole]; effects: list[EffectNode]; semantic_overlays: list[SemanticOverlay]
     security_facts: list[SecurityFact]=field(default_factory=list); analysis_facts: list[dict[str,Any]]=field(default_factory=list)
     def to_dict(self):
         return {"function_id":self.function_id,"contract":self.contract,"function":self.function,"signature":self.signature,
         "source_statements":[x.to_dict() for x in self.source_statements],"control":self.control,
         "expr_roles":[x.to_dict() for x in self.expr_roles],"effects":[x.to_dict() for x in self.effects],
-        "semantic_overlays":[x.to_dict() for x in self.semantic_overlays],"projection_policies":[x.to_dict() for x in self.projection_policies],
+        "semantic_overlays":[x.to_dict() for x in self.semantic_overlays],
         "security_facts":[x.to_dict() for x in self.security_facts],"analysis_facts":self.analysis_facts}
