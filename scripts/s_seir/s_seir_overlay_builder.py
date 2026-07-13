@@ -15,7 +15,8 @@ from assembly_external_call_ir import PRECOMPILES, native_precompile_call
 from assembly_semantic_ir import parse_int_literal, strip_ssa
 from s_seir_id import IdAllocator
 from s_seir_model import EffectNode, FunctionUnit, SemanticOverlay
-from s_seir_yul_normalize import division_guards, invert_condition, normalize_expr, words_from_memory_query
+from s_seir_selector_registry import normalize_selector_value
+from s_seir_yul_normalize import division_guards, invert_condition, is_unknown_value as memory_is_unknown_value, normalize_expr, words_from_memory_query
 
 
 def hash_candidates_values(candidates: dict[str, tuple[EffectNode, dict[str, Any]]]) -> dict[str, dict[str, Any]]:
@@ -23,16 +24,18 @@ def hash_candidates_values(candidates: dict[str, tuple[EffectNode, dict[str, Any
 
 
 class SemanticOverlayBuilder:
-    def __init__(self, events_by_contract: dict[str, list[EventDecl]] | None = None, include_shallow_overlays: bool = True):
+    def __init__(self, events_by_contract: dict[str, list[EventDecl]] | None = None, include_shallow_overlays: bool = True, selector_registry: dict[str, list[dict[str, Any]]] | None = None):
         self.ids = IdAllocator()
         self.events_by_contract = events_by_contract or {}
         self.include_shallow_overlays = include_shallow_overlays
+        self.selector_registry = selector_registry or {}
 
     def build(self, unit: FunctionUnit, type_env: Any, expr_roles: list[Any], effects: list[EffectNode]) -> list[SemanticOverlay]:
         overlays: list[SemanticOverlay] = []
         overlays.extend(self.require_overlays(type_env, effects))
         overlays.extend(self.raw_revert_bytes(type_env, expr_roles, effects))
         overlays.extend(self.solidity_custom_errors(effects))
+        overlays.extend(self.custom_error_selector_overlays(effects))
         overlays.extend(self.storage_overlays(type_env, effects))
         overlays.extend(self.event_overlays(unit, effects))
         call_overlays = self.call_overlays(effects)
@@ -68,6 +71,26 @@ class SemanticOverlayBuilder:
         for e in effects:
             if e.kind == 'Revert' and isinstance(e.attrs.get('payload'), str) and e.attrs.get('payload').strip():
                 out.append(self.ov('CustomErrorRevert', e.effect_id, e.stmt_refs, {'error': e.attrs.get('payload')}))
+        return out
+
+    def custom_error_selector_overlays(self, effects: list[EffectNode]) -> list[SemanticOverlay]:
+        out: list[SemanticOverlay] = []
+        for e in effects:
+            if e.kind != 'Revert':
+                continue
+            selector_info = self.selector_info_from_partial(e.attrs.get('payload_memory_partial'), preferred_kind='error')
+            if not selector_info:
+                continue
+            match = selector_info.get('best_match') or {}
+            signature = match.get('signature')
+            attrs = {
+                'selector': selector_info.get('selector'),
+                'selector_source': selector_info.get('selector_source'),
+                'selector_match': selector_info,
+                'error': signature,
+                'revert_like': f"revert {signature};" if signature else None,
+            }
+            out.append(self.ov('CustomErrorRevert', e.effect_id, e.stmt_refs, attrs))
         return out
 
     def require_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
@@ -409,12 +432,12 @@ class SemanticOverlayBuilder:
 
     @staticmethod
     def is_unknown_value(value: Any) -> bool:
-        return value is None or value == 'unknown' or (isinstance(value, list) and not value)
+        return memory_is_unknown_value(value)
 
     @staticmethod
     def value_text(value: Any) -> str:
         if isinstance(value, list):
-            vals = [normalize_expr(v) for v in value if v not in {None, 'unknown'}]
+            vals = [normalize_expr(v) for v in value if not memory_is_unknown_value(v)]
             return vals[0] if len(vals) == 1 else 'phi(' + ', '.join(vals) + ')'
         return normalize_expr(value)
 
@@ -435,6 +458,9 @@ class SemanticOverlayBuilder:
             args, notes = self.event_args(event, e)
             name = event.name if event else 'unknownEvent'
             data_size = parse_int_literal(str(e.attrs.get('data_size') or '').strip())
+            near_misses = [] if event else self.event_topic_near_misses(e, evs, data_size)
+            if near_misses:
+                notes.append('topic0_prefix_matches_known_event_but_full_topic_mismatch')
             if event:
                 non_indexed = [param for param in event.params if not param.indexed]
                 expected = 32 * len(non_indexed)
@@ -449,7 +475,12 @@ class SemanticOverlayBuilder:
                 'args': args,
                 'topics': [normalize_expr(t) for t in e.attrs.get('topics', [])],
                 'data': words_from_memory_query(e.attrs.get('data_memory')),
+                'path_conditioned_data': [
+                    word for word in words_from_memory_query(e.attrs.get('data_memory'))
+                    if word.get('path_conditioned')
+                ],
                 'emit_like': f"emit {name}({', '.join(map(str,args))});" if args else None,
+                'topic0_near_misses': near_misses,
                 'notes': notes,
             }))
         return out
@@ -460,8 +491,12 @@ class SemanticOverlayBuilder:
         data_values = []
         notes: list[str] = []
         for word in data_words:
+            if word.get('path_conditioned'):
+                notes.append('data_word_path_conditioned')
+                data_values.append('unknown')
+                continue
             value = word.get('value')
-            if value in {None, 'unknown'}:
+            if self.is_unknown_value(value):
                 notes.append('data_word_unknown')
                 continue
             if word.get('symbolic_candidates'):
@@ -496,6 +531,13 @@ class SemanticOverlayBuilder:
             attrs = dict(e.attrs)
             attrs['gas'] = normalize_expr(attrs.get('gas')) if attrs.get('gas') else attrs.get('gas')
             attrs['target_solidity'] = self.target_solidity(attrs.get('target'))
+            selector_info = self.selector_info_from_partial(attrs.get('input_memory_partial'), preferred_kind='function')
+            if selector_info:
+                attrs['selector'] = selector_info.get('selector')
+                attrs['selector_match'] = selector_info
+                attrs['selector_signature'] = (selector_info.get('best_match') or {}).get('signature')
+                attrs['arguments'] = (attrs.get('input_memory_partial') or {}).get('abi_hint', {}).get('arguments', [])
+                attrs['solidity_like'] = self.low_level_call_solidity_like(attrs)
             precompile = self.precompile(attrs)
             if precompile:
                 attrs.update(precompile)
@@ -504,13 +546,66 @@ class SemanticOverlayBuilder:
                 out.append(self.ov(mapping[e.kind], e.effect_id, e.stmt_refs, attrs))
         return out
 
+    def selector_info_from_partial(self, partial: dict[str, Any] | None, preferred_kind: str | None = None) -> dict[str, Any] | None:
+        hint = (partial or {}).get('abi_hint') or {}
+        raw_selector = hint.get('selector') or hint.get('selector_source_value')
+        selector = normalize_selector_value(raw_selector)
+        if not selector:
+            return None
+        matches = list(self.selector_registry.get(selector.lower(), []))
+        if preferred_kind:
+            preferred = [item for item in matches if item.get('kind') == preferred_kind]
+        else:
+            preferred = matches
+        best = preferred[0] if preferred else (matches[0] if matches else None)
+        return {
+            'selector': selector,
+            'selector_source': raw_selector,
+            'preferred_kind': preferred_kind,
+            'best_match': best,
+            'matches': matches,
+            'match_status': 'matched' if best else 'unmatched',
+            'abi_hint': hint,
+        }
+
+    @staticmethod
+    def low_level_call_solidity_like(attrs: dict[str, Any]) -> str | None:
+        signature = attrs.get('selector_signature')
+        target = attrs.get('target_solidity') or attrs.get('target')
+        if not signature or not target:
+            return None
+        args = [normalize_expr(arg) for arg in attrs.get('arguments') or []]
+        selector_expr = f"bytes4({attrs.get('selector')}) /* {signature} */"
+        arg_suffix = (", " + ", ".join(args)) if args else ""
+        payload = f"abi.encodeWithSelector({selector_expr}{arg_suffix})"
+        value = normalize_expr(attrs.get('value')) if attrs.get('value') is not None else '0'
+        evaluated_args = attrs.get('evaluated_args') or []
+        gas = str(evaluated_args[0]) if evaluated_args else (normalize_expr(attrs.get('gas')) if attrs.get('gas') else None)
+        result = attrs.get('result')
+        prefix = f"{result} = " if result else ""
+        output_ptr = attrs.get('output_ptr')
+        output_size = attrs.get('output_size')
+        output = f"memory[{output_ptr}:{output_size}]" if output_ptr is not None and output_size is not None else "memory[unknown]"
+        return f"{prefix}yulCall(gas: {gas}, target: {target}, value: {value}, input: {payload}, output: {output});"
+
     def precompile(self, attrs: dict[str, Any]) -> dict[str, Any] | None:
         target = self.int_value(attrs.get('target'))
         if target not in PRECOMPILES:
             return None
         words = words_from_memory_query(attrs.get('input_memory'))
-        word_values = [w.get('value') for w in words if w.get('value') not in {None, 'unknown'}]
-        native = {'precompile': PRECOMPILES[target], 'input_words': [normalize_expr(v) for v in word_values], 'input_memory': attrs.get('input_memory')}
+        path_conditioned_words = [word for word in words if word.get('path_conditioned')]
+        word_values = [w.get('value') for w in words if not w.get('path_conditioned') and not self.is_unknown_value(w.get('value'))]
+        native = {
+            'precompile': PRECOMPILES[target],
+            'input_words': [normalize_expr(v) for v in word_values],
+            'input_memory': attrs.get('input_memory'),
+        }
+        if path_conditioned_words:
+            native['path_conditioned_input'] = path_conditioned_words
+            native['notes'] = ['precompile_input_path_conditioned']
+            raw_args = attrs.get('args') or []
+            call_expr = normalize_expr(f"{attrs.get('op')}({', '.join(map(str, raw_args))})") if raw_args else str(attrs.get('op'))
+            native['solidity_like'] = f"require(({call_expr} != 0)); /* path-conditioned {PRECOMPILES[target]} input */"
         snapshot = self.call_snapshot(attrs, words)
         call_args = {
             'gas': str(attrs.get('gas') or ''),
@@ -521,7 +616,9 @@ class SemanticOverlayBuilder:
             'output_ptr': str(attrs.get('output_ptr') or ''),
             'output_size': str(attrs.get('output_size') or ''),
         }
-        lifted = native_precompile_call(PRECOMPILES[target], str(attrs.get('op') or ''), call_args, snapshot, self.int_node(attrs.get('cfg_node_id')) or 0)
+        lifted = None
+        if not path_conditioned_words:
+            lifted = native_precompile_call(PRECOMPILES[target], str(attrs.get('op') or ''), call_args, snapshot, self.int_node(attrs.get('cfg_node_id')) or 0)
         if lifted:
             native['native_precompile'] = lifted
             native['solidity_like'] = lifted.get('solidity_like')
@@ -530,14 +627,20 @@ class SemanticOverlayBuilder:
     @staticmethod
     def call_snapshot(attrs: dict[str, Any], words: list[dict[str, Any]]) -> dict[str, Any]:
         input_size = parse_int_literal(strip_ssa(str(attrs.get('input_size') or '')) or str(attrs.get('input_size') or ''))
-        complete = bool(words) and not any(w.get('value') in {None, 'unknown'} for w in words)
+        complete = bool(words) and not any(
+            word.get('path_conditioned') or SemanticOverlayBuilder.is_unknown_value(word.get('value'))
+            for word in words
+        )
         rendered_words = []
         for index, word in enumerate(words):
-            rendered_words.append({
+            rendered = {
                 'value': str(word.get('value')),
                 'size': min(32, max(0, (input_size or 32) - index * 32)),
                 'memory_ssa': word.get('memory_ssa'),
-            })
+            }
+            if word.get('path_conditioned'):
+                rendered['path_conditioned_candidates'] = word.get('path_conditioned_candidates')
+            rendered_words.append(rendered)
         return {
             'ptr': attrs.get('input_ptr'),
             'size': attrs.get('input_size'),
@@ -634,10 +737,56 @@ class SemanticOverlayBuilder:
         out: list[SemanticOverlay] = []
         for e in effects:
             if e.kind == 'ValueDef':
-                out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {'target': e.attrs.get('targets', [None])[0], 'expression': e.attrs.get('value'), 'solidity_like': self.value_def_like(e), 'context': 'value', 'division_guards': division_guards(e.attrs.get('value'))}))
+                target = e.attrs.get('targets', [None])[0]
+                if self.is_storage_pointer_slot_target(target):
+                    pointer = str(target).removesuffix('.slot')
+                    value = e.attrs.get('value')
+                    out.append(self.ov('StoragePointerSlotBinding', e.effect_id, e.stmt_refs, {
+                        'pointer': pointer,
+                        'slot': value,
+                        'slot_normalized': normalize_expr(value),
+                        'solidity_equivalent': False,
+                        'reason': 'storage_reference_slot_binding_requires_inline_assembly',
+                        'solidity_like': f"/* storage pointer binding: {pointer}.slot := {normalize_expr(value)} */",
+                    }))
+                    continue
+                out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {'target': target, 'expression': e.attrs.get('value'), 'solidity_like': self.value_def_like(e), 'context': 'value', 'division_guards': division_guards(e.attrs.get('value'))}))
             elif e.kind == 'Branch':
-                out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {'expression': e.attrs.get('condition'), 'solidity_like': f"if ({e.attrs.get('condition_normalized') or normalize_expr(e.attrs.get('condition'))})", 'context': 'condition', 'division_guards': division_guards(e.attrs.get('condition'))}))
+                condition_text = e.attrs.get('condition_final_temp') or e.attrs.get('condition_normalized') or normalize_expr(e.attrs.get('condition'))
+                out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {
+                    'expression': e.attrs.get('condition'),
+                    'solidity_like': f"if ({condition_text})",
+                    'context': 'condition',
+                    'condition_final_temp': e.attrs.get('condition_final_temp'),
+                    'condition_evaluation': e.attrs.get('condition_evaluation'),
+                    'division_guards': division_guards(e.attrs.get('condition')),
+                }))
+            elif e.kind == 'EvaluationStep':
+                temp = e.attrs.get('temp')
+                expr = e.attrs.get('value_from_call_output') or e.attrs.get('expression_normalized') or normalize_expr(e.attrs.get('expression'))
+                out.append(self.ov('EvaluationStep', e.effect_id, e.stmt_refs, {
+                    'temp': temp,
+                    'expression': e.attrs.get('expression'),
+                    'expression_normalized': expr,
+                    'solidity_like': f"{temp} = {expr};" if temp else None,
+                    'order': e.attrs.get('order'),
+                    'call': e.attrs.get('call'),
+                    'raw_args': e.attrs.get('raw_args'),
+                    'evaluated_args': e.attrs.get('evaluated_args'),
+                    'parent_effect': e.attrs.get('parent_effect'),
+                    'evaluation_model': 'yul_ast_right_to_left_function_call_arguments',
+                    'reads_after_call_output': e.attrs.get('reads_after_call_output'),
+                    'value_from_call_output': e.attrs.get('value_from_call_output'),
+                }))
         return out
+
+    @staticmethod
+    def is_storage_pointer_slot_target(target: Any) -> bool:
+        text = str(target or '').strip()
+        if not text.endswith('.slot'):
+            return False
+        base = text[:-5]
+        return bool(base) and '[' not in base and '(' not in base
 
     @staticmethod
     def value_def_like(effect: EffectNode) -> str | None:
@@ -670,6 +819,53 @@ class SemanticOverlayBuilder:
             if (not e.anonymous) and len(topics) == indexed + 1 and normalize_topic_value(e.topic0) == t0:
                 return e
         return None
+
+    @staticmethod
+    def event_topic_near_misses(effect: EffectNode, events: list[EventDecl], data_size: int | None) -> list[dict[str, Any]]:
+        topics = effect.attrs.get('topics', []) or []
+        if not topics:
+            return []
+        observed = normalize_topic_value(topics[0])
+        if not observed or not str(observed).startswith('0x'):
+            return []
+        out: list[dict[str, Any]] = []
+        observed_hex = str(observed)[2:]
+        for event in events:
+            expected = normalize_topic_value(event.topic0)
+            if event.anonymous or not expected or not str(expected).startswith('0x'):
+                continue
+            indexed = len([param for param in event.params if param.indexed])
+            if len(topics) != indexed + 1:
+                continue
+            non_indexed = [param for param in event.params if not param.indexed]
+            expected_data_size = 32 * len(non_indexed)
+            if data_size is not None and data_size != expected_data_size:
+                continue
+            expected_hex = str(expected)[2:]
+            if observed_hex == expected_hex:
+                continue
+            prefix = SemanticOverlayBuilder.matching_prefix_nibbles(observed_hex, expected_hex)
+            # Event topic0 is 32 bytes. A 4-byte prefix match is useful as a
+            # diagnostic only; exact event recovery still requires all bytes.
+            if prefix >= 8:
+                out.append({
+                    'event': event.name,
+                    'signature': event.signature,
+                    'expected_topic0': expected,
+                    'observed_topic0': observed,
+                    'matching_prefix_nibbles': prefix,
+                    'reason': 'event_topic0_requires_full_32_byte_match',
+                })
+        return out
+
+    @staticmethod
+    def matching_prefix_nibbles(left: str, right: str) -> int:
+        count = 0
+        for a, b in zip(left.lower(), right.lower()):
+            if a != b:
+                break
+            count += 1
+        return count
 
     @staticmethod
     def target_solidity(target: Any) -> str | None:

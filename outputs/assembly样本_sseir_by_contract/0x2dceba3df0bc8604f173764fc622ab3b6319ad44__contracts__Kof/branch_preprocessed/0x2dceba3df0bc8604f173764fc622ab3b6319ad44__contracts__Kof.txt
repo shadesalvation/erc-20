@@ -1,0 +1,433 @@
+INFO:SSEIRBranchPreprocessFlatten:input Solidity source with imports
+INFO:SSEIRBranchPreprocessFlatten:algorithm recursive import resolution + per-file branch preprocess
+INFO:SSEIRBranchPreprocessFlatten:entry /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/contracts/Kof.sol
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/contracts/Kof.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/contracts/DN404.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: DN404._getDN404Storage()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: DN404._linkMirrorContract(address mirror)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 3: DN404._packedLogsMalloc(uint256 n)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: DN404._packedLogsAppend(struct DN404._PackedLogs p, address a, uint256 id, uint256 burnBit)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: DN404._packedLogsSend(struct DN404._PackedLogs p, address mirror)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: DN404._hasCode(address a)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: DN404._calldataload(uint256 offset)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: DN404._return(uint256 x)
+ConditionalMaterialization: sink=N3 target=return mode=linearized
+  baseline path: entry
+  baseline slot: return(0x00=x)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, x); // origin: N2
+    return(0x00, 0x20); // origin: N3
+  OriginSummary: shared=[2] cloned=[3]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 9: DN404._zeroFloorSub(uint256 x, uint256 y)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 10: DN404._set(struct DN404.Uint32Map map, uint256 index, uint32 value)
+ConditionalMaterialization: sink=N6 target=v mode=linearized
+  baseline path: entry
+  baseline slot: s=keccak256(0x00=shr(3, index),add(0x00,32)=map.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x20, map.slot); // origin: N2
+    mstore(0x00, shr(3, index)); // origin: N3
+    let s := keccak256(0x00, 0x40); // origin: N4
+    let v := sload(s); // origin: N6
+  OriginSummary: shared=[2, 3, 4] cloned=[6]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 11: DN404._setOwnerAliasAndOwnedIndex(struct DN404.Uint32Map map, uint256 id, uint32 ownership, uint32 ownedIndex)
+ConditionalMaterialization: sink=N7 target=v mode=linearized
+  baseline path: entry
+  baseline slot: s=keccak256(0x00=shr(2, id),add(0x00,32)=map.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x20, map.slot); // origin: N3
+    mstore(0x00, shr(2, id)); // origin: N4
+    let s := keccak256(0x00, 0x40); // origin: N5
+    let v := sload(s); // origin: N7
+  OriginSummary: shared=[3, 4, 5] cloned=[7]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/contracts/ISwapRouter.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/contracts/ISwapFactory.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/contracts/DailyOutflowCounterLib.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/solady/src/auth/OwnableRoles.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: OwnableRoles._setRoles(address user, uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: OwnableRoles._updateRoles(address user, uint256 roles, bool on)
+ConditionalMaterialization: sink=N5 target=current mode=linearized
+  baseline path: entry
+  baseline slot: roleSlot=keccak256(0x0c=_ROLE_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _ROLE_SLOT_SEED); // origin: N2
+    let roleSlot := keccak256(0x0c, 0x20); // origin: N4
+    let current := sload(roleSlot); // origin: N5
+  OriginSummary: shared=[2, 4] cloned=[5]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 3: OwnableRoles._checkRoles(uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: OwnableRoles._checkOwnerOrRoles(uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: OwnableRoles._checkRolesOrOwner(uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: OwnableRoles._rolesFromOrdinals(uint8[] ordinals)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: OwnableRoles._ordinalsFromRoles(uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: OwnableRoles.rolesOf(address user)
+ConditionalMaterialization: sink=N4 target=roles mode=linearized
+  baseline path: entry
+  baseline slot: keccak256(0x0c=_ROLE_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _ROLE_SLOT_SEED); // origin: N2
+    roles := sload(keccak256(0x0c, 0x20)); // origin: N4
+  OriginSummary: shared=[2] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/solady/src/auth/Ownable.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: Ownable._initializeOwner(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: Ownable._initializeOwner(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 3: Ownable._setOwner(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: Ownable._setOwner(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: Ownable._checkOwner()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: Ownable.transferOwnership(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: Ownable.requestOwnershipHandover()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: Ownable.cancelOwnershipHandover()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 9: Ownable.completeOwnershipHandover(address pendingOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 10: Ownable.owner()
+ConditionalMaterialization: sink=N2 target=result mode=linearized
+  baseline path: entry
+  baseline slot: _OWNER_SLOT
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    result := sload(_OWNER_SLOT); // origin: N2
+  OriginSummary: shared=[] cloned=[2]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 11: Ownable.ownershipHandoverExpiresAt(address pendingOwner)
+ConditionalMaterialization: sink=N4 target=result mode=linearized
+  baseline path: entry
+  baseline slot: keccak256(0x0c=_HANDOVER_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _HANDOVER_SLOT_SEED); // origin: N2
+    result := sload(keccak256(0x0c, 0x20)); // origin: N4
+  OriginSummary: shared=[2] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/solady/src/utils/LibString.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: LibString.bytesStorage(struct LibString.StringStorage $)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: LibString.toString(uint256 value)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 3: LibString.toString(int256 value)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: LibString.toHexString(uint256 value, uint256 byteCount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: LibString.toHexStringNoPrefix(uint256 value, uint256 byteCount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: LibString.toHexString(uint256 value)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: LibString.toMinimalHexString(uint256 value)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: LibString.toMinimalHexStringNoPrefix(uint256 value)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 9: LibString.toHexStringNoPrefix(uint256 value)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 10: LibString.toHexStringChecksummed(address value)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 11: LibString.toHexString(address value)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 12: LibString.toHexStringNoPrefix(address value)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 13: LibString.toHexString(bytes raw)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 14: LibString.toHexStringNoPrefix(bytes raw)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 15: LibString.runeCount(string s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 16: LibString.is7BitASCII(string s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 17: LibString.is7BitASCII(string s, uint128 allowed)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 18: LibString.to7BitASCIIAllowedLookup(string s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 19: LibString.split(string subject, string delimiter)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 20: LibString.toCase(string subject, bool toUpper)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 21: LibString.fromSmallString(bytes32 s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 22: LibString.normalizeSmallString(bytes32 s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 23: LibString.toSmallString(string s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 24: LibString.escapeHTML(string s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 25: LibString.escapeJSON(string s, bool addDoubleQuotes)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 26: LibString.encodeURIComponent(string s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 27: LibString.eq(string a, string b)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 28: LibString.eqs(string a, bytes32 b)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 29: LibString.packOne(string a)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 30: LibString.unpackOne(bytes32 packed)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 31: LibString.packTwo(string a, string b)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 32: LibString.unpackTwo(bytes32 packed)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 33: LibString.directReturn(string a)
+  No path-divergent materializable memory sink.
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/solady/src/utils/LibBytes.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: LibBytes.set(struct LibBytes.BytesStorage $, bytes s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: LibBytes.setCalldata(struct LibBytes.BytesStorage $, bytes s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 3: LibBytes.length(struct LibBytes.BytesStorage $)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: LibBytes.get(struct LibBytes.BytesStorage $)
+ConditionalMaterialization: sink=N4 target=packed mode=linearized
+  baseline path: entry
+  baseline slot: $.slot
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    let packed := sload($.slot); // origin: N4
+  OriginSummary: shared=[] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 5: LibBytes.replace(bytes subject, bytes needle, bytes replacement)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: LibBytes.indexOf(bytes subject, bytes needle, uint256 from)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: LibBytes.lastIndexOf(bytes subject, bytes needle, uint256 from)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: LibBytes.startsWith(bytes subject, bytes needle)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 9: LibBytes.endsWith(bytes subject, bytes needle)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 10: LibBytes.repeat(bytes subject, uint256 times)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 11: LibBytes.slice(bytes subject, uint256 start, uint256 end)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 12: LibBytes.indicesOf(bytes subject, bytes needle)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 13: LibBytes.split(bytes subject, bytes delimiter)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 14: LibBytes.concat(bytes a, bytes b)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 15: LibBytes.eq(bytes a, bytes b)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 16: LibBytes.eqs(bytes a, bytes32 b)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 17: LibBytes.directReturn(bytes a)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 18: LibBytes.load(bytes a, uint256 offset)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 19: LibBytes.loadCalldata(bytes a, uint256 offset)
+  No path-divergent materializable memory sink.
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x2dceba3df0bc8604f173764fc622ab3b6319ad44/solady/src/utils/SafeTransferLib.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: SafeTransferLib.safeTransferETH(address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: SafeTransferLib.safeTransferAllETH(address to)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 3: SafeTransferLib.forceSafeTransferETH(address to, uint256 amount, uint256 gasStipend)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: SafeTransferLib.forceSafeTransferAllETH(address to, uint256 gasStipend)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: SafeTransferLib.forceSafeTransferETH(address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: SafeTransferLib.forceSafeTransferAllETH(address to)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: SafeTransferLib.trySafeTransferETH(address to, uint256 amount, uint256 gasStipend)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: SafeTransferLib.trySafeTransferAllETH(address to, uint256 gasStipend)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 9: SafeTransferLib.safeTransferFrom(address token, address from, address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 10: SafeTransferLib.trySafeTransferFrom(address token, address from, address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 11: SafeTransferLib.safeTransferAllFrom(address token, address from, address to)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 12: SafeTransferLib.safeTransfer(address token, address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 13: SafeTransferLib.safeTransferAll(address token, address to)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 14: SafeTransferLib.safeApprove(address token, address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 15: SafeTransferLib.safeApproveWithRetry(address token, address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 16: SafeTransferLib.balanceOf(address token, address account)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 17: SafeTransferLib.permit2TransferFrom(address token, address from, address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 18: SafeTransferLib.permit2(address token, address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 19: SafeTransferLib.simplePermit2(address token, address owner, address spender, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+  No path-divergent materializable memory sink.

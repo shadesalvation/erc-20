@@ -1,0 +1,72 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function ICEToken.airdropToWallets(address[], uint256[])
+  SourceFunction
+  ```solidity
+  function airdropToWallets(address[] calldata recipients, uint256[] calldata amounts) external onlyAirDropper {
+  
+          if (recipients.length != amounts.length) {
+              revert Mismatch();
+          }
+  
+          uint256 length = recipients.length;
+          uint256 totalSupplyDelta;
+  
+          // Start of the loop
+          assembly {
+  
+              // Temporary memory to save the recipient selector
+              let ptr := mload(0x40)
+              let ptr2 := add(ptr, 0x20)
+  
+              // Skip the 4-bytes function signature hash to load the first dynamic variable offset
+              let recipientsDataOffset := calldataload(0x4)
+  
+              // Skip the 4-bytes function signature hash and the 32-bytes first dynamic variable offset to load
+              // the second dynamic variable offset
+              let amountsDataOffset := calldataload(0x24)
+  
+              // Loop counter
+              for { let i := 0 } lt(i, length) { i := add(i, 1) } {
+  
+                  // Load recipient and amount
+                  let offset := add(mul(i, 0x20), 0x24)
+                  let amount := calldataload(add(amountsDataOffset, offset))
+  
+                  // Calculate the recipient slot
+                  mstore(ptr, calldataload(add(recipientsDataOffset, offset)))
+                  mstore(ptr2, _balances.slot)
+                  let recipientSlot := keccak256(ptr, 0x40)
+  
+                  // Update stored values
+                  sstore(recipientSlot, add(sload(recipientSlot), amount))
+                  totalSupplyDelta := add(totalSupplyDelta, amount)
+              }
+          }
+  
+          // Update the total supply after the loop
+          unchecked {
+              _totalSupply += totalSupplyDelta;
+          }
+      }
+  ```
+  AssemblyBlock asm_block_2
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      ptr = mload(0x40); // yul: let ptr := mload(0x40)
+      ptr2 = (ptr + 0x20); // yul: let ptr2 := add(ptr, 0x20)
+      recipientsDataOffset = calldataload(0x4); // yul: let recipientsDataOffset := calldataload(0x4)
+      amountsDataOffset = calldataload(0x24); // yul: let amountsDataOffset := calldataload(0x24)
+      i = 0; // yul: let i := 0
+      for (; (i < length); i = (i + 1)) { // yul: for
+          offset = ((i * 0x20) + 0x24); // yul: let offset := add(mul(i, 0x20), 0x24)
+          amount = calldataload((amountsDataOffset + offset)); // yul: let amount := calldataload(add(amountsDataOffset, offset))
+          memory[ptr] = calldataload((recipientsDataOffset + offset)); // yul: mstore(ptr, calldataload(add(recipientsDataOffset, offset)))
+          memory[ptr2] = _balances.slot; // yul: mstore(ptr2, _balances.slot)
+          recipientSlot = slot(_balances[calldataload((recipientsDataOffset + offset))]); // yul: let recipientSlot := keccak256(ptr, 0x40)
+          _balances[calldataload((recipientsDataOffset + offset))] = (sload(recipientSlot) + amount); // yul: sstore(recipientSlot, add(sload(recipientSlot), amount))
+          totalSupplyDelta = (totalSupplyDelta + amount); // yul: totalSupplyDelta := add(totalSupplyDelta, amount)
+      }
+  }
+  ```

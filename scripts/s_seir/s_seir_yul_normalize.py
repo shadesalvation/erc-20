@@ -80,30 +80,66 @@ def invert_condition(expr: Any, type_env: Any | None = None) -> str:
     return f"!({normalize_expr(text, context='condition')})"
 
 
+def is_unknown_value(value: Any) -> bool:
+    if value is None or value == "unknown":
+        return True
+    if isinstance(value, list):
+        return not value or all(is_unknown_value(item) for item in value)
+    return False
+
+
+def path_conditioned_candidates(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[str, dict[str, Any]] = {}
+    for candidate in candidates:
+        value = candidate.get("value")
+        if is_unknown_value(value):
+            continue
+        key = str(value)
+        item = grouped.setdefault(key, {
+            "value": value,
+            "paths": [],
+            "memory_ssa": [],
+            "definitions": [],
+            "aliases": [],
+        })
+        path = candidate.get("path")
+        if path and path not in item["paths"]:
+            item["paths"].append(path)
+        memory_ssa = candidate.get("memory_ssa")
+        if memory_ssa and memory_ssa not in item["memory_ssa"]:
+            item["memory_ssa"].append(memory_ssa)
+        definition = candidate.get("definition")
+        if definition and definition not in item["definitions"]:
+            item["definitions"].append(definition)
+        for alias in candidate.get("aliases") or []:
+            if alias not in item["aliases"]:
+                item["aliases"].append(alias)
+    return list(grouped.values())
+
+
 def words_from_memory_query(query: dict[str, Any] | None, prefer_known_branch: bool = True) -> list[dict[str, Any]]:
     words = []
     for word in (query or {}).get("words", []) or []:
         item = dict(word)
         value = item.get("value")
-        if prefer_known_branch and (value in {None, "unknown"}):
+        if prefer_known_branch and is_unknown_value(value):
             known = [
                 c
                 for c in item.get("branch_candidates", []) or []
-                if c.get("value") not in {None, "unknown"}
+                if not is_unknown_value(c.get("value"))
             ]
             if known:
-                vals = []
-                for cand in known:
-                    if cand.get("value") not in vals:
-                        vals.append(cand.get("value"))
-                if len(vals) == 1:
-                    item["value"] = vals[0]
+                conditioned = path_conditioned_candidates(known)
+                if len(conditioned) == 1:
+                    item["value"] = conditioned[0]["value"]
                     item["discarded_unknown_branch"] = True
                     item["known_branch_candidates"] = known
                 else:
-                    item["value"] = vals
-                    item["discarded_unknown_branch"] = True
+                    item["value"] = "unknown"
+                    item["path_conditioned"] = True
+                    item["path_conditioned_candidates"] = conditioned
                     item["known_branch_candidates"] = known
+                    item["notes"] = list(dict.fromkeys((item.get("notes") or []) + ["multiple_path_conditioned_memory_values"]))
         words.append(item)
     return words
 

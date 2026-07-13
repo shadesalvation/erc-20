@@ -453,7 +453,11 @@ class MemorySSAAnalyzer:
             value = yul_expression(node)
             parsed = parse_int_literal_local(value)
             if parsed is not None:
-                return [AddressAlias(normalize_expression(value), value, 0, value, "literal")]
+                aliases = [AddressAlias(normalize_expression(value), value, 0, value, "literal")]
+                zero_based_key = normalize_alias_key("0x00", parsed)
+                if zero_based_key not in {alias.key for alias in aliases}:
+                    aliases.append(AddressAlias(zero_based_key, "0x00", parsed, alias_expression("0x00", parsed), "literal-zero-base"))
+                return aliases
 
         if node_type == "YulIdentifier":
             name = str(node.get("name", ""))

@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -22,6 +23,7 @@ from typing import Any, Iterable
 
 
 Json = dict[str, Any]
+_SOLC_HELP_CACHE: dict[str, str] = {}
 
 
 @dataclass
@@ -123,6 +125,24 @@ def discover_solc(explicit: str | None) -> str | None:
     return shutil.which("solc")
 
 
+def solc_help(solc_bin: str) -> str:
+    key = str(Path(solc_bin).resolve()) if Path(solc_bin).exists() else solc_bin
+    if key not in _SOLC_HELP_CACHE:
+        process = subprocess.run(
+            [solc_bin, "--help"],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        _SOLC_HELP_CACHE[key] = process.stdout + process.stderr
+    return _SOLC_HELP_CACHE[key]
+
+
+def solc_supports_option(solc_bin: str, option: str) -> bool:
+    return re.search(rf"^\s+{re.escape(option)}(?:\s|$)", solc_help(solc_bin), re.M) is not None
+
+
 def parse_src(src: str) -> tuple[int, int]:
     try:
         start_text, length_text, _file = src.split(":", 2)
@@ -143,21 +163,40 @@ def compile_source_ast(source: Path, solc_bin: str) -> Json:
     candidate = Path(solc_bin)
     if not candidate.is_absolute() and candidate.is_file():
         solc_bin = str(candidate.resolve())
+    include_paths = [
+        Path(item).resolve()
+        for item in os.environ.get("SSEIR_SOLC_INCLUDE_PATHS", "").split(os.pathsep)
+        if item.strip()
+    ]
+    source_text = source.read_text(encoding="utf-8")
+    source_key = source_unit_name(source, [source.parent, *include_paths], source_text)
+    remappings = [
+        item
+        for item in os.environ.get("SSEIR_SOLC_REMAPPINGS", "").split(os.pathsep)
+        if item.strip()
+    ]
     compiler_input = {
         "language": "Solidity",
-        "sources": {source.name: {"content": source.read_text(encoding="utf-8")}},
+        "sources": {source_key: {"content": source_text}},
         "settings": {
             "outputSelection": {"*": {"": ["ast"]}},
         },
     }
+    if remappings:
+        compiler_input["settings"]["remappings"] = remappings
     command = [
         solc_bin,
         "--standard-json",
-        "--base-path",
-        str(source.parent),
-        "--include-path",
-        str(source.parent),
     ]
+    if solc_supports_option(solc_bin, "--base-path"):
+        command.extend(["--base-path", str(source.parent)])
+    include_paths = [path for path in include_paths if path != source.parent]
+    if include_paths and solc_supports_option(solc_bin, "--include-path"):
+        for include_path in include_paths:
+            command.extend(["--include-path", str(include_path)])
+    elif include_paths and solc_supports_option(solc_bin, "--allow-paths"):
+        allowed = ",".join(str(path) for path in [source.parent, *include_paths])
+        command.extend(["--allow-paths", allowed])
     process = subprocess.run(
         command,
         cwd=str(source.parent),
@@ -186,11 +225,45 @@ def compile_source_ast(source: Path, solc_bin: str) -> Json:
         messages = "\n".join(item.get("formattedMessage", str(item)) for item in errors)
         raise RuntimeError(f"solc AST generation failed:\n{messages}")
 
-    ast = result.get("sources", {}).get(source.name, {}).get("ast")
+    ast = result.get("sources", {}).get(source_key, {}).get("ast")
     if not isinstance(ast, dict):
         available = ", ".join(result.get("sources", {}).keys())
-        raise RuntimeError(f"solc did not return AST for {source.name}; available: {available}")
+        raise RuntimeError(f"solc did not return AST for {source_key}; available: {available}")
     return ast
+
+
+def source_unit_name(source: Path, roots: list[Path], source_text: str = "") -> str:
+    candidates: list[str] = [source.name]
+    for root in roots:
+        try:
+            rel = source.relative_to(root.resolve())
+        except Exception:
+            continue
+        if rel.parts:
+            candidates.append(rel.as_posix())
+    min_parent_depth = max_relative_import_parent_depth(source_text)
+    usable = [
+        item
+        for item in candidates
+        if max(0, len(Path(item).parts) - 1) >= min_parent_depth
+    ]
+    # Solidity resolves relative imports against the source unit name. Prefer
+    # the shortest usable relative name so entry files stay simple, while
+    # imported package files keep enough path context for imports such as
+    # "../../utils/Context.sol".
+    return min(usable or candidates, key=lambda item: (len(Path(item).parts), len(item)))
+
+
+def max_relative_import_parent_depth(source_text: str) -> int:
+    max_depth = 0
+    for match in re.finditer(r"import\s+(?:(?:[^;\"']*?\s+from\s+)?[\"']([^\"']+)[\"']|[\"']([^\"']+)[\"'])\s*;", source_text, re.S):
+        spec = match.group(1) or match.group(2) or ""
+        if not spec.startswith("."):
+            continue
+        parts = Path(spec).parts
+        depth = sum(1 for part in parts if part == "..")
+        max_depth = max(max_depth, depth)
+    return max_depth
 
 
 def iter_child_nodes(value: Any) -> Iterable[Json]:

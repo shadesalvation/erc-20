@@ -1,0 +1,42 @@
+{
+  "schema": "s-seir-batch-manifest/v1",
+  "input_root": "/home/ubuntu/erc-20/TOKENS/assembly样本/0xa2645f987631f4b60741e30c05c30a14451b0072/GoPulseToken.sol",
+  "output_dir": "/home/ubuntu/erc-20/outputs/batch_sseir_per_source_test",
+  "layout": {
+    "per_source_directory": "<output_dir>/<source_id>/",
+    "source_snapshot": "source/",
+    "full_sseir": "sseir.json",
+    "assembly_functions": "assembly_functions.json",
+    "failure": "failure.json"
+  },
+  "selection_rule": {
+    "included_contracts": "ContractDefinition.contractKind == 'contract'",
+    "excluded_contracts": [
+      "library",
+      "interface",
+      "abstract contract unless --include-abstract"
+    ],
+    "assembly_function_rule": "function.source_statements contains at least one yul statement"
+  },
+  "sources": [
+    {
+      "source": "/home/ubuntu/erc-20/TOKENS/assembly样本/0xa2645f987631f4b60741e30c05c30a14451b0072/GoPulseToken.sol",
+      "source_id": "0xa2645f987631f4b60741e30c05c30a14451b0072__GoPulseToken",
+      "result_dir": "/home/ubuntu/erc-20/outputs/batch_sseir_per_source_test/0xa2645f987631f4b60741e30c05c30a14451b0072__GoPulseToken",
+      "sseir_output": "/home/ubuntu/erc-20/outputs/batch_sseir_per_source_test/0xa2645f987631f4b60741e30c05c30a14451b0072__GoPulseToken/sseir.json",
+      "assembly_output": "/home/ubuntu/erc-20/outputs/batch_sseir_per_source_test/0xa2645f987631f4b60741e30c05c30a14451b0072__GoPulseToken/assembly_functions.json",
+      "function_count": 24,
+      "assembly_function_count": 4,
+      "selected_contracts": [
+        "ERC20",
+        "GoPulseToken"
+      ],
+      "status": "ok"
+    }
+  ],
+  "summary": {
+    "processed_sources": 1,
+    "failed_sources": 0,
+    "assembly_sources": 1
+  }
+}

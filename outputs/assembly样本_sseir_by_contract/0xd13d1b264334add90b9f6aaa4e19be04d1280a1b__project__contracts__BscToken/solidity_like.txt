@@ -1,0 +1,810 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function ERC20.totalSupply()
+  SourceFunction
+  ```solidity
+  function totalSupply() public view virtual returns (uint256 result) {
+          /// @solidity memory-safe-assembly
+          assembly {
+              result := sload(_TOTAL_SUPPLY_SLOT)
+          }
+      }
+  ```
+  AssemblyBlock asm_block_1
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      result = sload(_TOTAL_SUPPLY_SLOT); // yul: result := sload(_TOTAL_SUPPLY_SLOT)
+  }
+  ```
+
+Function ERC20.balanceOf(address)
+  SourceFunction
+  ```solidity
+  function balanceOf(address owner) public view virtual returns (uint256 result) {
+          /// @solidity memory-safe-assembly
+          assembly {
+              mstore(0x0c, _BALANCE_SLOT_SEED)
+              mstore(0x00, owner)
+              result := sload(keccak256(0x0c, 0x20))
+          }
+      }
+  ```
+  AssemblyBlock asm_block_2
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x0c] = _BALANCE_SLOT_SEED; // yul: mstore(0x0c, _BALANCE_SLOT_SEED)
+      memory[0x00] = owner; // yul: mstore(0x00, owner)
+      result = sload(keccak256(0x0c, 0x20)); // yul: result := sload(keccak256(0x0c, 0x20))
+  }
+  ```
+
+Function ERC20.allowance(address, address)
+  SourceFunction
+  ```solidity
+  function allowance(address owner, address spender)
+      public
+      view
+      virtual
+      returns (uint256 result)
+      {
+          if (_givePermit2InfiniteAllowance()) {
+              if (spender == _PERMIT2) return type(uint256).max;
+          }
+          /// @solidity memory-safe-assembly
+          assembly {
+              mstore(0x20, spender)
+              mstore(0x0c, _ALLOWANCE_SLOT_SEED)
+              mstore(0x00, owner)
+              result := sload(keccak256(0x0c, 0x34))
+          }
+      }
+  ```
+  AssemblyBlock asm_block_3
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x20] = spender; // yul: mstore(0x20, spender)
+      memory[0x0c] = _ALLOWANCE_SLOT_SEED; // yul: mstore(0x0c, _ALLOWANCE_SLOT_SEED)
+      memory[0x00] = owner; // yul: mstore(0x00, owner)
+      result = sload(keccak256(0x0c, 0x34)); // yul: result := sload(keccak256(0x0c, 0x34))
+  }
+  ```
+
+Function ERC20.approve(address, uint256)
+  SourceFunction
+  ```solidity
+  function approve(address spender, uint256 amount) public virtual returns (bool) {
+          if (_givePermit2InfiniteAllowance()) {
+              /// @solidity memory-safe-assembly
+              assembly {
+                  // If `spender == _PERMIT2 && amount != type(uint256).max`.
+                  if iszero(or(xor(shr(96, shl(96, spender)), _PERMIT2), iszero(not(amount)))) {
+                      mstore(0x00, 0x3f68539a) // `Permit2AllowanceIsFixedAtInfinity()`.
+                      revert(0x1c, 0x04)
+                  }
+              }
+          }
+          /// @solidity memory-safe-assembly
+          assembly {
+              // Compute the allowance slot and store the amount.
+              mstore(0x20, spender)
+              mstore(0x0c, _ALLOWANCE_SLOT_SEED)
+              mstore(0x00, caller())
+              sstore(keccak256(0x0c, 0x34), amount)
+              // Emit the {Approval} event.
+              mstore(0x00, amount)
+              log3(0x00, 0x20, _APPROVAL_EVENT_SIGNATURE, caller(), shr(96, mload(0x2c)))
+          }
+          return true;
+      }
+  ```
+  AssemblyBlock asm_block_4
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      if ((((((spender << 96) >> 96) ^ _PERMIT2) | ((~amount) == 0)) == 0)) {
+          memory[0x00] = 0x3f68539a; // yul: mstore(0x00, 0x3f68539a)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+  }
+  ```
+  AssemblyBlock asm_block_5
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x20] = spender; // yul: mstore(0x20, spender)
+      memory[0x0c] = _ALLOWANCE_SLOT_SEED; // yul: mstore(0x0c, _ALLOWANCE_SLOT_SEED)
+      memory[0x00] = msg.sender; // yul: mstore(0x00, caller())
+      sstore(keccak256(0x0c, 0x34), amount) // yul: sstore(keccak256(0x0c, 0x34), amount)
+      memory[0x00] = amount; // yul: mstore(0x00, amount)
+      emit unknownEvent(msg.sender, (mload(0x2c) >> 96), amount); // yul: log3(0x00, 0x20, _APPROVAL_EVENT_SIGNATURE, caller(), shr(96, mload(0x2c)))
+  }
+  ```
+
+Function ERC20.transfer(address, uint256)
+  SourceFunction
+  ```solidity
+  function transfer(address to, uint256 amount) public virtual returns (bool) {
+          _beforeTokenTransfer(msg.sender, to, amount);
+          /// @solidity memory-safe-assembly
+          assembly {
+              // Compute the balance slot and load its value.
+              mstore(0x0c, _BALANCE_SLOT_SEED)
+              mstore(0x00, caller())
+              let fromBalanceSlot := keccak256(0x0c, 0x20)
+              let fromBalance := sload(fromBalanceSlot)
+              // Revert if insufficient balance.
+              if gt(amount, fromBalance) {
+                  mstore(0x00, 0xf4d678b8) // `InsufficientBalance()`.
+                  revert(0x1c, 0x04)
+              }
+              // Subtract and store the updated balance.
+              sstore(fromBalanceSlot, sub(fromBalance, amount))
+              // Compute the balance slot of `to`.
+              mstore(0x00, to)
+              let toBalanceSlot := keccak256(0x0c, 0x20)
+              // Add and store the updated balance of `to`.
+              // Will not overflow because the sum of all user balances
+              // cannot exceed the maximum uint256 value.
+              sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+              // Emit the {Transfer} event.
+              mstore(0x20, amount)
+              log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, caller(), shr(96, mload(0x0c)))
+          }
+          _afterTokenTransfer(msg.sender, to, amount);
+          return true;
+      }
+  ```
+  AssemblyBlock asm_block_6
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x0c] = _BALANCE_SLOT_SEED; // yul: mstore(0x0c, _BALANCE_SLOT_SEED)
+      memory[0x00] = msg.sender; // yul: mstore(0x00, caller())
+      fromBalanceSlot = keccak256(0x0c, 0x20); // yul: let fromBalanceSlot := keccak256(0x0c, 0x20)
+      fromBalance = sload(fromBalanceSlot); // yul: let fromBalance := sload(fromBalanceSlot)
+      if ((amount > fromBalance)) {
+          memory[0x00] = 0xf4d678b8; // yul: mstore(0x00, 0xf4d678b8)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if (!((amount > fromBalance))) {
+          sstore(fromBalanceSlot, sub(fromBalance, amount)) // yul: sstore(fromBalanceSlot, sub(fromBalance, amount))
+          memory[0x00] = to; // yul: mstore(0x00, to)
+          toBalanceSlot = keccak256(0x0c, 0x20); // yul: let toBalanceSlot := keccak256(0x0c, 0x20)
+          sstore(toBalanceSlot, add(sload(toBalanceSlot), amount)) // yul: sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+          memory[0x20] = amount; // yul: mstore(0x20, amount)
+          emit unknownEvent(msg.sender, (mload(0x0c) >> 96), amount); // yul: log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, caller(), shr(96, mload(0x0c)))
+      }
+  }
+  ```
+
+Function ERC20.transferFrom(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function transferFrom(address from, address to, uint256 amount) public virtual returns (bool) {
+          _beforeTokenTransfer(from, to, amount);
+          // Code duplication is for zero-cost abstraction if possible.
+          if (_givePermit2InfiniteAllowance()) {
+              /// @solidity memory-safe-assembly
+              assembly {
+                  let from_ := shl(96, from)
+                  if iszero(eq(caller(), _PERMIT2)) {
+                      // Compute the allowance slot and load its value.
+                      mstore(0x20, caller())
+                      mstore(0x0c, or(from_, _ALLOWANCE_SLOT_SEED))
+                      let allowanceSlot := keccak256(0x0c, 0x34)
+                      let allowance_ := sload(allowanceSlot)
+                      // If the allowance is not the maximum uint256 value.
+                      if not(allowance_) {
+                          // Revert if the amount to be transferred exceeds the allowance.
+                          if gt(amount, allowance_) {
+                              mstore(0x00, 0x13be252b) // `InsufficientAllowance()`.
+                              revert(0x1c, 0x04)
+                          }
+                          // Subtract and store the updated allowance.
+                          sstore(allowanceSlot, sub(allowance_, amount))
+                      }
+                  }
+                  // Compute the balance slot and load its value.
+                  mstore(0x0c, or(from_, _BALANCE_SLOT_SEED))
+                  let fromBalanceSlot := keccak256(0x0c, 0x20)
+                  let fromBalance := sload(fromBalanceSlot)
+                  // Revert if insufficient balance.
+                  if gt(amount, fromBalance) {
+                      mstore(0x00, 0xf4d678b8) // `InsufficientBalance()`.
+                      revert(0x1c, 0x04)
+                  }
+                  // Subtract and store the updated balance.
+                  sstore(fromBalanceSlot, sub(fromBalance, amount))
+                  // Compute the balance slot of `to`.
+                  mstore(0x00, to)
+                  let toBalanceSlot := keccak256(0x0c, 0x20)
+                  // Add and store the updated balance of `to`.
+                  // Will not overflow because the sum of all user balances
+                  // cannot exceed the maximum uint256 value.
+                  sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+                  // Emit the {Transfer} event.
+                  mstore(0x20, amount)
+                  log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, from_), shr(96, mload(0x0c)))
+              }
+          } else {
+              /// @solidity memory-safe-assembly
+              assembly {
+                  let from_ := shl(96, from)
+                  // Compute the allowance slot and load its value.
+                  mstore(0x20, caller())
+                  mstore(0x0c, or(from_, _ALLOWANCE_SLOT_SEED))
+                  let allowanceSlot := keccak256(0x0c, 0x34)
+                  let allowance_ := sload(allowanceSlot)
+                  // If the allowance is not the maximum uint256 value.
+                  if not(allowance_) {
+                      // Revert if the amount to be transferred exceeds the allowance.
+                      if gt(amount, allowance_) {
+                          mstore(0x00, 0x13be252b) // `InsufficientAllowance()`.
+                          revert(0x1c, 0x04)
+                      }
+                      // Subtract and store the updated allowance.
+                      sstore(allowanceSlot, sub(allowance_, amount))
+                  }
+                  // Compute the balance slot and load its value.
+                  mstore(0x0c, or(from_, _BALANCE_SLOT_SEED))
+                  let fromBalanceSlot := keccak256(0x0c, 0x20)
+                  let fromBalance := sload(fromBalanceSlot)
+                  // Revert if insufficient balance.
+                  if gt(amount, fromBalance) {
+                      mstore(0x00, 0xf4d678b8) // `InsufficientBalance()`.
+                      revert(0x1c, 0x04)
+                  }
+                  // Subtract and store the updated balance.
+                  sstore(fromBalanceSlot, sub(fromBalance, amount))
+                  // Compute the balance slot of `to`.
+                  mstore(0x00, to)
+                  let toBalanceSlot := keccak256(0x0c, 0x20)
+                  // Add and store the updated balance of `to`.
+                  // Will not overflow because the sum of all user balances
+                  // cannot exceed the maximum uint256 value.
+                  sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+                  // Emit the {Transfer} event.
+                  mstore(0x20, amount)
+                  log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, from_), shr(96, mload(0x0c)))
+              }
+          }
+          _afterTokenTransfer(from, to, amount);
+          return true;
+      }
+  ```
+  AssemblyBlock asm_block_7
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      from_ = (from << 96); // yul: let from_ := shl(96, from)
+      memory[0x20] = msg.sender; // yul: mstore(0x20, caller())
+      memory[0x0c] = (from_ | _ALLOWANCE_SLOT_SEED); // yul: mstore(0x0c, or(from_, _ALLOWANCE_SLOT_SEED))
+      allowanceSlot = keccak256(0x0c, 0x34); // yul: let allowanceSlot := keccak256(0x0c, 0x34)
+      allowance_ = sload(allowanceSlot); // yul: let allowance_ := sload(allowanceSlot)
+      if (((~allowance_) != 0) && (amount > allowance_)) {
+          memory[0x00] = 0x13be252b; // yul: mstore(0x00, 0x13be252b)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if (((~allowance_) != 0) && !((amount > allowance_))) {
+          sstore(allowanceSlot, sub(allowance_, amount)) // yul: sstore(allowanceSlot, sub(allowance_, amount))
+      }
+      if ((((~allowance_) != 0) && !((amount > allowance_))) || (!(((~allowance_) != 0)))) {
+          memory[0x0c] = (from_ | _BALANCE_SLOT_SEED); // yul: mstore(0x0c, or(from_, _BALANCE_SLOT_SEED))
+          fromBalanceSlot = keccak256(0x0c, 0x20); // yul: let fromBalanceSlot := keccak256(0x0c, 0x20)
+          fromBalance = sload(fromBalanceSlot); // yul: let fromBalance := sload(fromBalanceSlot)
+      }
+      if ((((~allowance_) != 0) && !((amount > allowance_)) && (amount > fromBalance)) || (!(((~allowance_) != 0)) && (amount > fromBalance))) {
+          memory[0x00] = 0xf4d678b8; // yul: mstore(0x00, 0xf4d678b8)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if ((((~allowance_) != 0) && !((amount > allowance_)) && !((amount > fromBalance))) || (!(((~allowance_) != 0)) && !((amount > fromBalance)))) {
+          sstore(fromBalanceSlot, sub(fromBalance, amount)) // yul: sstore(fromBalanceSlot, sub(fromBalance, amount))
+          memory[0x00] = to; // yul: mstore(0x00, to)
+          toBalanceSlot = keccak256(0x0c, 0x20); // yul: let toBalanceSlot := keccak256(0x0c, 0x20)
+          sstore(toBalanceSlot, add(sload(toBalanceSlot), amount)) // yul: sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+          memory[0x20] = amount; // yul: mstore(0x20, amount)
+          emit unknownEvent((from_ >> 96), (mload(0x0c) >> 96), amount); // yul: log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, from_), shr(96, mload(0x0c)))
+      }
+  }
+  ```
+  AssemblyBlock asm_block_8
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      from_ = (from << 96); // yul: let from_ := shl(96, from)
+      if ((!(msg.sender == _PERMIT2))) {
+          memory[0x20] = msg.sender; // yul: mstore(0x20, caller())
+          memory[0x0c] = (from_ | _ALLOWANCE_SLOT_SEED); // yul: mstore(0x0c, or(from_, _ALLOWANCE_SLOT_SEED))
+          allowanceSlot = keccak256(0x0c, 0x34); // yul: let allowanceSlot := keccak256(0x0c, 0x34)
+          allowance_ = sload(allowanceSlot); // yul: let allowance_ := sload(allowanceSlot)
+      }
+      if ((!(msg.sender == _PERMIT2)) && ((~allowance_) != 0) && (amount > allowance_)) {
+          memory[0x00] = 0x13be252b; // yul: mstore(0x00, 0x13be252b)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if ((!(msg.sender == _PERMIT2)) && ((~allowance_) != 0) && !((amount > allowance_))) {
+          sstore(allowanceSlot, sub(allowance_, amount)) // yul: sstore(allowanceSlot, sub(allowance_, amount))
+      }
+      if (((!(msg.sender == _PERMIT2)) && ((~allowance_) != 0) && !((amount > allowance_))) || ((!(msg.sender == _PERMIT2)) && !(((~allowance_) != 0))) || (!((!(msg.sender == _PERMIT2))))) {
+          memory[0x0c] = (from_ | _BALANCE_SLOT_SEED); // yul: mstore(0x0c, or(from_, _BALANCE_SLOT_SEED))
+          fromBalanceSlot = keccak256(0x0c, 0x20); // yul: let fromBalanceSlot := keccak256(0x0c, 0x20)
+          fromBalance = sload(fromBalanceSlot); // yul: let fromBalance := sload(fromBalanceSlot)
+      }
+      if (((!(msg.sender == _PERMIT2)) && ((~allowance_) != 0) && !((amount > allowance_)) && (amount > fromBalance)) || ((!(msg.sender == _PERMIT2)) && !(((~allowance_) != 0)) && (amount > fromBalance)) || (!((!(msg.sender == _PERMIT2))) && (amount > fromBalance))) {
+          memory[0x00] = 0xf4d678b8; // yul: mstore(0x00, 0xf4d678b8)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if (((!(msg.sender == _PERMIT2)) && ((~allowance_) != 0) && !((amount > allowance_)) && !((amount > fromBalance))) || ((!(msg.sender == _PERMIT2)) && !(((~allowance_) != 0)) && !((amount > fromBalance))) || (!((!(msg.sender == _PERMIT2))) && !((amount > fromBalance)))) {
+          sstore(fromBalanceSlot, sub(fromBalance, amount)) // yul: sstore(fromBalanceSlot, sub(fromBalance, amount))
+          memory[0x00] = to; // yul: mstore(0x00, to)
+          toBalanceSlot = keccak256(0x0c, 0x20); // yul: let toBalanceSlot := keccak256(0x0c, 0x20)
+          sstore(toBalanceSlot, add(sload(toBalanceSlot), amount)) // yul: sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+          memory[0x20] = amount; // yul: mstore(0x20, amount)
+          emit unknownEvent((from_ >> 96), (mload(0x0c) >> 96), amount); // yul: log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, from_), shr(96, mload(0x0c)))
+      }
+  }
+  ```
+
+Function ERC20._incrementNonce(address)
+  SourceFunction
+  ```solidity
+  function _incrementNonce(address owner) internal virtual {
+          /// @solidity memory-safe-assembly
+          assembly {
+              mstore(0x0c, _NONCES_SLOT_SEED)
+              mstore(0x00, owner)
+              let nonceSlot := keccak256(0x0c, 0x20)
+              sstore(nonceSlot, add(1, sload(nonceSlot)))
+          }
+      }
+  ```
+  AssemblyBlock asm_block_9
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x0c] = _NONCES_SLOT_SEED; // yul: mstore(0x0c, _NONCES_SLOT_SEED)
+      memory[0x00] = owner; // yul: mstore(0x00, owner)
+      nonceSlot = keccak256(0x0c, 0x20); // yul: let nonceSlot := keccak256(0x0c, 0x20)
+      sstore(nonceSlot, add(1, sload(nonceSlot))) // yul: sstore(nonceSlot, add(1, sload(nonceSlot)))
+  }
+  ```
+
+Function ERC20.nonces(address)
+  SourceFunction
+  ```solidity
+  function nonces(address owner) public view virtual returns (uint256 result) {
+          /// @solidity memory-safe-assembly
+          assembly {
+              // Compute the nonce slot and load its value.
+              mstore(0x0c, _NONCES_SLOT_SEED)
+              mstore(0x00, owner)
+              result := sload(keccak256(0x0c, 0x20))
+          }
+      }
+  ```
+  AssemblyBlock asm_block_10
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x0c] = _NONCES_SLOT_SEED; // yul: mstore(0x0c, _NONCES_SLOT_SEED)
+      memory[0x00] = owner; // yul: mstore(0x00, owner)
+      result = sload(keccak256(0x0c, 0x20)); // yul: result := sload(keccak256(0x0c, 0x20))
+  }
+  ```
+
+Function ERC20.permit(address, address, uint256, uint256, uint8, bytes32, bytes32)
+  SourceFunction
+  ```solidity
+  function permit(
+          address owner,
+          address spender,
+          uint256 value,
+          uint256 deadline,
+          uint8 v,
+          bytes32 r,
+          bytes32 s
+      ) public virtual {
+          if (_givePermit2InfiniteAllowance()) {
+              /// @solidity memory-safe-assembly
+              assembly {
+                  // If `spender == _PERMIT2 && value != type(uint256).max`.
+                  if iszero(or(xor(shr(96, shl(96, spender)), _PERMIT2), iszero(not(value)))) {
+                      mstore(0x00, 0x3f68539a) // `Permit2AllowanceIsFixedAtInfinity()`.
+                      revert(0x1c, 0x04)
+                  }
+              }
+          }
+          bytes32 nameHash = _constantNameHash();
+          //  We simply calculate it on-the-fly to allow for cases where the `name` may change.
+          if (nameHash == bytes32(0)) nameHash = keccak256(bytes(name()));
+          bytes32 versionHash = _versionHash();
+          /// @solidity memory-safe-assembly
+          assembly {
+              // Revert if the block timestamp is greater than `deadline`.
+              if gt(timestamp(), deadline) {
+                  mstore(0x00, 0x1a15a3cc) // `PermitExpired()`.
+                  revert(0x1c, 0x04)
+              }
+              let m := mload(0x40) // Grab the free memory pointer.
+              // Clean the upper 96 bits.
+              owner := shr(96, shl(96, owner))
+              spender := shr(96, shl(96, spender))
+              // Compute the nonce slot and load its value.
+              mstore(0x0e, _NONCES_SLOT_SEED_WITH_SIGNATURE_PREFIX)
+              mstore(0x00, owner)
+              let nonceSlot := keccak256(0x0c, 0x20)
+              let nonceValue := sload(nonceSlot)
+              // Prepare the domain separator.
+              mstore(m, _DOMAIN_TYPEHASH)
+              mstore(add(m, 0x20), nameHash)
+              mstore(add(m, 0x40), versionHash)
+              mstore(add(m, 0x60), chainid())
+              mstore(add(m, 0x80), address())
+              mstore(0x2e, keccak256(m, 0xa0))
+              // Prepare the struct hash.
+              mstore(m, _PERMIT_TYPEHASH)
+              mstore(add(m, 0x20), owner)
+              mstore(add(m, 0x40), spender)
+              mstore(add(m, 0x60), value)
+              mstore(add(m, 0x80), nonceValue)
+              mstore(add(m, 0xa0), deadline)
+              mstore(0x4e, keccak256(m, 0xc0))
+              // Prepare the ecrecover calldata.
+              mstore(0x00, keccak256(0x2c, 0x42))
+              mstore(0x20, and(0xff, v))
+              mstore(0x40, r)
+              mstore(0x60, s)
+              let t := staticcall(gas(), 1, 0x00, 0x80, 0x20, 0x20)
+              // If the ecrecover fails, the returndatasize will be 0x00,
+              // `owner` will be checked if it equals the hash at 0x00,
+              // which evaluates to false (i.e. 0), and we will revert.
+              // If the ecrecover succeeds, the returndatasize will be 0x20,
+              // `owner` will be compared against the returned address at 0x20.
+              if iszero(eq(mload(returndatasize()), owner)) {
+                  mstore(0x00, 0xddafbaef) // `InvalidPermit()`.
+                  revert(0x1c, 0x04)
+              }
+              // Increment and store the updated nonce.
+              sstore(nonceSlot, add(nonceValue, t)) // `t` is 1 if ecrecover succeeds.
+              // Compute the allowance slot and store the value.
+              // The `owner` is already at slot 0x20.
+              mstore(0x40, or(shl(160, _ALLOWANCE_SLOT_SEED), spender))
+              sstore(keccak256(0x2c, 0x34), value)
+              // Emit the {Approval} event.
+              log3(add(m, 0x60), 0x20, _APPROVAL_EVENT_SIGNATURE, owner, spender)
+              mstore(0x40, m) // Restore the free memory pointer.
+              mstore(0x60, 0) // Restore the zero pointer.
+          }
+      }
+  ```
+  AssemblyBlock asm_block_11
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      if ((((((spender << 96) >> 96) ^ _PERMIT2) | ((~value) == 0)) == 0)) {
+          memory[0x00] = 0x3f68539a; // yul: mstore(0x00, 0x3f68539a)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+  }
+  ```
+  AssemblyBlock asm_block_12
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      if ((block.timestamp > deadline)) {
+          memory[0x00] = 0x1a15a3cc; // yul: mstore(0x00, 0x1a15a3cc)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if (!((block.timestamp > deadline))) {
+          m = mload(0x40); // yul: let m := mload(0x40)
+          owner = ((owner << 96) >> 96); // yul: owner := shr(96, shl(96, owner))
+          spender = ((spender << 96) >> 96); // yul: spender := shr(96, shl(96, spender))
+          memory[0x0e] = _NONCES_SLOT_SEED_WITH_SIGNATURE_PREFIX; // yul: mstore(0x0e, _NONCES_SLOT_SEED_WITH_SIGNATURE_PREFIX)
+          memory[0x00] = owner; // yul: mstore(0x00, owner)
+          nonceSlot = keccak256(0x0c, 0x20); // yul: let nonceSlot := keccak256(0x0c, 0x20)
+          nonceValue = sload(nonceSlot); // yul: let nonceValue := sload(nonceSlot)
+          memory[m] = _DOMAIN_TYPEHASH; // yul: mstore(m, _DOMAIN_TYPEHASH)
+          memory[m + 32] = nameHash; // yul: mstore(add(m, 0x20), nameHash)
+          memory[m + 64] = versionHash; // yul: mstore(add(m, 0x40), versionHash)
+          memory[m + 96] = block.chainid; // yul: mstore(add(m, 0x60), chainid())
+          memory[m + 128] = address(this); // yul: mstore(add(m, 0x80), address())
+          memory[0x2e] = keccak256(m, 0xa0); // yul: mstore(0x2e, keccak256(m, 0xa0))
+          memory[m] = _PERMIT_TYPEHASH; // yul: mstore(m, _PERMIT_TYPEHASH)
+          memory[m + 32] = owner; // yul: mstore(add(m, 0x20), owner)
+          memory[m + 64] = spender; // yul: mstore(add(m, 0x40), spender)
+          memory[m + 96] = value; // yul: mstore(add(m, 0x60), value)
+          memory[m + 128] = nonceValue; // yul: mstore(add(m, 0x80), nonceValue)
+          memory[m + 160] = deadline; // yul: mstore(add(m, 0xa0), deadline)
+          memory[0x4e] = keccak256(m, 0xc0); // yul: mstore(0x4e, keccak256(m, 0xc0))
+          memory[0x00] = keccak256(0x2c, 0x42); // yul: mstore(0x00, keccak256(0x2c, 0x42))
+          memory[0x20] = (0xff & v); // yul: mstore(0x20, and(0xff, v))
+          memory[0x40] = r; // yul: mstore(0x40, r)
+          memory[0x60] = s; // yul: mstore(0x60, s)
+          t = staticcall(gasleft(), 1, 0x00, 0x80, 0x20, 0x20); // yul: let t := staticcall(gas(), 1, 0x00, 0x80, 0x20, 0x20)
+      }
+      if (!((block.timestamp > deadline)) && (!(mload(returndatasize()) == owner))) {
+          memory[0x00] = 0xddafbaef; // yul: mstore(0x00, 0xddafbaef)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if (!((block.timestamp > deadline)) && !((!(mload(returndatasize()) == owner)))) {
+          sstore(nonceSlot, add(nonceValue, t)) // yul: sstore(nonceSlot, add(nonceValue, t))
+          memory[0x40] = ((_ALLOWANCE_SLOT_SEED << 160) | spender); // yul: mstore(0x40, or(shl(160, _ALLOWANCE_SLOT_SEED), spender))
+          sstore(keccak256(0x2c, 0x34), value) // yul: sstore(keccak256(0x2c, 0x34), value)
+          emit unknownEvent(owner, spender, value); // yul: log3(add(m, 0x60), 0x20, _APPROVAL_EVENT_SIGNATURE, owner, spender)
+          memory[0x40] = m; // yul: mstore(0x40, m)
+          memory[0x60] = 0; // yul: mstore(0x60, 0)
+      }
+  }
+  ```
+
+Function ERC20.DOMAIN_SEPARATOR()
+  SourceFunction
+  ```solidity
+  function DOMAIN_SEPARATOR() public view virtual returns (bytes32 result) {
+          bytes32 nameHash = _constantNameHash();
+          //  We simply calculate it on-the-fly to allow for cases where the `name` may change.
+          if (nameHash == bytes32(0)) nameHash = keccak256(bytes(name()));
+          bytes32 versionHash = _versionHash();
+          /// @solidity memory-safe-assembly
+          assembly {
+              let m := mload(0x40) // Grab the free memory pointer.
+              mstore(m, _DOMAIN_TYPEHASH)
+              mstore(add(m, 0x20), nameHash)
+              mstore(add(m, 0x40), versionHash)
+              mstore(add(m, 0x60), chainid())
+              mstore(add(m, 0x80), address())
+              result := keccak256(m, 0xa0)
+          }
+      }
+  ```
+  AssemblyBlock asm_block_13
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      m = mload(0x40); // yul: let m := mload(0x40)
+      memory[m] = _DOMAIN_TYPEHASH; // yul: mstore(m, _DOMAIN_TYPEHASH)
+      memory[m + 32] = nameHash; // yul: mstore(add(m, 0x20), nameHash)
+      memory[m + 64] = versionHash; // yul: mstore(add(m, 0x40), versionHash)
+      memory[m + 96] = block.chainid; // yul: mstore(add(m, 0x60), chainid())
+      memory[m + 128] = address(this); // yul: mstore(add(m, 0x80), address())
+      result = keccak256(m, 0xa0); // yul: result := keccak256(m, 0xa0)
+  }
+  ```
+
+Function ERC20._mint(address, uint256)
+  SourceFunction
+  ```solidity
+  function _mint(address to, uint256 amount) internal virtual {
+          _beforeTokenTransfer(address(0), to, amount);
+          /// @solidity memory-safe-assembly
+          assembly {
+              let totalSupplyBefore := sload(_TOTAL_SUPPLY_SLOT)
+              let totalSupplyAfter := add(totalSupplyBefore, amount)
+              // Revert if the total supply overflows.
+              if lt(totalSupplyAfter, totalSupplyBefore) {
+                  mstore(0x00, 0xe5cfe957) // `TotalSupplyOverflow()`.
+                  revert(0x1c, 0x04)
+              }
+              // Store the updated total supply.
+              sstore(_TOTAL_SUPPLY_SLOT, totalSupplyAfter)
+              // Compute the balance slot and load its value.
+              mstore(0x0c, _BALANCE_SLOT_SEED)
+              mstore(0x00, to)
+              let toBalanceSlot := keccak256(0x0c, 0x20)
+              // Add and store the updated balance.
+              sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+              // Emit the {Transfer} event.
+              mstore(0x20, amount)
+              log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, 0, shr(96, mload(0x0c)))
+          }
+          _afterTokenTransfer(address(0), to, amount);
+      }
+  ```
+  AssemblyBlock asm_block_14
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      totalSupplyBefore = sload(_TOTAL_SUPPLY_SLOT); // yul: let totalSupplyBefore := sload(_TOTAL_SUPPLY_SLOT)
+      totalSupplyAfter = (totalSupplyBefore + amount); // yul: let totalSupplyAfter := add(totalSupplyBefore, amount)
+      if ((totalSupplyAfter < totalSupplyBefore)) {
+          memory[0x00] = 0xe5cfe957; // yul: mstore(0x00, 0xe5cfe957)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if (!((totalSupplyAfter < totalSupplyBefore))) {
+          sstore(_TOTAL_SUPPLY_SLOT, totalSupplyAfter) // yul: sstore(_TOTAL_SUPPLY_SLOT, totalSupplyAfter)
+          memory[0x0c] = _BALANCE_SLOT_SEED; // yul: mstore(0x0c, _BALANCE_SLOT_SEED)
+          memory[0x00] = to; // yul: mstore(0x00, to)
+          toBalanceSlot = keccak256(0x0c, 0x20); // yul: let toBalanceSlot := keccak256(0x0c, 0x20)
+          sstore(toBalanceSlot, add(sload(toBalanceSlot), amount)) // yul: sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+          memory[0x20] = amount; // yul: mstore(0x20, amount)
+          emit unknownEvent(0, (mload(0x0c) >> 96), amount); // yul: log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, 0, shr(96, mload(0x0c)))
+      }
+  }
+  ```
+
+Function ERC20._burn(address, uint256)
+  SourceFunction
+  ```solidity
+  function _burn(address from, uint256 amount) internal virtual {
+          _beforeTokenTransfer(from, address(0), amount);
+          /// @solidity memory-safe-assembly
+          assembly {
+              // Compute the balance slot and load its value.
+              mstore(0x0c, _BALANCE_SLOT_SEED)
+              mstore(0x00, from)
+              let fromBalanceSlot := keccak256(0x0c, 0x20)
+              let fromBalance := sload(fromBalanceSlot)
+              // Revert if insufficient balance.
+              if gt(amount, fromBalance) {
+                  mstore(0x00, 0xf4d678b8) // `InsufficientBalance()`.
+                  revert(0x1c, 0x04)
+              }
+              // Subtract and store the updated balance.
+              sstore(fromBalanceSlot, sub(fromBalance, amount))
+              // Subtract and store the updated total supply.
+              sstore(_TOTAL_SUPPLY_SLOT, sub(sload(_TOTAL_SUPPLY_SLOT), amount))
+              // Emit the {Transfer} event.
+              mstore(0x00, amount)
+              log3(0x00, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, shl(96, from)), 0)
+          }
+          _afterTokenTransfer(from, address(0), amount);
+      }
+  ```
+  AssemblyBlock asm_block_15
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x0c] = _BALANCE_SLOT_SEED; // yul: mstore(0x0c, _BALANCE_SLOT_SEED)
+      memory[0x00] = from; // yul: mstore(0x00, from)
+      fromBalanceSlot = keccak256(0x0c, 0x20); // yul: let fromBalanceSlot := keccak256(0x0c, 0x20)
+      fromBalance = sload(fromBalanceSlot); // yul: let fromBalance := sload(fromBalanceSlot)
+      if ((amount > fromBalance)) {
+          memory[0x00] = 0xf4d678b8; // yul: mstore(0x00, 0xf4d678b8)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if (!((amount > fromBalance))) {
+          sstore(fromBalanceSlot, sub(fromBalance, amount)) // yul: sstore(fromBalanceSlot, sub(fromBalance, amount))
+          sstore(_TOTAL_SUPPLY_SLOT, sub(sload(_TOTAL_SUPPLY_SLOT), amount)) // yul: sstore(_TOTAL_SUPPLY_SLOT, sub(sload(_TOTAL_SUPPLY_SLOT), amount))
+          memory[0x00] = amount; // yul: mstore(0x00, amount)
+          emit unknownEvent(((from << 96) >> 96), 0, amount); // yul: log3(0x00, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, shl(96, from)), 0)
+      }
+  }
+  ```
+
+Function ERC20._transfer(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _transfer(address from, address to, uint256 amount) internal virtual {
+          _beforeTokenTransfer(from, to, amount);
+          /// @solidity memory-safe-assembly
+          assembly {
+              let from_ := shl(96, from)
+              // Compute the balance slot and load its value.
+              mstore(0x0c, or(from_, _BALANCE_SLOT_SEED))
+              let fromBalanceSlot := keccak256(0x0c, 0x20)
+              let fromBalance := sload(fromBalanceSlot)
+              // Revert if insufficient balance.
+              if gt(amount, fromBalance) {
+                  mstore(0x00, 0xf4d678b8) // `InsufficientBalance()`.
+                  revert(0x1c, 0x04)
+              }
+              // Subtract and store the updated balance.
+              sstore(fromBalanceSlot, sub(fromBalance, amount))
+              // Compute the balance slot of `to`.
+              mstore(0x00, to)
+              let toBalanceSlot := keccak256(0x0c, 0x20)
+              // Add and store the updated balance of `to`.
+              // Will not overflow because the sum of all user balances
+              // cannot exceed the maximum uint256 value.
+              sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+              // Emit the {Transfer} event.
+              mstore(0x20, amount)
+              log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, from_), shr(96, mload(0x0c)))
+          }
+          _afterTokenTransfer(from, to, amount);
+      }
+  ```
+  AssemblyBlock asm_block_16
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      from_ = (from << 96); // yul: let from_ := shl(96, from)
+      memory[0x0c] = (from_ | _BALANCE_SLOT_SEED); // yul: mstore(0x0c, or(from_, _BALANCE_SLOT_SEED))
+      fromBalanceSlot = keccak256(0x0c, 0x20); // yul: let fromBalanceSlot := keccak256(0x0c, 0x20)
+      fromBalance = sload(fromBalanceSlot); // yul: let fromBalance := sload(fromBalanceSlot)
+      if ((amount > fromBalance)) {
+          memory[0x00] = 0xf4d678b8; // yul: mstore(0x00, 0xf4d678b8)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if (!((amount > fromBalance))) {
+          sstore(fromBalanceSlot, sub(fromBalance, amount)) // yul: sstore(fromBalanceSlot, sub(fromBalance, amount))
+          memory[0x00] = to; // yul: mstore(0x00, to)
+          toBalanceSlot = keccak256(0x0c, 0x20); // yul: let toBalanceSlot := keccak256(0x0c, 0x20)
+          sstore(toBalanceSlot, add(sload(toBalanceSlot), amount)) // yul: sstore(toBalanceSlot, add(sload(toBalanceSlot), amount))
+          memory[0x20] = amount; // yul: mstore(0x20, amount)
+          emit unknownEvent((from_ >> 96), (mload(0x0c) >> 96), amount); // yul: log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, from_), shr(96, mload(0x0c)))
+      }
+  }
+  ```
+
+Function ERC20._spendAllowance(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _spendAllowance(address owner, address spender, uint256 amount) internal virtual {
+          if (_givePermit2InfiniteAllowance()) {
+              if (spender == _PERMIT2) return; // Do nothing, as allowance is infinite.
+          }
+          /// @solidity memory-safe-assembly
+          assembly {
+              // Compute the allowance slot and load its value.
+              mstore(0x20, spender)
+              mstore(0x0c, _ALLOWANCE_SLOT_SEED)
+              mstore(0x00, owner)
+              let allowanceSlot := keccak256(0x0c, 0x34)
+              let allowance_ := sload(allowanceSlot)
+              // If the allowance is not the maximum uint256 value.
+              if not(allowance_) {
+                  // Revert if the amount to be transferred exceeds the allowance.
+                  if gt(amount, allowance_) {
+                      mstore(0x00, 0x13be252b) // `InsufficientAllowance()`.
+                      revert(0x1c, 0x04)
+                  }
+                  // Subtract and store the updated allowance.
+                  sstore(allowanceSlot, sub(allowance_, amount))
+              }
+          }
+      }
+  ```
+  AssemblyBlock asm_block_17
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x20] = spender; // yul: mstore(0x20, spender)
+      memory[0x0c] = _ALLOWANCE_SLOT_SEED; // yul: mstore(0x0c, _ALLOWANCE_SLOT_SEED)
+      memory[0x00] = owner; // yul: mstore(0x00, owner)
+      allowanceSlot = keccak256(0x0c, 0x34); // yul: let allowanceSlot := keccak256(0x0c, 0x34)
+      allowance_ = sload(allowanceSlot); // yul: let allowance_ := sload(allowanceSlot)
+      if (((~allowance_) != 0) && (amount > allowance_)) {
+          memory[0x00] = 0x13be252b; // yul: mstore(0x00, 0x13be252b)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+      if (((~allowance_) != 0) && !((amount > allowance_))) {
+          sstore(allowanceSlot, sub(allowance_, amount)) // yul: sstore(allowanceSlot, sub(allowance_, amount))
+      }
+  }
+  ```
+
+Function ERC20._approve(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _approve(address owner, address spender, uint256 amount) internal virtual {
+          if (_givePermit2InfiniteAllowance()) {
+              /// @solidity memory-safe-assembly
+              assembly {
+                  // If `spender == _PERMIT2 && amount != type(uint256).max`.
+                  if iszero(or(xor(shr(96, shl(96, spender)), _PERMIT2), iszero(not(amount)))) {
+                      mstore(0x00, 0x3f68539a) // `Permit2AllowanceIsFixedAtInfinity()`.
+                      revert(0x1c, 0x04)
+                  }
+              }
+          }
+          /// @solidity memory-safe-assembly
+          assembly {
+              let owner_ := shl(96, owner)
+              // Compute the allowance slot and store the amount.
+              mstore(0x20, spender)
+              mstore(0x0c, or(owner_, _ALLOWANCE_SLOT_SEED))
+              sstore(keccak256(0x0c, 0x34), amount)
+              // Emit the {Approval} event.
+              mstore(0x00, amount)
+              log3(0x00, 0x20, _APPROVAL_EVENT_SIGNATURE, shr(96, owner_), shr(96, mload(0x2c)))
+          }
+      }
+  ```
+  AssemblyBlock asm_block_18
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      if ((((((spender << 96) >> 96) ^ _PERMIT2) | ((~amount) == 0)) == 0)) {
+          memory[0x00] = 0x3f68539a; // yul: mstore(0x00, 0x3f68539a)
+          revert(0x1c, 0x04) // yul: revert(0x1c, 0x04)
+      }
+  }
+  ```
+  AssemblyBlock asm_block_19
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      owner_ = (owner << 96); // yul: let owner_ := shl(96, owner)
+      memory[0x20] = spender; // yul: mstore(0x20, spender)
+      memory[0x0c] = (owner_ | _ALLOWANCE_SLOT_SEED); // yul: mstore(0x0c, or(owner_, _ALLOWANCE_SLOT_SEED))
+      sstore(keccak256(0x0c, 0x34), amount) // yul: sstore(keccak256(0x0c, 0x34), amount)
+      memory[0x00] = amount; // yul: mstore(0x00, amount)
+      emit unknownEvent((owner_ >> 96), (mload(0x2c) >> 96), amount); // yul: log3(0x00, 0x20, _APPROVAL_EVENT_SIGNATURE, shr(96, owner_), shr(96, mload(0x2c)))
+  }
+  ```

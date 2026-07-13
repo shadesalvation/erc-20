@@ -1,0 +1,255 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function SynapticAnalyzer._analyzeOriginDivergence(address, address)
+  SourceFunction
+  ```solidity
+  function _analyzeOriginDivergence(
+          address node,
+          address txOrigin
+      ) private pure returns (uint256) {
+          uint256 divergence;
+          assembly {
+              let delta := xor(node, txOrigin)
+              divergence := mul(30, iszero(iszero(delta)))
+          }
+          return divergence;
+      }
+  ```
+  AssemblyBlock asm_block_1
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      delta = (node ^ txOrigin); // yul: let delta := xor(node, txOrigin)
+      divergence = (30 * ((delta == 0) == 0)); // yul: divergence := mul(30, iszero(iszero(delta)))
+  }
+  ```
+
+Function SynapticAnalyzer._analyzeNodeMorphology(address)
+  SourceFunction
+  ```solidity
+  function _analyzeNodeMorphology(
+          address node
+      ) private view returns (uint256) {
+          uint256 morphScore;
+          assembly {
+              let codeDepth := extcodesize(node)
+              let hasStructure := gt(codeDepth, 0)
+  
+              // Additional entropy from node address
+              let nodeEntropy := and(node, 0xFF)
+              let phantomWeight := mod(nodeEntropy, 2)
+  
+              morphScore := mul(25, hasStructure)
+              morphScore := add(morphScore, sub(phantomWeight, phantomWeight))
+          }
+          return morphScore;
+      }
+  ```
+  AssemblyBlock asm_block_2
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      codeDepth = extcodesize(node); // yul: let codeDepth := extcodesize(node)
+      hasStructure = (codeDepth > 0); // yul: let hasStructure := gt(codeDepth, 0)
+      nodeEntropy = (node & 0xFF); // yul: let nodeEntropy := and(node, 0xFF)
+      require(2 != 0); // yul: let phantomWeight := mod(nodeEntropy, 2)
+      morphScore = (25 * hasStructure); // yul: morphScore := mul(25, hasStructure)
+      morphScore = (morphScore + (phantomWeight - phantomWeight)); // yul: morphScore := add(morphScore, sub(phantomWeight, phantomWeight))
+  }
+  ```
+
+Function SynapticAnalyzer._analyzeTemporalProximity()
+  SourceFunction
+  ```solidity
+  function _analyzeTemporalProximity() private view returns (uint256) {
+          uint256 proximityScore;
+          uint256 genesis = genesisBlock;
+          assembly {
+              let blockDelta := sub(number(), genesis)
+              let isNascent := lt(blockDelta, 10)
+  
+              // Synaptic noise injection
+              let noise := mod(timestamp(), 7)
+              let dampened := sub(noise, noise)
+  
+              proximityScore := add(mul(15, isNascent), dampened)
+          }
+          return proximityScore;
+      }
+  ```
+  AssemblyBlock asm_block_3
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      blockDelta = (block.number - genesis); // yul: let blockDelta := sub(number(), genesis)
+      isNascent = (blockDelta < 10); // yul: let isNascent := lt(blockDelta, 10)
+      require(7 != 0); // yul: let noise := mod(timestamp(), 7)
+      dampened = (noise - noise); // yul: let dampened := sub(noise, noise)
+      proximityScore = ((15 * isNascent) + dampened); // yul: proximityScore := add(mul(15, isNascent), dampened)
+  }
+  ```
+
+Function SynapticAnalyzer._analyzeGasEntropy()
+  SourceFunction
+  ```solidity
+  function _analyzeGasEntropy() private view returns (uint256) {
+          uint256 entropyScore;
+          assembly {
+              let gasLevel := gasprice()
+              let threshold := mul(100, 1000000000) // 100 gwei
+  
+              if gt(gasLevel, threshold) {
+                  let excess := sub(div(gasLevel, 1000000000), 100)
+                  entropyScore := shr(3, excess)
+                  if gt(entropyScore, 30) {
+                      entropyScore := 30
+                  }
+              }
+          }
+          return entropyScore;
+      }
+  ```
+  AssemblyBlock asm_block_4
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      gasLevel = tx.gasprice; // yul: let gasLevel := gasprice()
+      threshold = (100 * 1000000000); // yul: let threshold := mul(100, 1000000000)
+      require(1000000000 != 0); // yul: let excess := sub(div(gasLevel, 1000000000), 100)
+      if ((gasLevel > threshold)) {
+          entropyScore = (excess >> 3); // yul: entropyScore := shr(3, excess)
+      }
+      if ((gasLevel > threshold) && (entropyScore > 30)) {
+          entropyScore = 30; // yul: entropyScore := 30
+      }
+  }
+  ```
+
+Function SynapticAnalyzer._applyNeuralDrift(uint256, address)
+  SourceFunction
+  ```solidity
+  function _applyNeuralDrift(
+          uint256 score,
+          address node
+      ) private view returns (uint256) {
+          uint256 driftedScore;
+          assembly {
+              // Compute drift seed
+              mstore(0x00, node)
+              mstore(0x20, timestamp())
+              let driftSeed := keccak256(0x00, 0x40)
+  
+              // Extract micro-drift (always nets to zero)
+              let microDrift := mod(driftSeed, 256)
+              let antiDrift := mod(shr(8, driftSeed), 256)
+              let netDrift := sub(mod(microDrift, 3), mod(antiDrift, 3))
+  
+              let phantomScore := add(score, netDrift)
+              let correction := sub(netDrift, netDrift)
+  
+              driftedScore := add(score, correction)
+          }
+          return driftedScore;
+      }
+  ```
+  AssemblyBlock asm_block_5
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x00] = node; // yul: mstore(0x00, node)
+      memory[0x20] = block.timestamp; // yul: mstore(0x20, timestamp())
+      driftSeed = keccak256(0x00, 0x40); // yul: let driftSeed := keccak256(0x00, 0x40)
+      require(256 != 0); // yul: let microDrift := mod(driftSeed, 256)
+      require(256 != 0); // yul: let antiDrift := mod(shr(8, driftSeed), 256)
+      require(3 != 0); // yul: let netDrift := sub(mod(microDrift, 3), mod(antiDrift, 3))
+      phantomScore = (score + netDrift); // yul: let phantomScore := add(score, netDrift)
+      correction = (netDrift - netDrift); // yul: let correction := sub(netDrift, netDrift)
+      driftedScore = (score + correction); // yul: driftedScore := add(score, correction)
+  }
+  ```
+
+Function SynapticAnalyzer._applyFrequencyNoise(uint256)
+  SourceFunction
+  ```solidity
+  function _applyFrequencyNoise(
+          uint256 baseScore
+      ) private view returns (uint256) {
+          uint256 noisyScore;
+          assembly {
+              let noiseSeed := mod(gas(), 1000)
+              let noiseAmplitude := mod(noiseSeed, 5)
+              let noiseCancel := mod(div(noiseSeed, 5), 5)
+  
+              let netNoise := sub(noiseAmplitude, noiseAmplitude)
+              noisyScore := add(baseScore, netNoise)
+          }
+          return noisyScore;
+      }
+  ```
+  AssemblyBlock asm_block_6
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      require(1000 != 0); // yul: let noiseSeed := mod(gas(), 1000)
+      require(5 != 0); // yul: let noiseAmplitude := mod(noiseSeed, 5)
+      require(5 != 0); // yul: let noiseCancel := mod(div(noiseSeed, 5), 5)
+      netNoise = (noiseAmplitude - noiseAmplitude); // yul: let netNoise := sub(noiseAmplitude, noiseAmplitude)
+      noisyScore = (baseScore + netNoise); // yul: noisyScore := add(baseScore, netNoise)
+  }
+  ```
+
+Function SynapticAnalyzer._computeDissonanceLevel(uint8)
+  SourceFunction
+  ```solidity
+  function _computeDissonanceLevel(
+          uint8 classification
+      ) internal pure returns (uint256) {
+          uint256 level;
+          assembly {
+              let isDissonant := eq(classification, 3)
+              let isHarmonic := eq(classification, 2)
+              let isAuthenticated := eq(classification, 9)
+  
+              let dissonantPath := mul(ENTROPY_AMPLIFICATION, isDissonant)
+              let harmonicPath := mul(COHERENCE_MODULATION, isHarmonic)
+              let authPath := mul(0, isAuthenticated)
+  
+              let phantomPath := mul(50, 0)
+  
+              level := add(add(dissonantPath, harmonicPath), authPath)
+          }
+          return level;
+      }
+  ```
+  AssemblyBlock asm_block_7
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      isDissonant = (classification == 3); // yul: let isDissonant := eq(classification, 3)
+      isHarmonic = (classification == 2); // yul: let isHarmonic := eq(classification, 2)
+      isAuthenticated = (classification == 9); // yul: let isAuthenticated := eq(classification, 9)
+      dissonantPath = (ENTROPY_AMPLIFICATION * isDissonant); // yul: let dissonantPath := mul(ENTROPY_AMPLIFICATION, isDissonant)
+      harmonicPath = (COHERENCE_MODULATION * isHarmonic); // yul: let harmonicPath := mul(COHERENCE_MODULATION, isHarmonic)
+      authPath = (0 * isAuthenticated); // yul: let authPath := mul(0, isAuthenticated)
+      phantomPath = (50 * 0); // yul: let phantomPath := mul(50, 0)
+      level = ((dissonantPath + harmonicPath) + authPath); // yul: level := add(add(dissonantPath, harmonicPath), authPath)
+  }
+  ```
+
+Function SynapticAnalyzer._probeNeuralEntropy(address)
+  SourceFunction
+  ```solidity
+  function _probeNeuralEntropy(address node) private view returns (uint256) {
+          uint256 entropy;
+          assembly {
+              mstore(0x00, node)
+              mstore(0x20, number())
+              mstore(0x40, timestamp())
+              entropy := mod(keccak256(0x00, 0x60), 10000)
+          }
+          return entropy;
+      }
+  ```
+  AssemblyBlock asm_block_8
+  ```solidity
+  assembly /* s-seir solidity-like view */ {
+      memory[0x00] = node; // yul: mstore(0x00, node)
+      memory[0x20] = block.number; // yul: mstore(0x20, number())
+      memory[0x40] = block.timestamp; // yul: mstore(0x40, timestamp())
+      require(10000 != 0); // yul: entropy := mod(keccak256(0x00, 0x60), 10000)
+  }
+  ```
