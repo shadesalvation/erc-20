@@ -42,6 +42,25 @@ def collect_state_variables(contract:Json):
         if isinstance(n,dict) and n.get('nodeType')=='VariableDeclaration' and n.get('stateVariable'):
             out.append(variable_info(n,'state',slot)); slot+=1
     return out
+def collect_struct_definitions(contract:Json):
+    structs={}
+    for n in contract.get('nodes',[]):
+        if not isinstance(n,dict) or n.get('nodeType')!='StructDefinition':
+            continue
+        name=n.get('name')
+        canonical=n.get('canonicalName') or (f"{contract.get('name')}.{name}" if name else None)
+        fields=[]
+        for index,m in enumerate(n.get('members',[]) or []):
+            if not isinstance(m,dict):
+                continue
+            info=variable_info(m,'struct_field')
+            fields.append({'name':info.name,'type_string':info.type_string,'offset':index*32,'index':index,'src':info.src})
+        item={'name':name,'canonical_name':canonical,'fields':fields,'src':str(n.get('src',''))}
+        if name:
+            structs[name]=item
+        if canonical:
+            structs[canonical]=item
+    return structs
 def yul_nodes(root:Json)->list[Json]:
     out=[]
     def visit(n):
@@ -59,9 +78,11 @@ class SourceStatementCollector:
                 if isinstance(fn,dict) and fn.get('nodeType') in {'FunctionDefinition','ModifierDefinition'}: units.append(self.collect_function(contract.get('name','<anonymous>'),fn))
         return units
     def collect_function(self,contract:str,fn:Json)->FunctionUnit:
-        ids=IdAllocator(); params,rets,locals_=collect_variables(fn); state_vars=collect_state_variables(next(c for c in iter_ast(self.ast) if c.get('nodeType')=='ContractDefinition' and c.get('name')==contract)); name=function_name(fn); sig=f"{name}({', '.join(v.type_string for v in params)})"; fid=f"{contract}.{sig}"
+        contract_node=next(c for c in iter_ast(self.ast) if c.get('nodeType')=='ContractDefinition' and c.get('name')==contract)
+        ids=IdAllocator(); params,rets,locals_=collect_variables(fn); state_vars=collect_state_variables(contract_node); name=function_name(fn); sig=f"{name}({', '.join(v.type_string for v in params)})"; fid=f"{contract}.{sig}"
         ctx=FunctionContext(contract=contract,name=name,visibility=fn.get('visibility'),parameters=[parameter_text(p) for p in fn.get('parameters',{}).get('parameters',[])])
         unit=FunctionUnit(fid,contract,name,sig,fn,params,rets,locals_,state_vars)
+        setattr(unit,'struct_definitions',collect_struct_definitions(contract_node))
         def add_sol(n,block_id=None): unit.source_statements.append(SourceStatement(ids.new('sol_s'),'solidity',src_text(self.source,str(n.get('src',''))) or n.get('nodeType',''),str(n.get('src','')),fid,block_id,{'nodeType':n.get('nodeType')}))
         def add_yul(block):
             label=f'asm_block_{block.block_id}'

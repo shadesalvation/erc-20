@@ -54,9 +54,22 @@ def normalize_expr(expr: Any, context: str = "value") -> str:
     if not text:
         return text
     try:
-        return render_yul_expression(text, context=context).text
+        return normalize_extcodesize(render_yul_expression(text, context=context).text)
     except Exception:
-        return text
+        return normalize_extcodesize(text)
+
+
+_EXTCODESIZE_RE = re.compile(r"\bextcodesize\(([^()]+)\)")
+
+
+def normalize_extcodesize(text: str) -> str:
+    def replace(match: re.Match[str]) -> str:
+        address = match.group(1).strip()
+        if not address:
+            return match.group(0)
+        return f"{normalize_expr(address)}.code.length"
+
+    return _EXTCODESIZE_RE.sub(replace, str(text))
 
 
 def invert_condition(expr: Any, type_env: Any | None = None) -> str:

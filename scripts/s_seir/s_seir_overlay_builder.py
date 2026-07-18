@@ -12,11 +12,11 @@ from typing import Any
 
 from assembly_event_ir import EventDecl, is_static_word_type, normalize_topic_value
 from assembly_external_call_ir import PRECOMPILES, native_precompile_call
-from assembly_semantic_ir import parse_int_literal, strip_ssa
+from assembly_semantic_ir import parse_int_literal, parse_memory_address, strip_ssa
 from s_seir_id import IdAllocator
 from s_seir_model import EffectNode, FunctionUnit, SemanticOverlay
 from s_seir_selector_registry import normalize_selector_value
-from s_seir_yul_normalize import division_guards, invert_condition, is_unknown_value as memory_is_unknown_value, normalize_expr, words_from_memory_query
+from s_seir_yul_normalize import call_parts, division_guards, invert_condition, is_unknown_value as memory_is_unknown_value, normalize_expr, words_from_memory_query
 
 
 def hash_candidates_values(candidates: dict[str, tuple[EffectNode, dict[str, Any]]]) -> dict[str, dict[str, Any]]:
@@ -42,6 +42,10 @@ class SemanticOverlayBuilder:
         overlays.extend(call_overlays)
         overlays.extend(self.precompile_output_overlays(effects, call_overlays))
         overlays.extend(self.division_guard_overlays(effects))
+        overlays.extend(self.memory_object_construction_overlays(unit, type_env, effects))
+        overlays.extend(self.struct_memory_mutation_overlays(unit, type_env, effects))
+        overlays.extend(self.abi_call_data_overlays(effects, overlays))
+        overlays.extend(self.address_code_overlays(type_env, effects))
         overlays.extend(self.expression_overlays(effects))
         return self.dedupe(overlays)
 
@@ -685,6 +689,271 @@ class SemanticOverlayBuilder:
                 break
         return out
 
+    def abi_call_data_overlays(self, effects: list[EffectNode], overlays: list[SemanticOverlay]) -> list[SemanticOverlay]:
+        out: list[SemanticOverlay] = []
+        call_overlays = [
+            overlay for overlay in overlays
+            if overlay.kind in {'LowLevelCall', 'StaticCallOverlay', 'DelegateCallOverlay'}
+        ]
+        writes = [effect for effect in effects if effect.kind == 'MemoryWrite']
+        values = [effect for effect in effects if effect.kind == 'ValueDef']
+        struct_reads = [overlay for overlay in overlays if overlay.kind == 'StructFieldRead']
+        for call_overlay in call_overlays:
+            construction = self.abi_construction_for_call(call_overlay, writes, values, struct_reads)
+            if not construction:
+                continue
+            construction_overlay = self.ov('AbiCallDataConstruction', call_overlay.effects, call_overlay.stmt_refs, construction)
+            out.append(construction_overlay)
+            encoded_attrs = dict(call_overlay.attrs)
+            encoded_attrs['abi_calldata'] = {
+                'overlay': construction_overlay.overlay_id,
+                **construction,
+            }
+            encoded_attrs['selector'] = construction.get('selector')
+            encoded_attrs['selector_signature'] = construction.get('signature')
+            encoded_attrs['selector_match'] = construction.get('selector_match')
+            encoded_attrs['arguments'] = [arg.get('value') for arg in construction.get('arguments') or []]
+            encoded_attrs['solidity_like'] = self.abi_encoded_low_level_call_solidity_like(encoded_attrs, construction)
+            out.append(self.ov('AbiEncodedLowLevelCall', call_overlay.effects, call_overlay.stmt_refs, encoded_attrs))
+        return out
+
+    def abi_construction_for_call(
+        self,
+        call_overlay: SemanticOverlay,
+        writes: list[EffectNode],
+        values: list[EffectNode],
+        struct_reads: list[SemanticOverlay],
+    ) -> dict[str, Any] | None:
+        attrs = call_overlay.attrs
+        input_ptr = attrs.get('input_ptr')
+        input_size = attrs.get('input_size')
+        if not input_ptr:
+            return None
+        input_addr = self.safe_memory_address(input_ptr)
+        base = str(input_addr.get('base') or '')
+        start = input_addr.get('offset')
+        if not base or start is None:
+            return None
+        call_node = self.int_node(attrs.get('cfg_node_id'))
+        prior_writes = [
+            write for write in writes
+            if call_node is None or (self.int_node(write.attrs.get('cfg_node_id')) or -1) <= call_node
+        ]
+        selector = None
+        selector_source = None
+        selector_write = None
+        head_words: list[dict[str, Any]] = []
+        raw_writes: list[dict[str, Any]] = []
+        for write in prior_writes:
+            for alias in write.attrs.get('aliases') or []:
+                if str(alias.get('base')) != base:
+                    continue
+                offset = self.int_node(alias.get('offset'))
+                if offset is None:
+                    try:
+                        offset = int(alias.get('offset'))
+                    except Exception:
+                        continue
+                value = write.attrs.get('value')
+                relative = offset - start
+                raw_writes.append({
+                    'effect': write.effect_id,
+                    'address': write.attrs.get('address'),
+                    'base': base,
+                    'offset': offset,
+                    'relative_offset': relative,
+                    'value': value,
+                    'value_normalized': normalize_expr(value),
+                    'alias': alias,
+                })
+                if offset <= start and start + 4 <= offset + 32:
+                    extraction = self.partial_word_extraction(value, start - offset, 4)
+                    normalized = normalize_selector_value(extraction)
+                    if normalized:
+                        selector = normalized
+                        selector_source = extraction
+                        selector_write = write.effect_id
+                if relative >= 4 and (relative - 4) % 32 == 0:
+                    head_words.append({
+                        'index': (relative - 4) // 32,
+                        'offset': relative,
+                        'value': value,
+                        'value_normalized': normalize_expr(value),
+                        'write_effect': write.effect_id,
+                    })
+        if not selector:
+            return None
+        match = self.selector_match(selector, preferred_kind='function')
+        size_expr = self.resolve_value_expression(input_size, values)
+        dynamic_arg = self.dynamic_array_argument_from_size(size_expr)
+        best_match = (match or {}).get('best_match') or {}
+        arguments = self.abi_arguments_from_layout(head_words, dynamic_arg, struct_reads, match)
+        return {
+            'input_ptr': input_ptr,
+            'input_size': input_size,
+            'input_size_expression': size_expr,
+            'base': base,
+            'start_offset': start,
+            'selector': selector,
+            'selector_source': selector_source,
+            'selector_write_effect': selector_write,
+            'selector_match': match,
+            'signature': best_match.get('signature'),
+            'head_words': sorted(head_words, key=lambda item: int(item.get('index') or 0)),
+            'arguments': arguments,
+            'raw_memory_writes': raw_writes,
+            'construction_model': 'call_sink_symbolic_base_backward_memoryssa',
+            'complete': bool(selector and (arguments or not self.signature_arg_types(best_match.get('signature')))),
+        }
+
+    @staticmethod
+    def safe_memory_address(expr: Any) -> dict[str, Any]:
+        try:
+            return parse_memory_address(str(expr))
+        except Exception:
+            return {'base': str(expr or ''), 'offset': None, 'offset_expr': None, 'expr': str(expr or '')}
+
+    @staticmethod
+    def partial_word_extraction(value: Any, source_offset: int, size: int) -> str:
+        if source_offset == 0 and size == 32:
+            return str(value)
+        if source_offset + size == 32:
+            return f"low_bytes({value}, {size})"
+        if source_offset == 0:
+            return f"high_bytes({value}, {size})"
+        return f"bytes({value}, offset={source_offset}, size={size})"
+
+    def selector_match(self, selector: str, preferred_kind: str | None = None) -> dict[str, Any] | None:
+        matches = list(self.selector_registry.get(str(selector).lower(), []))
+        preferred = [item for item in matches if item.get('kind') == preferred_kind] if preferred_kind else matches
+        best = preferred[0] if preferred else (matches[0] if matches else None)
+        return {
+            'selector': selector,
+            'preferred_kind': preferred_kind,
+            'best_match': best,
+            'matches': matches,
+            'match_status': 'matched' if best else 'unmatched',
+        }
+
+    @staticmethod
+    def resolve_value_expression(value: Any, values: list[EffectNode]) -> str:
+        text = str(value or '')
+        for effect in values:
+            if text in [str(target) for target in effect.attrs.get('targets') or []]:
+                return str(effect.attrs.get('value') or text)
+        return text
+
+    @staticmethod
+    def dynamic_array_argument_from_size(expr: Any) -> dict[str, Any] | None:
+        text = str(expr or '').replace(' ', '')
+        patterns = [
+            r'^add\(0x44,shl\(5,mload\(([^()]+)\)\)\)$',
+            r'^add\(68,shl\(5,mload\(([^()]+)\)\)\)$',
+            r'^add\(0x44,mul\(mload\(([^()]+)\),0x20\)\)$',
+            r'^add\(68,mul\(mload\(([^()]+)\),32\)\)$',
+        ]
+        for pattern in patterns:
+            match = __import__('re').match(pattern, text)
+            if match:
+                return {
+                    'kind': 'dynamic_array',
+                    'value': match.group(1),
+                    'length_expr': f"mload({match.group(1)})",
+                    'length_semantic': f"{match.group(1)}.length",
+                    'total_size_model': '4 + 32 + 32 + length * 32',
+                }
+        return None
+
+    def abi_arguments_from_layout(
+        self,
+        head_words: list[dict[str, Any]],
+        dynamic_arg: dict[str, Any] | None,
+        struct_reads: list[SemanticOverlay],
+        selector_match: dict[str, Any] | None,
+    ) -> list[dict[str, Any]]:
+        best_match = (selector_match or {}).get('best_match') or {}
+        arg_types = self.signature_arg_types(best_match.get('signature'))
+        args: list[dict[str, Any]] = []
+        head_by_index = {int(item.get('index') or 0): item for item in head_words}
+        if dynamic_arg and head_by_index.get(0, {}).get('value') in {'0x20', '32'}:
+            value = dynamic_arg['value']
+            item = {
+                'index': 0,
+                'type': arg_types[0] if arg_types else None,
+                'value': value,
+                'value_normalized': normalize_expr(value),
+                'kind': dynamic_arg.get('kind'),
+                'head_offset': head_by_index[0].get('value'),
+                'length_expr': dynamic_arg.get('length_expr'),
+                'length_semantic': dynamic_arg.get('length_semantic'),
+            }
+            source = self.struct_read_source_for_value(value, struct_reads)
+            if source:
+                item['source'] = source
+                item['value_semantic'] = f"{source.get('struct_object')}.{(source.get('field') or {}).get('name')}"
+            args.append(item)
+            return args
+        for index, head in sorted(head_by_index.items()):
+            value = head.get('value')
+            args.append({
+                'index': index,
+                'type': arg_types[index] if index < len(arg_types) else None,
+                'value': value,
+                'value_normalized': normalize_expr(value),
+                'kind': 'static_word',
+                'head_offset': head.get('offset'),
+                'write_effect': head.get('write_effect'),
+            })
+        return args
+
+    @staticmethod
+    def signature_arg_types(signature: Any) -> list[str]:
+        text = str(signature or '')
+        if '(' not in text or not text.endswith(')'):
+            return []
+        inner = text.split('(', 1)[1][:-1]
+        if not inner:
+            return []
+        return [part.strip() for part in inner.split(',')]
+
+    @staticmethod
+    def struct_read_source_for_value(value: Any, struct_reads: list[SemanticOverlay]) -> dict[str, Any] | None:
+        for overlay in struct_reads:
+            if str(overlay.attrs.get('value')) == str(value):
+                return {
+                    'overlay': overlay.overlay_id,
+                    'struct_object': overlay.attrs.get('struct_object'),
+                    'struct_type': overlay.attrs.get('struct_type'),
+                    'field': overlay.attrs.get('field'),
+                }
+        return None
+
+    @staticmethod
+    def abi_encoded_low_level_call_solidity_like(attrs: dict[str, Any], construction: dict[str, Any]) -> str | None:
+        target = attrs.get('target_solidity') or attrs.get('target')
+        selector = construction.get('selector')
+        if not target or not selector:
+            return None
+        signature = construction.get('signature')
+        args = [
+            normalize_expr(arg.get('value_semantic') or arg.get('value'))
+            for arg in construction.get('arguments') or []
+            if arg.get('value') is not None or arg.get('value_semantic') is not None
+        ]
+        selector_expr = f"bytes4({selector})" + (f" /* {signature} */" if signature else "")
+        arg_suffix = (", " + ", ".join(args)) if args else ""
+        payload = f"abi.encodeWithSelector({selector_expr}{arg_suffix})"
+        value = normalize_expr(attrs.get('value')) if attrs.get('value') is not None else '0'
+        evaluated_args = attrs.get('evaluated_args') or []
+        gas = str(evaluated_args[0]) if evaluated_args else (normalize_expr(attrs.get('gas')) if attrs.get('gas') else None)
+        result = attrs.get('result')
+        prefix = f"{result} = " if result else ""
+        output_ptr = attrs.get('output_ptr')
+        output_size = attrs.get('output_size')
+        output = f"memory[{output_ptr}:{output_size}]" if output_ptr is not None and output_size is not None else "memory[unknown]"
+        call_kind = attrs.get('op') or 'call'
+        return f"{prefix}yul{call_kind[0].upper() + call_kind[1:]}(gas: {gas}, target: {target}, value: {value}, input: {payload}, output: {output});"
+
     def division_guard_overlays(self, effects: list[EffectNode]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []
         for effect in effects:
@@ -733,6 +1002,384 @@ class SemanticOverlayBuilder:
             return True
         return False
 
+    def memory_object_construction_overlays(self, unit: FunctionUnit, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
+        writes = [e for e in effects if e.kind == 'MemoryWrite']
+        out: list[SemanticOverlay] = []
+        allocations = self.manual_memory_allocations(effects)
+        allocation_writes = {
+            id(allocation): self.memory_writes_inside_allocation(unit, writes, allocation)
+            for allocation in allocations
+        }
+        for allocation in allocations:
+            attrs = dict(allocation)
+            attrs['stored_values'] = allocation_writes.get(id(allocation), [])
+            out.append(self.ov('MemoryRegionAllocate', attrs.get('effects', []), attrs.get('stmt_refs', []), attrs))
+            for stored in attrs['stored_values']:
+                out.append(self.ov('MemoryRegionWrite', stored.get('effect', []), stored.get('stmt_refs', []), {
+                    'region_base': attrs.get('base'),
+                    'region_allocation_effect': attrs.get('write_effect'),
+                    'address': stored.get('address'),
+                    'value': stored.get('value'),
+                    'value_normalized': normalize_expr(stored.get('value')),
+                    'aliases': stored.get('aliases', []),
+                    'stmt_refs': stored.get('stmt_refs', []),
+                }))
+        for ret in unit.returns:
+            if not ret.name or not getattr(type_env, 'is_memory_pointer_return', lambda _x: False)(ret.name):
+                continue
+            layout = getattr(type_env, 'struct_layout_for_var', lambda _x: None)(ret.name)
+            if not layout:
+                continue
+            bindings = []
+            effect_ids = []
+            refs = []
+            for write in writes:
+                field = self.struct_field_write(type_env, ret.name, write)
+                if not field:
+                    continue
+                value = write.attrs.get('value')
+                memory_object = self.memory_object_for_field_value(str(value), allocations, allocation_writes)
+                item = {
+                    'field': field,
+                    'value': value,
+                    'write_effect': write.effect_id,
+                    'semantic': 'manual_memory_object_pointer' if memory_object else 'memory_value',
+                }
+                if memory_object:
+                    item['memory_object'] = memory_object
+                bindings.append(item)
+                effect_ids.append(write.effect_id)
+                refs.extend(write.stmt_refs)
+            if not bindings:
+                continue
+            overlay_attrs = {
+                'target': ret.name,
+                'type': ret.type_string,
+                'struct_type': self.struct_type_ref(layout, ret.type_string),
+                'fields': bindings,
+                'allocation': self.best_allocation_for_bindings(allocations, bindings),
+                'solidity_equivalent': 'not_exact',
+                'reason': 'manual_memory_layout_or_custom_allocator',
+                'solidity_like': self.return_struct_construction_like(ret.name, ret.type_string, bindings),
+            }
+            out.append(self.ov('StructInitializationFragment', effect_ids, list(dict.fromkeys(refs)), overlay_attrs))
+        return out
+
+    def memory_writes_inside_allocation(self, unit: FunctionUnit, writes: list[EffectNode], allocation: dict[str, Any]) -> list[dict[str, Any]]:
+        ret_names = {ret.name for ret in unit.returns if ret.name}
+        start = allocation.get('start_node')
+        end = allocation.get('end_node')
+        stored: list[dict[str, Any]] = []
+        for write in writes:
+            node = self.int_node(write.attrs.get('cfg_node_id'))
+            if node is None:
+                continue
+            if start is not None and node < start:
+                continue
+            if end is not None and node > end:
+                continue
+            if str(write.attrs.get('address')) in {'0x40', '64'}:
+                continue
+            if self.write_targets_return_object(write, ret_names):
+                continue
+            aliases = write.attrs.get('aliases') or []
+            allocation_aliases = [
+                alias for alias in aliases
+                if str(alias.get('base')) == 'mload(0x40)' or str(alias.get('base')).startswith('add(mload(0x40),')
+            ]
+            if not allocation_aliases:
+                continue
+            stored.append({
+                'effect': write.effect_id,
+                'address': write.attrs.get('address'),
+                'value': write.attrs.get('value'),
+                'aliases': allocation_aliases,
+                'stmt_refs': write.stmt_refs,
+            })
+        return stored
+
+    @staticmethod
+    def write_targets_return_object(write: EffectNode, ret_names: set[str]) -> bool:
+        for alias in write.attrs.get('aliases') or []:
+            if str(alias.get('base')) in ret_names:
+                return True
+        return False
+
+    @staticmethod
+    def memory_object_for_field_value(value: str, allocations: list[dict[str, Any]], allocation_writes: dict[int, list[dict[str, Any]]]) -> dict[str, Any] | None:
+        for allocation in allocations:
+            stored_values = allocation_writes.get(id(allocation), [])
+            direct_writes = [item for item in stored_values if str(item.get('address')) == value]
+            alias_writes = []
+            for item in stored_values:
+                for alias in item.get('aliases') or []:
+                    if str(alias.get('key')) == value or str(alias.get('base')) == value:
+                        alias_writes.append(item)
+                        break
+            writes = direct_writes or alias_writes
+            if not writes:
+                continue
+            return {
+                'allocation': allocation,
+                'pointer': value,
+                'stored_values': writes,
+            }
+        return None
+
+    def manual_memory_allocations(self, effects: list[EffectNode]) -> list[dict[str, Any]]:
+        reads = [e for e in effects if e.kind == 'MemoryRead' and str(e.attrs.get('read_from')) == '0x40']
+        writes = [e for e in effects if e.kind == 'MemoryWrite' and str(e.attrs.get('address')) == '0x40']
+        out = []
+        for write in writes:
+            start_node = None
+            read_effect = None
+            write_node = self.int_node(write.attrs.get('cfg_node_id'))
+            for read in reads:
+                read_node = self.int_node(read.attrs.get('cfg_node_id'))
+                if read_node is None or write_node is None or read_node > write_node:
+                    continue
+                if start_node is None or read_node > start_node:
+                    start_node = read_node
+                    read_effect = read
+            effects_ids = [write.effect_id]
+            refs = list(write.stmt_refs)
+            if read_effect:
+                effects_ids.insert(0, read_effect.effect_id)
+                refs = list(dict.fromkeys(read_effect.stmt_refs + refs))
+            out.append({
+                'base': 'mload(0x40)',
+                'new_free_pointer': normalize_expr(write.attrs.get('value')),
+                'write_effect': write.effect_id,
+                'read_effect': read_effect.effect_id if read_effect else None,
+                'start_node': start_node,
+                'end_node': write_node,
+                'effects': effects_ids,
+                'stmt_refs': refs,
+            })
+        return out
+
+    def struct_field_write(self, type_env: Any, target: str, write: EffectNode) -> dict[str, Any] | None:
+        for alias in write.attrs.get('aliases') or []:
+            if str(alias.get('base')) != target:
+                continue
+            try:
+                offset = int(alias.get('offset'))
+            except Exception:
+                continue
+            field = getattr(type_env, 'struct_field_by_offset', lambda *_args: None)(target, offset)
+            if not field:
+                continue
+            return dict(field)
+        return None
+
+    def struct_memory_mutation_overlays(self, unit: FunctionUnit, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
+        writes = [e for e in effects if e.kind == 'MemoryWrite']
+        struct_vars = [
+            variable for variable in unit.parameters + unit.returns + unit.locals
+            if variable.name and getattr(type_env, 'is_memory_struct', lambda _x: False)(variable)
+        ]
+        if not struct_vars:
+            return []
+
+        out: list[SemanticOverlay] = []
+        cursor_reads = self.struct_field_cursor_reads(type_env, struct_vars, effects)
+        related_by_cursor = self.memory_writes_by_cursor(writes, cursor_reads)
+
+        for items in cursor_reads.values():
+            for item in items:
+                field = item.get('field') or {}
+                struct_object = item.get('struct_object')
+                struct_type = item.get('struct_type')
+                cursor = item.get('cursor_var')
+                read_effect = item.get('read_effect')
+                out.append(self.ov('StructFieldRead', read_effect or [], item.get('stmt_refs', []), {
+                    'struct_object': struct_object,
+                    'struct_type': struct_type,
+                    'field': self.field_ref(field),
+                    'value': cursor,
+                    'read_from': item.get('read_from'),
+                    'solidity_like': f"{cursor} = {struct_object}.{field.get('name')};" if cursor and struct_object and field.get('name') else None,
+                }))
+
+        for variable in struct_vars:
+            layout = getattr(type_env, 'struct_layout_for_var', lambda _x: None)(variable.name)
+            if not layout:
+                continue
+            mutations: list[dict[str, Any]] = []
+            effect_ids: list[str] = []
+            refs: list[str] = []
+            for write in writes:
+                field = self.struct_field_write(type_env, variable.name, write)
+                if not field:
+                    continue
+                value = write.attrs.get('value')
+                mutation = {
+                    'struct_object': variable.name,
+                    'struct_type': self.struct_type_ref(layout, variable.type_string),
+                    'field': self.field_ref(field),
+                    'new_value': value,
+                    'new_value_normalized': normalize_expr(value),
+                    'write_effect': write.effect_id,
+                    'solidity_like': f"{variable.name}.{field.get('name')} = {normalize_expr(value)};",
+                }
+                old_source = self.cursor_read_for_field(cursor_reads, variable.name, field)
+                if old_source:
+                    mutation['old_value_source'] = old_source
+                mutations.append(mutation)
+                effect_ids.append(write.effect_id)
+                refs.extend(write.stmt_refs)
+                out.append(self.ov('StructFieldWrite', write.effect_id, write.stmt_refs, {
+                    'struct_object': variable.name,
+                    'struct_type': self.struct_type_ref(layout, variable.type_string),
+                    'field': self.field_ref(field),
+                    'value': value,
+                    'value_normalized': normalize_expr(value),
+                    'write_effect': write.effect_id,
+                    'solidity_like': mutation['solidity_like'],
+                }))
+            if not mutations:
+                continue
+            related = []
+            for mutation in mutations:
+                source = mutation.get('old_value_source') or {}
+                cursor = source.get('cursor_var')
+                if cursor:
+                    related.extend(related_by_cursor.get(str(cursor), []))
+            attrs = {
+                'struct_object': variable.name,
+                'struct_type': self.struct_type_ref(layout, variable.type_string),
+                'mutations': mutations,
+                'related_memory_writes': self.dedupe_related_memory_writes(related),
+                'semantic_hint': 'struct_field_update',
+                'solidity_like': ' '.join(m['solidity_like'] for m in mutations if m.get('solidity_like')),
+            }
+            out.append(self.ov('StructMutationFragment', effect_ids, list(dict.fromkeys(refs)), attrs))
+            for related_write in attrs['related_memory_writes']:
+                out.append(self.ov('CursorBasedMemoryWrite', related_write.get('effect', []), related_write.get('stmt_refs', []), {
+                    'struct_object': variable.name,
+                    'struct_type': self.struct_type_ref(layout, variable.type_string),
+                    'cursor_field': related_write.get('cursor_field'),
+                    'memory_write': related_write,
+                    'field_updates': mutations,
+                    'semantic_hint': 'write_word_then_advance_struct_cursor',
+                }))
+        return out
+
+    def struct_field_cursor_reads(self, type_env: Any, struct_vars: list[Any], effects: list[EffectNode]) -> dict[str, list[dict[str, Any]]]:
+        out: dict[str, list[dict[str, Any]]] = {}
+        struct_names = {variable.name for variable in struct_vars if variable.name}
+        for effect in effects:
+            if effect.kind != 'MemoryRead':
+                continue
+            read = effect.attrs.get('memory_read') or {}
+            address = read.get('address') or {}
+            base = str(address.get('base') or '')
+            if base not in struct_names:
+                continue
+            try:
+                offset = int(address.get('offset'))
+            except Exception:
+                continue
+            field = getattr(type_env, 'struct_field_by_offset', lambda *_args: None)(base, offset)
+            if not field:
+                continue
+            layout = getattr(type_env, 'struct_layout_for_var', lambda _x: None)(base)
+            value = effect.attrs.get('value')
+            item = {
+                'cursor_var': value,
+                'struct_object': base,
+                'struct_type': self.struct_type_ref(layout, base),
+                'field': self.field_ref(field),
+                'read_effect': effect.effect_id,
+                'read_from': effect.attrs.get('read_from'),
+                'stmt_refs': effect.stmt_refs,
+            }
+            out.setdefault(base, []).append(item)
+        return out
+
+    @staticmethod
+    def cursor_read_for_field(cursor_reads: dict[str, list[dict[str, Any]]], struct_object: str, field: dict[str, Any]) -> dict[str, Any] | None:
+        for item in cursor_reads.get(struct_object, []):
+            item_field = item.get('field') or {}
+            if item_field.get('name') == field.get('name') and item_field.get('offset') == field.get('offset'):
+                return item
+        return None
+
+    @staticmethod
+    def memory_writes_by_cursor(writes: list[EffectNode], cursor_reads: dict[str, list[dict[str, Any]]]) -> dict[str, list[dict[str, Any]]]:
+        cursor_info = {
+            str(item.get('cursor_var')): item
+            for items in cursor_reads.values()
+            for item in items
+            if item.get('cursor_var')
+        }
+        out: dict[str, list[dict[str, Any]]] = {}
+        for write in writes:
+            address = str(write.attrs.get('address') or '')
+            if address not in cursor_info:
+                continue
+            source = cursor_info[address]
+            field = source.get('field') or {}
+            address_semantic = f"old({source.get('struct_object')}.{field.get('name')})" if source.get('struct_object') and field.get('name') else f"old({address})"
+            out.setdefault(address, []).append({
+                'effect': write.effect_id,
+                'address': address,
+                'address_semantic': address_semantic,
+                'cursor_field': field,
+                'value': write.attrs.get('value'),
+                'value_normalized': normalize_expr(write.attrs.get('value')),
+                'stmt_refs': write.stmt_refs,
+            })
+        return out
+
+    @staticmethod
+    def dedupe_related_memory_writes(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for item in items:
+            key = str(item.get('effect'))
+            if key in seen:
+                continue
+            out.append(item)
+            seen.add(key)
+        return out
+
+    @staticmethod
+    def struct_type_ref(layout: dict[str, Any] | None, fallback: Any = None) -> str | None:
+        if isinstance(layout, dict):
+            return layout.get('canonical_name') or layout.get('name') or (str(fallback) if fallback else None)
+        return str(fallback) if fallback else None
+
+    @staticmethod
+    def field_ref(field: dict[str, Any] | None) -> dict[str, Any]:
+        if not isinstance(field, dict):
+            return {}
+        return {
+            'name': field.get('name'),
+            'type_string': field.get('type_string'),
+            'offset': field.get('offset'),
+            'index': field.get('index'),
+            'src': field.get('src'),
+        }
+
+    @staticmethod
+    def best_allocation_for_bindings(allocations: list[dict[str, Any]], bindings: list[dict[str, Any]]) -> dict[str, Any] | None:
+        for binding in bindings:
+            memory_object = binding.get('memory_object') or {}
+            allocation = memory_object.get('allocation')
+            if allocation:
+                return allocation
+        return allocations[0] if allocations else None
+
+    @staticmethod
+    def return_struct_construction_like(target: str, type_string: str, bindings: list[dict[str, Any]]) -> str:
+        parts = [f"/* construct return memory struct {target}: {type_string} */"]
+        for binding in bindings:
+            field = binding.get('field') or {}
+            value = normalize_expr(binding.get('value'))
+            parts.append(f"{target}.{field.get('name')} = {value};")
+        return " ".join(parts)
+
     def expression_overlays(self, effects: list[EffectNode]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []
         for e in effects:
@@ -777,6 +1424,47 @@ class SemanticOverlayBuilder:
                     'evaluation_model': 'yul_ast_right_to_left_function_call_arguments',
                     'reads_after_call_output': e.attrs.get('reads_after_call_output'),
                     'value_from_call_output': e.attrs.get('value_from_call_output'),
+                }))
+        return out
+
+    def address_code_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
+        out: list[SemanticOverlay] = []
+        for effect in effects:
+            if effect.kind != 'ValueDef':
+                continue
+            targets = effect.attrs.get('targets') or []
+            target = targets[0] if targets else None
+            call, args = call_parts(str(effect.attrs.get('value') or ''))
+            if call != 'extcodesize' or len(args) != 1 or not target:
+                continue
+            address = args[0]
+            address_expr = normalize_expr(address)
+            code_size = f'{address_expr}.code.length'
+            target_info = getattr(type_env, 'lookup', lambda _name: None)(target)
+            target_type = getattr(target_info, 'type_string', None)
+            if getattr(type_env, 'is_bool', lambda _name: False)(target):
+                condition = f'({code_size} != 0)'
+                out.append(self.ov('AddressHasCode', effect.effect_id, effect.stmt_refs, {
+                    'target': target,
+                    'target_type': target_type,
+                    'address': address,
+                    'address_normalized': address_expr,
+                    'code_size': code_size,
+                    'condition': condition,
+                    'source_expression': effect.attrs.get('value'),
+                    'solidity_like': f'{target} = {condition};',
+                    'solidity_equivalent': True,
+                }))
+            else:
+                out.append(self.ov('AddressCodeSize', effect.effect_id, effect.stmt_refs, {
+                    'target': target,
+                    'target_type': target_type,
+                    'address': address,
+                    'address_normalized': address_expr,
+                    'code_size': code_size,
+                    'source_expression': effect.attrs.get('value'),
+                    'solidity_like': f'{target} = {code_size};',
+                    'solidity_equivalent': True,
                 }))
         return out
 

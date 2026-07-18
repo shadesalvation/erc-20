@@ -141,6 +141,7 @@ def build_sseir(source_path:Path, solc_bin:str|None=None, slither_bin:str|None=N
         overlays=SemanticOverlayBuilder(events,include_shallow_overlays=True,selector_registry=selector_registry).build(unit,type_env,roles,effects)
         roles,effects,overlays,normalizer_facts=SemanticNormalizer().normalize(unit,type_env,roles,effects,overlays)
         facts.extend(normalizer_facts)
+        facts.append({'kind':'SSEIRStructTable','structs':getattr(unit,'struct_definitions',{}) or {}})
         facts.append({'kind':'SSEIRSelectorRegistry','selector_count':len(selector_registry),'selectors':selector_registry})
         facts.append({'kind':'SSEIRBranchPreprocess','original_source':str(original_source_path),'analysis_source':str(source_path),'rewrite_count':branch_rewrite_count,'enabled':branch_preprocess,'flattened_imports':bool(getattr(branch_result,'flattened',False)) if branch_preprocess else False,'imported_files':getattr(branch_result,'imported_files',[]) if branch_preprocess else [],'preprocessed_files':getattr(branch_result,'preprocessed_files',[]) if branch_preprocess else []})
         security_facts=SecurityFactBuilder().build(effects,overlays)

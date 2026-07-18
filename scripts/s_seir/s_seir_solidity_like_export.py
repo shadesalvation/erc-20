@@ -47,6 +47,8 @@ class SolidityLikeRenderer:
         self.overlays_by_ref = self._overlays_by_anchor(fn.semantic_overlays)
         self.condition_aliases = self._condition_aliases(fn.effects)
         self.skip_branch_conditions = self._skip_branch_conditions(fn.semantic_overlays)
+        self.memory_construction_notes = self._memory_construction_notes(fn.semantic_overlays)
+        self.struct_field_lines_by_effect = self._struct_field_lines_by_effect(fn.semantic_overlays)
         self.loop_groups = self._loop_groups()
 
     def render_function(self) -> list[str]:
@@ -58,40 +60,185 @@ class SolidityLikeRenderer:
             for line in source_text.rstrip().splitlines():
                 lines.append(f"  {line}")
             lines.append("  ```")
+            solidity_like = self.function_solidity_like_text(source_text)
+            if solidity_like:
+                lines.append("  SolidityLikeFunction")
+                lines.append("  ```solidity")
+                for line in solidity_like.rstrip().splitlines():
+                    lines.append(f"  {line}")
+                lines.append("  ```")
+                return lines
+        lines.extend(self.render_assembly_blocks())
+        return lines
+
+    def render_assembly_blocks(self) -> list[str]:
+        lines: list[str] = []
         block_ids = []
         for stmt in self.fn.source_statements:
             if stmt.lang == "yul" and stmt.block_id and stmt.block_id not in block_ids:
                 block_ids.append(stmt.block_id)
         for block_id in block_ids:
-            yul_stmts = [s for s in self.fn.source_statements if s.lang == "yul" and s.block_id == block_id]
-            if not yul_stmts:
-                continue
             lines.append(f"  AssemblyBlock {block_id}")
             lines.append("  ```solidity")
             lines.append("  assembly /* s-seir solidity-like view */ {")
-            consumed: set[str] = set()
-            body_lines: list[str] = []
-            for stmt in yul_stmts:
-                if stmt.stmt_id in consumed:
-                    continue
-                loop_group = self.loop_groups.get(stmt.stmt_id)
-                if loop_group:
-                    rendered = self.render_loop_group(loop_group, yul_stmts)
-                    consumed.update(loop_group["consumed_stmt_ids"])
-                    body_lines.extend(rendered)
-                    continue
-                rendered = self.render_stmt(stmt)
-                if rendered is None:
-                    continue
-                comment_index = self.comment_line_index(rendered)
-                for index, line in enumerate(rendered):
-                    comment = f" // yul: {stmt.text}" if index == comment_index else ""
-                    body_lines.append(f"{line}{comment}")
-            for line in self.coalesce_adjacent_condition_blocks(body_lines):
+            for line in self.render_assembly_block_body(block_id):
                 lines.append(f"      {line}")
             lines.append("  }")
             lines.append("  ```")
         return lines
+
+    def render_assembly_block_body(self, block_id: str) -> list[str]:
+        yul_stmts = [s for s in self.fn.source_statements if s.lang == "yul" and s.block_id == block_id]
+        if not yul_stmts:
+            return []
+        consumed: set[str] = set()
+        body_lines: list[str] = list(self.memory_construction_notes)
+        for stmt in yul_stmts:
+            if stmt.stmt_id in consumed:
+                continue
+            loop_group = self.loop_groups.get(stmt.stmt_id)
+            if loop_group:
+                rendered = self.render_loop_group(loop_group, yul_stmts)
+                consumed.update(loop_group["consumed_stmt_ids"])
+                body_lines.extend(rendered)
+                continue
+            rendered = self.render_stmt(stmt)
+            if rendered is None:
+                continue
+            comment_index = self.comment_line_index(rendered)
+            for index, line in enumerate(rendered):
+                comment = f" // yul: {stmt.text}" if index == comment_index else ""
+                body_lines.append(f"{line}{comment}")
+        return self.coalesce_adjacent_condition_blocks(body_lines)
+
+    def function_solidity_like_text(self, source_text: str) -> str | None:
+        block_ids = []
+        for stmt in self.fn.source_statements:
+            if stmt.lang == "yul" and stmt.block_id and stmt.block_id not in block_ids:
+                block_ids.append(stmt.block_id)
+        if not block_ids:
+            return None
+        ranges = self.find_assembly_ranges(source_text)
+        if not ranges:
+            return None
+        result = source_text
+        replacements: list[tuple[int, int, str]] = []
+        for block_id, (start, end) in zip(block_ids, ranges):
+            indent = self.line_indent(source_text, start)
+            replacement_lines = ["assembly /* s-seir solidity-like view */ {"]
+            replacement_lines.extend(f"{indent}    {line}" for line in self.render_assembly_block_body(block_id))
+            replacement_lines.append(f"{indent}}}")
+            replacements.append((start, end, "\n".join(replacement_lines)))
+        for start, end, replacement in reversed(replacements):
+            result = result[:start] + replacement + result[end:]
+        return result
+
+    @staticmethod
+    def line_indent(text: str, index: int) -> str:
+        line_start = text.rfind("\n", 0, index) + 1
+        match = re.match(r"[ \t]*", text[line_start:index])
+        return match.group(0) if match else ""
+
+    @classmethod
+    def find_assembly_ranges(cls, source_text: str) -> list[tuple[int, int]]:
+        ranges: list[tuple[int, int]] = []
+        index = 0
+        while index < len(source_text):
+            match = re.search(r"\bassembly\b", source_text[index:])
+            if not match:
+                break
+            start = index + match.start()
+            if not cls.in_code_context(source_text, start):
+                index = start + len("assembly")
+                continue
+            brace = source_text.find("{", start)
+            if brace < 0:
+                break
+            end = cls.matching_brace_end(source_text, brace)
+            if end is None:
+                break
+            ranges.append((start, end))
+            index = end
+        return ranges
+
+    @staticmethod
+    def in_code_context(source_text: str, index: int) -> bool:
+        state = "code"
+        i = 0
+        while i < index:
+            ch = source_text[i]
+            nxt = source_text[i + 1] if i + 1 < len(source_text) else ""
+            if state == "code":
+                if ch == "/" and nxt == "/":
+                    state = "line_comment"
+                    i += 2
+                    continue
+                if ch == "/" and nxt == "*":
+                    state = "block_comment"
+                    i += 2
+                    continue
+                if ch in {'"', "'"}:
+                    state = f"string_{ch}"
+            elif state == "line_comment":
+                if ch == "\n":
+                    state = "code"
+            elif state == "block_comment":
+                if ch == "*" and nxt == "/":
+                    state = "code"
+                    i += 2
+                    continue
+            elif state.startswith("string_"):
+                quote = state[-1]
+                if ch == "\\":
+                    i += 2
+                    continue
+                if ch == quote:
+                    state = "code"
+            i += 1
+        return state == "code"
+
+    @staticmethod
+    def matching_brace_end(source_text: str, brace_index: int) -> int | None:
+        depth = 0
+        state = "code"
+        i = brace_index
+        while i < len(source_text):
+            ch = source_text[i]
+            nxt = source_text[i + 1] if i + 1 < len(source_text) else ""
+            if state == "code":
+                if ch == "/" and nxt == "/":
+                    state = "line_comment"
+                    i += 2
+                    continue
+                if ch == "/" and nxt == "*":
+                    state = "block_comment"
+                    i += 2
+                    continue
+                if ch in {'"', "'"}:
+                    state = f"string_{ch}"
+                elif ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                    if depth == 0:
+                        return i + 1
+            elif state == "line_comment":
+                if ch == "\n":
+                    state = "code"
+            elif state == "block_comment":
+                if ch == "*" and nxt == "/":
+                    state = "code"
+                    i += 2
+                    continue
+            elif state.startswith("string_"):
+                quote = state[-1]
+                if ch == "\\":
+                    i += 2
+                    continue
+                if ch == quote:
+                    state = "code"
+            i += 1
+        return None
 
     def function_source_text(self) -> str | None:
         source = getattr(self.fn, "_sseir_function_source", None)
@@ -535,6 +682,47 @@ class SolidityLikeRenderer:
                 aliases[condition] = final
         return aliases
 
+    @staticmethod
+    def _memory_construction_notes(overlays: list[SemanticOverlay]) -> list[str]:
+        notes: list[str] = []
+        for overlay in overlays:
+            if overlay.kind not in {"StructInitializationFragment", "ReturnMemoryStructConstruction"}:
+                continue
+            target = overlay.attrs.get("target")
+            type_string = overlay.attrs.get("type") or overlay.attrs.get("struct_type")
+            reason = overlay.attrs.get("reason")
+            notes.append(f"/* struct initialization fragment {target}: {type_string}; {reason} */")
+        return notes
+
+    @staticmethod
+    def _struct_field_lines_by_effect(overlays: list[SemanticOverlay]) -> dict[str, str]:
+        out: dict[str, str] = {}
+        for overlay in overlays:
+            if overlay.kind == "StructFieldWrite":
+                effect_id = overlay.attrs.get("write_effect") or (overlay.effects[0] if overlay.effects else None)
+                line = overlay.attrs.get("solidity_like")
+                if effect_id and line:
+                    out[str(effect_id)] = str(line)
+                continue
+            if overlay.kind in {"StructMutationFragment", "StructMemoryMutation"}:
+                for mutation in overlay.attrs.get("mutations") or []:
+                    effect_id = mutation.get("write_effect")
+                    line = mutation.get("solidity_like")
+                    if effect_id and line:
+                        out[str(effect_id)] = str(line)
+                continue
+            if overlay.kind not in {"StructInitializationFragment", "ReturnMemoryStructConstruction"}:
+                continue
+            target = overlay.attrs.get("target")
+            for binding in overlay.attrs.get("fields") or []:
+                field = binding.get("field") or {}
+                effect_id = binding.get("write_effect")
+                name = field.get("name")
+                value = binding.get("value")
+                if target and name and effect_id:
+                    out[str(effect_id)] = f"{target}.{name} = {normalize_expr(value)};"
+        return out
+
     def is_yul_ref(self, ref: str) -> bool:
         stmt = self.stmt_by_id.get(ref)
         return bool(stmt and stmt.lang == "yul")
@@ -568,6 +756,9 @@ class SolidityLikeRenderer:
             "PathConditionedStorageWrite",
             "PathConditionedStorageRead",
             "StoragePointerSlotBinding",
+            "AddressHasCode",
+            "AddressCodeSize",
+            "StructFieldRead",
             "MappingSlot",
         ):
             for overlay in overlays:
@@ -585,7 +776,7 @@ class SolidityLikeRenderer:
         call_lines_by_result = {
             overlay.attrs.get("result"): overlay.attrs.get("solidity_like")
             for overlay in overlays
-            if overlay.kind in {"LowLevelCall", "StaticCallOverlay", "DelegateCallOverlay"}
+            if overlay.kind in {"AbiEncodedLowLevelCall", "LowLevelCall", "StaticCallOverlay", "DelegateCallOverlay"}
             and overlay.attrs.get("result")
             and overlay.attrs.get("solidity_like")
         }
@@ -616,6 +807,10 @@ class SolidityLikeRenderer:
         if overlay.kind in {"PathConditionedStorageRead", "PathConditionedStorageWrite"}:
             return self.path_conditioned_line(overlay)
         if overlay.kind == "StoragePointerSlotBinding":
+            return attrs.get("solidity_like")
+        if overlay.kind in {"AddressHasCode", "AddressCodeSize"}:
+            return attrs.get("solidity_like")
+        if overlay.kind == "StructFieldRead":
             return attrs.get("solidity_like")
         if overlay.kind == "MappingSlot":
             target = attrs.get("target")
@@ -658,6 +853,8 @@ class SolidityLikeRenderer:
         for effect in self.effects_by_ref.get(stmt.stmt_id, []):
             if effect.kind != "MemoryWrite":
                 continue
+            if effect.effect_id in self.struct_field_lines_by_effect:
+                return self.struct_field_lines_by_effect[effect.effect_id]
             if effect.attrs.get("write_kind") in {"loop_phi"}:
                 continue
             address = self.memory_address(effect.attrs)

@@ -109,8 +109,39 @@ class SemanticNormalizer:
                     add_role(o.attrs.get('selector'), 'abi_selector', ref, o.attrs.get('selector'), 'bytes4', {'overlay': o.overlay_id})
                 for i, arg in enumerate(o.attrs.get('input_words') or []):
                     add_role(arg, 'abi_argument', ref, arg, None, {'overlay': o.overlay_id, 'call_input_word': i})
+            elif o.kind == 'AbiCallDataConstruction':
+                add_role(o.attrs.get('input_ptr'), 'abi_calldata_ptr', ref, o.attrs.get('input_ptr'), 'memory_ptr', {'overlay': o.overlay_id})
+                add_role(o.attrs.get('input_size'), 'abi_calldata_size', ref, o.attrs.get('input_size_expression') or o.attrs.get('input_size'), 'uint256', {'overlay': o.overlay_id})
+                add_role(o.attrs.get('selector'), 'abi_selector', ref, o.attrs.get('selector'), 'bytes4', {'overlay': o.overlay_id, 'signature': o.attrs.get('signature')})
+                for arg in o.attrs.get('arguments') or []:
+                    add_role(arg.get('value'), 'abi_argument', ref, arg.get('value_semantic') or arg.get('value_normalized') or arg.get('value'), arg.get('type'), {'overlay': o.overlay_id, 'index': arg.get('index'), 'kind': arg.get('kind')})
+            elif o.kind == 'AbiEncodedLowLevelCall':
+                add_role(o.attrs.get('target'), 'call_target', ref, o.attrs.get('target_solidity') or o.attrs.get('target'), 'address', {'overlay': o.overlay_id})
+                add_role(o.attrs.get('selector'), 'abi_selector', ref, o.attrs.get('selector'), 'bytes4', {'overlay': o.overlay_id, 'signature': o.attrs.get('selector_signature')})
+                for i, arg in enumerate(o.attrs.get('arguments') or []):
+                    add_role(arg, 'abi_argument', ref, normalize_expr(arg), None, {'overlay': o.overlay_id, 'index': i})
             elif o.kind == 'RawRevertBytes':
                 add_role(o.attrs.get('payload'), 'revert_payload_ptr', ref, o.attrs.get('payload'), 'bytes', {'overlay': o.overlay_id})
+            elif o.kind in {'AddressHasCode', 'AddressCodeSize'}:
+                add_role(o.attrs.get('address'), 'address_code_target', ref, o.attrs.get('address_normalized') or o.attrs.get('address'), 'address', {'overlay': o.overlay_id})
+                add_role(o.attrs.get('code_size'), 'address_code_size', ref, o.attrs.get('code_size'), 'uint256', {'overlay': o.overlay_id})
+                if o.kind == 'AddressHasCode':
+                    add_role(o.attrs.get('condition'), 'address_has_code_condition', ref, o.attrs.get('condition'), 'bool', {'overlay': o.overlay_id, 'target': o.attrs.get('target')})
+            elif o.kind == 'StructFieldRead':
+                field = o.attrs.get('field') or {}
+                add_role(o.attrs.get('read_from'), 'struct_field_ptr', ref, o.attrs.get('read_from'), 'memory_ptr', {'overlay': o.overlay_id, 'struct_object': o.attrs.get('struct_object'), 'field': field.get('name')})
+                add_role(o.attrs.get('value'), 'struct_field_value', ref, o.attrs.get('value'), field.get('type_string'), {'overlay': o.overlay_id, 'access': f"{o.attrs.get('struct_object')}.{field.get('name')}"})
+            elif o.kind == 'StructFieldWrite':
+                field = o.attrs.get('field') or {}
+                add_role(o.attrs.get('value'), 'struct_field_write_value', ref, o.attrs.get('value_normalized') or o.attrs.get('value'), field.get('type_string'), {'overlay': o.overlay_id, 'access': f"{o.attrs.get('struct_object')}.{field.get('name')}"})
+            elif o.kind in {'StructInitializationFragment', 'StructMutationFragment'}:
+                for i, mutation in enumerate(o.attrs.get('mutations') or o.attrs.get('fields') or []):
+                    field = mutation.get('field') or {}
+                    value = mutation.get('new_value') if 'new_value' in mutation else mutation.get('value')
+                    add_role(value, 'struct_field_write_value', ref, mutation.get('new_value_normalized') or normalize_expr(value), field.get('type_string'), {'overlay': o.overlay_id, 'field': field.get('name'), 'index': i})
+            elif o.kind in {'MemoryRegionAllocate', 'MemoryRegionWrite', 'CursorBasedMemoryWrite'}:
+                add_role(o.attrs.get('address') or o.attrs.get('base'), 'memory_region_ptr', ref, o.attrs.get('address') or o.attrs.get('base'), 'memory_ptr', {'overlay': o.overlay_id, 'overlay_kind': o.kind})
+                add_role(o.attrs.get('value') or o.attrs.get('new_free_pointer'), 'memory_region_value', ref, o.attrs.get('value_normalized') or o.attrs.get('value') or o.attrs.get('new_free_pointer'), None, {'overlay': o.overlay_id, 'overlay_kind': o.kind})
 
         facts.extend(self.branch_materialization_facts(effects))
         facts.extend(self.unresolved_facts(overlays))
