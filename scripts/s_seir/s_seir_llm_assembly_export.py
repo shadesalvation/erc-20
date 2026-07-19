@@ -361,17 +361,28 @@ def compact_effect_summary(effects: list[dict[str, Any]]) -> dict[str, Any]:
 def compact_overlay_attrs(kind: str, attrs: dict[str, Any]) -> dict[str, Any]:
     keys_by_kind = {
         "RequireOverlay": ("condition", "nearest_condition", "require_like", "revert_payload", "control_path", "merged_conditions", "discarded_before_revert"),
-        "MappingSlot": ("target", "target_key", "expression", "state_variable", "key", "base", "slot_kind", "activation", "notes"),
-        "MappingRead": ("access", "target", "state_variable", "key", "slot", "slot_key", "solidity_like", "notes"),
-        "MappingWrite": ("access", "value", "value_yul", "state_variable", "key", "slot", "slot_key", "solidity_like", "notes"),
+        "MappingSlot": ("target", "target_key", "expression", "state_variable", "storage_reference", "storage_reference_type", "storage_reference_kind", "storage_field", "key", "base", "slot_kind", "activation", "notes"),
+        "MappingRead": ("access", "target", "state_variable", "storage_reference", "storage_reference_type", "storage_reference_kind", "storage_field", "key", "slot", "slot_key", "solidity_like", "notes"),
+        "MappingWrite": ("access", "value", "value_yul", "state_variable", "storage_reference", "storage_reference_type", "storage_reference_kind", "storage_field", "key", "slot", "slot_key", "solidity_like", "notes"),
         "PathConditionedStorageRead": ("slot", "target", "path_states", "candidates", "note"),
         "PathConditionedStorageWrite": ("slot", "value", "value_yul", "path_states", "candidates", "note"),
-        "StateVariableRead": ("access", "target", "state_variable", "slot", "solidity_like"),
-        "StateVariableWrite": ("access", "value", "value_yul", "state_variable", "slot", "solidity_like"),
-        "EventEmit": ("event", "signature", "topic0", "args", "topics", "solidity_like"),
+        "StateVariableRead": (
+            "access", "target", "state_variable", "slot", "slot_constant", "slot_value",
+            "storage_model", "state_access", "state_mutation", "variable_name_inferred",
+            "solidity_like", "notes"
+        ),
+        "StateVariableWrite": (
+            "access", "value", "value_yul", "state_variable", "slot", "slot_constant", "slot_value",
+            "storage_model", "state_access", "state_mutation", "mutation_kind", "variable_name_inferred",
+            "solidity_like", "notes"
+        ),
+        "EventEmit": ("event", "signature", "topic0", "args", "topics", "raw_topics", "topic_constants", "argument_state_reads", "solidity_like", "notes"),
         "PrecompileCall": ("op", "target", "gas", "input_size", "output_size", "native_name", "solidity_like"),
         "PrecompileOutputRead": ("source_precompile_overlay", "target", "value", "solidity_like"),
-        "ExpressionNormalization": ("target", "expression", "solidity_like", "context", "division_guards"),
+        "RawReturnData": ("payload_ptr", "payload_size", "encoding_hint", "values", "solidity_like", "reason"),
+        "CalldataWordRead": ("target", "target_type", "source", "offset", "offset_normalized", "width_bytes", "solidity_like", "reason"),
+        "ExpressionNormalization": ("target", "expression", "solidity_like", "context", "condition_evaluation", "division_guards"),
+        "EvaluationStep": ("temp", "expression", "expression_normalized", "state_read", "solidity_like", "order", "call", "evaluation_model"),
     }
     keys = keys_by_kind.get(kind, ("solidity_like", "access", "value", "target", "condition", "event", "signature", "note"))
     out: dict[str, Any] = {}

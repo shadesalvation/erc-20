@@ -87,11 +87,11 @@ class SemanticNormalizer:
         for o in overlays:
             ref = o.stmt_refs[0] if o.stmt_refs else None
             if o.kind == 'MappingSlot':
-                add_role(o.attrs.get('expression'), 'mapping_slot_expr', ref, o.attrs.get('expression'), 'storage_slot', {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable')})
-                add_role(o.attrs.get('key'), 'mapping_key_material', ref, o.attrs.get('key'), None, {'overlay': o.overlay_id})
+                add_role(o.attrs.get('expression'), 'mapping_slot_expr', ref, o.attrs.get('expression'), 'storage_slot', {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable'), 'storage_reference': o.attrs.get('storage_reference'), 'storage_reference_kind': o.attrs.get('storage_reference_kind'), 'storage_field': o.attrs.get('storage_field')})
+                add_role(o.attrs.get('key'), 'mapping_key_material', ref, o.attrs.get('key'), None, {'overlay': o.overlay_id, 'storage_reference': o.attrs.get('storage_reference')})
             elif o.kind in {'MappingRead', 'MappingWrite'}:
-                add_role(o.attrs.get('slot'), 'mapping_slot_expr', ref, o.attrs.get('access'), 'storage_slot', {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable')})
-                add_role(o.attrs.get('access'), 'state_access_expr', ref, o.attrs.get('access'), None, {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable')})
+                add_role(o.attrs.get('slot'), 'mapping_slot_expr', ref, o.attrs.get('access'), 'storage_slot', {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable'), 'storage_reference': o.attrs.get('storage_reference'), 'storage_reference_kind': o.attrs.get('storage_reference_kind'), 'storage_field': o.attrs.get('storage_field')})
+                add_role(o.attrs.get('access'), 'state_access_expr', ref, o.attrs.get('access'), None, {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable'), 'storage_reference': o.attrs.get('storage_reference'), 'storage_reference_kind': o.attrs.get('storage_reference_kind'), 'storage_field': o.attrs.get('storage_field')})
             elif o.kind in {'PathConditionedStorageRead', 'PathConditionedStorageWrite'}:
                 add_role(o.attrs.get('slot'), 'storage_slot_expr', ref, o.attrs.get('slot'), 'storage_slot', {'overlay': o.overlay_id, 'slot_versions': o.attrs.get('slot_versions')})
                 for i, candidate in enumerate(o.attrs.get('candidates') or []):
@@ -122,11 +122,19 @@ class SemanticNormalizer:
                     add_role(arg, 'abi_argument', ref, normalize_expr(arg), None, {'overlay': o.overlay_id, 'index': i})
             elif o.kind == 'RawRevertBytes':
                 add_role(o.attrs.get('payload'), 'revert_payload_ptr', ref, o.attrs.get('payload'), 'bytes', {'overlay': o.overlay_id})
+            elif o.kind == 'RawReturnData':
+                add_role(o.attrs.get('payload_ptr'), 'return_payload_ptr', ref, o.attrs.get('payload_ptr_normalized') or o.attrs.get('payload_ptr'), 'memory_ptr', {'overlay': o.overlay_id, 'encoding_hint': o.attrs.get('encoding_hint')})
+                add_role(o.attrs.get('payload_size'), 'return_payload_size', ref, o.attrs.get('payload_size_normalized') or o.attrs.get('payload_size'), 'uint256', {'overlay': o.overlay_id, 'encoding_hint': o.attrs.get('encoding_hint')})
+                for i, value in enumerate(o.attrs.get('values') or []):
+                    add_role(value, 'return_payload_value', ref, value, None, {'overlay': o.overlay_id, 'index': i, 'encoding_hint': o.attrs.get('encoding_hint')})
             elif o.kind in {'AddressHasCode', 'AddressCodeSize'}:
                 add_role(o.attrs.get('address'), 'address_code_target', ref, o.attrs.get('address_normalized') or o.attrs.get('address'), 'address', {'overlay': o.overlay_id})
                 add_role(o.attrs.get('code_size'), 'address_code_size', ref, o.attrs.get('code_size'), 'uint256', {'overlay': o.overlay_id})
                 if o.kind == 'AddressHasCode':
                     add_role(o.attrs.get('condition'), 'address_has_code_condition', ref, o.attrs.get('condition'), 'bool', {'overlay': o.overlay_id, 'target': o.attrs.get('target')})
+            elif o.kind == 'CalldataWordRead':
+                add_role(o.attrs.get('offset'), 'calldata_read_offset', ref, o.attrs.get('offset_normalized') or o.attrs.get('offset'), 'uint256', {'overlay': o.overlay_id, 'source': o.attrs.get('source')})
+                add_role(o.attrs.get('source_expression'), 'calldata_word_value', ref, o.attrs.get('solidity_like'), o.attrs.get('target_type'), {'overlay': o.overlay_id, 'target': o.attrs.get('target'), 'width_bytes': o.attrs.get('width_bytes')})
             elif o.kind == 'StructFieldRead':
                 field = o.attrs.get('field') or {}
                 add_role(o.attrs.get('read_from'), 'struct_field_ptr', ref, o.attrs.get('read_from'), 'memory_ptr', {'overlay': o.overlay_id, 'struct_object': o.attrs.get('struct_object'), 'field': field.get('name')})

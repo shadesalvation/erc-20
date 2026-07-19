@@ -39,8 +39,34 @@ def collect_variables(fn:Json):
 def collect_state_variables(contract:Json):
     out=[]; slot=0
     for n in contract.get('nodes',[]):
-        if isinstance(n,dict) and n.get('nodeType')=='VariableDeclaration' and n.get('stateVariable'):
+        if isinstance(n,dict) and n.get('nodeType')=='VariableDeclaration' and n.get('stateVariable') and not n.get('constant'):
             out.append(variable_info(n,'state',slot)); slot+=1
+    return out
+def literal_expression_text(source:str,node:Json|None)->str|None:
+    if not isinstance(node,dict):
+        return None
+    if node.get('nodeType')=='Literal':
+        value=node.get('value')
+        if value is not None:
+            return str(value)
+    text=src_text(source,str(node.get('src','')))
+    return text or None
+def collect_constant_values(contract:Json,source:str):
+    out={}
+    for n in contract.get('nodes',[]):
+        if not isinstance(n,dict) or n.get('nodeType')!='VariableDeclaration':
+            continue
+        if not n.get('constant'):
+            continue
+        info=variable_info(n,'constant')
+        if not info.name:
+            continue
+        out[info.name]={
+            'name':info.name,
+            'type_string':info.type_string,
+            'value':literal_expression_text(source,n.get('value')),
+            'src':info.src,
+        }
     return out
 def collect_struct_definitions(contract:Json):
     structs={}
@@ -69,6 +95,9 @@ def yul_nodes(root:Json)->list[Json]:
     visit(root); return out
 def is_yul_statement(n:Json)->bool:
     return n.get('nodeType') in {'YulVariableDeclaration','YulAssignment','YulExpressionStatement','YulIf','YulSwitch','YulCase','YulForLoop','YulBreak','YulContinue','YulLeave'}
+def src_start(src:str)->int:
+    a,_b=parse_src(str(src or ''))
+    return a
 class SourceStatementCollector:
     def __init__(self, source_path:Path, ast:Json): self.source_path=source_path; self.source=source_path.read_text(encoding='utf-8'); self.ast=ast; self.next_asm=1
     def collect(self)->list[FunctionUnit]:
@@ -83,6 +112,7 @@ class SourceStatementCollector:
         ctx=FunctionContext(contract=contract,name=name,visibility=fn.get('visibility'),parameters=[parameter_text(p) for p in fn.get('parameters',{}).get('parameters',[])])
         unit=FunctionUnit(fid,contract,name,sig,fn,params,rets,locals_,state_vars)
         setattr(unit,'struct_definitions',collect_struct_definitions(contract_node))
+        setattr(unit,'constant_values',collect_constant_values(contract_node,self.source))
         def add_sol(n,block_id=None): unit.source_statements.append(SourceStatement(ids.new('sol_s'),'solidity',src_text(self.source,str(n.get('src',''))) or n.get('nodeType',''),str(n.get('src','')),fid,block_id,{'nodeType':n.get('nodeType')}))
         def add_yul(block):
             label=f'asm_block_{block.block_id}'
@@ -94,4 +124,6 @@ class SourceStatementCollector:
                 if isinstance(y,dict):
                     block=AssemblyAstBlock(self.next_asm,self.source_path,self.source,n,y,ctx); self.next_asm+=1; unit.assembly_blocks.append(block); add_yul(block)
             elif n.get('nodeType') in STATEMENT_NODE_TYPES: add_sol(n)
+        unit.assembly_blocks.sort(key=lambda block: src_start(str(block.solidity_node.get('src',''))))
+        unit.source_statements.sort(key=lambda stmt: (src_start(stmt.src), 0 if stmt.lang=='solidity' else 1, stmt.stmt_id))
         return unit

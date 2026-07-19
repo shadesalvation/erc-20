@@ -34,10 +34,11 @@ class SemanticOverlayBuilder:
         overlays: list[SemanticOverlay] = []
         overlays.extend(self.require_overlays(type_env, effects))
         overlays.extend(self.raw_revert_bytes(type_env, expr_roles, effects))
+        overlays.extend(self.return_overlays(effects))
         overlays.extend(self.solidity_custom_errors(effects))
         overlays.extend(self.custom_error_selector_overlays(effects))
         overlays.extend(self.storage_overlays(type_env, effects))
-        overlays.extend(self.event_overlays(unit, effects))
+        overlays.extend(self.event_overlays(unit, type_env, effects))
         call_overlays = self.call_overlays(effects)
         overlays.extend(call_overlays)
         overlays.extend(self.precompile_output_overlays(effects, call_overlays))
@@ -45,8 +46,9 @@ class SemanticOverlayBuilder:
         overlays.extend(self.memory_object_construction_overlays(unit, type_env, effects))
         overlays.extend(self.struct_memory_mutation_overlays(unit, type_env, effects))
         overlays.extend(self.abi_call_data_overlays(effects, overlays))
+        overlays.extend(self.calldata_word_read_overlays(type_env, effects))
         overlays.extend(self.address_code_overlays(type_env, effects))
-        overlays.extend(self.expression_overlays(effects))
+        overlays.extend(self.expression_overlays(type_env, effects))
         return self.dedupe(overlays)
 
     def ov(self, kind: str, effect_ids: list[str] | str, refs: list[str], attrs: dict[str, Any]) -> SemanticOverlay:
@@ -75,6 +77,50 @@ class SemanticOverlayBuilder:
         for e in effects:
             if e.kind == 'Revert' and isinstance(e.attrs.get('payload'), str) and e.attrs.get('payload').strip():
                 out.append(self.ov('CustomErrorRevert', e.effect_id, e.stmt_refs, {'error': e.attrs.get('payload')}))
+        return out
+
+    def return_overlays(self, effects: list[EffectNode]) -> list[SemanticOverlay]:
+        out: list[SemanticOverlay] = []
+        for e in effects:
+            if e.kind != 'Return':
+                continue
+            ptr = e.attrs.get('payload_ptr')
+            size = e.attrs.get('payload_size')
+            if ptr is None or size is None:
+                continue
+            words = words_from_memory_query(e.attrs.get('payload_memory'))
+            values = [
+                normalize_expr(word.get('value'))
+                for word in words
+                if word.get('value') is not None and not memory_is_unknown_value(word.get('value'))
+            ]
+            size_int = parse_int_literal(str(size))
+            complete = bool((e.attrs.get('payload_memory') or {}).get('complete'))
+            encoding_hint = None
+            if size_int == 32 and len(values) == 1 and complete:
+                encoding_hint = 'abi_word'
+                solidity_like = f"returnRawAbiWord({values[0]});"
+            elif size_int is not None and size_int % 32 == 0 and values and complete:
+                encoding_hint = 'abi_static_words'
+                solidity_like = f"returnRawAbiWords({', '.join(values)});"
+            else:
+                solidity_like = f"returnRawMemory({normalize_expr(ptr)}, {normalize_expr(size)});"
+            attrs = {
+                'payload_ptr': ptr,
+                'payload_size': size,
+                'payload_ptr_normalized': normalize_expr(ptr),
+                'payload_size_normalized': normalize_expr(size),
+                'payload_memory_complete': complete,
+                'encoding_hint': encoding_hint,
+                'values': values,
+                'words': words,
+                'partial_slices': (e.attrs.get('payload_memory_partial') or {}).get('slices') or [],
+                'solidity_like': solidity_like,
+                'solidity_equivalent': False,
+                'reason': 'yul_return_terminates_current_evm_call_with_raw_return_data',
+                'path_states': self.path_states(e),
+            }
+            out.append(self.ov('RawReturnData', e.effect_id, e.stmt_refs, attrs))
         return out
 
     def custom_error_selector_overlays(self, effects: list[EffectNode]) -> list[SemanticOverlay]:
@@ -206,6 +252,7 @@ class SemanticOverlayBuilder:
         activated: set[str] = set()
         slot_expr_by_var: dict[str, dict[str, Any]] = {}
         hash_effect_by_var: dict[str, EffectNode] = {}
+        value_defs_by_version = self.value_defs_by_version(effects)
 
         for e in effects:
             if e.kind != 'MemoryHash':
@@ -237,10 +284,14 @@ class SemanticOverlayBuilder:
                 'target_keys': slot_expr.get('target_keys'),
                 'expression': slot_expr['access'],
                 'state_variable': slot_expr.get('state_variable'),
+                'storage_reference': slot_expr.get('storage_reference'),
+                'storage_reference_type': slot_expr.get('storage_reference_type'),
+                'storage_reference_kind': slot_expr.get('storage_reference_kind'),
+                'storage_field': slot_expr.get('storage_field'),
                 'key': slot_expr.get('key'),
                 'base': slot_expr.get('base'),
                 'base_key': slot_expr.get('base_key'),
-                'slot_kind': 'mapping_slot' if base_key not in slot_expr_by_var else 'nested_mapping_slot',
+                'slot_kind': slot_expr.get('slot_kind') or ('mapping_slot' if base_key not in slot_expr_by_var else 'nested_mapping_slot'),
                 'activation': 'storage_consumer',
                 'resolved_inputs': slot_expr.get('resolved_inputs'),
                 'notes': slot_expr.get('notes', []),
@@ -271,6 +322,7 @@ class SemanticOverlayBuilder:
             slot_key = self.first_known_key(self.storage_slot_keys(e), slot_expr_by_var)
             value = e.attrs.get('value')
             direct_state = type_env.state_var_by_slot(slot)
+            direct_slot = self.direct_storage_slot_info(type_env, e, value_defs_by_version)
             if slot_key:
                 slot_expr = slot_expr_by_var[slot_key]
                 kind = 'MappingRead' if e.kind == 'StorageRead' else 'MappingWrite'
@@ -280,6 +332,10 @@ class SemanticOverlayBuilder:
                     'value': normalize_expr(value) if e.kind == 'StorageWrite' else None,
                     'value_yul': value if e.kind == 'StorageWrite' else None,
                     'state_variable': slot_expr.get('state_variable'),
+                    'storage_reference': slot_expr.get('storage_reference'),
+                    'storage_reference_type': slot_expr.get('storage_reference_type'),
+                    'storage_reference_kind': slot_expr.get('storage_reference_kind'),
+                    'storage_field': slot_expr.get('storage_field'),
                     'key': slot_expr.get('key'),
                     'slot': slot,
                     'slot_key': slot_key,
@@ -302,11 +358,166 @@ class SemanticOverlayBuilder:
                     'solidity_like': f"{value} = {direct_state.name};" if e.kind == 'StorageRead' and value else f"{direct_state.name} = {normalize_expr(value)};",
                 }
                 out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
+            elif direct_slot:
+                kind = 'StateVariableRead' if e.kind == 'StorageRead' else 'StateVariableWrite'
+                access = f"storage[{direct_slot.get('name') or direct_slot.get('slot')}]"
+                state_note = 'state read, manual slot' if e.kind == 'StorageRead' else 'state write, manual slot'
+                solidity_like = (
+                    f"{value} = {access}; /* {state_note} */"
+                    if e.kind == 'StorageRead' and value
+                    else f"{access} = {normalize_expr(value)}; /* {state_note} */"
+                )
+                attrs = {
+                    'access': access,
+                    'target': value if e.kind == 'StorageRead' else None,
+                    'value': normalize_expr(value) if e.kind == 'StorageWrite' else None,
+                    'slot': slot,
+                    'slot_versions': e.attrs.get('slot_versions'),
+                    'slot_constant': direct_slot.get('name'),
+                    'slot_value': direct_slot.get('value'),
+                    'storage_model': 'manual_constant_slot',
+                    'state_access': True,
+                    'state_mutation': e.kind == 'StorageWrite',
+                    'mutation_kind': 'state_write' if e.kind == 'StorageWrite' else None,
+                    'variable_name_inferred': False,
+                    'solidity_like': solidity_like,
+                    'notes': ['constant_storage_slot', 'manual_storage_layout', 'writes_contract_state' if e.kind == 'StorageWrite' else 'reads_contract_state'],
+                }
+                out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
             else:
                 kind = 'StateVariableRead' if e.kind == 'StorageRead' else 'StateVariableWrite'
                 attrs = {'access': f'storage[{slot}]', 'target': value if e.kind == 'StorageRead' else None, 'value': normalize_expr(value) if e.kind == 'StorageWrite' else None, 'slot': slot, 'slot_versions': e.attrs.get('slot_versions'), 'unresolved_reason': 'unknown_storage_slot'}
                 out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
         return out
+
+    @staticmethod
+    def value_defs_by_version(effects: list[EffectNode]) -> dict[str, EffectNode]:
+        out: dict[str, EffectNode] = {}
+        for effect in effects:
+            if effect.kind != 'ValueDef':
+                continue
+            versions = effect.attrs.get('target_versions') or {}
+            for names in versions.values():
+                for version in names or []:
+                    out[str(version)] = effect
+        return out
+
+    @staticmethod
+    def value_defs_by_name(effects: list[EffectNode]) -> dict[str, list[EffectNode]]:
+        out: dict[str, list[EffectNode]] = {}
+        for effect in effects:
+            if effect.kind != 'ValueDef':
+                continue
+            for target in effect.attrs.get('targets') or []:
+                out.setdefault(str(target), []).append(effect)
+        return out
+
+    def direct_storage_slot_info(self, type_env: Any, effect: EffectNode, value_defs_by_version: dict[str, EffectNode]) -> dict[str, Any] | None:
+        slot = effect.attrs.get('slot')
+        direct = self.constant_slot_info(type_env, slot)
+        if direct:
+            direct['slot'] = slot
+            return direct
+        for version in effect.attrs.get('slot_versions') or []:
+            value_def = value_defs_by_version.get(str(version))
+            if not value_def:
+                continue
+            value = value_def.attrs.get('value')
+            resolved = self.constant_slot_info(type_env, value)
+            if resolved:
+                resolved['slot'] = slot
+                resolved['via_value_def'] = value_def.effect_id
+                resolved['via_version'] = version
+                return resolved
+        return None
+
+    @staticmethod
+    def constant_slot_info(type_env: Any, expr: Any) -> dict[str, Any] | None:
+        text = str(expr or '').strip()
+        if not text:
+            return None
+        value = getattr(type_env, 'constant_value', lambda _name: None)(text)
+        if value:
+            item = getattr(type_env, 'constant', lambda _name: None)(text) or {}
+            return {'name': text, 'value': value, 'type_string': item.get('type_string'), 'kind': 'constant_storage_slot'}
+        return None
+
+    def direct_storage_slot_info_for_expr(
+        self,
+        type_env: Any,
+        slot_expr: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
+    ) -> dict[str, Any] | None:
+        direct = self.constant_slot_info(type_env, slot_expr)
+        if direct:
+            direct['slot'] = slot_expr
+            return direct
+        text = str(slot_expr or '').strip()
+        if not text:
+            return None
+        matches = []
+        for value_def in value_defs_by_name.get(text, []):
+            resolved = self.constant_slot_info(type_env, value_def.attrs.get('value'))
+            if not resolved:
+                continue
+            resolved = dict(resolved)
+            resolved['slot'] = slot_expr
+            resolved['via_value_def'] = value_def.effect_id
+            matches.append(resolved)
+        if not matches:
+            return None
+        names = {item.get('name') for item in matches}
+        values = {item.get('value') for item in matches}
+        if len(names) == 1 and len(values) == 1:
+            return matches[0]
+        return None
+
+    def manual_slot_state_read_from_expr(
+        self,
+        type_env: Any,
+        expr: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
+    ) -> dict[str, Any] | None:
+        name, args = call_parts(str(expr or '').strip())
+        if name != 'sload' or len(args) != 1:
+            return None
+        slot_expr = args[0].strip()
+        direct_slot = self.direct_storage_slot_info_for_expr(type_env, slot_expr, value_defs_by_name)
+        if not direct_slot:
+            return None
+        access = f"storage[{direct_slot.get('name') or direct_slot.get('slot')}]"
+        return self.clean({
+            'original': str(expr),
+            'access': access,
+            'slot': slot_expr,
+            'slot_constant': direct_slot.get('name'),
+            'slot_value': direct_slot.get('value'),
+            'storage_model': 'manual_constant_slot',
+            'state_access': True,
+            'state_mutation': False,
+            'variable_name_inferred': False,
+            'solidity_like': f"{access} /* state read, manual slot */",
+            'notes': ['constant_storage_slot', 'manual_storage_layout', 'reads_contract_state'],
+        })
+
+    def normalize_expression_with_state_reads(
+        self,
+        type_env: Any,
+        expr: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
+    ) -> tuple[str, dict[str, Any] | None]:
+        state_read = self.manual_slot_state_read_from_expr(type_env, expr, value_defs_by_name)
+        if state_read:
+            return str(state_read['solidity_like']), state_read
+        return normalize_expr(expr), None
+
+    @staticmethod
+    def resolve_constant_expr(type_env: Any, expr: Any) -> Any:
+        text = str(expr or '').strip()
+        if not text:
+            return expr
+        value = getattr(type_env, 'constant_value', lambda _name: None)(text)
+        return value if value else expr
 
     def path_conditioned_storage_overlay(
         self,
@@ -333,6 +544,10 @@ class SemanticOverlayBuilder:
                     'overlay_kind': kind,
                     'access': access,
                     'state_variable': slot_expr.get('state_variable'),
+                    'storage_reference': slot_expr.get('storage_reference'),
+                    'storage_reference_type': slot_expr.get('storage_reference_type'),
+                    'storage_reference_kind': slot_expr.get('storage_reference_kind'),
+                    'storage_field': slot_expr.get('storage_field'),
                     'key': slot_expr.get('key'),
                     'slot_effect': hash_effect_by_var.get(key).effect_id if key in hash_effect_by_var else None,
                     'solidity_like': self.storage_solidity_like(kind, access, value, effect),
@@ -393,14 +608,76 @@ class SemanticOverlayBuilder:
             prev = known[base_key]
             access = f"{prev['access']}[{key_norm}]"
             state_var = prev.get('state_variable')
+            return {
+                'access': access,
+                'key': key_norm,
+                'base': base_text,
+                'base_key': base_key,
+                'state_variable': state_var,
+                'storage_reference': prev.get('storage_reference'),
+                'storage_reference_type': prev.get('storage_reference_type'),
+                'storage_reference_kind': prev.get('storage_reference_kind'),
+                'storage_field': prev.get('storage_field'),
+                'slot_kind': 'nested_mapping_slot',
+                'resolved_inputs': words[:2],
+                'notes': notes,
+            }
         else:
             var = type_env.state_var_by_slot(base_text)
-            if not var:
-                return None
-            state_var = var.name
-            access = f'{var.name}[{key_norm}]'
-            base_key = base_text
-        return {'access': access, 'key': key_norm, 'base': base_text, 'base_key': base_key, 'state_variable': state_var, 'resolved_inputs': words[:2], 'notes': notes}
+            if var:
+                state_var = var.name
+                access = f'{var.name}[{key_norm}]'
+                base_key = base_text
+                return {'access': access, 'key': key_norm, 'base': base_text, 'base_key': base_key, 'state_variable': state_var, 'slot_kind': 'mapping_slot', 'resolved_inputs': words[:2], 'notes': notes}
+            storage_ref = self.storage_ref_mapping_access(type_env, base, key_norm)
+            if storage_ref:
+                return {
+                    'access': storage_ref['access'],
+                    'key': key_norm,
+                    'base': base_text,
+                    'base_key': base_text,
+                    'state_variable': None,
+                    'storage_reference': storage_ref.get('root'),
+                    'storage_reference_type': storage_ref.get('root_type'),
+                    'storage_reference_kind': storage_ref.get('kind'),
+                    'storage_field': self.field_ref(storage_ref.get('field')),
+                    'slot_kind': 'storage_ref_mapping_slot',
+                    'resolved_inputs': words[:2],
+                    'notes': list(dict.fromkeys(notes + ['storage_reference_mapping_slot'])),
+                }
+            return None
+
+    @classmethod
+    def storage_ref_mapping_access(cls, type_env: Any, base: Any, key: str) -> dict[str, Any] | None:
+        root = cls.storage_ref_slot_root(base)
+        if not root:
+            return None
+        return getattr(type_env, 'storage_ref_mapping_access', lambda *_args: None)(root['name'], root['slot_offset'], key)
+
+    @staticmethod
+    def storage_ref_slot_root(base: Any) -> dict[str, Any] | None:
+        text = str(base or '').strip()
+        if not text:
+            return None
+        if text.endswith('.slot'):
+            name = text[:-5].strip()
+            return {'name': name, 'slot_offset': 0} if name else None
+        call, args = call_parts(text)
+        if call == 'add' and len(args) == 2:
+            left = SemanticOverlayBuilder.storage_ref_slot_root(args[0])
+            right = parse_int_literal(str(args[1]).strip())
+            if left and right is not None:
+                return {'name': left['name'], 'slot_offset': left['slot_offset'] + right}
+            right_root = SemanticOverlayBuilder.storage_ref_slot_root(args[1])
+            left_const = parse_int_literal(str(args[0]).strip())
+            if right_root and left_const is not None:
+                return {'name': right_root['name'], 'slot_offset': right_root['slot_offset'] + left_const}
+        m = re.match(r'^\(?\s*([A-Za-z_$][A-Za-z0-9_$]*)\.slot\s*\+\s*(0x[0-9a-fA-F]+|\d+)\s*\)?$', text)
+        if m:
+            offset = parse_int_literal(m.group(2))
+            if offset is not None:
+                return {'name': m.group(1), 'slot_offset': offset}
+        return None
 
     @staticmethod
     def hash_result_keys(effect: EffectNode) -> list[str]:
@@ -452,19 +729,30 @@ class SemanticOverlayBuilder:
             return f'{target} = {access};' if target else f'read {access};'
         return f'{access} = {normalize_expr(value)};'
 
-    def event_overlays(self, unit: FunctionUnit, effects: list[EffectNode]) -> list[SemanticOverlay]:
+    def event_overlays(self, unit: FunctionUnit, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
         evs = self.events_for_contract(unit.contract)
         out: list[SemanticOverlay] = []
+        value_defs_by_name = self.value_defs_by_name(effects)
         for e in effects:
             if e.kind != 'EventLog':
                 continue
-            event = self.match_event_name(e, evs)
-            args, notes = self.event_args(event, e)
+            raw_topics = e.attrs.get('topics', []) or []
+            topics = [self.resolve_constant_expr(type_env, topic) for topic in raw_topics]
+            topic_constants = [
+                {'name': str(raw), 'value': str(resolved)}
+                for raw, resolved in zip(raw_topics, topics)
+                if str(raw) != str(resolved)
+            ]
+            event = self.match_event_name(e, evs, topics)
+            data_words = self.event_data_words(e)
+            args, notes, argument_state_reads = self.event_args(event, e, type_env, value_defs_by_name, topics, data_words)
             name = event.name if event else 'unknownEvent'
             data_size = parse_int_literal(str(e.attrs.get('data_size') or '').strip())
-            near_misses = [] if event else self.event_topic_near_misses(e, evs, data_size)
+            near_misses = [] if event else self.event_topic_near_misses(e, evs, data_size, topics)
             if near_misses:
                 notes.append('topic0_prefix_matches_known_event_but_full_topic_mismatch')
+            if topic_constants:
+                notes.append('resolved_topic_constants')
             if event:
                 non_indexed = [param for param in event.params if not param.indexed]
                 expected = 32 * len(non_indexed)
@@ -475,12 +763,15 @@ class SemanticOverlayBuilder:
             out.append(self.ov('EventEmit', e.effect_id, e.stmt_refs, {
                 'event': name,
                 'signature': event.signature if event else None,
-                'topic0': event.topic0 if event else (e.attrs.get('topics') or [None])[0],
+                'topic0': event.topic0 if event else (topics or [None])[0],
                 'args': args,
-                'topics': [normalize_expr(t) for t in e.attrs.get('topics', [])],
-                'data': words_from_memory_query(e.attrs.get('data_memory')),
+                'topics': [normalize_expr(t) for t in topics],
+                'raw_topics': raw_topics,
+                'topic_constants': topic_constants,
+                'argument_state_reads': argument_state_reads,
+                'data': data_words,
                 'path_conditioned_data': [
-                    word for word in words_from_memory_query(e.attrs.get('data_memory'))
+                    word for word in data_words
                     if word.get('path_conditioned')
                 ],
                 'emit_like': f"emit {name}({', '.join(map(str,args))});" if args else None,
@@ -489,11 +780,31 @@ class SemanticOverlayBuilder:
             }))
         return out
 
-    def event_args(self, event: EventDecl | None, effect: EffectNode) -> tuple[list[Any], list[str]]:
-        topics = effect.attrs.get('topics', []) or []
-        data_words = words_from_memory_query(effect.attrs.get('data_memory'))
+    def event_args(
+        self,
+        event: EventDecl | None,
+        effect: EffectNode,
+        type_env: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
+        topics: list[Any] | None = None,
+        data_words: list[dict[str, Any]] | None = None,
+    ) -> tuple[list[Any], list[str], list[dict[str, Any]]]:
+        topics = topics if topics is not None else (effect.attrs.get('topics', []) or [])
+        data_words = self.event_data_words(effect) if data_words is None else data_words
         data_values = []
         notes: list[str] = []
+        argument_state_reads: list[dict[str, Any]] = []
+
+        def render_arg(value: Any) -> str:
+            state_read = self.manual_slot_state_read_from_expr(type_env, value, value_defs_by_name)
+            if state_read:
+                if state_read not in argument_state_reads:
+                    argument_state_reads.append(state_read)
+                if 'event_argument_state_read' not in notes:
+                    notes.append('event_argument_state_read')
+                return str(state_read['solidity_like'])
+            return normalize_expr(value)
+
         for word in data_words:
             if word.get('path_conditioned'):
                 notes.append('data_word_path_conditioned')
@@ -505,16 +816,16 @@ class SemanticOverlayBuilder:
                 continue
             if word.get('symbolic_candidates'):
                 notes.append('data_word_has_symbolic_overwrite_candidate')
-            data_values.append(normalize_expr(value))
+            data_values.append(render_arg(value))
         if not event:
             notes.append('unknown_event_topic0')
-            return [normalize_expr(t) for t in topics[1:]] + data_values, notes
+            return [render_arg(t) for t in topics[1:]] + data_values, notes, argument_state_reads
         args: list[Any] = []
         topic_index = 0 if event.anonymous else 1
         data_index = 0
         for param in event.params:
             if param.indexed:
-                args.append(normalize_expr(topics[topic_index]) if topic_index < len(topics) else None)
+                args.append(render_arg(topics[topic_index]) if topic_index < len(topics) else None)
                 topic_index += 1
             else:
                 args.append(data_values[data_index] if data_index < len(data_values) else None)
@@ -524,7 +835,14 @@ class SemanticOverlayBuilder:
         non_indexed_count = len([p for p in event.params if not p.indexed])
         if len(data_words) < non_indexed_count:
             notes.append('memory_data_words_incomplete')
-        return args, notes
+        return args, notes, argument_state_reads
+
+    @staticmethod
+    def event_data_words(effect: EffectNode) -> list[dict[str, Any]]:
+        data_size = parse_int_literal(str(effect.attrs.get('data_size') or '').strip())
+        if data_size == 0:
+            return []
+        return words_from_memory_query(effect.attrs.get('data_memory'))
 
     def call_overlays(self, effects: list[EffectNode]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []
@@ -1380,8 +1698,9 @@ class SemanticOverlayBuilder:
             parts.append(f"{target}.{field.get('name')} = {value};")
         return " ".join(parts)
 
-    def expression_overlays(self, effects: list[EffectNode]) -> list[SemanticOverlay]:
+    def expression_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []
+        value_defs_by_name = self.value_defs_by_name(effects)
         for e in effects:
             if e.kind == 'ValueDef':
                 target = e.attrs.get('targets', [None])[0]
@@ -1400,18 +1719,23 @@ class SemanticOverlayBuilder:
                 out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {'target': target, 'expression': e.attrs.get('value'), 'solidity_like': self.value_def_like(e), 'context': 'value', 'division_guards': division_guards(e.attrs.get('value'))}))
             elif e.kind == 'Branch':
                 condition_text = e.attrs.get('condition_final_temp') or e.attrs.get('condition_normalized') or normalize_expr(e.attrs.get('condition'))
+                condition_evaluation = self.condition_evaluation_with_state_reads(type_env, e.attrs.get('condition_evaluation'), value_defs_by_name)
                 out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {
                     'expression': e.attrs.get('condition'),
                     'solidity_like': f"if ({condition_text})",
                     'context': 'condition',
                     'condition_final_temp': e.attrs.get('condition_final_temp'),
-                    'condition_evaluation': e.attrs.get('condition_evaluation'),
+                    'condition_evaluation': condition_evaluation,
                     'division_guards': division_guards(e.attrs.get('condition')),
                 }))
             elif e.kind == 'EvaluationStep':
                 temp = e.attrs.get('temp')
-                expr = e.attrs.get('value_from_call_output') or e.attrs.get('expression_normalized') or normalize_expr(e.attrs.get('expression'))
-                out.append(self.ov('EvaluationStep', e.effect_id, e.stmt_refs, {
+                if e.attrs.get('value_from_call_output'):
+                    expr = e.attrs.get('value_from_call_output')
+                    state_read = None
+                else:
+                    expr, state_read = self.normalize_expression_with_state_reads(type_env, e.attrs.get('expression'), value_defs_by_name)
+                attrs = {
                     'temp': temp,
                     'expression': e.attrs.get('expression'),
                     'expression_normalized': expr,
@@ -1424,8 +1748,35 @@ class SemanticOverlayBuilder:
                     'evaluation_model': 'yul_ast_right_to_left_function_call_arguments',
                     'reads_after_call_output': e.attrs.get('reads_after_call_output'),
                     'value_from_call_output': e.attrs.get('value_from_call_output'),
-                }))
+                }
+                if state_read:
+                    attrs['state_read'] = state_read
+                out.append(self.ov('EvaluationStep', e.effect_id, e.stmt_refs, self.clean(attrs)))
         return out
+
+    def condition_evaluation_with_state_reads(
+        self,
+        type_env: Any,
+        condition_evaluation: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
+    ) -> Any:
+        if not isinstance(condition_evaluation, dict):
+            return condition_evaluation
+        out = dict(condition_evaluation)
+        steps = []
+        state_reads = []
+        for step in condition_evaluation.get('steps') or []:
+            item = dict(step)
+            expr, state_read = self.normalize_expression_with_state_reads(type_env, item.get('expression'), value_defs_by_name)
+            item['expression_normalized'] = expr
+            if state_read:
+                item['state_read'] = state_read
+                state_reads.append(state_read)
+            steps.append(item)
+        out['steps'] = steps
+        if state_reads:
+            out['state_reads'] = state_reads
+        return self.clean(out)
 
     def address_code_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []
@@ -1468,6 +1819,36 @@ class SemanticOverlayBuilder:
                 }))
         return out
 
+    def calldata_word_read_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
+        out: list[SemanticOverlay] = []
+        for effect in effects:
+            if effect.kind != 'ValueDef':
+                continue
+            targets = effect.attrs.get('targets') or []
+            target = targets[0] if targets else None
+            call, args = call_parts(str(effect.attrs.get('value') or ''))
+            if call != 'calldataload' or len(args) != 1 or not target:
+                continue
+            offset = args[0]
+            offset_expr = normalize_expr(offset)
+            target_info = getattr(type_env, 'lookup', lambda _name: None)(target)
+            target_type = getattr(target_info, 'type_string', None)
+            out.append(self.ov('CalldataWordRead', effect.effect_id, effect.stmt_refs, {
+                'target': target,
+                'target_type': target_type,
+                'source': 'msg.data',
+                'offset': offset,
+                'offset_normalized': offset_expr,
+                'width_bytes': 32,
+                'source_expression': effect.attrs.get('value'),
+                'solidity_like': f'{target} = calldataWord({offset_expr});',
+                'solidity_equivalent': False,
+                'reason': 'raw_calldata_word_read_requires_inline_assembly_or_helper',
+                'path_states': effect.attrs.get('path_states') or [],
+                'target_versions': effect.attrs.get('target_versions') or {},
+            }))
+        return out
+
     @staticmethod
     def is_storage_pointer_slot_target(target: Any) -> bool:
         text = str(target or '').strip()
@@ -1495,8 +1876,8 @@ class SemanticOverlayBuilder:
         return out
 
     @staticmethod
-    def match_event_name(effect: EffectNode, events: list[EventDecl]) -> EventDecl | None:
-        topics = effect.attrs.get('topics', [])
+    def match_event_name(effect: EffectNode, events: list[EventDecl], resolved_topics: list[Any] | None = None) -> EventDecl | None:
+        topics = resolved_topics if resolved_topics is not None else effect.attrs.get('topics', [])
         if not topics:
             return None
         t0 = normalize_topic_value(topics[0])
@@ -1509,8 +1890,8 @@ class SemanticOverlayBuilder:
         return None
 
     @staticmethod
-    def event_topic_near_misses(effect: EffectNode, events: list[EventDecl], data_size: int | None) -> list[dict[str, Any]]:
-        topics = effect.attrs.get('topics', []) or []
+    def event_topic_near_misses(effect: EffectNode, events: list[EventDecl], data_size: int | None, resolved_topics: list[Any] | None = None) -> list[dict[str, Any]]:
+        topics = resolved_topics if resolved_topics is not None else (effect.attrs.get('topics', []) or [])
         if not topics:
             return []
         observed = normalize_topic_value(topics[0])

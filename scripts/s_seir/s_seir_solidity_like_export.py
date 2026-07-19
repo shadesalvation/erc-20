@@ -747,6 +747,7 @@ class SolidityLikeRenderer:
             "EventEmit",
             "PrecompileOutputRead",
             "PrecompileCall",
+            "RawReturnData",
             "RequireOverlay",
             "CustomErrorRevert",
             "MappingWrite",
@@ -756,6 +757,7 @@ class SolidityLikeRenderer:
             "PathConditionedStorageWrite",
             "PathConditionedStorageRead",
             "StoragePointerSlotBinding",
+            "CalldataWordRead",
             "AddressHasCode",
             "AddressCodeSize",
             "StructFieldRead",
@@ -799,6 +801,8 @@ class SolidityLikeRenderer:
             return attrs.get("revert_like") or (f"revert {attrs.get('error')};" if attrs.get("error") else None)
         if overlay.kind in {"PrecompileCall", "PrecompileOutputRead"}:
             return attrs.get("solidity_like")
+        if overlay.kind == "RawReturnData":
+            return attrs.get("solidity_like")
         if overlay.kind in {"MappingRead", "MappingWrite", "StateVariableRead", "StateVariableWrite"}:
             line = attrs.get("solidity_like")
             if line and not line.replace(" ", "").endswith("=;"):
@@ -807,6 +811,8 @@ class SolidityLikeRenderer:
         if overlay.kind in {"PathConditionedStorageRead", "PathConditionedStorageWrite"}:
             return self.path_conditioned_line(overlay)
         if overlay.kind == "StoragePointerSlotBinding":
+            return attrs.get("solidity_like")
+        if overlay.kind == "CalldataWordRead":
             return attrs.get("solidity_like")
         if overlay.kind in {"AddressHasCode", "AddressCodeSize"}:
             return attrs.get("solidity_like")
