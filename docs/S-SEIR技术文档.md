@@ -558,6 +558,212 @@ return_payload
 call_input / staticcall_input / delegatecall_input / callcode_input
 ```
 
+### 8.5.1 SinkResolver 统一语义终点解析层
+
+实现文件：
+
+```Plain
+scripts/s_seir/s_seir_sink_resolver.py
+```
+
+目的：
+
+```text
+把不同 effect 中已有的 MemorySSA / byte-axis 查询结果，统一整理为 path-sensitive sink_resolution。
+后续 storage、event、revert、return、call 等 overlay 不再各自发明一套 memory 参数匹配规则，而是统一消费 sink_resolution。
+```
+
+当前接入位置：
+
+```text
+s_seir_overlay_builder.py
+
+OverlayBuilder.build()
+  -> SinkResolver().attach_all(effects)
+  -> 后续 overlay builder 读取 effect.attrs.sink_resolution
+```
+
+SinkResolver 支持的 effect：
+
+```text
+MemoryHash
+EventLog
+Return
+Revert
+Call
+StaticCall
+DelegateCall
+CallCode
+```
+
+各 effect 对应的 memory range：
+
+```text
+MemoryHash   -> memory_read(ptr, size)      -> role = slot/hash_input
+EventLog     -> data_memory(data_ptr, size) -> role = data/event_data
+Return       -> payload_memory(ptr, size)   -> role = payload/return_payload
+Revert       -> payload_memory(ptr, size)   -> role = payload/revert_payload
+Call         -> input_memory(ptr, size)     -> role = input/call_input
+StaticCall   -> input_memory(ptr, size)     -> role = input/staticcall_input
+DelegateCall -> input_memory(ptr, size)     -> role = input/delegatecall_input
+CallCode     -> input_memory(ptr, size)     -> role = input/callcode_input
+```
+
+核心算法：
+
+```text
+1. 对每个 semantic sink 读取已有 memory query 结果。
+2. 优先使用 MemoryByteAxis 的 byte_slice / path_slices。
+3. 如果 path_slices 不存在，但存在单一路径 slices，则构造 entry path。
+4. 对每条 path 单独保留：
+   - condition
+   - memory slice
+   - extraction
+   - source_version
+   - source_node_id
+5. 如果某条 path 的 slice 不完整，标记 unresolved，不强行恢复。
+6. 如果不同 path 的 extraction 不同，或 path 带 condition，则标记 path_sensitive = true。
+7. 对 keccak256/hash sink，normalized 表示为：
+   keccak256(abi.encodePacked(...))
+8. 对普通 memory range sink，normalized 表示为：
+   MemorySlice(...)
+```
+
+`sink_resolution` 结构：
+
+```json
+{
+  "sink_id": "sink_asm_s_4_Return_12",
+  "stmt_refs": ["asm_s_4"],
+  "cfg_node_id": 12,
+  "sink_kind": "Return",
+  "args": ["0", "0x20"],
+  "path_sensitive": true,
+  "path_resolutions": [
+    {
+      "path_id": "path_0",
+      "condition": "!(cond)",
+      "status": "resolved",
+      "arg_resolutions": {
+        "payload": {
+          "expr": "0:0x20",
+          "normalized": "MemorySlice(a)",
+          "memory_slice": {
+            "query_kind": "PathMemoryByteSlice",
+            "slices": [
+              {
+                "query_offset": 0,
+                "size": 32,
+                "extraction": "a",
+                "source_version": "a__ssa1",
+                "source_node_id": 2
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+后续 overlay 消费规则：
+
+```text
+PathConditionedStorageRead / PathConditionedStorageWrite
+  由 MemoryHash sink_resolution 区分不同 path 下的 keccak 输入。
+
+PathConditionedEventEmit
+  由 EventLog.data 的 sink_resolution 生成不同 condition 下的 emit。
+
+PathConditionedCustomErrorRevert
+  由 Revert.payload 的 sink_resolution 解析 selector，并匹配源码 error 定义。
+
+PathConditionedRawReturnData
+  由 Return.payload 的 sink_resolution 记录不同 condition 下返回的 ABI word / raw memory。
+
+PathConditionedLowLevelCall / PathConditionedStaticCallOverlay / PathConditionedDelegateCallOverlay
+  由 call input 的 sink_resolution 解析 selector 与参数；无法匹配 ABI 时保留 yulCall + MemorySlice。
+```
+
+示例 1：同一个 EventLog 在不同分支下读取不同 data：
+
+```yul
+mstore(0, a)
+if cond { mstore(0, b) }
+log1(0, 0x20, V_topic0)
+```
+
+SinkResolver 输出两条 path：
+
+```text
+condition = !(cond)   data = MemorySlice(a)
+condition = cond      data = MemorySlice(b)
+```
+
+Overlay 输出：
+
+```solidity
+if (!(cond)) {
+    emit V(a);
+}
+if (cond) {
+    emit V(b);
+}
+```
+
+示例 2：同一个 revert 在不同分支下抛出不同 error selector：
+
+```yul
+mstore(0, 0xaaaaaaaa)
+if cond { mstore(0, 0xbbbbbbbb) }
+revert(0x1c, 0x04)
+```
+
+如果 selector registry 中存在：
+
+```text
+0xaaaaaaaa -> A()
+0xbbbbbbbb -> B()
+```
+
+则恢复为：
+
+```solidity
+if (!(cond)) {
+    revert A();
+}
+if (cond) {
+    revert B();
+}
+```
+
+示例 3：同一个低层 call 在不同分支下构造不同 calldata：
+
+```yul
+mstore(0, 0xa9059cbb)
+mstore(0x20, to)
+mstore(0x40, amount)
+if cond {
+    mstore(0, 0x095ea7b3)
+    mstore(0x40, allowance)
+}
+let ok := call(gas(), token, 0, 0x1c, 0x44, 0, 0)
+```
+
+SinkResolver 记录：
+
+```text
+condition = !(cond)   input = MemorySlice(selector_transfer, to, amount)
+condition = cond      input = MemorySlice(selector_approve, to, allowance)
+```
+
+如果 selector 能匹配 ABI，则 overlay 可进一步恢复 selector_signature 与 arguments；否则保守输出：
+
+```solidity
+yulCall(... input: MemorySlice(...));
+```
+
 ### 8.6 SSA 版本记录
 
 EffectLifter 会记录：

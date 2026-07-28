@@ -11,11 +11,14 @@ Function Initializable._getInitializableStorage()
           }
       }
   ```
-  AssemblyBlock asm_block_1
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      /* storage pointer binding: $.slot := slot */ // yul: $.slot := slot
-  }
+  function _getInitializableStorage() private pure returns (InitializableStorage storage $) {
+          bytes32 slot = _initializableStorageSlot();
+          assembly /* s-seir solidity-like view */ {
+              /* storage pointer binding: $.slot := slot */ // yul: $.slot := slot
+          }
+      }
   ```
 
 Function ERC20Upgradeable._iD(address)
@@ -42,16 +45,19 @@ Function ERC20Upgradeable._iD(address)
           }
       }
   ```
-  AssemblyBlock asm_block_2
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      p = mload(0x40); // yul: let p := mload(0x40)
-      memory[p] = 0x0902f1ac00000000000000000000000000000000000000000000000000000000; // yul: mstore(p, 0x0902f1ac00000000000000000000000000000000000000000000000000000000)
-      v2 = staticcall(gasleft(), t_, p, 0x04, 0, 0); // yul: let v2 := staticcall(gas(), t_, p, 0x04, 0, 0)
-      memory[p] = 0x3850c7bd00000000000000000000000000000000000000000000000000000000; // yul: mstore(p, 0x3850c7bd00000000000000000000000000000000000000000000000000000000)
-      v3 = staticcall(gasleft(), t_, p, 0x04, 0, 0); // yul: let v3 := staticcall(gas(), t_, p, 0x04, 0, 0)
-      iD_ = (v2 | v3); // yul: iD_ := or(v2, v3)
-  }
+  function _iD(address t_) internal view returns (bool iD_) {
+          if (t_.code.length == 0) return false;
+          assembly /* s-seir solidity-like view */ {
+              p = mload(0x40); // yul: let p := mload(0x40)
+              memory[p] = 0x0902f1ac00000000000000000000000000000000000000000000000000000000; // yul: mstore(p, 0x0902f1ac00000000000000000000000000000000000000000000000000000000)
+              v2 = staticcall(gasleft(), t_, p, 0x04, 0, 0); // yul: let v2 := staticcall(gas(), t_, p, 0x04, 0, 0)
+              memory[p] = 0x3850c7bd00000000000000000000000000000000000000000000000000000000; // yul: mstore(p, 0x3850c7bd00000000000000000000000000000000000000000000000000000000)
+              v3 = staticcall(gasleft(), t_, p, 0x04, 0, 0); // yul: let v3 := staticcall(gas(), t_, p, 0x04, 0, 0)
+              iD_ = (v2 | v3); // yul: iD_ := or(v2, v3)
+          }
+      }
   ```
 
 Function ERC20Upgradeable._gB()
@@ -65,11 +71,15 @@ Function ERC20Upgradeable._gB()
           }
       }
   ```
-  AssemblyBlock asm_block_3
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      x = (i * i); // yul: let x := mul(i, i)
-  }
+  function _gB() internal pure {
+          for (uint256 i = 0; i < type(uint256).max; i++) {
+              assembly /* s-seir solidity-like view */ {
+                  x = (i * i); // yul: let x := mul(i, i)
+              }
+          }
+      }
   ```
 
 Function OwnableUpgradeable._getOwnableStorage()
@@ -81,9 +91,11 @@ Function OwnableUpgradeable._getOwnableStorage()
           }
       }
   ```
-  AssemblyBlock asm_block_4
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      /* storage pointer binding: $.slot := OwnableStorageLocation */ // yul: $.slot := OwnableStorageLocation
-  }
+  function _getOwnableStorage() private pure returns (OwnableStorage storage $) {
+          assembly /* s-seir solidity-like view */ {
+              /* storage pointer binding: $.slot := OwnableStorageLocation */ // yul: $.slot := OwnableStorageLocation
+          }
+      }
   ```

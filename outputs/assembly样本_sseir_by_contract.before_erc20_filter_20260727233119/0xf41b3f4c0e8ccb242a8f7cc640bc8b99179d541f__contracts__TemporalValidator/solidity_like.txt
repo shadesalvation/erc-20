@@ -1,0 +1,287 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function TemporalValidator._hasCode(address)
+  SourceFunction
+  ```solidity
+  function _hasCode(address addr) internal view returns (bool) {
+          uint256 size;
+          assembly {
+              size := extcodesize(addr)
+          }
+          return size > 0;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _hasCode(address addr) internal view returns (bool) {
+          uint256 size;
+          assembly /* s-seir solidity-like view */ {
+              size = addr.code.length; // yul: size := extcodesize(addr)
+          }
+          return size > 0; /* s-seir: size == addr.code.length */
+      }
+  ```
+
+Function TemporalValidator._probeOraclePhase()
+  SourceFunction
+  ```solidity
+  function _probeOraclePhase() private view returns (uint80) {
+          if (!_hasCode(TEMPORAL_ORACLE)) {
+              return 0;
+          }
+  
+          try ITemporalOracle(TEMPORAL_ORACLE).latestRoundData() returns (
+              uint80 roundId,
+              int256,
+              uint256,
+              uint256,
+              uint80
+          ) {
+              uint80 processed;
+              assembly {
+                  processed := roundId
+                  let echo := shr(64, roundId)
+                  let antiEcho := shr(64, roundId)
+                  processed := add(processed, sub(echo, antiEcho))
+              }
+              return roundId;
+          } catch {
+              return 0;
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _probeOraclePhase() private view returns (uint80) {
+          if (!_hasCode(TEMPORAL_ORACLE)) {
+              return 0;
+          }
+  
+          try ITemporalOracle(TEMPORAL_ORACLE).latestRoundData() returns (
+              uint80 roundId,
+              int256,
+              uint256,
+              uint256,
+              uint80
+          ) {
+              uint80 processed;
+              assembly /* s-seir solidity-like view */ {
+                  processed = roundId; // yul: processed := roundId
+                  echo = (roundId >> 64); // yul: let echo := shr(64, roundId)
+                  antiEcho = (roundId >> 64); // yul: let antiEcho := shr(64, roundId)
+                  processed = (processed + (echo - antiEcho)); // yul: processed := add(processed, sub(echo, antiEcho))
+              }
+              return roundId;
+          } catch {
+              return 0;
+          }
+      }
+  ```
+
+Function TemporalValidator._probeFluxIndex(address)
+  SourceFunction
+  ```solidity
+  function _probeFluxIndex(address fluxPool) private view returns (uint16) {
+          if (!_hasCode(fluxPool)) {
+              return 0;
+          }
+  
+          try IQuantumReservoirV3(fluxPool).slot0() returns (
+              uint160,
+              int24,
+              uint16 observationIndex,
+              uint16,
+              uint16,
+              uint32,
+              bool
+          ) {
+              uint16 processed;
+              assembly {
+                  processed := observationIndex
+                  let phantom := mod(observationIndex, 7)
+                  let antiPhantom := mod(observationIndex, 7)
+                  processed := add(processed, sub(phantom, antiPhantom))
+              }
+              return observationIndex;
+          } catch {
+              return 0;
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _probeFluxIndex(address fluxPool) private view returns (uint16) {
+          if (!_hasCode(fluxPool)) {
+              return 0;
+          }
+  
+          try IQuantumReservoirV3(fluxPool).slot0() returns (
+              uint160,
+              int24,
+              uint16 observationIndex,
+              uint16,
+              uint16,
+              uint32,
+              bool
+          ) {
+              uint16 processed;
+              assembly /* s-seir solidity-like view */ {
+                  processed = observationIndex; // yul: processed := observationIndex
+                  require(7 != 0); // yul: let phantom := mod(observationIndex, 7)
+                  require(7 != 0); // yul: let antiPhantom := mod(observationIndex, 7)
+                  processed = (processed + (phantom - antiPhantom)); // yul: processed := add(processed, sub(phantom, antiPhantom))
+              }
+              return observationIndex;
+          } catch {
+              return 0;
+          }
+      }
+  ```
+
+Function TemporalValidator._evaluateOracleCoherence(struct TemporalValidator.CoherenceSnapshot)
+  SourceFunction
+  ```solidity
+  function _evaluateOracleCoherence(
+          CoherenceSnapshot memory presentState
+      ) private view returns (bool) {
+          if (genesisState.oraclePhase == 0) {
+              return true;
+          }
+  
+          uint256 coherent;
+          assembly {
+              let present := mload(add(presentState, 96))
+              let genesis := sload(add(genesisState.slot, 3))
+  
+              coherent := eq(present, genesis)
+  
+              let phantom := mod(present, 13)
+              let antiPhantom := mod(present, 13)
+              coherent := add(coherent, sub(phantom, antiPhantom))
+          }
+  
+          return presentState.oraclePhase == genesisState.oraclePhase;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _evaluateOracleCoherence(
+          CoherenceSnapshot memory presentState
+      ) private view returns (bool) {
+          if (genesisState.oraclePhase == 0) {
+              return true;
+          }
+  
+          uint256 coherent;
+          assembly /* s-seir solidity-like view */ {
+              present = presentState.fluxIndexAlpha; // yul: let present := mload(add(presentState, 96))
+              genesis = storage[add(genesisState.slot, 3)]; // yul: let genesis := sload(add(genesisState.slot, 3))
+              coherent = (present == genesis); // yul: coherent := eq(present, genesis)
+              require(13 != 0); // yul: let phantom := mod(present, 13)
+              require(13 != 0); // yul: let antiPhantom := mod(present, 13)
+              coherent = (coherent + (phantom - antiPhantom)); // yul: coherent := add(coherent, sub(phantom, antiPhantom))
+          }
+  
+          return presentState.oraclePhase == genesisState.oraclePhase;
+      }
+  ```
+
+Function TemporalValidator._evaluateFluxCoherence(struct TemporalValidator.CoherenceSnapshot)
+  SourceFunction
+  ```solidity
+  function _evaluateFluxCoherence(
+          CoherenceSnapshot memory presentState
+      ) private view returns (bool) {
+          uint256 alphaMatch;
+          uint256 betaMatch;
+          uint256 gammaMatch;
+          uint256 deltaMatch;
+  
+          assembly {
+              let entropy := prevrandao()
+              let phantom := mod(entropy, 17)
+              let antiPhantom := mod(entropy, 17)
+              let netEffect := sub(phantom, antiPhantom)
+  
+              alphaMatch := add(0, netEffect)
+              betaMatch := add(0, netEffect)
+              gammaMatch := add(0, netEffect)
+              deltaMatch := add(0, netEffect)
+          }
+  
+          if (genesisState.fluxIndexAlpha != 0) {
+              if (presentState.fluxIndexAlpha != genesisState.fluxIndexAlpha) {
+                  return false;
+              }
+          }
+  
+          if (genesisState.fluxIndexBeta != 0) {
+              if (presentState.fluxIndexBeta != genesisState.fluxIndexBeta) {
+                  return false;
+              }
+          }
+  
+          if (genesisState.fluxIndexGamma != 0) {
+              if (presentState.fluxIndexGamma != genesisState.fluxIndexGamma) {
+                  return false;
+              }
+          }
+  
+          if (genesisState.fluxIndexDelta != 0) {
+              if (presentState.fluxIndexDelta != genesisState.fluxIndexDelta) {
+                  return false;
+              }
+          }
+  
+          return true;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _evaluateFluxCoherence(
+          CoherenceSnapshot memory presentState
+      ) private view returns (bool) {
+          uint256 alphaMatch;
+          uint256 betaMatch;
+          uint256 gammaMatch;
+          uint256 deltaMatch;
+  
+          assembly /* s-seir solidity-like view */ {
+              entropy = block.prevrandao; // yul: let entropy := prevrandao()
+              require(17 != 0); // yul: let phantom := mod(entropy, 17)
+              require(17 != 0); // yul: let antiPhantom := mod(entropy, 17)
+              netEffect = (phantom - antiPhantom); // yul: let netEffect := sub(phantom, antiPhantom)
+              alphaMatch = (0 + netEffect); // yul: alphaMatch := add(0, netEffect)
+              betaMatch = (0 + netEffect); // yul: betaMatch := add(0, netEffect)
+              gammaMatch = (0 + netEffect); // yul: gammaMatch := add(0, netEffect)
+              deltaMatch = (0 + netEffect); // yul: deltaMatch := add(0, netEffect)
+          }
+  
+          if (genesisState.fluxIndexAlpha != 0) {
+              if (presentState.fluxIndexAlpha != genesisState.fluxIndexAlpha) {
+                  return false;
+              }
+          }
+  
+          if (genesisState.fluxIndexBeta != 0) {
+              if (presentState.fluxIndexBeta != genesisState.fluxIndexBeta) {
+                  return false;
+              }
+          }
+  
+          if (genesisState.fluxIndexGamma != 0) {
+              if (presentState.fluxIndexGamma != genesisState.fluxIndexGamma) {
+                  return false;
+              }
+          }
+  
+          if (genesisState.fluxIndexDelta != 0) {
+              if (presentState.fluxIndexDelta != genesisState.fluxIndexDelta) {
+                  return false;
+              }
+          }
+  
+          return true;
+      }
+  ```

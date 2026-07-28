@@ -16,9 +16,17 @@ Function GGGTOKEN.isContract(address)
           return size > 0;
       }
   ```
-  AssemblyBlock asm_block_6
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      size = extcodesize(account); // yul: size := extcodesize(account)
-  }
+  function isContract(address account) internal view returns (bool) {
+          // This method relies on extcodesize, which returns 0 for contracts in
+          // construction, since the code is only stored at the end of the
+          // constructor execution.
+  
+          uint256 size;
+          assembly /* s-seir solidity-like view */ {
+              size = account.code.length; // yul: size := extcodesize(account)
+          }
+          return size > 0; /* s-seir: size == account.code.length */
+      }
   ```

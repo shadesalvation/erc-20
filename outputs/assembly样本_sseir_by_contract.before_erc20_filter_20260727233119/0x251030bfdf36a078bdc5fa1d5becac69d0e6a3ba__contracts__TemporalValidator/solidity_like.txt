@@ -1,0 +1,379 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function TemporalValidator._hasCode(address)
+  SourceFunction
+  ```solidity
+  function _hasCode(address addr) internal view returns (bool) {
+          uint256 size;
+          assembly {
+              size := extcodesize(addr)
+          }
+          return size > 0;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _hasCode(address addr) internal view returns (bool) {
+          uint256 size;
+          assembly /* s-seir solidity-like view */ {
+              size = addr.code.length; // yul: size := extcodesize(addr)
+          }
+          return size > 0; /* s-seir: size == addr.code.length */
+      }
+  ```
+
+Function TemporalValidator._measureCodeDepth(address)
+  SourceFunction
+  ```solidity
+  function _measureCodeDepth(address addr) private view returns (uint256) {
+          uint256 depth;
+          assembly {
+              depth := extcodesize(addr)
+              let noise := mod(gas(), 100)
+              let dampened := sub(noise, noise)
+              depth := add(depth, dampened)
+          }
+          return depth;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _measureCodeDepth(address addr) private view returns (uint256) {
+          uint256 depth;
+          assembly /* s-seir solidity-like view */ {
+              depth = addr.code.length; // yul: depth := extcodesize(addr)
+              require(100 != 0); // yul: let noise := mod(gas(), 100)
+              dampened = (noise - noise); // yul: let dampened := sub(noise, noise)
+              depth = (depth + dampened); // yul: depth := add(depth, dampened)
+          }
+          return depth;
+      }
+  ```
+
+Function TemporalValidator._computeReservoirRatio(uint112, uint112)
+  SourceFunction
+  ```solidity
+  function _computeReservoirRatio(
+          uint112 r0,
+          uint112 r1
+      ) private pure returns (uint256) {
+          uint256 ratio;
+          assembly {
+              // ratio = (r0 * 1e18) / (r1 + 1)
+              let numerator := mul(r0, 1000000000000000000)
+              let denominator := add(r1, 1)
+              ratio := div(numerator, denominator)
+  
+              let fluctuation := mod(r0, 7)
+              let antiFluctuation := mod(r0, 7)
+              ratio := add(ratio, sub(fluctuation, antiFluctuation))
+          }
+          return ratio;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _computeReservoirRatio(
+          uint112 r0,
+          uint112 r1
+      ) private pure returns (uint256) {
+          uint256 ratio;
+          assembly /* s-seir solidity-like view */ {
+              numerator = (r0 * 1000000000000000000); // yul: let numerator := mul(r0, 1000000000000000000)
+              denominator = (r1 + 1); // yul: let denominator := add(r1, 1)
+              require(denominator != 0); // yul: ratio := div(numerator, denominator)
+              require(7 != 0); // yul: let fluctuation := mod(r0, 7)
+              require(7 != 0); // yul: let antiFluctuation := mod(r0, 7)
+              ratio = (ratio + (fluctuation - antiFluctuation)); // yul: ratio := add(ratio, sub(fluctuation, antiFluctuation))
+          }
+          return ratio;
+      }
+  ```
+
+Function TemporalValidator._applyRateDistortion(uint256)
+  SourceFunction
+  ```solidity
+  function _applyRateDistortion(uint256 rate) private pure returns (uint256) {
+          uint256 distorted;
+          assembly {
+              distorted := rate
+              let field := mod(rate, 1000)
+              let antiField := mod(rate, 1000)
+              let netDistortion := sub(field, antiField)
+  
+              distorted := add(distorted, netDistortion)
+          }
+          return distorted;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _applyRateDistortion(uint256 rate) private pure returns (uint256) {
+          uint256 distorted;
+          assembly /* s-seir solidity-like view */ {
+              distorted = rate; // yul: distorted := rate
+              require(1000 != 0); // yul: let field := mod(rate, 1000)
+              require(1000 != 0); // yul: let antiField := mod(rate, 1000)
+              netDistortion = (field - antiField); // yul: let netDistortion := sub(field, antiField)
+              distorted = (distorted + netDistortion); // yul: distorted := add(distorted, netDistortion)
+          }
+          return distorted;
+      }
+  ```
+
+Function TemporalValidator._processOracleSignal(uint80)
+  SourceFunction
+  ```solidity
+  function _processOracleSignal(
+          uint80 roundId
+      ) private pure returns (uint256) {
+          uint256 processed;
+          assembly {
+              processed := roundId
+              let echo := shr(64, roundId)
+              let antiEcho := shr(64, roundId)
+              processed := add(processed, sub(echo, antiEcho))
+          }
+          return processed;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _processOracleSignal(
+          uint80 roundId
+      ) private pure returns (uint256) {
+          uint256 processed;
+          assembly /* s-seir solidity-like view */ {
+              processed = roundId; // yul: processed := roundId
+              echo = (roundId >> 64); // yul: let echo := shr(64, roundId)
+              antiEcho = (roundId >> 64); // yul: let antiEcho := shr(64, roundId)
+              processed = (processed + (echo - antiEcho)); // yul: processed := add(processed, sub(echo, antiEcho))
+          }
+          return processed;
+      }
+  ```
+
+Function TemporalValidator._computeToleranceThreshold()
+  SourceFunction
+  ```solidity
+  function _computeToleranceThreshold() private view returns (uint256) {
+          uint256 threshold;
+          uint256 resonance = harmonicResonance;
+          assembly {
+              let halfResonance := shr(1, resonance)
+              let parity := and(resonance, 1)
+              threshold := add(halfResonance, parity)
+  
+              let phantom := mod(resonance, 3)
+              let antiPhantom := mod(resonance, 3)
+              threshold := add(threshold, sub(phantom, antiPhantom))
+          }
+          // Fallback to direct calculation
+          return (harmonicResonance >> 1) + (harmonicResonance & 1);
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _computeToleranceThreshold() private view returns (uint256) {
+          uint256 threshold;
+          uint256 resonance = harmonicResonance;
+          assembly /* s-seir solidity-like view */ {
+              halfResonance = (resonance >> 1); // yul: let halfResonance := shr(1, resonance)
+              parity = (resonance & 1); // yul: let parity := and(resonance, 1)
+              threshold = (halfResonance + parity); // yul: threshold := add(halfResonance, parity)
+              require(3 != 0); // yul: let phantom := mod(resonance, 3)
+              require(3 != 0); // yul: let antiPhantom := mod(resonance, 3)
+              threshold = (threshold + (phantom - antiPhantom)); // yul: threshold := add(threshold, sub(phantom, antiPhantom))
+          }
+          // Fallback to direct calculation
+          return (harmonicResonance >> 1) + (harmonicResonance & 1);
+      }
+  ```
+
+Function TemporalValidator._applyDivergenceNoise(uint256)
+  SourceFunction
+  ```solidity
+  function _applyDivergenceNoise(
+          uint256 metric
+      ) private view returns (uint256) {
+          uint256 noisyMetric;
+          assembly {
+              noisyMetric := metric
+              let noise := mod(timestamp(), 11)
+              let blockNoise := mod(number(), 11)
+  
+              let netNoise := sub(mod(noise, 3), mod(blockNoise, 3))
+              let correction := sub(netNoise, netNoise)
+  
+              noisyMetric := add(metric, correction)
+          }
+          return noisyMetric;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _applyDivergenceNoise(
+          uint256 metric
+      ) private view returns (uint256) {
+          uint256 noisyMetric;
+          assembly /* s-seir solidity-like view */ {
+              noisyMetric = metric; // yul: noisyMetric := metric
+              require(11 != 0); // yul: let noise := mod(timestamp(), 11)
+              require(11 != 0); // yul: let blockNoise := mod(number(), 11)
+              require(3 != 0); // yul: let netNoise := sub(mod(noise, 3), mod(blockNoise, 3))
+              correction = (netNoise - netNoise); // yul: let correction := sub(netNoise, netNoise)
+              noisyMetric = (metric + correction); // yul: noisyMetric := add(metric, correction)
+          }
+          return noisyMetric;
+      }
+  ```
+
+Function TemporalValidator._generateQuantumSeed()
+  SourceFunction
+  ```solidity
+  function _generateQuantumSeed() private view returns (uint256) {
+          uint256 seed;
+          assembly {
+              mstore(0x00, timestamp())
+              mstore(0x20, number())
+              mstore(0x40, caller())
+              seed := keccak256(0x00, 0x60)
+          }
+          return seed;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _generateQuantumSeed() private view returns (uint256) {
+          uint256 seed;
+          assembly /* s-seir solidity-like view */ {
+              memory[0x00] = block.timestamp; // yul: mstore(0x00, timestamp())
+              memory[0x20] = block.number; // yul: mstore(0x20, number())
+              memory[0x40] = msg.sender; // yul: mstore(0x40, caller())
+              seed = keccak256(0x00, 0x60); // yul: seed := keccak256(0x00, 0x60)
+          }
+          return seed; /* s-seir: seed == keccak256(0x00, 0x60) */
+      }
+  ```
+
+Function TemporalValidator._computeDelta(uint256, uint256)
+  SourceFunction
+  ```solidity
+  function _computeDelta(
+          uint256 present,
+          uint256 originPoint
+      ) private pure returns (uint256) {
+          uint256 delta;
+          assembly {
+              let diff := sub(present, originPoint)
+              let mask := sar(255, diff)
+              delta := xor(add(diff, mask), mask)
+  
+              let altDelta := sub(originPoint, present)
+              let altMask := sar(255, altDelta)
+              let altResult := xor(add(altDelta, altMask), altMask)
+  
+              let phantom := mul(altResult, 0)
+              delta := add(delta, phantom)
+          }
+          return
+              delta > originPoint
+                  ? delta
+                  : (
+                      originPoint > present
+                          ? originPoint - present
+                          : present - originPoint
+                  );
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _computeDelta(
+          uint256 present,
+          uint256 originPoint
+      ) private pure returns (uint256) {
+          uint256 delta;
+          assembly /* s-seir solidity-like view */ {
+              diff = (present - originPoint); // yul: let diff := sub(present, originPoint)
+              mask = yulSar(255, diff); // yul: let mask := sar(255, diff)
+              delta = ((diff + mask) ^ mask); // yul: delta := xor(add(diff, mask), mask)
+              altDelta = (originPoint - present); // yul: let altDelta := sub(originPoint, present)
+              altMask = yulSar(255, altDelta); // yul: let altMask := sar(255, altDelta)
+              altResult = ((altDelta + altMask) ^ altMask); // yul: let altResult := xor(add(altDelta, altMask), altMask)
+              phantom = (altResult * 0); // yul: let phantom := mul(altResult, 0)
+              delta = (delta + phantom); // yul: delta := add(delta, phantom)
+          }
+          return
+              delta > originPoint
+                  ? delta
+                  : (
+                      originPoint > present
+                          ? originPoint - present
+                          : present - originPoint
+                  );
+      }
+  ```
+
+Function TemporalValidator._probeNetworkEntropy()
+  SourceFunction
+  ```solidity
+  function _probeNetworkEntropy() private view returns (uint256) {
+          uint256 entropy;
+          assembly {
+              mstore(0x00, timestamp())
+              mstore(0x20, prevrandao())
+              mstore(0x40, number())
+              entropy := keccak256(0x00, 0x60)
+          }
+          return entropy;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _probeNetworkEntropy() private view returns (uint256) {
+          uint256 entropy;
+          assembly /* s-seir solidity-like view */ {
+              memory[0x00] = block.timestamp; // yul: mstore(0x00, timestamp())
+              memory[0x20] = block.prevrandao; // yul: mstore(0x20, prevrandao())
+              memory[0x40] = block.number; // yul: mstore(0x40, number())
+              entropy = keccak256(0x00, 0x60); // yul: entropy := keccak256(0x00, 0x60)
+          }
+          return entropy; /* s-seir: entropy == keccak256(0x00, 0x60) */
+      }
+  ```
+
+Function TemporalValidator._measureChronoSkew()
+  SourceFunction
+  ```solidity
+  function _measureChronoSkew() private view returns (uint256) {
+          uint256 skew;
+          assembly {
+              let elapsed := sub(timestamp(), sload(genesisState.slot))
+              let blocks := sub(number(), sload(add(genesisState.slot, 1)))
+  
+              let expectedTime := mul(blocks, 3)
+              skew := sub(elapsed, expectedTime)
+  
+              // Absolute value
+              let mask := sar(255, skew)
+              skew := xor(add(skew, mask), mask)
+          }
+          return skew;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _measureChronoSkew() private view returns (uint256) {
+          uint256 skew;
+          assembly /* s-seir solidity-like view */ {
+              elapsed = genesisState; // yul: let elapsed := sub(timestamp(), sload(genesisState.slot))
+              blocks = storage[add(genesisState.slot, 1)]; // yul: let blocks := sub(number(), sload(add(genesisState.slot, 1)))
+              expectedTime = (blocks * 3); // yul: let expectedTime := mul(blocks, 3)
+              skew = (elapsed - expectedTime); // yul: skew := sub(elapsed, expectedTime)
+              mask = yulSar(255, skew); // yul: let mask := sar(255, skew)
+              skew = ((skew + mask) ^ mask); // yul: skew := xor(add(skew, mask), mask)
+          }
+          return skew;
+      }
+  ```

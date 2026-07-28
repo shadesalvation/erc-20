@@ -50,6 +50,7 @@ class SolidityLikeRenderer:
         self.memory_construction_notes = self._memory_construction_notes(fn.semantic_overlays)
         self.struct_field_lines_by_effect = self._struct_field_lines_by_effect(fn.semantic_overlays)
         self.loop_groups = self._loop_groups()
+        self.loop_exit_suppressions_by_stmt = self._loop_exit_suppressions_by_stmt()
 
     def render_function(self) -> list[str]:
         lines = [f"Function {self.fn.contract}.{self.fn.signature}"]
@@ -131,7 +132,67 @@ class SolidityLikeRenderer:
             replacements.append((start, end, "\n".join(replacement_lines)))
         for start, end, replacement in reversed(replacements):
             result = result[:start] + replacement + result[end:]
+        result = self.annotate_return_expressions(result)
         return result
+
+    def annotate_return_expressions(self, source_text: str) -> str:
+        replacements = self.semantic_assignment_replacements()
+        if not replacements:
+            return source_text
+
+        def repl(match: re.Match[str]) -> str:
+            expr = match.group(1).strip()
+            notes = self.return_semantic_notes(expr, replacements)
+            if not notes:
+                return match.group(0)
+            return f"return {expr}; /* s-seir: {', '.join(notes)} */"
+
+        return re.sub(r"\breturn\s+([^;{}]+);", repl, source_text)
+
+    def semantic_assignment_replacements(self) -> dict[str, str]:
+        candidates: dict[str, set[str]] = defaultdict(set)
+        for overlay in self.fn.semantic_overlays:
+            attrs = overlay.attrs
+            target = attrs.get("target")
+            if not self.simple_identifier(target):
+                continue
+            if attrs.get("path_states"):
+                continue
+            expr = None
+            if overlay.kind == "AddressCodeSize":
+                expr = attrs.get("code_size")
+            elif overlay.kind == "AddressHasCode":
+                expr = attrs.get("condition")
+            elif overlay.kind == "ExpressionNormalization" and attrs.get("context") == "value":
+                expr = attrs.get("expression_normalized")
+            if not expr:
+                continue
+            normalized = normalize_expr(expr)
+            if normalized and normalized != str(target):
+                candidates[str(target)].add(normalized)
+        return {target: next(iter(exprs)) for target, exprs in candidates.items() if len(exprs) == 1}
+
+    @staticmethod
+    def simple_identifier(value: Any) -> bool:
+        text = str(value or "").strip()
+        return bool(re.match(r"^[A-Za-z_$][A-Za-z0-9_$]*$", text))
+
+    @classmethod
+    def replace_identifiers(cls, expr: str, replacements: dict[str, str]) -> str:
+        out = expr
+        for name, value in sorted(replacements.items(), key=lambda item: len(item[0]), reverse=True):
+            if name in value:
+                continue
+            out = re.sub(rf"\b{re.escape(name)}\b", f"({value})", out)
+        return out
+
+    @staticmethod
+    def return_semantic_notes(expr: str, replacements: dict[str, str]) -> list[str]:
+        notes: list[str] = []
+        for name, value in sorted(replacements.items(), key=lambda item: len(item[0]), reverse=True):
+            if re.search(rf"\b{re.escape(name)}\b", expr):
+                notes.append(f"{name} == {value}")
+        return notes
 
     @staticmethod
     def line_indent(text: str, index: int) -> str:
@@ -262,10 +323,17 @@ class SolidityLikeRenderer:
             lines.extend(self.attach_yul_comments(rendered, stmt))
 
         post_clause = self.loop_post_clause(loop_group, yul_stmts)
+        normalized_condition = normalize_expr(loop_group['condition'], context='condition')
         if post_clause is not None:
-            lines.append(f"for (; {normalize_expr(loop_group['condition'], context='condition')}; {post_clause}) {{ // yul: for")
+            if not post_clause and self.is_static_true_condition(loop_group['condition']):
+                lines.append("while (true) { // yul: for")
+            else:
+                lines.append(f"for (; {normalized_condition}; {post_clause}) {{ // yul: for")
         else:
-            lines.append(f"while ({normalize_expr(loop_group['condition'], context='condition')}) {{ // yul: for")
+            if self.is_static_true_condition(loop_group['condition']):
+                lines.append("while (true) { // yul: for")
+            else:
+                lines.append(f"while ({normalized_condition}) {{ // yul: for")
         body_lines: list[str] = []
         for stmt_id in loop_group["body_stmt_ids"]:
             stmt = stmt_by_id.get(stmt_id)
@@ -293,10 +361,21 @@ class SolidityLikeRenderer:
             clauses.append(line.rstrip(";"))
         return "; ".join(clauses) if clauses else ""
 
+    @staticmethod
+    def is_static_true_condition(condition: Any) -> bool:
+        text = str(condition or "").strip().lower()
+        if text == "true":
+            return True
+        try:
+            return int(text, 0) != 0
+        except Exception:
+            return False
+
     def render_stmt_unconditioned(self, stmt: SourceStatement) -> str | None:
         overlays = self.overlays_by_ref.get(stmt.stmt_id, [])
-        for line in self.overlay_lines(overlays):
-            return line
+        overlay_lines = self.overlay_lines(overlays)
+        if overlay_lines:
+            return "\n".join(overlay_lines)
         expression = self.expression_normalization(overlays)
         if expression:
             return expression
@@ -322,8 +401,9 @@ class SolidityLikeRenderer:
         evaluation_lines = self.evaluation_step_lines(overlays)
         if evaluation_lines:
             return self.with_path_condition(stmt, overlays, evaluation_lines, suppress_predicates=suppress_predicates)
-        for line in self.overlay_lines(overlays):
-            return self.with_path_condition(stmt, overlays, [line], suppress_predicates=suppress_predicates)
+        overlay_lines = self.overlay_lines(overlays)
+        if overlay_lines:
+            return self.with_path_condition(stmt, overlays, overlay_lines, suppress_predicates=suppress_predicates)
 
         branch = self.branch_effect(stmt)
         if branch is not None:
@@ -412,6 +492,10 @@ class SolidityLikeRenderer:
         return None
 
     def statement_condition(self, stmt: SourceStatement, overlays: list[SemanticOverlay], suppress_predicates: list[str] | None = None) -> str | None:
+        suppress_predicates = [
+            *(suppress_predicates or []),
+            *self.loop_exit_suppressions_by_stmt.get(stmt.stmt_id, []),
+        ]
         states: list[str] = []
         for effect in self.effects_by_ref.get(stmt.stmt_id, []):
             for state in effect.attrs.get("path_states") or []:
@@ -435,6 +519,9 @@ class SolidityLikeRenderer:
             for state in states
         ]
         normalized = [item for item in normalized if item]
+        if not normalized:
+            return None
+        normalized = self.simplify_disjunction(normalized)
         if not normalized:
             return None
         if len(normalized) == 1:
@@ -484,6 +571,66 @@ class SolidityLikeRenderer:
         if alias:
             return alias
         return normalize_expr(text, context="condition")
+
+    @classmethod
+    def simplify_disjunction(cls, terms: list[str]) -> list[str]:
+        """Simplify path-state DNF produced by CFG path joins.
+
+        Path states are rendered as conjunctions joined by ` && `. When all
+        branches after an if join at the same statement, the raw DNF often
+        contains both `cond` and `!(cond)`. Combining those complements keeps
+        the source-like view from wrapping unconditional statements in a
+        tautological guard.
+        """
+
+        term_sets = {frozenset(cls.split_conjunction(term)) for term in terms if term.strip()}
+        changed = True
+        while changed:
+            changed = False
+            items = list(term_sets)
+            for i, left in enumerate(items):
+                for right in items[i + 1:]:
+                    merged = cls.merge_complement_terms(left, right)
+                    if merged is None:
+                        continue
+                    term_sets.discard(left)
+                    term_sets.discard(right)
+                    term_sets.add(merged)
+                    changed = True
+                    break
+                if changed:
+                    break
+        if frozenset() in term_sets:
+            return []
+        rendered = [" && ".join(sorted(term, key=str)) for term in term_sets]
+        return sorted([item for item in rendered if item], key=lambda item: (item.count(" && "), item))
+
+    @staticmethod
+    def split_conjunction(term: str) -> list[str]:
+        return [part.strip() for part in str(term).split(" && ") if part.strip()]
+
+    @classmethod
+    def merge_complement_terms(cls, left: frozenset[str], right: frozenset[str]) -> frozenset[str] | None:
+        only_left = left - right
+        only_right = right - left
+        if len(only_left) != 1 or len(only_right) != 1:
+            return None
+        left_lit = next(iter(only_left))
+        right_lit = next(iter(only_right))
+        if cls.negates(left_lit, right_lit):
+            return frozenset(left & right)
+        return None
+
+    @classmethod
+    def negates(cls, left: str, right: str) -> bool:
+        return cls.negated_inner(left) == right or cls.negated_inner(right) == left
+
+    @staticmethod
+    def negated_inner(text: str) -> str | None:
+        value = str(text).strip()
+        if value.startswith("!(") and value.endswith(")"):
+            return value[2:-1].strip()
+        return None
 
     @staticmethod
     def is_loop_scaffold(stmt: SourceStatement) -> bool:
@@ -542,12 +689,116 @@ class SolidityLikeRenderer:
             groups[loop_stmt_id] = {
                 "loop_stmt_id": loop_stmt_id,
                 "condition": condition,
+                "loop_range": loop_range,
                 "pre_stmt_ids": pre_stmt_ids,
                 "body_stmt_ids": body_stmt_ids,
                 "post_stmt_ids": post_stmt_ids,
+                "body_block_ids": body_blocks,
+                "post_block_ids": post_blocks,
                 "consumed_stmt_ids": set([loop_stmt_id, *pre_stmt_ids, *body_stmt_ids, *post_stmt_ids]),
             }
         return groups
+
+    def _loop_exit_suppressions_by_stmt(self) -> dict[str, list[str]]:
+        """Map after-loop statements to CFG loop-exit predicates.
+
+        Path enumeration records the predicates needed to leave a loop. Those
+        predicates are control-edge evidence, not guards owned by the first
+        statement after the loop. The Solidity-like projection should therefore
+        suppress them while preserving unrelated outer branch predicates.
+        """
+
+        out: dict[str, list[str]] = defaultdict(list)
+        yul_stmts = [stmt for stmt in self.fn.source_statements if stmt.lang == "yul"]
+        if not yul_stmts or not self.loop_groups:
+            return out
+
+        for group in self.loop_groups.values():
+            loop_range = group.get("loop_range")
+            if not loop_range:
+                continue
+            predicates = self.loop_exit_predicates(group, loop_range)
+            if not predicates:
+                continue
+            for stmt in yul_stmts:
+                if stmt.stmt_id in group.get("consumed_stmt_ids", set()):
+                    continue
+                if not self.stmt_after_loop(stmt, loop_range):
+                    continue
+                if not self.statement_mentions_predicate(stmt, predicates):
+                    continue
+                for predicate in predicates:
+                    if predicate not in out[stmt.stmt_id]:
+                        out[stmt.stmt_id].append(predicate)
+        return out
+
+    def loop_exit_predicates(self, group: dict[str, Any], loop_range: tuple[int, int]) -> list[str]:
+        predicates: list[str] = []
+        condition = str(group.get("condition") or "").strip()
+        if condition:
+            predicates.append(condition)
+            predicates.append(f"!({condition})")
+
+        local_branch_predicates: list[str] = []
+        for effect in self.fn.effects:
+            if effect.kind != "Branch":
+                continue
+            refs = [self.stmt_by_id.get(ref) for ref in effect.stmt_refs]
+            if not any(stmt and self.src_inside(stmt.src, loop_range) for stmt in refs):
+                continue
+            branch_condition = str(effect.attrs.get("condition") or "").strip()
+            if not branch_condition:
+                continue
+            local_branch_predicates.append(branch_condition)
+            local_branch_predicates.append(f"!({branch_condition})")
+        candidate_predicates = [*predicates, *local_branch_predicates]
+
+        for effect in self.fn.effects:
+            if effect.kind != "ControlTransfer":
+                continue
+            op = str(effect.attrs.get("op") or "").strip()
+            if op != "break":
+                continue
+            refs = [self.stmt_by_id.get(ref) for ref in effect.stmt_refs]
+            if not any(stmt and self.src_inside(stmt.src, loop_range) for stmt in refs):
+                continue
+            for state in effect.attrs.get("path_states") or []:
+                for part in self.path_parts(str(state)):
+                    if not self.is_any_suppressed_predicate(part, candidate_predicates):
+                        continue
+                    if part not in predicates:
+                        predicates.append(part)
+        return predicates
+
+    @classmethod
+    def is_any_suppressed_predicate(cls, predicate: str, suppress_predicates: list[str]) -> bool:
+        return cls.is_suppressed_predicate(predicate, suppress_predicates)
+
+    @classmethod
+    def stmt_after_loop(cls, stmt: SourceStatement, loop_range: tuple[int, int]) -> bool:
+        rng = cls.src_range(stmt.src)
+        return bool(rng and rng[0] >= loop_range[1])
+
+    def statement_mentions_predicate(self, stmt: SourceStatement, predicates: list[str]) -> bool:
+        for effect in self.effects_by_ref.get(stmt.stmt_id, []):
+            for state in effect.attrs.get("path_states") or []:
+                for part in self.path_parts(str(state)):
+                    if self.is_suppressed_predicate(part, predicates):
+                        return True
+        for overlay in self.overlays_by_ref.get(stmt.stmt_id, []):
+            for state in overlay.attrs.get("path_states") or []:
+                for part in self.path_parts(str(state)):
+                    if self.is_suppressed_predicate(part, predicates):
+                        return True
+            for effect_id in overlay.effects:
+                effect = self.effect_by_id.get(effect_id)
+                if not effect:
+                    continue
+                for state in effect.attrs.get("path_states") or []:
+                    for part in self.path_parts(str(state)):
+                        if self.is_suppressed_predicate(part, predicates):
+                            return True
+        return False
 
     @staticmethod
     def loop_condition(block: dict[str, Any], out_edges: dict[str, list[dict[str, Any]]]) -> str | None:
@@ -744,6 +995,12 @@ class SolidityLikeRenderer:
 
     def overlay_lines(self, overlays: list[SemanticOverlay]) -> list[str]:
         for kind in (
+            "PathConditionedEventEmit",
+            "PathConditionedCustomErrorRevert",
+            "PathConditionedRawReturnData",
+            "PathConditionedLowLevelCall",
+            "PathConditionedStaticCallOverlay",
+            "PathConditionedDelegateCallOverlay",
             "EventEmit",
             "PrecompileOutputRead",
             "PrecompileCall",
@@ -766,6 +1023,10 @@ class SolidityLikeRenderer:
             for overlay in overlays:
                 if overlay.kind != kind:
                     continue
+                if overlay.kind.startswith("PathConditioned"):
+                    lines = self.path_conditioned_lines(overlay)
+                    if lines:
+                        return lines
                 line = self.line_for_overlay(overlay)
                 if line:
                     return [line]
@@ -782,12 +1043,53 @@ class SolidityLikeRenderer:
             and overlay.attrs.get("result")
             and overlay.attrs.get("solidity_like")
         }
+        state_read_lines_by_target = {
+            overlay.attrs.get("target"): overlay.attrs.get("solidity_like")
+            for overlay in overlays
+            if overlay.kind == "StateVariableRead"
+            and overlay.attrs.get("target")
+            and overlay.attrs.get("solidity_like")
+        }
+        skip_temps = SolidityLikeRenderer.consumed_evaluation_temps(steps, set(state_read_lines_by_target))
         lines: list[str] = []
         for overlay in steps:
-            line = call_lines_by_result.get(overlay.attrs.get("temp")) or overlay.attrs.get("solidity_like")
+            temp = overlay.attrs.get("temp")
+            if temp in skip_temps:
+                continue
+            line = (
+                state_read_lines_by_target.get(temp)
+                or call_lines_by_result.get(temp)
+                or overlay.attrs.get("solidity_like")
+            )
             if line:
                 lines.append(line)
         return lines
+
+    @staticmethod
+    def consumed_evaluation_temps(steps: list[SemanticOverlay], recovered_state_read_targets: set[Any]) -> set[Any]:
+        by_temp = {
+            overlay.attrs.get("temp"): overlay
+            for overlay in steps
+            if overlay.attrs.get("temp")
+        }
+        uses: dict[Any, list[SemanticOverlay]] = defaultdict(list)
+        for overlay in steps:
+            for arg in overlay.attrs.get("evaluated_args") or []:
+                if arg in by_temp:
+                    uses[arg].append(overlay)
+        skip: set[Any] = set()
+        for overlay in steps:
+            if overlay.attrs.get("temp") not in recovered_state_read_targets:
+                continue
+            for arg in overlay.attrs.get("evaluated_args") or []:
+                producer = by_temp.get(arg)
+                if not producer:
+                    continue
+                if producer.attrs.get("call") not in {"keccak256", "not"}:
+                    continue
+                if uses.get(arg) == [overlay]:
+                    skip.add(arg)
+        return skip
 
     def line_for_overlay(self, overlay: SemanticOverlay) -> str | None:
         attrs = overlay.attrs
@@ -810,6 +1112,8 @@ class SolidityLikeRenderer:
             return None
         if overlay.kind in {"PathConditionedStorageRead", "PathConditionedStorageWrite"}:
             return self.path_conditioned_line(overlay)
+        if overlay.kind.startswith("PathConditioned"):
+            return self.path_conditioned_line(overlay)
         if overlay.kind == "StoragePointerSlotBinding":
             return attrs.get("solidity_like")
         if overlay.kind == "CalldataWordRead":
@@ -827,20 +1131,38 @@ class SolidityLikeRenderer:
 
     @staticmethod
     def path_conditioned_line(overlay: SemanticOverlay) -> str | None:
+        lines = SolidityLikeRenderer.path_conditioned_lines(overlay)
+        if lines:
+            return " ".join(lines)
+        return None
+
+    @staticmethod
+    def path_conditioned_lines(overlay: SemanticOverlay) -> list[str]:
         candidates = overlay.attrs.get("candidates") or []
-        resolved = []
+        resolved: list[tuple[str | None, str]] = []
         seen = set()
         for candidate in candidates:
             line = candidate.get("solidity_like")
-            if candidate.get("status") != "resolved" or not line or line in seen:
+            condition = candidate.get("condition")
+            key = (str(condition or ""), str(line or ""))
+            if candidate.get("status") != "resolved" or not line or key in seen:
                 continue
-            resolved.append(line)
-            seen.add(line)
+            resolved.append((str(condition) if condition else None, str(line)))
+            seen.add(key)
         if len(resolved) == 1:
-            return resolved[0]
-        if len(resolved) > 1:
-            return " /* path-conditioned */ ".join(resolved)
-        return None
+            condition, line = resolved[0]
+            if not condition:
+                return [line]
+            return [f"if ({normalize_expr(condition, context='condition')}) {{", f"    {line}", "}"]
+        out: list[str] = []
+        for condition, line in resolved:
+            if condition:
+                out.append(f"if ({normalize_expr(condition, context='condition')}) {{")
+                out.append(f"    {line}")
+                out.append("}")
+            else:
+                out.append(line)
+        return out
 
     @staticmethod
     def expression_normalization(overlays: list[SemanticOverlay]) -> str | None:

@@ -1,0 +1,24 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function TOKEN.isContract(address)
+  SourceFunction
+  ```solidity
+  function isContract(address _addr) private view returns (bool) {
+          uint32 size;
+          assembly {
+              size := extcodesize(_addr)
+          }
+          return (size > 0);
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function isContract(address _addr) private view returns (bool) {
+          uint32 size;
+          assembly /* s-seir solidity-like view */ {
+              size = _addr.code.length; // yul: size := extcodesize(_addr)
+          }
+          return (size > 0); /* s-seir: size == _addr.code.length */
+      }
+  ```

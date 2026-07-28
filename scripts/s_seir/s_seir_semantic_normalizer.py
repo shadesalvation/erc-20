@@ -92,6 +92,14 @@ class SemanticNormalizer:
             elif o.kind in {'MappingRead', 'MappingWrite'}:
                 add_role(o.attrs.get('slot'), 'mapping_slot_expr', ref, o.attrs.get('access'), 'storage_slot', {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable'), 'storage_reference': o.attrs.get('storage_reference'), 'storage_reference_kind': o.attrs.get('storage_reference_kind'), 'storage_field': o.attrs.get('storage_field')})
                 add_role(o.attrs.get('access'), 'state_access_expr', ref, o.attrs.get('access'), None, {'overlay': o.overlay_id, 'state_variable': o.attrs.get('state_variable'), 'storage_reference': o.attrs.get('storage_reference'), 'storage_reference_kind': o.attrs.get('storage_reference_kind'), 'storage_field': o.attrs.get('storage_field')})
+            elif o.kind in {'StateVariableRead', 'StateVariableWrite'}:
+                slot_derivation = o.attrs.get('slot_derivation') or {}
+                add_role(o.attrs.get('slot'), 'storage_slot_expr', ref, o.attrs.get('access'), 'storage_slot', {'overlay': o.overlay_id, 'storage_model': o.attrs.get('storage_model'), 'slot_constant': o.attrs.get('slot_constant'), 'slot_derivation_kind': slot_derivation.get('kind')})
+                add_role(o.attrs.get('access'), 'state_access_expr', ref, o.attrs.get('access'), None, {'overlay': o.overlay_id, 'storage_model': o.attrs.get('storage_model'), 'state_mutation': o.attrs.get('state_mutation'), 'slot_derivation_kind': slot_derivation.get('kind')})
+                if slot_derivation.get('kind') == 'manual_packed_hash_slot':
+                    add_role(slot_derivation.get('expression') or o.attrs.get('access'), 'manual_storage_slot_expr', ref, slot_derivation.get('expression') or o.attrs.get('access'), 'storage_slot', {'overlay': o.overlay_id, 'slot_derivation': slot_derivation.get('kind')})
+                    for i, item in enumerate(slot_derivation.get('packed_inputs') or []):
+                        add_role(item, 'packed_hash_material', ref, item, 'bytes', {'overlay': o.overlay_id, 'slot_derivation': slot_derivation.get('kind'), 'index': i})
             elif o.kind in {'PathConditionedStorageRead', 'PathConditionedStorageWrite'}:
                 add_role(o.attrs.get('slot'), 'storage_slot_expr', ref, o.attrs.get('slot'), 'storage_slot', {'overlay': o.overlay_id, 'slot_versions': o.attrs.get('slot_versions')})
                 for i, candidate in enumerate(o.attrs.get('candidates') or []):
@@ -132,6 +140,9 @@ class SemanticNormalizer:
                 add_role(o.attrs.get('code_size'), 'address_code_size', ref, o.attrs.get('code_size'), 'uint256', {'overlay': o.overlay_id})
                 if o.kind == 'AddressHasCode':
                     add_role(o.attrs.get('condition'), 'address_has_code_condition', ref, o.attrs.get('condition'), 'bool', {'overlay': o.overlay_id, 'target': o.attrs.get('target')})
+            elif o.kind == 'AddressZeroCheck':
+                add_role(o.attrs.get('variable'), 'address_zero_checked_value', ref, o.attrs.get('variable'), o.attrs.get('variable_type') or 'address', {'overlay': o.overlay_id, 'check': o.attrs.get('check'), 'projection': o.attrs.get('projection')})
+                add_role(o.attrs.get('source_expression'), 'guard_condition', ref, o.attrs.get('condition'), 'bool', {'overlay': o.overlay_id, 'semantic': 'address_zero_check'})
             elif o.kind == 'CalldataWordRead':
                 add_role(o.attrs.get('offset'), 'calldata_read_offset', ref, o.attrs.get('offset_normalized') or o.attrs.get('offset'), 'uint256', {'overlay': o.overlay_id, 'source': o.attrs.get('source')})
                 add_role(o.attrs.get('source_expression'), 'calldata_word_value', ref, o.attrs.get('solidity_like'), o.attrs.get('target_type'), {'overlay': o.overlay_id, 'target': o.attrs.get('target'), 'width_bytes': o.attrs.get('width_bytes')})
@@ -142,6 +153,15 @@ class SemanticNormalizer:
             elif o.kind == 'StructFieldWrite':
                 field = o.attrs.get('field') or {}
                 add_role(o.attrs.get('value'), 'struct_field_write_value', ref, o.attrs.get('value_normalized') or o.attrs.get('value'), field.get('type_string'), {'overlay': o.overlay_id, 'access': f"{o.attrs.get('struct_object')}.{field.get('name')}"})
+            elif o.kind == 'MemoryArrayLengthRead':
+                add_role(o.attrs.get('source_expression'), 'memory_array_length_value', ref, o.attrs.get('access'), 'uint256', {'overlay': o.overlay_id, 'array': o.attrs.get('array'), 'array_type': o.attrs.get('array_type')})
+            elif o.kind == 'MemoryArrayElementRead':
+                add_role(o.attrs.get('source_expression'), 'memory_array_element_value', ref, o.attrs.get('access'), o.attrs.get('element_type'), {'overlay': o.overlay_id, 'array': o.attrs.get('array'), 'array_type': o.attrs.get('array_type'), 'index': o.attrs.get('index')})
+            elif o.kind == 'MemoryArrayConstruction':
+                add_role(o.attrs.get('base'), 'memory_array_constructed_base', ref, o.attrs.get('base'), 'memory_ptr', {'overlay': o.overlay_id, 'array_type': o.attrs.get('array_type'), 'result': o.attrs.get('result')})
+                add_role(o.attrs.get('length_expr'), 'memory_array_constructed_length', ref, o.attrs.get('length_expr_normalized') or o.attrs.get('length_expr'), 'uint256', {'overlay': o.overlay_id, 'result': o.attrs.get('result')})
+                for i, write in enumerate(o.attrs.get('element_writes') or []):
+                    add_role(write.get('value'), 'memory_array_constructed_element', ref, write.get('value_normalized') or normalize_expr(write.get('value')), o.attrs.get('element_type'), {'overlay': o.overlay_id, 'result': o.attrs.get('result'), 'index': i, 'write_effect': write.get('effect')})
             elif o.kind in {'StructInitializationFragment', 'StructMutationFragment'}:
                 for i, mutation in enumerate(o.attrs.get('mutations') or o.attrs.get('fields') or []):
                     field = mutation.get('field') or {}

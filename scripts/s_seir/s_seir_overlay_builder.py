@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from pathlib import Path as _SSEIRPath
+import re
 import sys as _sseir_sys
 _SSEIR_ROOT = _SSEIRPath(__file__).resolve().parents[1]
 for _sseir_path in (_SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
@@ -16,6 +17,7 @@ from assembly_semantic_ir import parse_int_literal, parse_memory_address, strip_
 from s_seir_id import IdAllocator
 from s_seir_model import EffectNode, FunctionUnit, SemanticOverlay
 from s_seir_selector_registry import normalize_selector_value
+from s_seir_sink_resolver import SinkResolver, packed_hash_sink_resolution
 from s_seir_yul_normalize import call_parts, division_guards, invert_condition, is_unknown_value as memory_is_unknown_value, normalize_expr, words_from_memory_query
 
 
@@ -31,8 +33,10 @@ class SemanticOverlayBuilder:
         self.selector_registry = selector_registry or {}
 
     def build(self, unit: FunctionUnit, type_env: Any, expr_roles: list[Any], effects: list[EffectNode]) -> list[SemanticOverlay]:
+        effects = SinkResolver().attach_all(effects)
         overlays: list[SemanticOverlay] = []
         overlays.extend(self.require_overlays(type_env, effects))
+        overlays.extend(self.address_zero_check_overlays(type_env, effects))
         overlays.extend(self.raw_revert_bytes(type_env, expr_roles, effects))
         overlays.extend(self.return_overlays(effects))
         overlays.extend(self.solidity_custom_errors(effects))
@@ -48,6 +52,8 @@ class SemanticOverlayBuilder:
         overlays.extend(self.abi_call_data_overlays(effects, overlays))
         overlays.extend(self.calldata_word_read_overlays(type_env, effects))
         overlays.extend(self.address_code_overlays(type_env, effects))
+        overlays.extend(self.memory_array_overlays(unit, type_env, effects))
+        overlays.extend(self.memory_array_construction_overlays(unit, type_env, effects))
         overlays.extend(self.expression_overlays(type_env, effects))
         return self.dedupe(overlays)
 
@@ -69,7 +75,7 @@ class SemanticOverlayBuilder:
             obj = ptr.attrs.get('object') if ptr else None
             size = e.attrs.get('payload_size')
             if obj and type_env.is_bytes_memory(obj) and (size == f'{obj}.length' or any(m.attrs.get('value') == size and m.attrs.get('read_from') == obj for m in mem)):
-                out.append(self.ov('RawRevertBytes', e.effect_id, e.stmt_refs, {'source_object': obj, 'payload': f'{obj}[0:{obj}.length]', 'guard': self.nearest_guard(e, effects)}))
+                out.append(self.ov('RawRevertBytes', e.effect_id, e.stmt_refs, {'source_object': obj, 'payload': f'{obj}[0:{obj}.length]', 'guard': self.nearest_guard(e, effects), 'sink_resolution': e.attrs.get('sink_resolution')}))
         return out
 
     def solidity_custom_errors(self, effects: list[EffectNode]) -> list[SemanticOverlay]:
@@ -83,6 +89,10 @@ class SemanticOverlayBuilder:
         out: list[SemanticOverlay] = []
         for e in effects:
             if e.kind != 'Return':
+                continue
+            path_overlay = self.path_conditioned_return_overlay(e)
+            if path_overlay:
+                out.append(path_overlay)
                 continue
             ptr = e.attrs.get('payload_ptr')
             size = e.attrs.get('payload_size')
@@ -114,6 +124,7 @@ class SemanticOverlayBuilder:
                 'encoding_hint': encoding_hint,
                 'values': values,
                 'words': words,
+                'sink_resolution': e.attrs.get('sink_resolution'),
                 'partial_slices': (e.attrs.get('payload_memory_partial') or {}).get('slices') or [],
                 'solidity_like': solidity_like,
                 'solidity_equivalent': False,
@@ -128,7 +139,11 @@ class SemanticOverlayBuilder:
         for e in effects:
             if e.kind != 'Revert':
                 continue
-            selector_info = self.selector_info_from_partial(e.attrs.get('payload_memory_partial'), preferred_kind='error')
+            path_overlay = self.path_conditioned_revert_overlay(e)
+            if path_overlay:
+                out.append(path_overlay)
+                continue
+            selector_info = self.selector_info_from_payload(e, preferred_kind='error')
             if not selector_info:
                 continue
             match = selector_info.get('best_match') or {}
@@ -139,9 +154,24 @@ class SemanticOverlayBuilder:
                 'selector_match': selector_info,
                 'error': signature,
                 'revert_like': f"revert {signature};" if signature else None,
+                'sink_resolution': e.attrs.get('sink_resolution'),
             }
             out.append(self.ov('CustomErrorRevert', e.effect_id, e.stmt_refs, attrs))
         return out
+
+    def selector_info_from_payload(self, effect: EffectNode, preferred_kind: str | None = None) -> dict[str, Any] | None:
+        byte_slice = (effect.attrs.get('payload_memory') or {}).get('byte_slice') or {}
+        if byte_slice.get('complete') and parse_int_literal(str(byte_slice.get('size') or '')) == 4:
+            parts = byte_slice.get('packed_semantics') or [
+                item.get('extraction')
+                for item in byte_slice.get('slices') or []
+                if item.get('extraction')
+            ]
+            if len(parts) == 1:
+                selector = normalize_selector_value(parts[0])
+                if selector:
+                    return self.selector_match_from_value(selector, parts[0], preferred_kind, {'kind': 'selector', 'selector': parts[0]})
+        return self.selector_info_from_partial(effect.attrs.get('payload_memory_partial'), preferred_kind=preferred_kind)
 
     def require_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []
@@ -164,6 +194,7 @@ class SemanticOverlayBuilder:
                 'require_conditions': merged or ([guard] if guard else []),
                 'discarded_before_revert': self.discarded_before_revert(e, merged, effects),
                 'elided_by_native_precompile': self.is_native_precompile_success_guard(guard),
+                'sink_resolution': e.attrs.get('sink_resolution'),
             }))
         return out
 
@@ -240,6 +271,189 @@ class SemanticOverlayBuilder:
         condition = effect.attrs.get('condition')
         return [str(condition)] if condition else []
 
+    def address_zero_check_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
+        out: list[SemanticOverlay] = []
+        value_defs_by_name = self.value_defs_by_name(effects)
+        for effect in effects:
+            if effect.kind != 'Branch':
+                continue
+            condition = effect.attrs.get('condition')
+            result = self.address_zero_check_from_condition(type_env, condition, value_defs_by_name)
+            if not result:
+                continue
+            check = result['check']
+            variable = result['variable']
+            human_condition = f"{variable} == address(0)" if check == 'is_zero' else f"{variable} != address(0)"
+            out.append(self.ov('AddressZeroCheck', effect.effect_id, effect.stmt_refs, self.clean({
+                'variable': variable,
+                'variable_type': result.get('variable_type'),
+                'check': check,
+                'condition': human_condition,
+                'source_expression': condition,
+                'source_pattern': result.get('source_pattern'),
+                'projection': result.get('projection'),
+                'projection_expression': result.get('projection_expression'),
+                'via_value_defs': result.get('via_value_defs'),
+                'used_by': 'Branch',
+                'solidity_like': human_condition,
+                'solidity_equivalent': True,
+            })))
+        return out
+
+    def address_zero_check_from_condition(
+        self,
+        type_env: Any,
+        condition: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
+    ) -> dict[str, Any] | None:
+        text = self.strip_outer_parens(str(condition or '').strip())
+        if not text:
+            return None
+        call, args = call_parts(text)
+        if call == 'iszero' and len(args) == 1:
+            inner = self.strip_outer_parens(args[0])
+            inner_call, inner_args = call_parts(inner)
+            if inner_call == 'iszero' and len(inner_args) == 1:
+                return self.address_zero_check_for_projection(type_env, inner_args[0], value_defs_by_name, 'is_nonzero', 'iszero(iszero(address_projection))')
+            if inner_call == 'eq' and len(inner_args) == 2:
+                eq_projection = self.zero_eq_projection(type_env, inner_args[0], inner_args[1], value_defs_by_name)
+                if eq_projection:
+                    eq_projection['check'] = 'is_nonzero'
+                    eq_projection['source_pattern'] = 'iszero(eq(address_projection, 0))'
+                    return eq_projection
+            return self.address_zero_check_for_projection(type_env, inner, value_defs_by_name, 'is_zero', 'iszero(address_projection)')
+        if call == 'eq' and len(args) == 2:
+            result = self.zero_eq_projection(type_env, args[0], args[1], value_defs_by_name)
+            if result:
+                result['check'] = 'is_zero'
+                result['source_pattern'] = 'eq(address_projection, 0)'
+                return result
+        return self.address_zero_check_for_projection(type_env, text, value_defs_by_name, 'is_nonzero', 'address_projection_as_condition')
+
+    def zero_eq_projection(
+        self,
+        type_env: Any,
+        left: Any,
+        right: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
+    ) -> dict[str, Any] | None:
+        left_zero = self.is_zero_literal(left)
+        right_zero = self.is_zero_literal(right)
+        if right_zero:
+            return self.address_projection(type_env, left, value_defs_by_name)
+        if left_zero:
+            return self.address_projection(type_env, right, value_defs_by_name)
+        return None
+
+    def address_zero_check_for_projection(
+        self,
+        type_env: Any,
+        expr: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
+        check: str,
+        pattern: str,
+    ) -> dict[str, Any] | None:
+        projection = self.address_projection(type_env, expr, value_defs_by_name)
+        if not projection:
+            return None
+        projection['check'] = check
+        projection['source_pattern'] = pattern
+        return projection
+
+    def address_projection(
+        self,
+        type_env: Any,
+        expr: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
+        depth: int = 0,
+        via: list[str] | None = None,
+    ) -> dict[str, Any] | None:
+        if depth > 8:
+            return None
+        via = list(via or [])
+        text = self.strip_outer_parens(str(expr or '').strip())
+        if not text:
+            return None
+        if self.is_address_variable(type_env, text):
+            info = getattr(type_env, 'lookup', lambda _name: None)(text)
+            return {
+                'variable': text,
+                'variable_type': getattr(info, 'type_string', None),
+                'projection': 'identity',
+                'projection_expression': text,
+                'via_value_defs': via,
+            }
+        value_defs = value_defs_by_name.get(text) or []
+        if len(value_defs) == 1:
+            value_def = value_defs[0]
+            resolved = self.address_projection(type_env, value_def.attrs.get('value'), value_defs_by_name, depth + 1, via + [value_def.effect_id])
+            if resolved:
+                resolved['projection_expression'] = text
+                return resolved
+        call, args = call_parts(text)
+        if call == 'shl' and len(args) == 2 and self.int_arg(args[0]) == 96:
+            resolved = self.address_projection(type_env, args[1], value_defs_by_name, depth + 1, via)
+            if resolved:
+                resolved['projection'] = 'shl(96, address)'
+                resolved['projection_expression'] = text
+                return resolved
+        if call == 'shr' and len(args) == 2 and self.int_arg(args[0]) == 96:
+            resolved = self.address_projection(type_env, args[1], value_defs_by_name, depth + 1, via)
+            if resolved:
+                resolved['projection'] = f"shr(96, {resolved.get('projection') or 'address_projection'})"
+                resolved['projection_expression'] = text
+                return resolved
+        if call == 'and' and len(args) == 2:
+            if self.is_address_mask(args[0]):
+                resolved = self.address_projection(type_env, args[1], value_defs_by_name, depth + 1, via)
+            elif self.is_address_mask(args[1]):
+                resolved = self.address_projection(type_env, args[0], value_defs_by_name, depth + 1, via)
+            else:
+                resolved = None
+            if resolved:
+                resolved['projection'] = 'and(address, address_mask)'
+                resolved['projection_expression'] = text
+                return resolved
+        return None
+
+    @staticmethod
+    def strip_outer_parens(text: str) -> str:
+        text = str(text or '').strip()
+        while text.startswith('(') and text.endswith(')'):
+            depth = 0
+            balanced = True
+            for index, ch in enumerate(text):
+                if ch == '(':
+                    depth += 1
+                elif ch == ')':
+                    depth -= 1
+                    if depth == 0 and index != len(text) - 1:
+                        balanced = False
+                        break
+            if not balanced or depth != 0:
+                break
+            text = text[1:-1].strip()
+        return text
+
+    @staticmethod
+    def is_zero_literal(value: Any) -> bool:
+        parsed = parse_int_literal(str(value or '').strip())
+        return parsed == 0
+
+    @staticmethod
+    def int_arg(value: Any) -> int | None:
+        return parse_int_literal(str(value or '').strip())
+
+    @staticmethod
+    def is_address_mask(value: Any) -> bool:
+        parsed = parse_int_literal(str(value or '').strip())
+        return parsed == (1 << 160) - 1
+
+    @staticmethod
+    def is_address_variable(type_env: Any, name: str) -> bool:
+        info = getattr(type_env, 'lookup', lambda _name: None)(str(name).strip())
+        return bool(info and 'address' in str(getattr(info, 'type_string', '')))
+
     def storage_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
         """Recover storage overlays with storage-consumer-gated, SSA-aware slot activation.
 
@@ -260,7 +474,10 @@ class SemanticOverlayBuilder:
             keys = self.hash_result_keys(e)
             if not keys:
                 continue
-            slot_expr = self.mapping_slot_expr(type_env, e, slot_expr_by_var | {k: v for k, v in hash_candidates_values(hash_candidates).items()})
+            slot_expr = (
+                self.mapping_slot_expr(type_env, e, slot_expr_by_var | {k: v for k, v in hash_candidates_values(hash_candidates).items()})
+                or self.packed_hash_slot_expr(e)
+            )
             if not slot_expr:
                 continue
             slot_expr['target'] = e.attrs.get('value')
@@ -278,6 +495,8 @@ class SemanticOverlayBuilder:
             activated.add(slot_key)
             slot_expr_by_var[slot_key] = slot_expr
             hash_effect_by_var[slot_key] = effect
+            if slot_expr.get('slot_kind') in {'manual_packed_hash_slot', 'path_conditioned_manual_packed_hash_slot'}:
+                return
             out.append(self.ov('MappingSlot', effect.effect_id, effect.stmt_refs, {
                 'target': slot_expr.get('target'),
                 'target_key': slot_key,
@@ -294,6 +513,8 @@ class SemanticOverlayBuilder:
                 'slot_kind': slot_expr.get('slot_kind') or ('mapping_slot' if base_key not in slot_expr_by_var else 'nested_mapping_slot'),
                 'activation': 'storage_consumer',
                 'resolved_inputs': slot_expr.get('resolved_inputs'),
+                'byte_slice': slot_expr.get('byte_slice'),
+                'packed_semantics': slot_expr.get('packed_semantics'),
                 'notes': slot_expr.get('notes', []),
             }))
 
@@ -325,6 +546,36 @@ class SemanticOverlayBuilder:
             direct_slot = self.direct_storage_slot_info(type_env, e, value_defs_by_version)
             if slot_key:
                 slot_expr = slot_expr_by_var[slot_key]
+                if slot_expr.get('path_candidates'):
+                    out.append(self.path_conditioned_storage_overlay_from_slot_expr(e, slot_key, slot_expr, hash_effect_by_var.get(slot_key)))
+                    continue
+                if slot_expr.get('slot_kind') == 'manual_packed_hash_slot':
+                    kind = 'StateVariableRead' if e.kind == 'StorageRead' else 'StateVariableWrite'
+                    slot_effect = hash_effect_by_var.get(slot_key)
+                    slot_derivation = self.manual_packed_slot_derivation(slot_expr, slot_key, slot_effect)
+                    attrs = {
+                        'access': slot_expr['access'],
+                        'target': value if e.kind == 'StorageRead' else None,
+                        'value': normalize_expr(value) if e.kind == 'StorageWrite' else None,
+                        'value_yul': value if e.kind == 'StorageWrite' else None,
+                        'slot': slot,
+                        'slot_key': slot_key,
+                        'slot_versions': e.attrs.get('slot_versions'),
+                        'slot_effect': slot_effect.effect_id if slot_effect else None,
+                        'slot_derivation': slot_derivation,
+                        'sink_resolution': slot_expr.get('sink_resolution'),
+                        'storage_model': 'manual_packed_hash_slot',
+                        'state_access': True,
+                        'state_mutation': e.kind == 'StorageWrite',
+                        'mutation_kind': 'state_write' if e.kind == 'StorageWrite' else None,
+                        'variable_name_inferred': False,
+                        'solidity_like': f"{value} = {slot_expr['access']};" if e.kind == 'StorageRead' and value else f"{slot_expr['access']} = {normalize_expr(value)};",
+                        'notes': slot_expr.get('notes', []),
+                    }
+                    effects_used = [x for x in [slot_effect.effect_id if slot_effect else None, e.effect_id] if x]
+                    refs = list(dict.fromkeys((slot_effect.stmt_refs if slot_effect else []) + e.stmt_refs))
+                    out.append(self.ov(kind, effects_used, refs, self.clean(attrs)))
+                    continue
                 kind = 'MappingRead' if e.kind == 'StorageRead' else 'MappingWrite'
                 attrs = {
                     'access': slot_expr['access'],
@@ -341,6 +592,7 @@ class SemanticOverlayBuilder:
                     'slot_key': slot_key,
                     'slot_versions': e.attrs.get('slot_versions'),
                     'slot_effect': hash_effect_by_var.get(slot_key).effect_id if slot_key in hash_effect_by_var else None,
+                    'sink_resolution': slot_expr.get('sink_resolution'),
                     'solidity_like': self.storage_solidity_like(kind, slot_expr['access'], value, e),
                     'notes': slot_expr.get('notes', []),
                 }
@@ -386,7 +638,16 @@ class SemanticOverlayBuilder:
                 out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
             else:
                 kind = 'StateVariableRead' if e.kind == 'StorageRead' else 'StateVariableWrite'
-                attrs = {'access': f'storage[{slot}]', 'target': value if e.kind == 'StorageRead' else None, 'value': normalize_expr(value) if e.kind == 'StorageWrite' else None, 'slot': slot, 'slot_versions': e.attrs.get('slot_versions'), 'unresolved_reason': 'unknown_storage_slot'}
+                access = f'storage[{slot}]'
+                attrs = {
+                    'access': access,
+                    'target': value if e.kind == 'StorageRead' else None,
+                    'value': normalize_expr(value) if e.kind == 'StorageWrite' else None,
+                    'slot': slot,
+                    'slot_versions': e.attrs.get('slot_versions'),
+                    'unresolved_reason': 'unknown_storage_slot',
+                    'solidity_like': self.storage_solidity_like(kind, access, value, e),
+                }
                 out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
         return out
 
@@ -509,7 +770,63 @@ class SemanticOverlayBuilder:
         state_read = self.manual_slot_state_read_from_expr(type_env, expr, value_defs_by_name)
         if state_read:
             return str(state_read['solidity_like']), state_read
-        return normalize_expr(expr), None
+        return self.normalize_expression_with_memory_arrays(type_env, expr), None
+
+    def normalize_expression_with_memory_arrays(self, type_env: Any, expr: Any) -> str:
+        text = str(expr or '').strip()
+        if not text:
+            return text
+        array_read = self.memory_array_read_from_mload_expr(type_env, text)
+        if array_read:
+            return str(array_read['access'])
+        name, args = call_parts(text)
+        if not name:
+            return normalize_expr(expr)
+        rendered_args = [self.normalize_expression_with_memory_arrays(type_env, arg) for arg in args]
+        return self.render_normalized_call(name, rendered_args, text)
+
+    @staticmethod
+    def render_normalized_call(name: str, args: list[str], original: str) -> str:
+        if name == 'add' and len(args) == 2:
+            return f"({args[0]} + {args[1]})"
+        if name == 'sub' and len(args) == 2:
+            return f"({args[0]} - {args[1]})"
+        if name == 'mul' and len(args) == 2:
+            return f"({args[0]} * {args[1]})"
+        if name == 'div' and len(args) == 2:
+            return f"({args[0]} / {args[1]})"
+        if name == 'mod' and len(args) == 2:
+            return f"({args[0]} % {args[1]})"
+        if name == 'shl' and len(args) == 2:
+            return f"({args[1]} << {args[0]})"
+        if name == 'shr' and len(args) == 2:
+            return f"({args[1]} >> {args[0]})"
+        if name == 'and' and len(args) == 2:
+            return f"({args[0]} & {args[1]})"
+        if name == 'or' and len(args) == 2:
+            return f"({args[0]} | {args[1]})"
+        if name == 'xor' and len(args) == 2:
+            return f"({args[0]} ^ {args[1]})"
+        if name == 'not' and len(args) == 1:
+            return f"(~{args[0]})"
+        if name == 'eq' and len(args) == 2:
+            return f"({args[0]} == {args[1]})"
+        if name == 'lt' and len(args) == 2:
+            return f"({args[0]} < {args[1]})"
+        if name == 'gt' and len(args) == 2:
+            return f"({args[0]} > {args[1]})"
+        if name == 'iszero' and len(args) == 1:
+            return f"({args[0]} == 0)"
+        if name == 'caller' and not args:
+            return 'msg.sender'
+        if name == 'timestamp' and not args:
+            return 'block.timestamp'
+        if name == 'gas' and not args:
+            return 'gasleft()'
+        try:
+            return normalize_expr(original)
+        except Exception:
+            return f"{name}({', '.join(args)})"
 
     @staticmethod
     def resolve_constant_expr(type_env: Any, expr: Any) -> Any:
@@ -537,7 +854,13 @@ class SemanticOverlayBuilder:
             slot_expr = slot_expr_by_var.get(key)
             if slot_expr:
                 access = slot_expr['access']
-                kind = 'MappingRead' if effect.kind == 'StorageRead' else 'MappingWrite'
+                manual_packed = slot_expr.get('slot_kind') == 'manual_packed_hash_slot'
+                kind = (
+                    ('StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite')
+                    if manual_packed
+                    else ('MappingRead' if effect.kind == 'StorageRead' else 'MappingWrite')
+                )
+                slot_effect = hash_effect_by_var.get(key)
                 candidates.append(self.clean({
                     'slot_key': key,
                     'status': 'resolved',
@@ -549,7 +872,12 @@ class SemanticOverlayBuilder:
                     'storage_reference_kind': slot_expr.get('storage_reference_kind'),
                     'storage_field': slot_expr.get('storage_field'),
                     'key': slot_expr.get('key'),
-                    'slot_effect': hash_effect_by_var.get(key).effect_id if key in hash_effect_by_var else None,
+                    'slot_effect': slot_effect.effect_id if slot_effect else None,
+                    'slot_derivation': self.manual_packed_slot_derivation(slot_expr, key, slot_effect) if manual_packed else None,
+                    'storage_model': 'manual_packed_hash_slot' if manual_packed else None,
+                    'state_access': True if manual_packed else None,
+                    'state_mutation': effect.kind == 'StorageWrite' if manual_packed else None,
+                    'variable_name_inferred': False if manual_packed else None,
                     'solidity_like': self.storage_solidity_like(kind, access, value, effect),
                     'notes': slot_expr.get('notes', []),
                 }))
@@ -647,6 +975,158 @@ class SemanticOverlayBuilder:
                 }
             return None
 
+    def packed_hash_slot_expr(self, effect: EffectNode) -> dict[str, Any] | None:
+        sink_resolution = packed_hash_sink_resolution(effect)
+        if sink_resolution and sink_resolution.path_sensitive:
+            candidates = []
+            for path in sink_resolution.path_resolutions:
+                slot_arg = path.arg_resolutions.get('slot')
+                if path.status != 'resolved' or not slot_arg or not slot_arg.normalized:
+                    candidates.append(self.clean({
+                        'status': 'unresolved',
+                        'condition': path.condition,
+                        'reason': path.reason or 'unresolved_path_memory_slice',
+                    }))
+                    continue
+                access = f"storage[{slot_arg.normalized}]"
+                memory_slice = slot_arg.memory_slice or {}
+                slices = memory_slice.get('slices') or []
+                parts = [str(item.get('extraction')) for item in slices if item.get('extraction')]
+                notes = list(dict.fromkeys(['manual_packed_hash_slot', *(slot_arg.notes or [])]))
+                candidates.append(self.clean({
+                    'status': 'resolved',
+                    'condition': path.condition,
+                    'access': access,
+                    'packed_inputs': parts,
+                    'byte_slice': memory_slice,
+                    'slot_derivation': {
+                        'kind': 'manual_packed_hash_slot',
+                        'hash': 'keccak256',
+                        'encoding': 'abi.encodePacked',
+                        'expression': access,
+                        'slot_key': slot_arg.ssa_key,
+                        'packed_inputs': parts,
+                        'byte_slice': memory_slice,
+                        'notes': notes,
+                    },
+                    'notes': notes,
+                }))
+            resolved_accesses = {item.get('access') for item in candidates if item.get('status') == 'resolved'}
+            all_resolved = all(item.get('status') == 'resolved' for item in candidates)
+            if len(resolved_accesses) == 1 and all_resolved:
+                only = next(item for item in candidates if item.get('status') == 'resolved')
+                return self.clean({
+                    'access': only.get('access'),
+                    'key': ', '.join(only.get('packed_inputs') or []),
+                    'base': 'keccak256_packed_memory',
+                    'base_key': None,
+                    'slot_kind': 'manual_packed_hash_slot',
+                    'resolved_inputs': only.get('packed_inputs'),
+                    'byte_slice': only.get('byte_slice'),
+                    'packed_semantics': only.get('packed_inputs'),
+                    'sink_resolution': sink_resolution.to_dict(),
+                    'notes': list(dict.fromkeys((only.get('notes') or []) + ['path_sensitive_sink_collapsed_same_access'])),
+                })
+            return self.clean({
+                'access': 'path_conditioned_storage',
+                'key': 'path_conditioned',
+                'base': 'keccak256_packed_memory',
+                'base_key': None,
+                'slot_kind': 'path_conditioned_manual_packed_hash_slot',
+                'path_candidates': candidates,
+                'sink_resolution': sink_resolution.to_dict(),
+                'notes': ['manual_packed_hash_slot', 'byte_axis_memory_slice', 'path_sensitive_sink'],
+            })
+        memory_read = effect.attrs.get('memory_read') or {}
+        byte_slice = memory_read.get('byte_slice') or {}
+        if not byte_slice or not byte_slice.get('complete'):
+            return None
+        slices = byte_slice.get('slices') or []
+        if not slices or any(not item.get('extraction') for item in slices):
+            return None
+        parts = [str(item.get('extraction')) for item in slices]
+        if len(parts) == 1 and int(byte_slice.get('size') or 0) == 32:
+            return None
+        access = f"storage[keccak256(abi.encodePacked({', '.join(parts)}))]"
+        return self.clean({
+            'access': access,
+            'key': ', '.join(parts),
+            'base': 'keccak256_packed_memory',
+            'base_key': None,
+            'slot_kind': 'manual_packed_hash_slot',
+            'resolved_inputs': parts,
+            'byte_slice': byte_slice,
+            'packed_semantics': parts,
+            'sink_resolution': sink_resolution.to_dict() if sink_resolution else None,
+            'notes': ['manual_packed_hash_slot', 'byte_axis_memory_slice'],
+        })
+
+    def path_conditioned_storage_overlay_from_slot_expr(
+        self,
+        effect: EffectNode,
+        slot_key: str,
+        slot_expr: dict[str, Any],
+        slot_effect: EffectNode | None,
+    ) -> SemanticOverlay:
+        value = effect.attrs.get('value')
+        overlay_kind = 'PathConditionedStorageRead' if effect.kind == 'StorageRead' else 'PathConditionedStorageWrite'
+        candidates: list[dict[str, Any]] = []
+        for candidate in slot_expr.get('path_candidates') or []:
+            if candidate.get('status') != 'resolved':
+                candidates.append(candidate)
+                continue
+            access = candidate.get('access')
+            kind = 'StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite'
+            solidity_like = (
+                f"{value} = {access};"
+                if effect.kind == 'StorageRead' and value
+                else f"{access} = {normalize_expr(value)};"
+            )
+            candidates.append(self.clean({
+                **candidate,
+                'overlay_kind': kind,
+                'solidity_like': solidity_like,
+                'value': normalize_expr(value) if effect.kind == 'StorageWrite' else None,
+                'target': value if effect.kind == 'StorageRead' else None,
+                'storage_model': 'manual_packed_hash_slot',
+                'state_access': True,
+                'state_mutation': effect.kind == 'StorageWrite',
+                'variable_name_inferred': False,
+            }))
+        effects_used = [x for x in [slot_effect.effect_id if slot_effect else None, effect.effect_id] if x]
+        refs = list(dict.fromkeys((slot_effect.stmt_refs if slot_effect else []) + effect.stmt_refs))
+        return self.ov(overlay_kind, effects_used, refs, self.clean({
+            'slot': effect.attrs.get('slot'),
+            'slot_key': slot_key,
+            'slot_versions': effect.attrs.get('slot_versions'),
+            'target': value if effect.kind == 'StorageRead' else None,
+            'value': normalize_expr(value) if effect.kind == 'StorageWrite' else None,
+            'value_yul': value if effect.kind == 'StorageWrite' else None,
+            'path_states': effect.attrs.get('path_states'),
+            'candidates': candidates,
+            'sink_resolution': slot_expr.get('sink_resolution'),
+            'storage_model': 'manual_packed_hash_slot',
+            'note': 'storage_effect_has_path_sensitive_sink_resolution',
+        }))
+
+    @staticmethod
+    def manual_packed_slot_derivation(
+        slot_expr: dict[str, Any],
+        slot_key: str | None,
+        slot_effect: EffectNode | None,
+    ) -> dict[str, Any]:
+        return {
+            'kind': 'manual_packed_hash_slot',
+            'hash': 'keccak256',
+            'encoding': 'abi.encodePacked',
+            'expression': slot_expr.get('access'),
+            'slot_key': slot_key,
+            'slot_effect': slot_effect.effect_id if slot_effect else None,
+            'packed_inputs': slot_expr.get('packed_semantics') or slot_expr.get('resolved_inputs') or [],
+            'byte_slice': slot_expr.get('byte_slice'),
+            'notes': slot_expr.get('notes', []),
+        }
+
     @classmethod
     def storage_ref_mapping_access(cls, type_env: Any, base: Any, key: str) -> dict[str, Any] | None:
         root = cls.storage_ref_slot_root(base)
@@ -724,10 +1204,197 @@ class SemanticOverlayBuilder:
 
     @staticmethod
     def storage_solidity_like(kind: str, access: str, value: Any, effect: EffectNode) -> str:
-        if kind == 'MappingRead':
+        if kind in {'MappingRead', 'StateVariableRead'}:
             target = effect.attrs.get('value')
             return f'{target} = {access};' if target else f'read {access};'
         return f'{access} = {normalize_expr(value)};'
+
+    def path_conditioned_event_overlay(self, effect: EffectNode, event: EventDecl | None, topics: list[Any]) -> SemanticOverlay | None:
+        paths = self.sink_path_values(effect, 'data')
+        if not paths:
+            return None
+        name = event.name if event else 'unknownEvent'
+        candidates = []
+        for item in paths:
+            if item.get('status') != 'resolved':
+                candidates.append(item)
+                continue
+            values = item.get('values') or []
+            args: list[Any] = []
+            if event:
+                topic_index = 0 if event.anonymous else 1
+                data_index = 0
+                for param in event.params:
+                    if param.indexed:
+                        args.append(normalize_expr(topics[topic_index]) if topic_index < len(topics) else None)
+                        topic_index += 1
+                    else:
+                        args.append(normalize_expr(values[data_index]) if data_index < len(values) else None)
+                        data_index += 1
+            else:
+                args = [normalize_expr(t) for t in topics[1:]] + [normalize_expr(v) for v in values]
+            candidates.append(self.clean({
+                **item,
+                'event': name,
+                'args': args,
+                'solidity_like': f"emit {name}({', '.join(map(str, args))});",
+            }))
+        return self.path_overlay_if_needed('PathConditionedEventEmit', effect, candidates, {
+            'event': name,
+            'signature': event.signature if event else None,
+            'topic0': event.topic0 if event else (topics or [None])[0],
+            'topics': [normalize_expr(t) for t in topics],
+        })
+
+    def path_conditioned_revert_overlay(self, effect: EffectNode) -> SemanticOverlay | None:
+        paths = self.sink_path_values(effect, 'payload')
+        if not paths:
+            return None
+        candidates = []
+        for item in paths:
+            if item.get('status') != 'resolved':
+                candidates.append(item)
+                continue
+            values = item.get('values') or []
+            selector_source = values[0] if values else None
+            selector_info = self.selector_match_from_extraction(selector_source, preferred_kind='error')
+            signature = (selector_info.get('best_match') or {}).get('signature') if selector_info else None
+            if signature:
+                line = f"revert {signature};"
+            elif selector_source:
+                line = f"revertRawSelector({normalize_expr(selector_source)});"
+            else:
+                line = "revertRawMemory();"
+            candidates.append(self.clean({
+                **item,
+                'selector_source': selector_source,
+                'selector': selector_info.get('selector') if selector_info else normalize_selector_value(selector_source),
+                'selector_match': selector_info,
+                'error': signature,
+                'solidity_like': line,
+            }))
+        return self.path_overlay_if_needed('PathConditionedCustomErrorRevert', effect, candidates, {})
+
+    def path_conditioned_return_overlay(self, effect: EffectNode) -> SemanticOverlay | None:
+        paths = self.sink_path_values(effect, 'payload')
+        if not paths:
+            return None
+        size_int = parse_int_literal(str(effect.attrs.get('payload_size') or ''))
+        candidates = []
+        for item in paths:
+            if item.get('status') != 'resolved':
+                candidates.append(item)
+                continue
+            values = [normalize_expr(v) for v in (item.get('values') or [])]
+            if size_int == 32 and len(values) == 1:
+                line = f"returnRawAbiWord({values[0]});"
+                hint = 'abi_word'
+            elif size_int is not None and size_int % 32 == 0 and values:
+                line = f"returnRawAbiWords({', '.join(values)});"
+                hint = 'abi_static_words'
+            else:
+                line = f"returnRawMemory({normalize_expr(effect.attrs.get('payload_ptr'))}, {normalize_expr(effect.attrs.get('payload_size'))});"
+                hint = None
+            candidates.append(self.clean({**item, 'values': values, 'encoding_hint': hint, 'solidity_like': line}))
+        return self.path_overlay_if_needed('PathConditionedRawReturnData', effect, candidates, {
+            'payload_ptr': effect.attrs.get('payload_ptr'),
+            'payload_size': effect.attrs.get('payload_size'),
+            'solidity_equivalent': False,
+            'reason': 'path_sensitive_yul_return_raw_data',
+        })
+
+    def path_conditioned_call_overlay(self, effect: EffectNode, overlay_kind: str, attrs: dict[str, Any]) -> SemanticOverlay | None:
+        paths = self.sink_path_values(effect, 'input')
+        if not paths:
+            return None
+        candidates = []
+        for item in paths:
+            if item.get('status') != 'resolved':
+                candidates.append(item)
+                continue
+            values = item.get('values') or []
+            selector_source = values[0] if values else None
+            selector_info = self.selector_match_from_extraction(selector_source, preferred_kind='function')
+            candidate_attrs = dict(attrs)
+            candidate_attrs['gas'] = normalize_expr(candidate_attrs.get('gas')) if candidate_attrs.get('gas') else candidate_attrs.get('gas')
+            candidate_attrs['target_solidity'] = self.target_solidity(candidate_attrs.get('target'))
+            candidate_attrs['selector'] = selector_info.get('selector') if selector_info else normalize_selector_value(selector_source)
+            candidate_attrs['selector_match'] = selector_info
+            candidate_attrs['selector_signature'] = (selector_info.get('best_match') or {}).get('signature') if selector_info else None
+            candidate_attrs['arguments'] = [normalize_expr(v) for v in values[1:]]
+            line = self.low_level_call_solidity_like(candidate_attrs)
+            if not line:
+                result = candidate_attrs.get('result')
+                prefix = f"{result} = " if result else ""
+                input_desc = f"MemorySlice({', '.join(map(str, values))})"
+                output = f"memory[{candidate_attrs.get('output_ptr')}:{candidate_attrs.get('output_size')}]"
+                line = (
+                    f"{prefix}yulCall(gas: {candidate_attrs.get('gas')}, target: {candidate_attrs.get('target_solidity') or candidate_attrs.get('target')}, "
+                    f"value: {normalize_expr(candidate_attrs.get('value')) if candidate_attrs.get('value') is not None else '0'}, input: {input_desc}, output: {output});"
+                )
+            candidates.append(self.clean({
+                **item,
+                'selector_source': selector_source,
+                'selector': candidate_attrs.get('selector'),
+                'selector_match': selector_info,
+                'selector_signature': candidate_attrs.get('selector_signature'),
+                'arguments': candidate_attrs.get('arguments'),
+                'solidity_like': line,
+            }))
+        return self.path_overlay_if_needed(f'PathConditioned{overlay_kind}', effect, candidates, {
+            'op': effect.attrs.get('op'),
+            'target': effect.attrs.get('target'),
+            'target_solidity': self.target_solidity(effect.attrs.get('target')),
+            'call_overlay_kind': overlay_kind,
+        })
+
+    def path_overlay_if_needed(
+        self,
+        kind: str,
+        effect: EffectNode,
+        candidates: list[dict[str, Any]],
+        attrs: dict[str, Any],
+    ) -> SemanticOverlay | None:
+        resolved = [item for item in candidates if item.get('status') == 'resolved' and item.get('solidity_like')]
+        if not resolved:
+            return None
+        unique_lines = {(item.get('condition'), item.get('solidity_like')) for item in resolved}
+        sink_resolution = effect.attrs.get('sink_resolution') or {}
+        if not sink_resolution.get('path_sensitive') and len(unique_lines) <= 1:
+            return None
+        return self.ov(kind, effect.effect_id, effect.stmt_refs, self.clean({
+            **attrs,
+            'candidates': candidates,
+            'sink_resolution': sink_resolution,
+            'path_states': self.path_states(effect),
+            'notes': ['path_sensitive_sink_resolution'],
+        }))
+
+    def sink_path_values(self, effect: EffectNode, role: str) -> list[dict[str, Any]]:
+        sink_resolution = effect.attrs.get('sink_resolution') or {}
+        if not sink_resolution.get('path_sensitive'):
+            return []
+        out = []
+        for path in sink_resolution.get('path_resolutions') or []:
+            arg = (path.get('arg_resolutions') or {}).get(role) or {}
+            memory_slice = arg.get('memory_slice') or {}
+            slices = memory_slice.get('slices') or []
+            values = [item.get('extraction') for item in slices if item.get('extraction')]
+            out.append(self.clean({
+                'status': path.get('status') or 'resolved',
+                'condition': path.get('condition'),
+                'values': values,
+                'memory_slice': memory_slice,
+                'normalized': arg.get('normalized'),
+                'notes': arg.get('notes') or [],
+            }))
+        return out
+
+    def selector_match_from_extraction(self, value: Any, preferred_kind: str | None = None) -> dict[str, Any] | None:
+        selector = normalize_selector_value(value)
+        if not selector:
+            return None
+        return self.selector_match_from_value(selector, value, preferred_kind, {'kind': 'selector', 'selector': value})
 
     def event_overlays(self, unit: FunctionUnit, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
         evs = self.events_for_contract(unit.contract)
@@ -744,8 +1411,12 @@ class SemanticOverlayBuilder:
                 if str(raw) != str(resolved)
             ]
             event = self.match_event_name(e, evs, topics)
+            path_overlay = self.path_conditioned_event_overlay(e, event, topics)
+            if path_overlay:
+                out.append(path_overlay)
+                continue
             data_words = self.event_data_words(e)
-            args, notes, argument_state_reads = self.event_args(event, e, type_env, value_defs_by_name, topics, data_words)
+            args, notes, argument_state_reads, argument_memory_reads = self.event_args(event, e, type_env, value_defs_by_name, topics, data_words)
             name = event.name if event else 'unknownEvent'
             data_size = parse_int_literal(str(e.attrs.get('data_size') or '').strip())
             near_misses = [] if event else self.event_topic_near_misses(e, evs, data_size, topics)
@@ -769,7 +1440,9 @@ class SemanticOverlayBuilder:
                 'raw_topics': raw_topics,
                 'topic_constants': topic_constants,
                 'argument_state_reads': argument_state_reads,
+                'argument_memory_reads': argument_memory_reads,
                 'data': data_words,
+                'sink_resolution': e.attrs.get('sink_resolution'),
                 'path_conditioned_data': [
                     word for word in data_words
                     if word.get('path_conditioned')
@@ -788,12 +1461,13 @@ class SemanticOverlayBuilder:
         value_defs_by_name: dict[str, list[EffectNode]],
         topics: list[Any] | None = None,
         data_words: list[dict[str, Any]] | None = None,
-    ) -> tuple[list[Any], list[str], list[dict[str, Any]]]:
+    ) -> tuple[list[Any], list[str], list[dict[str, Any]], list[dict[str, Any]]]:
         topics = topics if topics is not None else (effect.attrs.get('topics', []) or [])
         data_words = self.event_data_words(effect) if data_words is None else data_words
         data_values = []
         notes: list[str] = []
         argument_state_reads: list[dict[str, Any]] = []
+        argument_memory_reads: list[dict[str, Any]] = []
 
         def render_arg(value: Any) -> str:
             state_read = self.manual_slot_state_read_from_expr(type_env, value, value_defs_by_name)
@@ -804,6 +1478,18 @@ class SemanticOverlayBuilder:
                     notes.append('event_argument_state_read')
                 return str(state_read['solidity_like'])
             return normalize_expr(value)
+
+        def render_topic_arg(param: Any, value: Any, topic_index: int) -> str:
+            resolved = self.event_topic_memory_arg(param, value, topic_index, effect)
+            if resolved:
+                record = resolved.get('record')
+                if record and record not in argument_memory_reads:
+                    argument_memory_reads.append(record)
+                note = resolved.get('note')
+                if note and note not in notes:
+                    notes.append(note)
+                return str(resolved.get('value'))
+            return render_arg(value)
 
         for word in data_words:
             if word.get('path_conditioned'):
@@ -819,13 +1505,13 @@ class SemanticOverlayBuilder:
             data_values.append(render_arg(value))
         if not event:
             notes.append('unknown_event_topic0')
-            return [render_arg(t) for t in topics[1:]] + data_values, notes, argument_state_reads
+            return [render_arg(t) for t in topics[1:]] + data_values, notes, argument_state_reads, argument_memory_reads
         args: list[Any] = []
         topic_index = 0 if event.anonymous else 1
         data_index = 0
         for param in event.params:
             if param.indexed:
-                args.append(render_arg(topics[topic_index]) if topic_index < len(topics) else None)
+                args.append(render_topic_arg(param, topics[topic_index], topic_index) if topic_index < len(topics) else None)
                 topic_index += 1
             else:
                 args.append(data_values[data_index] if data_index < len(data_values) else None)
@@ -835,7 +1521,107 @@ class SemanticOverlayBuilder:
         non_indexed_count = len([p for p in event.params if not p.indexed])
         if len(data_words) < non_indexed_count:
             notes.append('memory_data_words_incomplete')
-        return args, notes, argument_state_reads
+        return args, notes, argument_state_reads, argument_memory_reads
+
+    def event_topic_memory_arg(
+        self,
+        param: Any,
+        value: Any,
+        topic_index: int,
+        effect: EffectNode,
+    ) -> dict[str, Any] | None:
+        text = str(value or '').strip()
+        if not text:
+            return None
+        param_type = str(getattr(param, 'type', '') or '')
+        name, args = call_parts(text)
+        read_ptr = None
+        transform = None
+        if name == 'mload' and len(args) == 1:
+            read_ptr = args[0]
+            transform = 'word'
+        elif name == 'shr' and len(args) == 2 and parse_int_literal(str(args[0]).strip()) == 96:
+            inner_name, inner_args = call_parts(args[1])
+            if inner_name == 'mload' and len(inner_args) == 1:
+                read_ptr = inner_args[0]
+                transform = 'shr96'
+        if read_ptr is None:
+            return None
+        read = self.find_topic_memory_read(effect, topic_index, read_ptr)
+        if not read:
+            return None
+        memory_read = read.get('memory_read') or {}
+        if transform == 'shr96' and param_type == 'address':
+            source = self.address_from_shr96_mload_byte_slice(memory_read.get('byte_slice'))
+            if source:
+                return {
+                    'value': source,
+                    'note': 'event_topic_memory_read_resolved',
+                    'record': self.clean({
+                        'topic_index': topic_index,
+                        'param': getattr(param, 'name', None),
+                        'param_type': param_type,
+                        'raw_expression': text,
+                        'resolved': source,
+                        'read_ptr': read_ptr,
+                        'transform': transform,
+                        'memory_read': memory_read,
+                    }),
+                }
+        if transform == 'word':
+            words = words_from_memory_query(memory_read)
+            if len(words) == 1 and not self.is_unknown_value(words[0].get('value')):
+                resolved = normalize_expr(words[0].get('value'))
+                return {
+                    'value': resolved,
+                    'note': 'event_topic_memory_read_resolved',
+                    'record': self.clean({
+                        'topic_index': topic_index,
+                        'param': getattr(param, 'name', None),
+                        'param_type': param_type,
+                        'raw_expression': text,
+                        'resolved': resolved,
+                        'read_ptr': read_ptr,
+                        'transform': transform,
+                        'memory_read': memory_read,
+                    }),
+                }
+        return None
+
+    @staticmethod
+    def find_topic_memory_read(effect: EffectNode, topic_index: int, ptr: Any) -> dict[str, Any] | None:
+        ptr_key = str(ptr or '').replace(' ', '').lower()
+        for read in effect.attrs.get('topic_memory_reads') or []:
+            if int(read.get('topic_index') or -1) != int(topic_index):
+                continue
+            read_ptr = str(read.get('ptr') or '').replace(' ', '').lower()
+            if read_ptr == ptr_key:
+                return read
+        return None
+
+    @staticmethod
+    def address_from_shr96_mload_byte_slice(byte_slice: dict[str, Any] | None) -> str | None:
+        if not byte_slice or not byte_slice.get('complete'):
+            return None
+        if parse_int_literal(str(byte_slice.get('size') or '')) != 32:
+            return None
+        slices = sorted(byte_slice.get('slices') or [], key=lambda item: int(item.get('query_offset') or 0))
+        if not slices:
+            return None
+        first = slices[0]
+        query_offset = first.get('query_offset')
+        if int(query_offset if query_offset is not None else -1) != 0 or int(first.get('size') or 0) != 20:
+            return None
+        if int(first.get('source_width') or 32) != 32:
+            return None
+        raw_source_offset = first.get('source_offset')
+        source_offset = int(raw_source_offset if raw_source_offset is not None else 0)
+        if source_offset != 12:
+            return None
+        source_value = first.get('source_value')
+        if source_value is None:
+            return None
+        return normalize_expr(source_value)
 
     @staticmethod
     def event_data_words(effect: EffectNode) -> list[dict[str, Any]]:
@@ -851,6 +1637,10 @@ class SemanticOverlayBuilder:
             if e.kind not in mapping:
                 continue
             attrs = dict(e.attrs)
+            path_overlay = self.path_conditioned_call_overlay(e, mapping[e.kind], attrs)
+            if path_overlay:
+                out.append(path_overlay)
+                continue
             attrs['gas'] = normalize_expr(attrs.get('gas')) if attrs.get('gas') else attrs.get('gas')
             attrs['target_solidity'] = self.target_solidity(attrs.get('target'))
             selector_info = self.selector_info_from_partial(attrs.get('input_memory_partial'), preferred_kind='function')
@@ -874,6 +1664,15 @@ class SemanticOverlayBuilder:
         selector = normalize_selector_value(raw_selector)
         if not selector:
             return None
+        return self.selector_match_from_value(selector, raw_selector, preferred_kind, hint)
+
+    def selector_match_from_value(
+        self,
+        selector: str,
+        raw_selector: Any,
+        preferred_kind: str | None,
+        hint: dict[str, Any],
+    ) -> dict[str, Any]:
         matches = list(self.selector_registry.get(selector.lower(), []))
         if preferred_kind:
             preferred = [item for item in matches if item.get('kind') == preferred_kind]
@@ -1698,6 +2497,303 @@ class SemanticOverlayBuilder:
             parts.append(f"{target}.{field.get('name')} = {value};")
         return " ".join(parts)
 
+    def memory_array_overlays(self, unit: FunctionUnit, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
+        out: list[SemanticOverlay] = []
+        array_params = {
+            variable.name: variable
+            for variable in unit.parameters
+            if variable.name and getattr(type_env, 'is_memory_array_parameter', lambda _name: False)(variable.name)
+        }
+        if not array_params:
+            return out
+        for effect in effects:
+            if effect.kind != 'MemoryRead':
+                continue
+            pointer = effect.attrs.get('read_from')
+            read = self.memory_array_read_from_pointer(type_env, pointer)
+            if not read:
+                continue
+            attrs = dict(read)
+            attrs.update({
+                'source_expression': f"mload({pointer})",
+                'read_from': pointer,
+                'target': effect.attrs.get('value'),
+                'cfg_node_id': effect.attrs.get('cfg_node_id'),
+                'path_states': effect.attrs.get('path_states'),
+                'memory_read': effect.attrs.get('memory_read'),
+            })
+            out.append(self.ov(read['overlay_kind'], effect.effect_id, effect.stmt_refs, self.clean(attrs)))
+        return out
+
+    def memory_array_construction_overlays(self, unit: FunctionUnit, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
+        out: list[SemanticOverlay] = []
+        value_defs = [e for e in effects if e.kind == 'ValueDef']
+        writes = [e for e in effects if e.kind == 'MemoryWrite']
+        for ret in unit.returns:
+            if not ret.name or not getattr(type_env, 'is_memory_array', lambda _var: False)(ret):
+                continue
+            base_def = self.return_array_base_def(ret.name, effects)
+            if not base_def:
+                continue
+            base_node = self.int_node(base_def.attrs.get('cfg_node_id'))
+            cursor_defs = self.array_cursor_defs(ret.name, value_defs, base_node)
+            cursor_names = set(cursor_defs)
+            length_writes = [
+                write for write in writes
+                if self.memory_write_aliases(write, ret.name, 0)
+                and self.node_after(write, base_node)
+            ]
+            free_updates = [
+                write for write in writes
+                if str(write.attrs.get('address')) in {'0x40', '64'}
+                and self.node_after(write, base_node)
+            ]
+            if not length_writes or not free_updates:
+                continue
+            element_writes = [
+                write for write in writes
+                if write not in length_writes
+                and write not in free_updates
+                and self.node_after(write, base_node)
+                and write.attrs.get('write_kind') not in {'loop_phi'}
+                and not memory_is_unknown_value(write.attrs.get('value'))
+                and self.array_element_write_matches(write, ret.name, cursor_names)
+            ]
+            if not element_writes:
+                continue
+            unique_element_writes = self.semantic_unique_effects(element_writes)
+            length_write = self.earliest_effect(length_writes)
+            free_update = self.latest_effect(free_updates)
+            element_pattern = 'cursor_based' if any(str(w.attrs.get('address')) in cursor_names for w in element_writes) else 'indexed'
+            effect_ids = list(dict.fromkeys(
+                [base_def.effect_id]
+                + [d.effect_id for d in cursor_defs.values()]
+                + [w.effect_id for w in unique_element_writes]
+                + [length_write.effect_id, free_update.effect_id]
+            ))
+            refs: list[str] = []
+            for effect in [base_def, *cursor_defs.values(), *unique_element_writes, length_write, free_update]:
+                refs.extend(effect.stmt_refs)
+            out.append(self.ov('MemoryArrayConstruction', effect_ids, list(dict.fromkeys(refs)), self.clean({
+                'result': ret.name,
+                'array_type': ret.type_string,
+                'element_type': self.memory_array_element_type_from_type(ret.type_string),
+                'base': ret.name,
+                'allocation_source': base_def.attrs.get('value') or f"{ret.name} := mload(0x40)",
+                'allocation_effect': base_def.effect_id,
+                'data_start': f"{ret.name} + 32",
+                'cursor_variables': sorted(cursor_names),
+                'cursor_defs': [
+                    {
+                        'cursor': name,
+                        'value': effect.attrs.get('value'),
+                        'value_normalized': effect.attrs.get('value_normalized') or normalize_expr(effect.attrs.get('value')),
+                        'effect': effect.effect_id,
+                    }
+                    for name, effect in sorted(cursor_defs.items())
+                ],
+                'element_write_pattern': element_pattern,
+                'element_writes': [
+                    {
+                        'effect': write.effect_id,
+                        'address': write.attrs.get('address'),
+                        'value': write.attrs.get('value'),
+                        'value_normalized': normalize_expr(write.attrs.get('value')),
+                        'path_states': write.attrs.get('path_states') or [],
+                        'stmt_refs': write.stmt_refs,
+                    }
+                    for write in unique_element_writes
+                ],
+                'length_expr': length_write.attrs.get('value'),
+                'length_expr_normalized': normalize_expr(length_write.attrs.get('value')),
+                'length_write': length_write.effect_id,
+                'free_memory_pointer_update': normalize_expr(free_update.attrs.get('value')),
+                'free_memory_pointer_write': free_update.effect_id,
+                'path_states': self.merge_path_states([base_def, *element_writes, length_write, free_update]),
+                'solidity_equivalent': False,
+                'reason': 'manual_dynamic_memory_array_construction',
+            })))
+        return out
+
+    @staticmethod
+    def return_array_base_def(name: str, effects: list[EffectNode]) -> EffectNode | None:
+        for effect in effects:
+            if effect.kind == 'ValueDef' and name in [str(t) for t in effect.attrs.get('targets') or []]:
+                if str(effect.attrs.get('value') or '').replace(' ', '') == 'mload(0x40)':
+                    return effect
+            if effect.kind == 'MemoryRead' and str(effect.attrs.get('read_from')) == '0x40' and str(effect.attrs.get('value')) == name:
+                return effect
+        return None
+
+    def array_cursor_defs(self, base: str, value_defs: list[EffectNode], base_node: int | None) -> dict[str, EffectNode]:
+        out: dict[str, EffectNode] = {}
+        for effect in value_defs:
+            if not self.node_after(effect, base_node):
+                continue
+            targets = [str(t) for t in effect.attrs.get('targets') or []]
+            if not targets:
+                continue
+            value = str(effect.attrs.get('value') or '').strip()
+            if self.expr_is_base_plus_word(value, base):
+                out[targets[0]] = effect
+        return out
+
+    @classmethod
+    def expr_is_base_plus_word(cls, expr: Any, base: str) -> bool:
+        name, args = call_parts(str(expr or '').strip())
+        if name != 'add' or len(args) != 2:
+            return False
+        left, right = args[0].strip(), args[1].strip()
+        return (left == base and cls.is_word_literal(right)) or (right == base and cls.is_word_literal(left))
+
+    @staticmethod
+    def is_word_literal(value: Any) -> bool:
+        parsed = parse_int_literal(str(value or '').strip())
+        return parsed == 32
+
+    @classmethod
+    def array_element_write_matches(cls, write: EffectNode, base: str, cursor_names: set[str]) -> bool:
+        address = str(write.attrs.get('address') or '').strip()
+        if address in cursor_names:
+            return True
+        for alias in write.attrs.get('aliases') or []:
+            try:
+                offset = int(alias.get('offset'))
+            except Exception:
+                offset = None
+            alias_base = str(alias.get('base') or '')
+            if alias_base == base and offset is not None and offset >= 32:
+                return True
+            if alias_base in cursor_names:
+                return True
+        parsed = cls.array_base_and_offset(address)
+        if parsed and parsed[0] == base:
+            return True
+        return False
+
+    @staticmethod
+    def memory_write_aliases(write: EffectNode, base: str, offset: int) -> bool:
+        if str(write.attrs.get('address')) == base and offset == 0:
+            return True
+        for alias in write.attrs.get('aliases') or []:
+            if str(alias.get('base')) != base:
+                continue
+            try:
+                if int(alias.get('offset')) == offset:
+                    return True
+            except Exception:
+                continue
+        return False
+
+    def node_after(self, effect: EffectNode, start_node: int | None) -> bool:
+        if start_node is None:
+            return True
+        node = self.int_node(effect.attrs.get('cfg_node_id'))
+        return node is None or node >= start_node
+
+    def earliest_effect(self, effects: list[EffectNode]) -> EffectNode:
+        return sorted(effects, key=lambda e: self.int_node(e.attrs.get('cfg_node_id')) or 10**9)[0]
+
+    def latest_effect(self, effects: list[EffectNode]) -> EffectNode:
+        return sorted(effects, key=lambda e: self.int_node(e.attrs.get('cfg_node_id')) or -1)[-1]
+
+    @staticmethod
+    def semantic_unique_effects(effects: list[EffectNode]) -> list[EffectNode]:
+        out: list[EffectNode] = []
+        seen: set[tuple[Any, ...]] = set()
+        for effect in effects:
+            key = (
+                effect.kind,
+                tuple(effect.stmt_refs),
+                effect.attrs.get('address'),
+                effect.attrs.get('value'),
+                effect.attrs.get('cfg_node_id'),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(effect)
+        return out
+
+    @staticmethod
+    def merge_path_states(effects: list[EffectNode]) -> list[str]:
+        out: list[str] = []
+        for effect in effects:
+            for state in effect.attrs.get('path_states') or []:
+                if state not in out:
+                    out.append(state)
+        return out
+
+    @staticmethod
+    def memory_array_element_type_from_type(type_string: Any) -> str | None:
+        text = str(type_string or '').replace(' memory', '').replace(' calldata', '').replace(' storage', '').strip()
+        return text[:-2] if text.endswith('[]') else None
+
+    def memory_array_read_from_mload_expr(self, type_env: Any, expr: Any) -> dict[str, Any] | None:
+        name, args = call_parts(str(expr or '').strip())
+        if name != 'mload' or len(args) != 1:
+            return None
+        read = self.memory_array_read_from_pointer(type_env, args[0])
+        if not read:
+            return None
+        read['source_expression'] = str(expr)
+        return read
+
+    def memory_array_read_from_pointer(self, type_env: Any, pointer: Any) -> dict[str, Any] | None:
+        text = str(pointer or '').strip()
+        if not text:
+            return None
+        if getattr(type_env, 'is_memory_array_parameter', lambda _name: False)(text):
+            variable = type_env.memory_array_parameter(text)
+            return self.clean({
+                'overlay_kind': 'MemoryArrayLengthRead',
+                'array': text,
+                'array_type': getattr(variable, 'type_string', None),
+                'data_location': 'memory',
+                'access': f'{text}.length',
+                'element_type': getattr(type_env, 'memory_array_element_type', lambda _name: None)(text),
+                'layout': 'solidity_memory_dynamic_array_length_at_base',
+            })
+        parsed = self.array_base_and_offset(text)
+        if not parsed:
+            return None
+        base, offset = parsed
+        if not getattr(type_env, 'is_memory_array_parameter', lambda _name: False)(base):
+            return None
+        variable = type_env.memory_array_parameter(base)
+        index_expr = self.memory_array_index_from_offset(offset)
+        return self.clean({
+            'overlay_kind': 'MemoryArrayElementRead',
+            'array': base,
+            'array_type': getattr(variable, 'type_string', None),
+            'data_location': 'memory',
+            'element_type': getattr(type_env, 'memory_array_element_type', lambda _name: None)(base),
+            'offset': offset,
+            'index': index_expr,
+            'access': f'{base}[{index_expr}]',
+            'layout': 'solidity_memory_dynamic_array_elements_after_length_word',
+        })
+
+    @staticmethod
+    def array_base_and_offset(expr: str) -> tuple[str, str] | None:
+        name, args = call_parts(str(expr or '').strip())
+        if name != 'add' or len(args) != 2:
+            return None
+        left, right = args[0].strip(), args[1].strip()
+        if not left or not right:
+            return None
+        return left, right
+
+    @staticmethod
+    def memory_array_index_from_offset(offset: Any) -> str:
+        text = str(offset or '').strip()
+        value = parse_int_literal(text)
+        if value is not None:
+            index = (value - 32) // 32
+            if value >= 32 and (value - 32) % 32 == 0:
+                return str(index)
+        return f"(({normalize_expr(text)} - 32) / 32)"
+
     def expression_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []
         value_defs_by_name = self.value_defs_by_name(effects)
@@ -1716,7 +2812,15 @@ class SemanticOverlayBuilder:
                         'solidity_like': f"/* storage pointer binding: {pointer}.slot := {normalize_expr(value)} */",
                     }))
                     continue
-                out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {'target': target, 'expression': e.attrs.get('value'), 'solidity_like': self.value_def_like(e), 'context': 'value', 'division_guards': division_guards(e.attrs.get('value'))}))
+                expr = self.normalize_expression_with_memory_arrays(type_env, e.attrs.get('value'))
+                out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {
+                    'target': target,
+                    'expression': e.attrs.get('value'),
+                    'expression_normalized': expr,
+                    'solidity_like': f"{target} = {expr};" if target else None,
+                    'context': 'value',
+                    'division_guards': division_guards(e.attrs.get('value')),
+                }))
             elif e.kind == 'Branch':
                 condition_text = e.attrs.get('condition_final_temp') or e.attrs.get('condition_normalized') or normalize_expr(e.attrs.get('condition'))
                 condition_evaluation = self.condition_evaluation_with_state_reads(type_env, e.attrs.get('condition_evaluation'), value_defs_by_name)
@@ -1990,8 +3094,79 @@ class SemanticOverlayBuilder:
         out: list[SemanticOverlay] = []
         seen: set[tuple[Any, ...]] = set()
         for o in overlays:
+            semantic_key = SemanticOverlayBuilder.semantic_dedupe_key(o)
+            if semantic_key is not None:
+                existing = next((item for item in out if SemanticOverlayBuilder.semantic_dedupe_key(item) == semantic_key), None)
+                if existing:
+                    SemanticOverlayBuilder.merge_overlay(existing, o)
+                    continue
             key = (o.kind, tuple(o.effects), tuple(o.stmt_refs), str(sorted(o.attrs.items())))
             if key not in seen:
                 seen.add(key)
                 out.append(o)
+        return out
+
+    @staticmethod
+    def semantic_dedupe_key(overlay: SemanticOverlay) -> tuple[Any, ...] | None:
+        attrs = overlay.attrs
+        if overlay.kind == 'MemoryRegionAllocate':
+            return (
+                overlay.kind,
+                normalize_expr(attrs.get('base')),
+                normalize_expr(attrs.get('new_free_pointer')),
+                attrs.get('start_node'),
+                attrs.get('end_node'),
+                tuple(attrs.get('stmt_refs') or overlay.stmt_refs),
+            )
+        if overlay.kind == 'MemoryArrayConstruction':
+            return (
+                overlay.kind,
+                attrs.get('result'),
+                attrs.get('array_type'),
+                normalize_expr(attrs.get('allocation_source')),
+                normalize_expr(attrs.get('length_expr')),
+                normalize_expr(attrs.get('free_memory_pointer_update')),
+            )
+        return None
+
+    @staticmethod
+    def merge_overlay(target: SemanticOverlay, incoming: SemanticOverlay) -> None:
+        target.effects = list(dict.fromkeys([*target.effects, *incoming.effects]))
+        target.stmt_refs = list(dict.fromkeys([*target.stmt_refs, *incoming.stmt_refs]))
+        target.attrs['effects'] = target.effects
+        target.attrs['stmt_refs'] = target.stmt_refs
+        for key in ('path_states',):
+            merged = list(dict.fromkeys([*(target.attrs.get(key) or []), *(incoming.attrs.get(key) or [])]))
+            if merged:
+                target.attrs[key] = merged
+        merged_effects = list(target.attrs.get('merged_effects') or [])
+        merged_effects.append({
+            'overlay_id': incoming.overlay_id,
+            'effects': incoming.effects,
+            'stmt_refs': incoming.stmt_refs,
+        })
+        target.attrs['merged_effects'] = merged_effects
+        if target.kind == 'MemoryArrayConstruction':
+            target.attrs['element_writes'] = SemanticOverlayBuilder.merge_dict_list(
+                target.attrs.get('element_writes') or [],
+                incoming.attrs.get('element_writes') or [],
+                ('effect', 'address', 'value'),
+            )
+        if target.kind == 'MemoryRegionAllocate':
+            target.attrs['stored_values'] = SemanticOverlayBuilder.merge_dict_list(
+                target.attrs.get('stored_values') or [],
+                incoming.attrs.get('stored_values') or [],
+                ('effect', 'address', 'value'),
+            )
+
+    @staticmethod
+    def merge_dict_list(left: list[dict[str, Any]], right: list[dict[str, Any]], keys: tuple[str, ...]) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        seen: set[tuple[Any, ...]] = set()
+        for item in [*left, *right]:
+            key = tuple(item.get(name) for name in keys)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(item)
         return out

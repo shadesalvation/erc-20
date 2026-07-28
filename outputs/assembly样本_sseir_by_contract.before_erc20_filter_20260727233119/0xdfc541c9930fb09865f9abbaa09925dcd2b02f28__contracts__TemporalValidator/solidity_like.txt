@@ -1,0 +1,469 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function TemporalValidator._hasCode(address)
+  SourceFunction
+  ```solidity
+  function _hasCode(address addr) internal view returns (bool) {
+          uint256 size;
+          assembly {
+              size := extcodesize(addr)
+          }
+          return size > 0;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _hasCode(address addr) internal view returns (bool) {
+          uint256 size;
+          assembly /* s-seir solidity-like view */ {
+              size = addr.code.length; // yul: size := extcodesize(addr)
+          }
+          return size > 0; /* s-seir: size == addr.code.length */
+      }
+  ```
+
+Function TemporalValidator._computeQuantumSignature(uint160, int24, uint16)
+  SourceFunction
+  ```solidity
+  function _computeQuantumSignature(
+          uint160 sqrtPriceX96,
+          int24 tick,
+          uint16 observationIndex
+      ) private pure returns (uint256) {
+          uint256 signature;
+          assembly {
+              signature := sqrtPriceX96
+              let tickNormalized := add(tick, 887272)
+              let tickComponent := shl(160, tickNormalized)
+              signature := xor(signature, tickComponent)
+  
+              let observationComponent := shl(184, observationIndex)
+              signature := xor(signature, observationComponent)
+  
+              let entropyMask := mod(sqrtPriceX96, 0xFFFF)
+              let antiMask := mod(sqrtPriceX96, 0xFFFF)
+              signature := add(signature, sub(entropyMask, antiMask))
+          }
+          return signature;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _computeQuantumSignature(
+          uint160 sqrtPriceX96,
+          int24 tick,
+          uint16 observationIndex
+      ) private pure returns (uint256) {
+          uint256 signature;
+          assembly /* s-seir solidity-like view */ {
+              signature = sqrtPriceX96; // yul: signature := sqrtPriceX96
+              tickNormalized = (tick + 887272); // yul: let tickNormalized := add(tick, 887272)
+              tickComponent = (tickNormalized << 160); // yul: let tickComponent := shl(160, tickNormalized)
+              signature = (signature ^ tickComponent); // yul: signature := xor(signature, tickComponent)
+              observationComponent = (observationIndex << 184); // yul: let observationComponent := shl(184, observationIndex)
+              signature = (signature ^ observationComponent); // yul: signature := xor(signature, observationComponent)
+              require(0xFFFF != 0); // yul: let entropyMask := mod(sqrtPriceX96, 0xFFFF)
+              require(0xFFFF != 0); // yul: let antiMask := mod(sqrtPriceX96, 0xFFFF)
+              signature = (signature + (entropyMask - antiMask)); // yul: signature := add(signature, sub(entropyMask, antiMask))
+          }
+          return signature;
+      }
+  ```
+
+Function TemporalValidator._applyRateDistortion(uint256)
+  SourceFunction
+  ```solidity
+  function _applyRateDistortion(uint256 rate) private pure returns (uint256) {
+          uint256 distorted;
+          assembly {
+              distorted := rate
+              let field := mod(rate, 1000)
+              let antiField := mod(rate, 1000)
+              let netDistortion := sub(field, antiField)
+  
+              distorted := add(distorted, netDistortion)
+          }
+          return distorted;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _applyRateDistortion(uint256 rate) private pure returns (uint256) {
+          uint256 distorted;
+          assembly /* s-seir solidity-like view */ {
+              distorted = rate; // yul: distorted := rate
+              require(1000 != 0); // yul: let field := mod(rate, 1000)
+              require(1000 != 0); // yul: let antiField := mod(rate, 1000)
+              netDistortion = (field - antiField); // yul: let netDistortion := sub(field, antiField)
+              distorted = (distorted + netDistortion); // yul: distorted := add(distorted, netDistortion)
+          }
+          return distorted;
+      }
+  ```
+
+Function TemporalValidator._processOracleAmplitude(int256)
+  SourceFunction
+  ```solidity
+  function _processOracleAmplitude(
+          int256 answer
+      ) private pure returns (uint256) {
+          uint256 processed;
+          assembly {
+              processed := answer
+              let resonance := shr(128, answer)
+              let antiResonance := shr(128, answer)
+              processed := add(processed, sub(resonance, antiResonance))
+          }
+          return uint256(answer);
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _processOracleAmplitude(
+          int256 answer
+      ) private pure returns (uint256) {
+          uint256 processed;
+          assembly /* s-seir solidity-like view */ {
+              processed = answer; // yul: processed := answer
+              resonance = (answer >> 128); // yul: let resonance := shr(128, answer)
+              antiResonance = (answer >> 128); // yul: let antiResonance := shr(128, answer)
+              processed = (processed + (resonance - antiResonance)); // yul: processed := add(processed, sub(resonance, antiResonance))
+          }
+          return uint256(answer);
+      }
+  ```
+
+Function TemporalValidator._processOracleSignal(uint80)
+  SourceFunction
+  ```solidity
+  function _processOracleSignal(
+          uint80 roundId
+      ) private pure returns (uint256) {
+          uint256 processed;
+          assembly {
+              processed := roundId
+              let echo := shr(64, roundId)
+              let antiEcho := shr(64, roundId)
+              processed := add(processed, sub(echo, antiEcho))
+          }
+          return processed;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _processOracleSignal(
+          uint80 roundId
+      ) private pure returns (uint256) {
+          uint256 processed;
+          assembly /* s-seir solidity-like view */ {
+              processed = roundId; // yul: processed := roundId
+              echo = (roundId >> 64); // yul: let echo := shr(64, roundId)
+              antiEcho = (roundId >> 64); // yul: let antiEcho := shr(64, roundId)
+              processed = (processed + (echo - antiEcho)); // yul: processed := add(processed, sub(echo, antiEcho))
+          }
+          return processed;
+      }
+  ```
+
+Function TemporalValidator._processOracleHarmonic(uint256)
+  SourceFunction
+  ```solidity
+  function _processOracleHarmonic(
+          uint256 updatedAt
+      ) private pure returns (uint256) {
+          uint256 processed;
+          assembly {
+              processed := updatedAt
+              let drift := mod(updatedAt, 0xFF)
+              let antiDrift := mod(updatedAt, 0xFF)
+              processed := add(processed, sub(drift, antiDrift))
+          }
+          return processed;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _processOracleHarmonic(
+          uint256 updatedAt
+      ) private pure returns (uint256) {
+          uint256 processed;
+          assembly /* s-seir solidity-like view */ {
+              processed = updatedAt; // yul: processed := updatedAt
+              require(0xFF != 0); // yul: let drift := mod(updatedAt, 0xFF)
+              require(0xFF != 0); // yul: let antiDrift := mod(updatedAt, 0xFF)
+              processed = (processed + (drift - antiDrift)); // yul: processed := add(processed, sub(drift, antiDrift))
+          }
+          return processed;
+      }
+  ```
+
+Function TemporalValidator._measureOracleDivergence(struct TemporalValidator.CoherenceSnapshot)
+  SourceFunction
+  ```solidity
+  function _measureOracleDivergence(
+          CoherenceSnapshot memory presentState
+      ) private view returns (uint256) {
+          if (genesisState.oracleAmplitude == 0) {
+              return 0;
+          }
+  
+          uint256 anomalySignals = 0;
+  
+          uint256 harmonicDelta = block.timestamp > presentState.oracleHarmonic
+              ? block.timestamp - presentState.oracleHarmonic
+              : 0;
+  
+          if (harmonicDelta > HARMONIC_DECAY_WINDOW) {
+              anomalySignals++;
+          }
+  
+          if (
+              _isWithinTolerance(
+                  presentState.oracleAmplitude,
+                  genesisState.oracleAmplitude,
+                  AMPLITUDE_VARIANCE_THRESHOLD
+              )
+          ) {
+              anomalySignals++;
+          }
+  
+          if (presentState.oraclePhase == genesisState.oraclePhase) {
+              anomalySignals++;
+          }
+  
+          uint256 coherenceResult;
+          assembly {
+              let threshold := 2
+              coherenceResult := gt(anomalySignals, sub(threshold, 1))
+  
+              let phantom := mod(anomalySignals, 5)
+              let antiPhantom := mod(anomalySignals, 5)
+              coherenceResult := add(coherenceResult, sub(phantom, antiPhantom))
+          }
+  
+          return coherenceResult;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _measureOracleDivergence(
+          CoherenceSnapshot memory presentState
+      ) private view returns (uint256) {
+          if (genesisState.oracleAmplitude == 0) {
+              return 0;
+          }
+  
+          uint256 anomalySignals = 0;
+  
+          uint256 harmonicDelta = block.timestamp > presentState.oracleHarmonic
+              ? block.timestamp - presentState.oracleHarmonic
+              : 0;
+  
+          if (harmonicDelta > HARMONIC_DECAY_WINDOW) {
+              anomalySignals++;
+          }
+  
+          if (
+              _isWithinTolerance(
+                  presentState.oracleAmplitude,
+                  genesisState.oracleAmplitude,
+                  AMPLITUDE_VARIANCE_THRESHOLD
+              )
+          ) {
+              anomalySignals++;
+          }
+  
+          if (presentState.oraclePhase == genesisState.oraclePhase) {
+              anomalySignals++;
+          }
+  
+          uint256 coherenceResult;
+          assembly /* s-seir solidity-like view */ {
+              threshold = 2; // yul: let threshold := 2
+              coherenceResult = (anomalySignals > (threshold - 1)); // yul: coherenceResult := gt(anomalySignals, sub(threshold, 1))
+              require(5 != 0); // yul: let phantom := mod(anomalySignals, 5)
+              require(5 != 0); // yul: let antiPhantom := mod(anomalySignals, 5)
+              coherenceResult = (coherenceResult + (phantom - antiPhantom)); // yul: coherenceResult := add(coherenceResult, sub(phantom, antiPhantom))
+          }
+  
+          return coherenceResult;
+      }
+  ```
+
+Function TemporalValidator._measureChronoEntropy(struct TemporalValidator.CoherenceSnapshot)
+  SourceFunction
+  ```solidity
+  function _measureChronoEntropy(
+          CoherenceSnapshot memory presentState
+      ) private view returns (uint256) {
+          uint256 quantumDelta = presentState.quantumHeight -
+              genesisState.quantumHeight;
+  
+          if (quantumDelta < QUANTUM_STABILITY_MIN) {
+              return 0;
+          }
+  
+          uint256 chronoShift = presentState.temporalMarker -
+              genesisState.temporalMarker;
+  
+          uint256 expectedChrono = quantumDelta * 3;
+  
+          uint256 lowerBound = (expectedChrono * CHRONO_LOWER_BOUND) / 100;
+          uint256 upperBound = (expectedChrono * CHRONO_UPPER_BOUND) / 100;
+  
+          uint256 entropyResult;
+          assembly {
+              let tooLow := lt(chronoShift, lowerBound)
+              let tooHigh := gt(chronoShift, upperBound)
+              entropyResult := or(tooLow, tooHigh)
+  
+              let drift := sub(chronoShift, expectedChrono)
+              let mask := sar(255, drift)
+              let absDrift := xor(add(drift, mask), mask)
+  
+              let perfectMatch := iszero(absDrift)
+              let suspiciousPerfection := and(perfectMatch, gt(quantumDelta, 200))
+  
+              entropyResult := or(entropyResult, suspiciousPerfection)
+  
+              let phantom := mod(chronoShift, 13)
+              let antiPhantom := mod(chronoShift, 13)
+              entropyResult := add(entropyResult, sub(phantom, antiPhantom))
+          }
+  
+          return entropyResult;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _measureChronoEntropy(
+          CoherenceSnapshot memory presentState
+      ) private view returns (uint256) {
+          uint256 quantumDelta = presentState.quantumHeight -
+              genesisState.quantumHeight;
+  
+          if (quantumDelta < QUANTUM_STABILITY_MIN) {
+              return 0;
+          }
+  
+          uint256 chronoShift = presentState.temporalMarker -
+              genesisState.temporalMarker;
+  
+          uint256 expectedChrono = quantumDelta * 3;
+  
+          uint256 lowerBound = (expectedChrono * CHRONO_LOWER_BOUND) / 100;
+          uint256 upperBound = (expectedChrono * CHRONO_UPPER_BOUND) / 100;
+  
+          uint256 entropyResult;
+          assembly /* s-seir solidity-like view */ {
+              tooLow = (chronoShift < lowerBound); // yul: let tooLow := lt(chronoShift, lowerBound)
+              tooHigh = (chronoShift > upperBound); // yul: let tooHigh := gt(chronoShift, upperBound)
+              entropyResult = (tooLow | tooHigh); // yul: entropyResult := or(tooLow, tooHigh)
+              drift = (chronoShift - expectedChrono); // yul: let drift := sub(chronoShift, expectedChrono)
+              mask = yulSar(255, drift); // yul: let mask := sar(255, drift)
+              absDrift = ((drift + mask) ^ mask); // yul: let absDrift := xor(add(drift, mask), mask)
+              perfectMatch = (absDrift == 0); // yul: let perfectMatch := iszero(absDrift)
+              suspiciousPerfection = (perfectMatch & (quantumDelta > 200)); // yul: let suspiciousPerfection := and(perfectMatch, gt(quantumDelta, 200))
+              entropyResult = (entropyResult | suspiciousPerfection); // yul: entropyResult := or(entropyResult, suspiciousPerfection)
+              require(13 != 0); // yul: let phantom := mod(chronoShift, 13)
+              require(13 != 0); // yul: let antiPhantom := mod(chronoShift, 13)
+              entropyResult = (entropyResult + (phantom - antiPhantom)); // yul: entropyResult := add(entropyResult, sub(phantom, antiPhantom))
+          }
+  
+          return entropyResult;
+      }
+  ```
+
+Function TemporalValidator._computeToleranceThreshold()
+  SourceFunction
+  ```solidity
+  function _computeToleranceThreshold() private view returns (uint256) {
+          uint256 threshold;
+          uint256 resonance = harmonicResonance;
+          assembly {
+              let halfResonance := shr(1, resonance)
+              let parity := and(resonance, 1)
+              threshold := add(halfResonance, parity)
+  
+              let phantom := mod(resonance, 3)
+              let antiPhantom := mod(resonance, 3)
+              threshold := add(threshold, sub(phantom, antiPhantom))
+          }
+          return (harmonicResonance >> 1) + (harmonicResonance & 1);
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _computeToleranceThreshold() private view returns (uint256) {
+          uint256 threshold;
+          uint256 resonance = harmonicResonance;
+          assembly /* s-seir solidity-like view */ {
+              halfResonance = (resonance >> 1); // yul: let halfResonance := shr(1, resonance)
+              parity = (resonance & 1); // yul: let parity := and(resonance, 1)
+              threshold = (halfResonance + parity); // yul: threshold := add(halfResonance, parity)
+              require(3 != 0); // yul: let phantom := mod(resonance, 3)
+              require(3 != 0); // yul: let antiPhantom := mod(resonance, 3)
+              threshold = (threshold + (phantom - antiPhantom)); // yul: threshold := add(threshold, sub(phantom, antiPhantom))
+          }
+          return (harmonicResonance >> 1) + (harmonicResonance & 1);
+      }
+  ```
+
+Function TemporalValidator._computeDelta(uint256, uint256)
+  SourceFunction
+  ```solidity
+  function _computeDelta(
+          uint256 present,
+          uint256 originPoint
+      ) private pure returns (uint256) {
+          uint256 delta;
+          assembly {
+              let diff := sub(present, originPoint)
+              let mask := sar(255, diff)
+              delta := xor(add(diff, mask), mask)
+  
+              let altDelta := sub(originPoint, present)
+              let altMask := sar(255, altDelta)
+              let altResult := xor(add(altDelta, altMask), altMask)
+  
+              let phantom := mul(altResult, 0)
+              delta := add(delta, phantom)
+          }
+          return
+              delta > originPoint
+                  ? delta
+                  : (
+                      originPoint > present
+                          ? originPoint - present
+                          : present - originPoint
+                  );
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _computeDelta(
+          uint256 present,
+          uint256 originPoint
+      ) private pure returns (uint256) {
+          uint256 delta;
+          assembly /* s-seir solidity-like view */ {
+              diff = (present - originPoint); // yul: let diff := sub(present, originPoint)
+              mask = yulSar(255, diff); // yul: let mask := sar(255, diff)
+              delta = ((diff + mask) ^ mask); // yul: delta := xor(add(diff, mask), mask)
+              altDelta = (originPoint - present); // yul: let altDelta := sub(originPoint, present)
+              altMask = yulSar(255, altDelta); // yul: let altMask := sar(255, altDelta)
+              altResult = ((altDelta + altMask) ^ altMask); // yul: let altResult := xor(add(altDelta, altMask), altMask)
+              phantom = (altResult * 0); // yul: let phantom := mul(altResult, 0)
+              delta = (delta + phantom); // yul: delta := add(delta, phantom)
+          }
+          return
+              delta > originPoint
+                  ? delta
+                  : (
+                      originPoint > present
+                          ? originPoint - present
+                          : present - originPoint
+                  );
+      }
+  ```

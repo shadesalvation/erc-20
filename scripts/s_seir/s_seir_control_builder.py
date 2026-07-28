@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from pathlib import Path as _SSEIRPath
+import os
+import signal
 import sys as _sseir_sys
 _SSEIR_ROOT = _SSEIRPath(__file__).resolve().parents[1]
 for _sseir_path in (_SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
@@ -14,6 +16,10 @@ from typing import Any
 
 from assembly_ast_cfg import build_yul_cfg, parse_src
 from s_seir_model import FunctionUnit, SourceStatement
+
+
+class SlitherLoadTimeout(TimeoutError):
+    pass
 
 
 @dataclass(frozen=True)
@@ -55,6 +61,7 @@ class ControlBuilder:
         self._source_text = self.source_path.read_text(encoding="utf-8") if self.source_path and self.source_path.exists() else ""
         self._slither_cache: Any | None = None
         self._slither_error: str | None = None
+        self._slither_attempted = False
 
     def build(self, unit: FunctionUnit) -> dict[str, Any]:
         if self.source_path and self.solc_bin:
@@ -290,17 +297,43 @@ class ControlBuilder:
     def _load_slither(self) -> Any | None:
         if self._slither_cache is not None:
             return self._slither_cache
+        if self._slither_attempted and self._slither_error:
+            return None
+        self._slither_attempted = True
         try:
             from slither.slither import Slither  # type: ignore
 
             kwargs: dict[str, Any] = {}
             if self.solc_bin:
                 kwargs["solc"] = self.solc_bin
-            self._slither_cache = Slither(str(self.source_path), **kwargs)
+            timeout = self.slither_timeout_seconds()
+            if timeout > 0 and hasattr(signal, "SIGALRM"):
+                previous_handler = signal.getsignal(signal.SIGALRM)
+
+                def timeout_handler(_signum: int, _frame: Any) -> None:
+                    raise SlitherLoadTimeout(f"Slither load exceeded {timeout}s")
+
+                signal.signal(signal.SIGALRM, timeout_handler)
+                signal.alarm(timeout)
+                try:
+                    self._slither_cache = Slither(str(self.source_path), **kwargs)
+                finally:
+                    signal.alarm(0)
+                    signal.signal(signal.SIGALRM, previous_handler)
+            else:
+                self._slither_cache = Slither(str(self.source_path), **kwargs)
             return self._slither_cache
         except Exception as exc:  # pragma: no cover - depends on local toolchain
             self._slither_error = f"{type(exc).__name__}: {exc}"
             return None
+
+    @staticmethod
+    def slither_timeout_seconds() -> int:
+        raw = os.environ.get("SSEIR_SLITHER_TIMEOUT", "45")
+        try:
+            return max(0, int(raw))
+        except ValueError:
+            return 45
 
     @staticmethod
     def _range_from_slither_node(node: Any) -> Range:

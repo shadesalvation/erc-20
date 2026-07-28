@@ -1,0 +1,180 @@
+INFO:SSEIRBranchPreprocessFlatten:input Solidity source with imports
+INFO:SSEIRBranchPreprocessFlatten:algorithm recursive import resolution + per-file branch preprocess
+INFO:SSEIRBranchPreprocessFlatten:entry /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/contracts/NeuralQuant.sol
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/contracts/NeuralQuant.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: NeuralQuant.computeAdjustment(address entity)
+ConditionalMaterialization: sink=N4 target=pulseCount mode=linearized
+  baseline path: entry
+  baseline slot: keccak256(0x00=entity,add(0x00,32)=interactionLevel.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, entity); // origin: N2
+    mstore(0x20, interactionLevel.slot); // origin: N3
+    let pulseCount := sload(keccak256(0x00, 0x40)); // origin: N4
+  OriginSummary: shared=[2, 3] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 2: NeuralQuant.calculateNodeLoad(address target)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 3: NeuralQuant._validateCallContext(address entity)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: NeuralQuant._updateInteractionMetrics(address sender, address recipient)
+ConditionalMaterialization: sink=N5 target=currentPulse mode=linearized
+  baseline path: entry
+  baseline slot: levelHash=keccak256(0x00=sender,add(0x00,32)=interactionLevel.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, sender); // origin: N2
+    mstore(0x20, interactionLevel.slot); // origin: N3
+    let levelHash := keccak256(0x00, 0x40); // origin: N4
+    let currentPulse := sload(levelHash); // origin: N5
+  OriginSummary: shared=[2, 3, 4] cloned=[5]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N11 target=currentFreq mode=linearized
+  baseline path: entry
+  baseline slot: freqHash=keccak256(0x00=recipient,add(0x00,32)=convergenceRate.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, recipient); // origin: N8
+    mstore(0x20, convergenceRate.slot); // origin: N9
+    let freqHash := keccak256(0x00, 0x40); // origin: N10
+    let currentFreq := sload(freqHash); // origin: N11
+  OriginSummary: shared=[8, 9, 10] cloned=[11]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 5: NeuralQuant._loadTransferContext(address transmitter, address receptor)
+ConditionalMaterialization: sink=N10 target=senderRoute mode=linearized
+  baseline path: entry
+  baseline slot: senderSlot=keccak256(0x00=transmitter,add(0x00,32)=routingMatrix.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, transmitter); // origin: N7
+    mstore(0x20, routingMatrix.slot); // origin: N8
+    let senderSlot := keccak256(0x00, 0x40); // origin: N9
+    let senderRoute := sload(senderSlot); // origin: N10
+  OriginSummary: shared=[7, 8, 9] cloned=[10]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N13 target=recipientRoute mode=linearized
+  baseline path: entry
+  baseline slot: recipientSlot=keccak256(0x00=receptor,add(0x00,32)=routingMatrix.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x20, routingMatrix.slot); // origin: N8
+    mstore(0x00, receptor); // origin: N11
+    let recipientSlot := keccak256(0x00, 0x40); // origin: N12
+    let recipientRoute := sload(recipientSlot); // origin: N13
+  OriginSummary: shared=[8, 11, 12] cloned=[13]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/@openzeppelin/contracts/token/ERC20/ERC20.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/@openzeppelin/contracts/token/ERC20/IERC20.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/@openzeppelin/contracts/utils/Context.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/@openzeppelin/contracts/interfaces/draft-IERC6093.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/@openzeppelin/contracts/access/Ownable.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/contracts/TemporalValidator.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: TemporalValidator._hasCode(address addr)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: TemporalValidator._measureCodeDepth(address addr)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 3: TemporalValidator._computeReservoirRatio(uint112 r0, uint112 r1)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: TemporalValidator._applyRateDistortion(uint256 rate)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: TemporalValidator._processOracleSignal(uint80 roundId)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: TemporalValidator._computeToleranceThreshold()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: TemporalValidator._applyDivergenceNoise(uint256 metric)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: TemporalValidator._generateQuantumSeed()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 9: TemporalValidator._computeDelta(uint256 present, uint256 originPoint)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 10: TemporalValidator._probeNetworkEntropy()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 11: TemporalValidator._measureChronoSkew()
+  No path-divergent materializable memory sink.
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x251030bfdf36a078bdc5fa1d5becac69d0e6a3ba/contracts/SynapticAnalyzer.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: SynapticAnalyzer._analyzeOriginDivergence(address node, address txOrigin)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: SynapticAnalyzer._analyzeNodeMorphology(address node)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 3: SynapticAnalyzer._analyzeTemporalProximity()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: SynapticAnalyzer._analyzeGasEntropy()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: SynapticAnalyzer._applyNeuralDrift(uint256 score, address node)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: SynapticAnalyzer._applyFrequencyNoise(uint256 baseScore)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: SynapticAnalyzer._computeDissonanceLevel(uint8 classification)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: SynapticAnalyzer._probeNeuralEntropy(address node)
+  No path-divergent materializable memory sink.

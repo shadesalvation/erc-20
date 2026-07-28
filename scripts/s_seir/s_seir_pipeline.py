@@ -132,9 +132,10 @@ def build_sseir(source_path:Path, solc_bin:str|None=None, slither_bin:str|None=N
     selector_registry=build_selector_registry(ast,source_text)
     storage_layouts=extract_storage_layout(source_path,solc)
     out=[]
+    control_builder=ControlBuilder(source_path, solc, slither_bin, workdir or Path.cwd())
     for unit in SourceStatementCollector(source_path,ast).collect():
         apply_storage_layout(unit,storage_layouts)
-        type_env=TypeEnv(unit); control=ControlBuilder(source_path, solc, slither_bin, workdir or Path.cwd()).build(unit); mem=build_memory_ssa_views(unit,control)
+        type_env=TypeEnv(unit); control=control_builder.build(unit); mem=build_memory_ssa_views(unit,control)
         roles=ExpressionRoleAnalyzer().analyze(unit,type_env,mem)
         effects,facts=EffectLifter().lift(unit,mem,control)
         branch_effects,branch_facts=build_branch_materialization_nodes(unit,mem); effects.extend(branch_effects); facts.extend(branch_facts)

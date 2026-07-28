@@ -22,6 +22,7 @@ for _sseir_path in (_SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
         sys.path.insert(0, _sseir_text)
 
 from assembly_ast_cfg import compile_source_ast, discover_solc
+from s_seir_selector_registry import abi_signature
 from s_seir_llm_assembly_export import function_has_assembly
 from s_seir_pipeline import build_sseir
 from s_seir_solidity_like_export import render_solidity_like_text, write_solidity_like_text
@@ -86,9 +87,182 @@ def contract_infos(source: Path, solc_bin: str) -> dict[str, Json]:
             "abstract": bool(node.get("abstract", False)),
             "fullyImplemented": node.get("fullyImplemented"),
             "base_contracts": base_contract_names(node),
+            "function_signatures": contract_function_signatures(node),
+            "erc20_entrypoints": [],
+            "erc20_like": False,
             "src": node.get("src"),
         }
+    for info in infos.values():
+        annotate_full_implementation_erc20(infos, info)
     return infos
+
+
+def annotate_full_implementation_erc20(infos: dict[str, Json], info: Json) -> None:
+    implementation = inherited_contract_names(infos, str(info["name"]))
+    inherited = inherited_function_signatures(infos, str(info["name"]))
+    entrypoints = sorted(sig for sig in ERC20_REQUIRED_SIGNATURES if sig in inherited)
+    inheritance_hints = erc20_inheritance_hints(infos, str(info["name"]))
+    if inheritance_hints:
+        entrypoints = sorted(set(entrypoints) | ERC20_REQUIRED_SIGNATURES)
+    is_concrete_full_implementation = (
+        info.get("contractKind") == "contract"
+        and not info.get("abstract")
+        and info.get("fullyImplemented") is not False
+    )
+    is_erc20 = is_concrete_full_implementation and (
+        is_erc20_like_entrypoint_set(set(entrypoints)) or bool(inheritance_hints)
+    )
+    info["full_implementation_contracts"] = sorted(implementation)
+    info["full_implementation_entrypoints"] = entrypoints
+    info["erc20_entrypoints"] = entrypoints
+    info["erc20_inheritance_hints"] = inheritance_hints
+    info["erc20_full_implementation"] = is_erc20
+    info["erc20_like"] = is_erc20
+
+
+def inherited_contract_names(infos: dict[str, Json], contract_name: str) -> set[str]:
+    out: set[str] = set()
+    stack = [contract_name]
+    while stack:
+        name = stack.pop()
+        if name in out:
+            continue
+        out.add(name)
+        for base in infos.get(name, {}).get("base_contracts") or []:
+            stack.append(str(base))
+    return out
+
+
+def project_contract_infos(source: Path, solc_bin: str) -> dict[str, Json]:
+    """Collect contract summaries from the entry source and local sample files.
+
+    The compiler AST for a single entry source does not always include imported
+    local base contracts. For deployed-token selection we need those bases only
+    to resolve inherited ERC-20 entrypoints; dependency/library files are still
+    excluded from the source selection path.
+    """
+
+    sample_root = sample_root_for(source)
+    candidates: list[Path]
+    if sample_root.exists() and sample_root.is_dir():
+        candidates = [
+            path for path in sample_root.rglob("*.sol")
+            if path.is_file() and not is_output_or_dependency_snapshot(path)
+        ]
+    else:
+        candidates = [source]
+    ordered = [source, *sorted(path for path in candidates if path != source)]
+    merged: dict[str, Json] = {}
+    for candidate in ordered:
+        if is_dependency_source(sample_root, candidate):
+            continue
+        try:
+            candidate_infos = contract_infos(candidate, solc_bin)
+        except Exception:
+            continue
+        for name, info in candidate_infos.items():
+            item = {**info, "source": str(candidate)}
+            if name not in merged or candidate == source:
+                merged[name] = item
+
+    # Recompute inherited ERC-20 facts after merging all local definitions.
+    for info in merged.values():
+        annotate_full_implementation_erc20(merged, info)
+    return merged
+
+
+ERC20_REQUIRED_SIGNATURES = {
+    "totalSupply()",
+    "balanceOf(address)",
+    "transfer(address,uint256)",
+    "allowance(address,address)",
+    "approve(address,uint256)",
+    "transferFrom(address,address,uint256)",
+}
+
+
+ERC20_MUTATING_SIGNATURES = {
+    "transfer(address,uint256)",
+    "approve(address,uint256)",
+    "transferFrom(address,address,uint256)",
+}
+
+
+KNOWN_ERC20_BASE_NAMES = {
+    "ERC20",
+    "ERC20Upgradeable",
+    "IERC20",
+    "IERC20Metadata",
+    "IERC20Upgradeable",
+    "IERC20MetadataUpgradeable",
+    "DN404",
+}
+
+
+def contract_function_signatures(contract_node: Json) -> list[str]:
+    signatures: list[str] = []
+    for node in contract_node.get("nodes") or []:
+        if not isinstance(node, dict) or node.get("nodeType") != "FunctionDefinition":
+            continue
+        name = node.get("name")
+        visibility = node.get("visibility")
+        if not name or visibility not in {"public", "external"}:
+            continue
+        signature = abi_signature(str(name), node.get("parameters") or {})
+        if signature:
+            signatures.append(signature)
+    return sorted(set(signatures))
+
+
+def inherited_function_signatures(infos: dict[str, Json], contract_name: str) -> set[str]:
+    out: set[str] = set()
+    seen: set[str] = set()
+
+    def visit(name: str) -> None:
+        if name in seen:
+            return
+        seen.add(name)
+        info = infos.get(name)
+        if not info:
+            return
+        out.update(str(sig) for sig in info.get("function_signatures") or [])
+        for base in info.get("base_contracts") or []:
+            visit(str(base))
+
+    visit(contract_name)
+    return out
+
+
+def is_erc20_like_entrypoint_set(entrypoints: set[str]) -> bool:
+    # Require the three state-changing ERC-20 entrypoints and at least one
+    # read-only ERC-20 entrypoint. This keeps Ownable/Address/utility contracts
+    # out while still allowing partial verified sources with public-variable
+    # getters missing from the AST.
+    if not ERC20_MUTATING_SIGNATURES.issubset(entrypoints):
+        return False
+    return bool(entrypoints & (ERC20_REQUIRED_SIGNATURES - ERC20_MUTATING_SIGNATURES))
+
+
+def erc20_inheritance_hints(infos: dict[str, Json], contract_name: str) -> list[str]:
+    hints: list[str] = []
+    seen: set[str] = set()
+
+    def visit(name: str, path: list[str]) -> None:
+        if name in seen:
+            return
+        seen.add(name)
+        info = infos.get(name)
+        if not info:
+            return
+        for base in info.get("base_contracts") or []:
+            base_name = str(base)
+            next_path = [*path, base_name]
+            if base_name in KNOWN_ERC20_BASE_NAMES:
+                hints.append(" -> ".join(next_path))
+            visit(base_name, next_path)
+
+    visit(contract_name, [contract_name])
+    return sorted(set(hints))
 
 
 def base_contract_names(contract_node: Json) -> list[str]:
@@ -118,11 +292,67 @@ def selected_deployed_contracts(infos: dict[str, Json], include_abstract: bool =
             reason = f"contractKind={info.get('contractKind')}"
         elif info.get("abstract") and not include_abstract:
             reason = "abstract_contract"
+        elif info.get("fullyImplemented") is False and not include_abstract:
+            reason = "incomplete_contract"
+        elif not info.get("erc20_like"):
+            reason = "not_erc20_implementation"
         if reason:
             skipped.append({**info, "skip_reason": reason})
             continue
         selected.add(name)
     return selected, skipped
+
+
+GENERIC_BASE_CONTRACT_NAMES = {
+    "Context",
+    "Ownable",
+    "OwnableRoles",
+    "ERC20",
+    "ERC20Upgradeable",
+    "BaseToken",
+    "DividendPayingToken",
+    "DividendPayingTokenInterface",
+    "DividendPayingTokenOptionalInterface",
+    "BABYTOKENDividendTracker",
+    "Initializable",
+}
+
+
+def refine_primary_deployed_contracts(source: Path, infos: dict[str, Json], selected: set[str]) -> tuple[set[str], list[Json]]:
+    if not selected:
+        return set(), []
+    source_path = str(source.resolve())
+    primary_names = [
+        name for name, info in infos.items()
+        if str(Path(str(info.get("source") or source_path)).resolve()) == source_path
+    ]
+    primary_selected = [name for name in primary_names if name in selected]
+    if not primary_selected:
+        return set(), [{**infos[name], "skip_reason": "not_primary_entry_contract"} for name in sorted(selected)]
+
+    stem = source.stem
+    if stem in primary_selected:
+        keep = {stem}
+    else:
+        stem_lower = stem.lower()
+        name_matches = [
+            name for name in primary_selected
+            if name.lower() == stem_lower or stem_lower in name.lower() or name.lower() in stem_lower
+        ]
+        non_generic = [name for name in primary_selected if name not in GENERIC_BASE_CONTRACT_NAMES]
+        if name_matches:
+            keep = {name_matches[-1]}
+        elif non_generic:
+            # Verified single-file sources commonly define helpers first and
+            # the deployed token contract last.
+            keep = {non_generic[-1]}
+        else:
+            keep = {primary_selected[-1]}
+    skipped = [
+        {**infos[name], "skip_reason": "not_selected_primary_deployed_contract"}
+        for name in sorted(selected - keep)
+    ]
+    return keep, skipped
 
 
 def inherited_analysis_contracts(infos: dict[str, Json], selected: set[str]) -> set[str]:
@@ -172,6 +402,30 @@ def import_paths(source: Path) -> list[str]:
     for match in pattern.finditer(text):
         out.append(match.group(1))
     return out
+
+
+def expanded_import_paths(source: Path, limit: int = 64) -> list[str]:
+    out: list[str] = []
+    seen_files: set[Path] = set()
+
+    def visit(path: Path) -> None:
+        if len(seen_files) >= limit:
+            return
+        try:
+            resolved = path.resolve()
+        except Exception:
+            resolved = path
+        if resolved in seen_files or not resolved.is_file():
+            return
+        seen_files.add(resolved)
+        for item in import_paths(resolved):
+            out.append(item)
+            if item.startswith("."):
+                local = (resolved.parent / item).resolve()
+                visit(local)
+
+    visit(source)
+    return sorted(set(out))
 
 
 def pragma_constraints(source: Path) -> list[str]:
@@ -427,7 +681,7 @@ def prepare_compile_environment(source: Path, args: argparse.Namespace, fallback
         solc_path = Path(fallback_solc)
         notes.append("selected_default_solc")
 
-    imports = import_paths(source)
+    imports = expanded_import_paths(source)
     installed: list[Json] = []
     if not args.no_install_deps:
         for root in sorted(dependency_roots(imports)):
@@ -496,16 +750,82 @@ def discover_sources(root: Path, pattern: str, sample_mode: bool = True, max_sou
             for sample_dir in sample_dirs:
                 out.extend(select_sample_sources(sample_dir, max_sources_per_sample))
             return out
-    return sorted(path for path in root.glob(pattern) if path.is_file())
+    return sorted(path for path in root.glob(pattern) if path.is_file() and not is_dependency_source(root, path))
 
 
 def select_sample_sources(sample_dir: Path, limit: int = 1) -> list[Path]:
     candidates = [path for path in sample_dir.rglob("*.sol") if path.is_file()]
     if not candidates:
         return []
-    ranked = sorted(candidates, key=lambda path: source_candidate_score(sample_dir, path), reverse=True)
-    selected = [path for path in ranked if source_candidate_score(sample_dir, path)[0] > -1000]
+    primary_candidates = [path for path in candidates if not is_dependency_source(sample_dir, path)]
+    ranked_base = primary_candidates or candidates
+    base_names = sample_base_contract_names(ranked_base)
+    ranked = sorted(
+        ranked_base,
+        key=lambda path: source_candidate_score_with_leaf_bonus(sample_dir, path, base_names),
+        reverse=True,
+    )
+    selected = [
+        path for path in ranked
+        if source_candidate_score_with_leaf_bonus(sample_dir, path, base_names)[0] > -1000
+    ]
     return selected[: max(1, limit)]
+
+
+def source_candidate_score_with_leaf_bonus(sample_dir: Path, source: Path, sample_base_names: set[str]) -> tuple[int, str]:
+    score, rel = source_candidate_score(sample_dir, source)
+    concrete_names, _abstract_names = source_contract_names(source)
+    if concrete_names:
+        leaf_names = [name for name in concrete_names if name not in sample_base_names]
+        if leaf_names:
+            score += 1400
+        if all(name in sample_base_names for name in concrete_names):
+            score -= 900
+    return score, rel
+
+
+def sample_base_contract_names(sources: list[Path]) -> set[str]:
+    out: set[str] = set()
+    for source in sources:
+        try:
+            text = mask_comments_for_selection(source.read_text(encoding="utf-8", errors="ignore"))
+        except Exception:
+            continue
+        for match in re.finditer(r"\bcontract\s+[A-Za-z_$][A-Za-z0-9_$]*\s+is\s+([^{]+)\{", text):
+            for base in re.finditer(r"\b([A-Za-z_$][A-Za-z0-9_$]*)\b", match.group(1)):
+                name = base.group(1)
+                if name not in {"public", "private", "internal", "external", "virtual", "override"}:
+                    out.add(name)
+    return out
+
+
+def source_contract_names(source: Path) -> tuple[list[str], list[str]]:
+    try:
+        text = mask_comments_for_selection(source.read_text(encoding="utf-8", errors="ignore"))
+    except Exception:
+        return [], []
+    concrete: list[str] = []
+    abstract: list[str] = []
+    for match in re.finditer(r"\b(?:(abstract)\s+)?contract\s+([A-Za-z_$][A-Za-z0-9_$]*)\b", text):
+        if match.group(1):
+            abstract.append(match.group(2))
+        else:
+            concrete.append(match.group(2))
+    return concrete, abstract
+
+
+def is_dependency_source(root: Path, source: Path) -> bool:
+    try:
+        rel = source.relative_to(root)
+    except ValueError:
+        return False
+    parts = set(rel.parts[:-1])
+    if any(part in DEPENDENCY_PARTS for part in parts):
+        return True
+    if source.name in DEPENDENCY_FILENAMES:
+        return True
+    stem = source.stem
+    return stem.startswith("I") and len(stem) > 1 and stem[1].isupper()
 
 
 def source_candidate_score(sample_dir: Path, source: Path) -> tuple[int, str]:
@@ -532,6 +852,7 @@ def source_candidate_score(sample_dir: Path, source: Path) -> tuple[int, str]:
         score += 300
     if stem.lower() in {"token", "kof", "contract", "main"}:
         score += 100
+    score += erc20_source_heuristic_score(source)
     try:
         text = source.read_text(encoding="utf-8", errors="ignore")
     except Exception:
@@ -540,7 +861,7 @@ def source_candidate_score(sample_dir: Path, source: Path) -> tuple[int, str]:
     if concrete_contracts:
         score += 700 + 100 * concrete_contracts
     if abstract_contracts and not concrete_contracts:
-        score -= 900
+        score -= 2500
     if "assembly" in text:
         score += 250
     if " contract " in text or "\ncontract " in text:
@@ -549,7 +870,34 @@ def source_candidate_score(sample_dir: Path, source: Path) -> tuple[int, str]:
         score -= 400
     if " interface " in text or "\ninterface " in text:
         score -= 400
+    if re.search(r"\bcontract\s+[A-Za-z_$][A-Za-z0-9_$]*\s+is\s+[^{;]*(?:ERC20|DN404|IERC20)", text):
+        score += 1200
     return score, str(rel)
+
+
+def erc20_source_heuristic_score(source: Path) -> int:
+    try:
+        text = mask_comments_for_selection(source.read_text(encoding="utf-8", errors="ignore"))
+    except Exception:
+        return 0
+    score = 0
+    required_names = {
+        "transfer": r"\bfunction\s+transfer\s*\(",
+        "approve": r"\bfunction\s+approve\s*\(",
+        "transferFrom": r"\bfunction\s+transferFrom\s*\(",
+        "balanceOf": r"\bfunction\s+balanceOf\s*\(",
+        "totalSupply": r"\bfunction\s+totalSupply\s*\(",
+        "allowance": r"\bfunction\s+allowance\s*\(",
+    }
+    hits = sum(1 for pattern in required_names.values() if re.search(pattern, text))
+    score += hits * 180
+    if hits >= 4 and all(re.search(required_names[name], text) for name in ("transfer", "approve", "transferFrom")):
+        score += 700
+    if re.search(r"\bevent\s+Transfer\s*\(", text):
+        score += 150
+    if re.search(r"\bevent\s+Approval\s*\(", text):
+        score += 150
+    return score
 
 
 def contract_implementation_counts(source_text: str) -> tuple[int, int]:
@@ -594,8 +942,8 @@ def batch_payload(
         "input_root": str(input_root),
         "output_dir": str(output_dir),
         "selection_rule": {
-            "included_contracts": "ContractDefinition.contractKind == 'contract'",
-            "excluded_contracts": ["library", "interface", "abstract contract unless --include-abstract"],
+            "included_contracts": "concrete root contract whose full inherited implementation is ERC-20",
+            "excluded_contracts": ["library", "interface", "abstract/incomplete contract unless --include-abstract", "contract whose full implementation is not ERC-20"],
             "assembly_function_rule": "function.source_statements contains at least one yul statement",
         },
         "sources": sources,
@@ -660,17 +1008,50 @@ def process_source(source: Path, args: argparse.Namespace, solc_bin: str, result
     preparation = prepare_compile_environment(source, args, solc_bin)
     previous_env = apply_compile_env(preparation.include_paths, preparation.remappings)
     try:
-        infos = contract_infos(source, preparation.solc_bin)
+        infos = project_contract_infos(source, preparation.solc_bin)
     except Exception:
         restore_compile_env(previous_env)
         raise
 
     selected, skipped = selected_deployed_contracts(infos, include_abstract=args.include_abstract)
+    selected, primary_skipped = refine_primary_deployed_contracts(source, infos, selected)
+    skipped.extend(primary_skipped)
     if args.contract:
         selected = {name for name in selected if name in set(args.contract)}
         for name, info in infos.items():
             if name not in selected and info not in skipped:
                 skipped.append({**info, "skip_reason": "not_in_requested_contracts"})
+
+    if not selected:
+        restore_compile_env(previous_env)
+        source_entry = {
+            "source": str(source),
+            "source_id": sid,
+            "compile_preparation": preparation.to_dict(),
+            "contracts": list(infos.values()),
+            "analysis_contract_definitions": [],
+            "selected_contracts": [],
+            "analysis_contracts": [],
+            "inherited_analysis_contracts": [],
+            "skipped_contracts": skipped,
+            "branch_preprocess": {
+                "enabled": False,
+                "disabled_reason": "no_erc20_implementation_contract",
+                "mode": None,
+                "source": None,
+                "report": None,
+            },
+            "function_count": 0,
+            "assembly_function_count": 0,
+            "functions": [],
+        }
+        assembly_entry = {
+            key: value
+            for key, value in source_entry.items()
+            if key != "functions"
+        }
+        assembly_entry["functions"] = []
+        return source_entry, assembly_entry, []
 
     try:
         functions = build_sseir(
@@ -846,6 +1227,16 @@ def main() -> None:
         result_dir = result_dir_for(source, args.output_dir)
         try:
             full_entry, assembly_entry, selected_functions = process_source(source, args, solc_bin, result_dir)
+            if not full_entry.get("selected_contracts"):
+                manifest_entries.append({
+                    "source": str(source),
+                    "source_id": full_entry.get("source_id"),
+                    "result_dir": None,
+                    "status": "skipped",
+                    "skip_reason": "no_erc20_implementation_contract",
+                    "skipped_contracts": full_entry.get("skipped_contracts", []),
+                })
+                continue
             full_sources.append(full_entry)
             if assembly_entry["functions"] or args.keep_sources_without_assembly:
                 assembly_sources.append(assembly_entry)
@@ -876,8 +1267,8 @@ def main() -> None:
             "failure": "failure.json",
         },
         "selection_rule": {
-            "included_contracts": "ContractDefinition.contractKind == 'contract'",
-            "excluded_contracts": ["library", "interface", "abstract contract unless --include-abstract"],
+            "included_contracts": "concrete root contract whose full inherited implementation is ERC-20",
+            "excluded_contracts": ["library", "interface", "abstract/incomplete contract unless --include-abstract", "contract whose full implementation is not ERC-20"],
             "assembly_function_rule": "function.source_statements contains at least one yul statement",
         },
         "sources": manifest_entries,

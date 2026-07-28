@@ -1,0 +1,202 @@
+INFO:SSEIRBranchPreprocessFlatten:input Solidity source with imports
+INFO:SSEIRBranchPreprocessFlatten:algorithm recursive import resolution + per-file branch preprocess
+INFO:SSEIRBranchPreprocessFlatten:entry /home/ubuntu/erc-20/TOKENS/assembly样本/0xd13d1b264334add90b9f6aaa4e19be04d1280a1b/project/contracts/BscToken.sol
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0xd13d1b264334add90b9f6aaa4e19be04d1280a1b/project/contracts/BscToken.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0xd13d1b264334add90b9f6aaa4e19be04d1280a1b/project/contracts/ERC20.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: ERC20.totalSupply()
+ConditionalMaterialization: sink=N2 target=result mode=linearized
+  baseline path: entry
+  baseline slot: _TOTAL_SUPPLY_SLOT
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    result := sload(_TOTAL_SUPPLY_SLOT); // origin: N2
+  OriginSummary: shared=[] cloned=[2]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 2: ERC20.balanceOf(address owner)
+ConditionalMaterialization: sink=N4 target=result mode=linearized
+  baseline path: entry
+  baseline slot: keccak256(0x0c=_BALANCE_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _BALANCE_SLOT_SEED); // origin: N2
+    result := sload(keccak256(0x0c, 0x20)); // origin: N4
+  OriginSummary: shared=[2] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 3: ERC20.allowance(address owner, address spender)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: ERC20.approve(address spender, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: ERC20.approve(address spender, uint256 amount)
+ConditionalMaterialization: sink=N7 target=log3 mode=linearized
+  baseline path: entry
+  baseline slot: log3(0x00=amount)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, amount); // origin: N6
+    log3(0x00, 0x20, _APPROVAL_EVENT_SIGNATURE, caller(), shr(96, mload(0x2c))); // origin: N7
+  OriginSummary: shared=[6] cloned=[7]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 6: ERC20.transfer(address to, uint256 amount)
+ConditionalMaterialization: sink=N5 target=fromBalance mode=linearized
+  baseline path: entry
+  baseline slot: fromBalanceSlot=keccak256(0x0c=_BALANCE_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _BALANCE_SLOT_SEED); // origin: N2
+    let fromBalanceSlot := keccak256(0x0c, 0x20); // origin: N4
+    let fromBalance := sload(fromBalanceSlot); // origin: N5
+  OriginSummary: shared=[2, 4] cloned=[5]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N15 target=log3 mode=linearized
+  baseline path: !(gt(amount, fromBalance))
+  baseline slot: log3(32=amount)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x20, amount); // origin: N14
+    log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, caller(), shr(96, mload(0x0c))); // origin: N15
+  OriginSummary: shared=[14] cloned=[15]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 7: ERC20.transferFrom(address from, address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: ERC20.transferFrom(address from, address to, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 9: ERC20._incrementNonce(address owner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 10: ERC20.nonces(address owner)
+ConditionalMaterialization: sink=N4 target=result mode=linearized
+  baseline path: entry
+  baseline slot: keccak256(0x0c=_NONCES_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _NONCES_SLOT_SEED); // origin: N2
+    result := sload(keccak256(0x0c, 0x20)); // origin: N4
+  OriginSummary: shared=[2] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 11: ERC20.permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 12: ERC20.permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+ConditionalMaterialization: sink=N30 target=staticcall mode=linearized
+  baseline path: !(gt(timestamp(), deadline))
+  baseline slot: staticcall(0x00=keccak256(0x2c, 0x42),add(0x00,32)=and(0xff, v),add(0x00,64)=r,add(0x00,96)=s)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, keccak256(0x2c, 0x42)); // origin: N26
+    mstore(0x20, and(0xff, v)); // origin: N27
+    mstore(0x40, r); // origin: N28
+    mstore(0x60, s); // origin: N29
+    let t := staticcall(gas(), 1, 0x00, 0x80, 0x20, 0x20); // origin: N30
+  OriginSummary: shared=[26, 27, 28, 29] cloned=[30]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N38 target=log3 mode=linearized
+  baseline path: !(gt(timestamp(), deadline)) && !(iszero(eq(mload(returndatasize()), owner)))
+  baseline slot: log3(add(m,0x60)=value)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    let m := mload(0x40); // origin: N6
+    mstore(add(m, 0x60), value); // origin: N22
+    log3(add(m, 0x60), 0x20, _APPROVAL_EVENT_SIGNATURE, owner, spender); // origin: N38
+  OriginSummary: shared=[6, 22] cloned=[38]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 13: ERC20.DOMAIN_SEPARATOR()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 14: ERC20._mint(address to, uint256 amount)
+ConditionalMaterialization: sink=N2 target=totalSupplyBefore mode=linearized
+  baseline path: entry
+  baseline slot: _TOTAL_SUPPLY_SLOT
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    let totalSupplyBefore := sload(_TOTAL_SUPPLY_SLOT); // origin: N2
+  OriginSummary: shared=[] cloned=[2]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N14 target=log3 mode=linearized
+  baseline path: !(lt(totalSupplyAfter, totalSupplyBefore))
+  baseline slot: log3(32=amount)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x20, amount); // origin: N13
+    log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, 0, shr(96, mload(0x0c))); // origin: N14
+  OriginSummary: shared=[13] cloned=[14]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 15: ERC20._burn(address from, uint256 amount)
+ConditionalMaterialization: sink=N5 target=fromBalance mode=linearized
+  baseline path: entry
+  baseline slot: fromBalanceSlot=keccak256(0x0c=_BALANCE_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _BALANCE_SLOT_SEED); // origin: N2
+    let fromBalanceSlot := keccak256(0x0c, 0x20); // origin: N4
+    let fromBalance := sload(fromBalanceSlot); // origin: N5
+  OriginSummary: shared=[2, 4] cloned=[5]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N13 target=log3 mode=linearized
+  baseline path: !(gt(amount, fromBalance))
+  baseline slot: log3(0x00=amount)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, amount); // origin: N12
+    log3(0x00, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, shl(96, from)), 0); // origin: N13
+  OriginSummary: shared=[12] cloned=[13]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 16: ERC20._transfer(address from, address to, uint256 amount)
+ConditionalMaterialization: sink=N5 target=fromBalance mode=linearized
+  baseline path: entry
+  baseline slot: fromBalanceSlot=keccak256(0x0c=or(from_, _BALANCE_SLOT_SEED))
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, or(from_, _BALANCE_SLOT_SEED)); // origin: N3
+    let fromBalanceSlot := keccak256(0x0c, 0x20); // origin: N4
+    let fromBalance := sload(fromBalanceSlot); // origin: N5
+  OriginSummary: shared=[3, 4] cloned=[5]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N15 target=log3 mode=linearized
+  baseline path: !(gt(amount, fromBalance))
+  baseline slot: log3(32=amount)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x20, amount); // origin: N14
+    log3(0x20, 0x20, _TRANSFER_EVENT_SIGNATURE, shr(96, from_), shr(96, mload(0x0c))); // origin: N15
+  OriginSummary: shared=[14] cloned=[15]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 17: ERC20._spendAllowance(address owner, address spender, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 18: ERC20._approve(address owner, address spender, uint256 amount)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 19: ERC20._approve(address owner, address spender, uint256 amount)
+ConditionalMaterialization: sink=N7 target=log3 mode=linearized
+  baseline path: entry
+  baseline slot: log3(0x00=amount)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, amount); // origin: N6
+    log3(0x00, 0x20, _APPROVAL_EVENT_SIGNATURE, shr(96, owner_), shr(96, mload(0x2c))); // origin: N7
+  OriginSummary: shared=[6] cloned=[7]
+  SourceRewrite: skipped linearized non-divergent expansion

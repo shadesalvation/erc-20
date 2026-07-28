@@ -1,0 +1,104 @@
+INFO:SSEIRBranchPreprocessFlatten:input Solidity source with imports
+INFO:SSEIRBranchPreprocessFlatten:algorithm recursive import resolution + per-file branch preprocess
+INFO:SSEIRBranchPreprocessFlatten:entry /home/ubuntu/erc-20/TOKENS/assembly样本/0x1bacdd4463d36f591d2bc156b716d53f1d6ae13d/solady/src/auth/OwnableRoles.sol
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x1bacdd4463d36f591d2bc156b716d53f1d6ae13d/solady/src/auth/OwnableRoles.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: OwnableRoles._setRoles(address user, uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: OwnableRoles._updateRoles(address user, uint256 roles, bool on)
+ConditionalMaterialization: sink=N5 target=current mode=linearized
+  baseline path: entry
+  baseline slot: roleSlot=keccak256(0x0c=_ROLE_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _ROLE_SLOT_SEED); // origin: N2
+    let roleSlot := keccak256(0x0c, 0x20); // origin: N4
+    let current := sload(roleSlot); // origin: N5
+  OriginSummary: shared=[2, 4] cloned=[5]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 3: OwnableRoles._checkRoles(uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: OwnableRoles._checkOwnerOrRoles(uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: OwnableRoles._checkRolesOrOwner(uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: OwnableRoles._rolesFromOrdinals(uint8[] ordinals)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: OwnableRoles._ordinalsFromRoles(uint256 roles)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: OwnableRoles.rolesOf(address user)
+ConditionalMaterialization: sink=N4 target=roles mode=linearized
+  baseline path: entry
+  baseline slot: keccak256(0x0c=_ROLE_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _ROLE_SLOT_SEED); // origin: N2
+    roles := sload(keccak256(0x0c, 0x20)); // origin: N4
+  OriginSummary: shared=[2] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+FlattenedSourceUnit: /home/ubuntu/erc-20/TOKENS/assembly样本/0x1bacdd4463d36f591d2bc156b716d53f1d6ae13d/solady/src/auth/Ownable.sol
+  BranchRewrites: 0
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: Ownable._initializeOwner(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 2: Ownable._initializeOwner(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 3: Ownable._setOwner(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 4: Ownable._setOwner(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 5: Ownable._checkOwner()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 6: Ownable.transferOwnership(address newOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 7: Ownable.requestOwnershipHandover()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 8: Ownable.cancelOwnershipHandover()
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 9: Ownable.completeOwnershipHandover(address pendingOwner)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 10: Ownable.owner()
+ConditionalMaterialization: sink=N2 target=result mode=linearized
+  baseline path: entry
+  baseline slot: _OWNER_SLOT
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    result := sload(_OWNER_SLOT); // origin: N2
+  OriginSummary: shared=[] cloned=[2]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 11: Ownable.ownershipHandoverExpiresAt(address pendingOwner)
+ConditionalMaterialization: sink=N4 target=result mode=linearized
+  baseline path: entry
+  baseline slot: keccak256(0x0c=_HANDOVER_SLOT_SEED)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0c, _HANDOVER_SLOT_SEED); // origin: N2
+    result := sload(keccak256(0x0c, 0x20)); // origin: N4
+  OriginSummary: shared=[2] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion

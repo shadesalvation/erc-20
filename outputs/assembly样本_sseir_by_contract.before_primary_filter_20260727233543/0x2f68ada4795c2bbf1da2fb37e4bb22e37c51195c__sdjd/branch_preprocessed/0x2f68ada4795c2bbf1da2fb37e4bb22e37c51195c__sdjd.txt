@@ -1,0 +1,22 @@
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: sdjd.airdrop(address[] to)
+ConditionalMaterialization: sink=N4 target=v mode=linearized
+  baseline path: entry
+  baseline slot: giftAmount.slot
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    let v := sload(giftAmount.slot); // origin: N4
+  OriginSummary: shared=[] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N10 target=log3 mode=linearized
+  baseline path: lt(i, len)
+  baseline slot: log3(0x0=v)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x0, v); // origin: N9
+    log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, address(), account); // origin: N10
+  OriginSummary: shared=[9] cloned=[10]
+  SourceRewrite: skipped linearized non-divergent expansion

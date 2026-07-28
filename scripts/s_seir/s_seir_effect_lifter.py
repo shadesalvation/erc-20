@@ -57,6 +57,7 @@ class EffectLifter:
                     "loop_phi_facts",
                     "range_summary_facts",
                     "memory_top_facts",
+                    "byte_axis_memory_slice",
                 ],
             })
             for d in getattr(res, "memory_definitions", {}).values():
@@ -154,9 +155,12 @@ class EffectLifter:
                     inline_hash = self.inline_keccak_hash_effect(stmt, res, nid, vals[0], block_loop_context)
                     if inline_hash:
                         effects.append(inline_hash)
+                    slot_versions = self.reaching_value_versions(res, nid, vals[0])
+                    if inline_hash and inline_hash.attrs.get("inline_slot_key") not in slot_versions:
+                        slot_versions = [inline_hash.attrs["inline_slot_key"]] + slot_versions
                     effects.append(self.effect("StorageRead", [stmt], {
                         "slot": vals[0],
-                        "slot_versions": self.reaching_value_versions(res, nid, vals[0]),
+                        "slot_versions": slot_versions,
                         "value": names[0] if names else None,
                         "value_versions": self.created_value_versions(res, nid, names),
                         "cfg_node_id": nid,
@@ -166,9 +170,12 @@ class EffectLifter:
                     inline_hash = self.inline_keccak_hash_effect(stmt, res, nid, vals[0], block_loop_context)
                     if inline_hash:
                         effects.append(inline_hash)
+                    slot_versions = self.reaching_value_versions(res, nid, vals[0])
+                    if inline_hash and inline_hash.attrs.get("inline_slot_key") not in slot_versions:
+                        slot_versions = [inline_hash.attrs["inline_slot_key"]] + slot_versions
                     effects.append(self.effect("StorageWrite", [stmt], {
                         "slot": vals[0],
-                        "slot_versions": self.reaching_value_versions(res, nid, vals[0]),
+                        "slot_versions": slot_versions,
                         "value": vals[1],
                         "value_versions": self.reaching_value_versions(res, nid, vals[1]),
                         "cfg_node_id": nid,
@@ -182,6 +189,9 @@ class EffectLifter:
                     attrs = {"op": call, "data_ptr": vals[0] if len(vals) > 0 else None, "data_size": vals[1] if len(vals) > 1 else None, "topics": vals[2:], "cfg_node_id": nid, "path_states": self.node_path_states(res, nid)}
                     if len(vals) >= 2:
                         attrs["data_memory"] = self.memory_query(res, nid, vals[0], vals[1], "event_log_data", block_loop_context)
+                    topic_memory_reads = self.topic_memory_reads(res, nid, vals[2:], block_loop_context)
+                    if topic_memory_reads:
+                        attrs["topic_memory_reads"] = topic_memory_reads
                     effects.append(self.effect("EventLog", [stmt], attrs))
                 elif call == "revert" and len(vals) >= 2:
                     effects.append(self.effect("Revert", [stmt], {
@@ -273,6 +283,20 @@ class EffectLifter:
                     "evaluation_step": dict(attrs),
                     "memory_read": self.memory_query(res, nid, vals[0], vals[1], "keccak256", block_loop_context),
                 }))
+            elif call == "sload" and len(vals) == 1:
+                inline_hash = self.inline_keccak_hash_effect(stmt, res, nid, vals[0], block_loop_context)
+                if inline_hash:
+                    out.append(inline_hash)
+                out.append(self.effect("StorageRead", [stmt], {
+                    "slot": vals[0],
+                    "slot_versions": self.reaching_value_versions(res, nid, vals[0]),
+                    "value": step.get("temp"),
+                    "value_versions": {},
+                    "cfg_node_id": nid,
+                    "path_states": self.node_path_states(res, nid),
+                    "nested_in_condition": True,
+                    "evaluation_step": dict(attrs),
+                }))
             elif call in {"call", "staticcall", "delegatecall", "callcode"}:
                 call_attrs = {
                     "op": call,
@@ -333,21 +357,50 @@ class EffectLifter:
     def same_memory_pointer(left: Any, right: Any) -> bool:
         return str(left or "").replace(" ", "").lower() == str(right or "").replace(" ", "").lower()
 
+    @classmethod
+    def topic_memory_reads(cls, res: Any, nid: int, topics: list[str], block_loop_context: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        reads: list[dict[str, Any]] = []
+        for topic_index, topic in enumerate(topics):
+            for read_expr, ptr in cls.mload_reads_in_expr(topic):
+                reads.append({
+                    "topic_index": topic_index,
+                    "topic": topic,
+                    "read_expr": read_expr,
+                    "ptr": ptr,
+                    "memory_read": cls.memory_query(res, nid, ptr, "0x20", "event_topic_mload", block_loop_context),
+                })
+        return reads
+
+    @classmethod
+    def mload_reads_in_expr(cls, expr: Any) -> list[tuple[str, str]]:
+        text = str(expr or "").strip()
+        if not text:
+            return []
+        name, args = call_parts(text)
+        out: list[tuple[str, str]] = []
+        if name == "mload" and len(args) == 1:
+            out.append((text, args[0]))
+        for arg in args:
+            out.extend(cls.mload_reads_in_expr(arg))
+        return out
+
     def inline_keccak_hash_effect(self, stmt: str | None, res: Any, nid: int, slot: str, block_loop_context: list[Any]) -> EffectNode | None:
         call, args = call_parts(slot)
         if call != "keccak256" or len(args) != 2:
             return None
         slot_key = str(slot)
+        inline_slot_key = f"{slot_key}__inline_n{nid}"
         return self.effect("MemoryHash", [stmt], {
             "op": "keccak256",
             "ptr": args[0],
             "size": args[1],
             "value": slot_key,
-            "value_versions": {slot_key: [slot_key]},
+            "value_versions": {slot_key: [inline_slot_key]},
             "cfg_node_id": nid,
             "path_states": self.node_path_states(res, nid),
             "memory_read": self.memory_query(res, nid, args[0], args[1], "keccak256", block_loop_context),
             "inline_storage_slot": True,
+            "inline_slot_key": inline_slot_key,
         })
 
 

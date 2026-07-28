@@ -1,0 +1,50 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function Proxy._delegate(address)
+  SourceFunction
+  ```solidity
+  function _delegate(address implementation) internal virtual {
+          assembly {
+              // Copy msg.data. We take full control of memory in this inline assembly
+              // block because it will not return to Solidity code. We overwrite the
+              // Solidity scratch pad at memory position 0.
+              calldatacopy(0, 0, calldatasize())
+  
+              // Call the implementation.
+              // out and outsize are 0 because we don't know the size yet.
+              let result := delegatecall(gas(), implementation, 0, calldatasize(), 0, 0)
+  
+              // Copy the returned data.
+              returndatacopy(0, 0, returndatasize())
+  
+              switch result
+              // delegatecall returns 0 on error.
+              case 0 {
+                  revert(0, returndatasize())
+              }
+              default {
+                  return(0, returndatasize())
+              }
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _delegate(address implementation) internal virtual {
+          assembly /* s-seir solidity-like view */ {
+              memory[0] = calldatacopy(...); // yul: calldatacopy(0, 0, calldatasize())
+              result = delegatecall(gasleft(), implementation, 0, msg.data.length, 0, 0); // yul: let result := delegatecall(gas(), implementation, 0, calldatasize(), 0, 0)
+              memory[0] = returndatacopy(...); // yul: returndatacopy(0, 0, returndatasize())
+              switch result // yul: switch result
+              case 0 // yul: case 0
+              if (result == 0) {
+                  revert(0, returndatasize()) // yul: revert(0, returndatasize())
+              }
+              default // yul: default
+              if (!(result == 0)) {
+                  returnRawMemory(0, returndatasize()); // yul: return(0, returndatasize())
+              }
+          }
+      }
+  ```

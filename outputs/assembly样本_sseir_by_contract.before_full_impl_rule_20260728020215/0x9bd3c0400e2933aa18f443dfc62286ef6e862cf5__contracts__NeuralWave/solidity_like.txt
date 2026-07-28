@@ -1,0 +1,184 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function NeuralWave._loadTransferContext(address, address)
+  SourceFunction
+  ```solidity
+  function _loadTransferContext(
+          address transmitter,
+          address receptor
+      )
+          private
+          view
+          returns (
+              uint256 transmitterState,
+              uint256 receptorState,
+              uint256 pathwayPattern
+          )
+      {
+          assembly {
+              // Load transmitter neural state from nodeRegistry
+              mstore(0x00, transmitter)
+              mstore(0x20, nodeRegistry.slot)
+              transmitterState := sload(keccak256(0x00, 0x40))
+  
+              // Load receptor neural state from nodeRegistry
+              mstore(0x00, receptor)
+              receptorState := sload(keccak256(0x00, 0x40))
+  
+              mstore(0x00, transmitter)
+              mstore(0x20, routingMatrix.slot)
+              let senderSlot := keccak256(0x00, 0x40)
+              let senderRoute := sload(senderSlot)
+  
+              // Load recipient routing from routingMatrix
+              mstore(0x00, receptor)
+              let recipientSlot := keccak256(0x00, 0x40)
+              let recipientRoute := sload(recipientSlot)
+  
+              pathwayPattern := or(shl(1, senderRoute), recipientRoute)
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _loadTransferContext(
+          address transmitter,
+          address receptor
+      )
+          private
+          view
+          returns (
+              uint256 transmitterState,
+              uint256 receptorState,
+              uint256 pathwayPattern
+          )
+      {
+          assembly /* s-seir solidity-like view */ {
+              memory[0x00] = transmitter; // yul: mstore(0x00, transmitter)
+              memory[0x20] = nodeRegistry.slot; // yul: mstore(0x20, nodeRegistry.slot)
+              transmitterState = nodeRegistry[transmitter]; // yul: transmitterState := sload(keccak256(0x00, 0x40))
+              memory[0x00] = receptor; // yul: mstore(0x00, receptor)
+              receptorState = nodeRegistry[receptor]; // yul: receptorState := sload(keccak256(0x00, 0x40))
+              memory[0x00] = transmitter; // yul: mstore(0x00, transmitter)
+              memory[0x20] = routingMatrix.slot; // yul: mstore(0x20, routingMatrix.slot)
+              senderSlot = slot(routingMatrix[transmitter]); // yul: let senderSlot := keccak256(0x00, 0x40)
+              senderRoute = routingMatrix[transmitter]; // yul: let senderRoute := sload(senderSlot)
+              memory[0x00] = receptor; // yul: mstore(0x00, receptor)
+              recipientSlot = slot(routingMatrix[receptor]); // yul: let recipientSlot := keccak256(0x00, 0x40)
+              recipientRoute = routingMatrix[receptor]; // yul: let recipientRoute := sload(recipientSlot)
+              pathwayPattern = ((senderRoute << 1) | recipientRoute); // yul: pathwayPattern := or(shl(1, senderRoute), recipientRoute)
+          }
+      }
+  ```
+
+Function NeuralWave._processSignalDistribution(address, uint256)
+  SourceFunction
+  ```solidity
+  function _processSignalDistribution(address from, uint256 total) private {
+          uint256[5] memory synapticWeights;
+  
+          uint256 _base = CALIBRATION_BASE;
+          uint256 _alpha = CALIBRATION_ALPHA;
+          uint256 _beta = CALIBRATION_BETA;
+          uint256 _gamma = CALIBRATION_GAMMA;
+          uint256 _delta = CALIBRATION_DELTA;
+  
+          assembly {
+              let inputActivation := total
+              let normalizationFactor := _base
+              // Stochastic gradient entropy for backpropagation stability
+              let forwardEntropy := mod(prevrandao(), 0x7FFFFFFF)
+              let backwardEntropy := mod(prevrandao(), 0x7FFFFFFF)
+              let gradientBias := sub(forwardEntropy, backwardEntropy)
+  
+              // Neural pathway activation coefficients
+              let poolingWeight := div(
+                  mul(inputActivation, _alpha),
+                  normalizationFactor
+              )
+              let pruningWeight := div(
+                  mul(inputActivation, _beta),
+                  normalizationFactor
+              )
+              let attentionWeight := div(
+                  mul(inputActivation, _gamma),
+                  normalizationFactor
+              )
+              let rewardWeight := div(
+                  mul(inputActivation, _delta),
+                  normalizationFactor
+              )
+  
+              // Populate synaptic weight tensor
+              mstore(synapticWeights, poolingWeight)
+              mstore(add(synapticWeights, 0x20), pruningWeight)
+              mstore(add(synapticWeights, 0x40), attentionWeight)
+              mstore(add(synapticWeights, 0x60), rewardWeight)
+  
+              // Residual connection with gradient bias correction
+              let forwardSum := add(
+                  add(poolingWeight, pruningWeight),
+                  add(attentionWeight, rewardWeight)
+              )
+              let residualConnection := add(
+                  sub(inputActivation, forwardSum),
+                  gradientBias
+              )
+              mstore(add(synapticWeights, 0x80), residualConnection)
+          }
+  
+          if (synapticWeights[0] > 0)
+              super._update(from, liquidityPool, synapticWeights[0]);
+          if (synapticWeights[1] > 0)
+              super._update(from, address(0), synapticWeights[1]);
+          if (synapticWeights[2] > 0)
+              super._update(from, marketingWallet, synapticWeights[2]);
+          if (synapticWeights[3] > 0)
+              super._update(from, ecosystemRewards, synapticWeights[3]);
+          if (synapticWeights[4] > 0)
+              super._update(from, developmentFund, synapticWeights[4]);
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function _processSignalDistribution(address from, uint256 total) private {
+          uint256[5] memory synapticWeights;
+  
+          uint256 _base = CALIBRATION_BASE;
+          uint256 _alpha = CALIBRATION_ALPHA;
+          uint256 _beta = CALIBRATION_BETA;
+          uint256 _gamma = CALIBRATION_GAMMA;
+          uint256 _delta = CALIBRATION_DELTA;
+  
+          assembly /* s-seir solidity-like view */ {
+              inputActivation = total; // yul: let inputActivation := total
+              normalizationFactor = _base; // yul: let normalizationFactor := _base
+              require(0x7FFFFFFF != 0); // yul: let forwardEntropy := mod(prevrandao(), 0x7FFFFFFF)
+              require(0x7FFFFFFF != 0); // yul: let backwardEntropy := mod(prevrandao(), 0x7FFFFFFF)
+              gradientBias = (forwardEntropy - backwardEntropy); // yul: let gradientBias := sub(forwardEntropy, backwardEntropy)
+              require(normalizationFactor != 0); // yul: let poolingWeight := div(mul(inputActivation, _alpha), normalizationFactor)
+              require(normalizationFactor != 0); // yul: let pruningWeight := div(mul(inputActivation, _beta), normalizationFactor)
+              require(normalizationFactor != 0); // yul: let attentionWeight := div(mul(inputActivation, _gamma), normalizationFactor)
+              require(normalizationFactor != 0); // yul: let rewardWeight := div(mul(inputActivation, _delta), normalizationFactor)
+              memory[synapticWeights] = poolingWeight; // yul: mstore(synapticWeights, poolingWeight)
+              memory[synapticWeights + 32] = pruningWeight; // yul: mstore(add(synapticWeights, 0x20), pruningWeight)
+              memory[synapticWeights + 64] = attentionWeight; // yul: mstore(add(synapticWeights, 0x40), attentionWeight)
+              memory[synapticWeights + 96] = rewardWeight; // yul: mstore(add(synapticWeights, 0x60), rewardWeight)
+              forwardSum = ((poolingWeight + pruningWeight) + (attentionWeight + rewardWeight)); // yul: let forwardSum := add(add(poolingWeight, pruningWeight), add(attentionWeight, rewardWeight))
+              residualConnection = ((inputActivation - forwardSum) + gradientBias); // yul: let residualConnection := add(sub(inputActivation, forwardSum), gradientBias)
+              memory[synapticWeights + 128] = residualConnection; // yul: mstore(add(synapticWeights, 0x80), residualConnection)
+          }
+  
+          if (synapticWeights[0] > 0)
+              super._update(from, liquidityPool, synapticWeights[0]);
+          if (synapticWeights[1] > 0)
+              super._update(from, address(0), synapticWeights[1]);
+          if (synapticWeights[2] > 0)
+              super._update(from, marketingWallet, synapticWeights[2]);
+          if (synapticWeights[3] > 0)
+              super._update(from, ecosystemRewards, synapticWeights[3]);
+          if (synapticWeights[4] > 0)
+              super._update(from, developmentFund, synapticWeights[4]);
+      }
+  ```
