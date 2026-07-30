@@ -80,7 +80,12 @@ def invert_condition(expr: Any, type_env: Any | None = None) -> str:
         v = type_env.lookup(inner) if type_env is not None and hasattr(type_env, "lookup") else None
         if v and "address" in str(v.type_string):
             return f"{inner} != address(0)"
-        inner_name, _inner_args = call_parts(inner)
+        inner_name, inner_args = call_parts(inner)
+        if inner_name == "iszero" and len(inner_args) == 1:
+            inner_inner = inner_args[0].strip()
+            inner_v = type_env.lookup(inner_inner) if type_env is not None and hasattr(type_env, "lookup") else None
+            if inner_v and "address" in str(inner_v.type_string):
+                return f"{inner_inner} == address(0)"
         if inner_name in {"staticcall", "call", "delegatecall", "callcode"}:
             return f"({normalize_expr(inner)} != 0)"
         return normalize_expr(inner, context="condition")

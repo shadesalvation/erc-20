@@ -389,7 +389,7 @@ class EffectLifter:
         if call != "keccak256" or len(args) != 2:
             return None
         slot_key = str(slot)
-        inline_slot_key = f"{slot_key}__inline_n{nid}"
+        inline_slot_key = self.inline_hash_slot_key(slot_key, stmt, res, nid)
         return self.effect("MemoryHash", [stmt], {
             "op": "keccak256",
             "ptr": args[0],
@@ -402,6 +402,18 @@ class EffectLifter:
             "inline_storage_slot": True,
             "inline_slot_key": inline_slot_key,
         })
+
+    @classmethod
+    def inline_hash_slot_key(cls, slot_key: str, stmt: str | None, res: Any, nid: int) -> str:
+        asm = getattr(res, "assembly_block_id", None)
+        scope = f"asm{asm}" if asm is not None else "asm_unknown"
+        if stmt:
+            scope = f"{scope}_{stmt}"
+        return f"{slot_key}__inline_{cls.key_token(scope)}_n{nid}"
+
+    @staticmethod
+    def key_token(text: str) -> str:
+        return ''.join(ch if ch.isalnum() or ch == '_' else '_' for ch in str(text))
 
 
     @staticmethod

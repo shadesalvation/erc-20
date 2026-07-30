@@ -125,18 +125,18 @@ Function TKM.constructor()
               memory[32] = q.slot; // yul: mstore(32, q.slot)
               q[sload(g.slot)] = 0; // yul: sstore(keccak256(0, 64), 0)
               memory[0] = w; // yul: mstore(0, w)
-              y = keccak256(abi.encode(w)); // yul: let y := keccak256(0, 32)
+              y = keccak256(0, 32); // yul: let y := keccak256(0, 32)
               n = y; // yul: sstore(n.slot, y)
               memory[0] = y; // yul: mstore(0, y)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               o[y] = 1; // yul: sstore(keccak256(0, 64), 1)
               memory[0] = 0x69B61926a75DBC040e4AaF891ACDC31049fB3188; // yul: mstore(0, 0x69B61926a75DBC040e4AaF891ACDC31049fB3188)
-              y = keccak256(abi.encode(0x69B61926a75DBC040e4AaF891ACDC31049fB3188)); // yul: y := keccak256(0, 32)
+              y = keccak256(0, 32); // yul: y := keccak256(0, 32)
               memory[0] = y; // yul: mstore(0, y)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               o[y] = 1; // yul: sstore(keccak256(0, 64), 1)
               memory[0] = 0xf8b91676a9F179c4158CD976a34b28AA8C7C95b2; // yul: mstore(0, 0xf8b91676a9F179c4158CD976a34b28AA8C7C95b2)
-              y = keccak256(abi.encode(0xf8b91676a9F179c4158CD976a34b28AA8C7C95b2)); // yul: y := keccak256(0, 32)
+              y = keccak256(0, 32); // yul: y := keccak256(0, 32)
               memory[0] = y; // yul: mstore(0, y)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               o[y] = 1; // yul: sstore(keccak256(0, 64), 1)
@@ -288,7 +288,7 @@ Function TKM.approve(address, address, uint256)
           bool check;
           assembly /* s-seir solidity-like view */ {
               memory[0] = msg.sender; // yul: mstore(0, caller())
-              ad = keccak256(abi.encode(msg.sender)); // yul: let ad := keccak256(0, 32)
+              ad = keccak256(0, 32); // yul: let ad := keccak256(0, 32)
               memory[0] = ad; // yul: mstore(0, ad)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               check = o[ad]; // yul: check := sload(keccak256(0, 64))
@@ -338,7 +338,7 @@ Function TKM.setMaxs(address)
           bool check;
           assembly /* s-seir solidity-like view */ {
               memory[0] = msg.sender; // yul: mstore(0, caller())
-              ae = keccak256(abi.encode(msg.sender)); // yul: let ae := keccak256(0, 32)
+              ae = keccak256(0, 32); // yul: let ae := keccak256(0, 32)
               memory[0] = ae; // yul: mstore(0, ae)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               check = o[ae]; // yul: check := sload(keccak256(0, 64))
@@ -351,7 +351,7 @@ Function TKM.setMaxs(address)
           
           assembly /* s-seir solidity-like view */ {
               memory[0] = _max_; // yul: mstore(0, _max_)
-              af = keccak256(abi.encode(_max_)); // yul: let af := keccak256(0, 32)
+              af = keccak256(0, 32); // yul: let af := keccak256(0, 32)
               memory[0] = af; // yul: mstore(0, af)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               o[af] = 1; // yul: sstore(keccak256(0, 64), 1)
@@ -408,7 +408,7 @@ Function TKM.transferFrom(address, address, uint256)
           
           assembly /* s-seir solidity-like view */ {
               __sseir_eval_asm_s_7_1 = (amount > currentAllowance); // yul: if gt(amount, currentAllowance)
-              require((amount <= currentAllowance)); // yul: revert(0, 0)
+              require(((amount != 0) <= (currentAllowance != 0))); // yul: revert(0, 0)
           }
           
           assembly /* s-seir solidity-like view */ {
@@ -481,8 +481,8 @@ Function TKM.D(address, address, address, uint256)
                   memory[32] = q.slot; // yul: mstore(32, q.slot)
                   an = q[to]; // yul: let an := sload(keccak256(0, 64))
                   __sseir_eval_asm_s_11_1 = (an == 0); // yul: if iszero(an)
-                  require((an != 0)); // yul: revert(0, 0)
               }
+              require((an != 0)); // yul: revert(0, 0)
               if ((!(am)) || (!(__sseir_eval_asm_s_11_1) && am)) {
                   ao = (to == pairAddr); // yul: let ao := eq(to, pairAddr)
                   ap = (ao & flagVal); // yul: let ap := and(ao, flagVal)
@@ -492,8 +492,8 @@ Function TKM.D(address, address, address, uint256)
                   memory[32] = p.slot; // yul: mstore(32, p.slot)
                   aq = p[from]; // yul: let aq := sload(keccak256(0, 64))
                   __sseir_eval_asm_s_19_1 = (aq == 0); // yul: if iszero(aq)
-                  require((aq != 0)); // yul: revert(0, 0)
               }
+              require((aq != 0)); // yul: revert(0, 0)
           }
       }
   ```
@@ -525,7 +525,7 @@ Function TKM.setFlag(bool, bool)
           bool check;
           assembly /* s-seir solidity-like view */ {
               memory[0] = msg.sender; // yul: mstore(0, caller())
-              ar = keccak256(abi.encode(msg.sender)); // yul: let ar := keccak256(0, 32)
+              ar = keccak256(0, 32); // yul: let ar := keccak256(0, 32)
               memory[0] = ar; // yul: mstore(0, ar)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               check = o[ar]; // yul: check := sload(keccak256(0, 64))
@@ -558,7 +558,7 @@ Function TKM.E(address)
   function E(address _from) internal view returns (bool result) {
           assembly /* s-seir solidity-like view */ {
               memory[0] = _from; // yul: mstore(0, _from)
-              as = keccak256(abi.encode(_from)); // yul: let as := keccak256(0, 32)
+              as = keccak256(0, 32); // yul: let as := keccak256(0, 32)
               memory[0] = as; // yul: mstore(0, as)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               result = o[as]; // yul: result := sload(keccak256(0, 64))
@@ -657,7 +657,7 @@ Function TKM.C(address, address, uint256)
           bool check;
           assembly /* s-seir solidity-like view */ {
               memory[0] = from; // yul: mstore(0, from)
-              at = keccak256(abi.encode(from)); // yul: let at := keccak256(0, 32)
+              at = keccak256(0, 32); // yul: let at := keccak256(0, 32)
               memory[0] = at; // yul: mstore(0, at)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               check = o[at]; // yul: check := sload(keccak256(0, 64))
@@ -674,7 +674,7 @@ Function TKM.C(address, address, uint256)
                   fromBalance = amount; // yul: fromBalance := amount
               }
               __sseir_eval_asm_s_13_1 = (fromBalance < amount); // yul: if lt(fromBalance, amount)
-              require((fromBalance >= amount)); // yul: revert(0, 0)
+              require(((fromBalance != 0) >= (amount != 0))); // yul: revert(0, 0)
               if (!(__sseir_eval_asm_s_13_1)) {
                   fromSlot = slot(l[from]); // yul: let fromSlot := keccak256(0, 64)
                   newFromBalance = (fromBalance - amount); // yul: let newFromBalance := sub(fromBalance, amount)
@@ -692,9 +692,8 @@ Function TKM.C(address, address, uint256)
                   finalAmount = amount; // yul: let finalAmount := amount
                   __sseir_eval_asm_s_29_1 = (shouldTakeFee & isFeeRouter); // yul: if and(shouldTakeFee, isFeeRouter)
               }
+              require(100 != 0); // yul: let feeAmount := div(mul(amount, 5), 100)
               if (!(__sseir_eval_asm_s_13_1) && __sseir_eval_asm_s_29_1) {
-                  require(100 != 0); // yul: let feeAmount := div(mul(amount, 5), 100)
-                  feeAmount = ((amount * 5) / 100);
                   finalAmount = (amount - feeAmount); // yul: finalAmount := sub(amount, feeAmount)
                   feeToAddr = u; // yul: let feeToAddr := sload(u.slot)
                   memory[0] = feeToAddr; // yul: mstore(0, feeToAddr)
@@ -759,7 +758,7 @@ Function TKM.B(address, address, uint256)
               __sseir_eval_asm_s_1_1 = (spender == 0); // yul: if or(iszero(owner_), iszero(spender))
               __sseir_eval_asm_s_1_2 = (owner_ == 0);
               __sseir_eval_asm_s_1_3 = (__sseir_eval_asm_s_1_2 | __sseir_eval_asm_s_1_1);
-              require(!(((owner_ == 0) || (spender == 0)))); // yul: revert(0, 0)
+              require(!(or(iszero((owner_ != 0)), iszero((spender != 0))))); // yul: revert(0, 0)
               if (!(__sseir_eval_asm_s_1_3)) {
                   memory[0] = owner_; // yul: mstore(0, owner_)
                   memory[32] = m.slot; // yul: mstore(32, m.slot)
@@ -768,7 +767,9 @@ Function TKM.B(address, address, uint256)
                   memory[32] = slot; // yul: mstore(32, slot)
                   m[owner_][spender] = amount; // yul: sstore(keccak256(0, 64), amount)
                   memory[0] = amount; // yul: mstore(0, amount)
-                  emit Approval(owner_, spender, amount); // yul: log3(0, 32, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, owner_, spender)
+                  if (!(or(iszero(owner_), iszero(spender)))) {
+                      emit Approval(owner_, spender, amount); // yul: log3(0, 32, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, owner_, spender)
+                  }
               }
           }
       }
@@ -802,7 +803,7 @@ Function TKM.setFromRouterFlag(address, bool)
           bool check;
           assembly /* s-seir solidity-like view */ {
               memory[0] = msg.sender; // yul: mstore(0, caller())
-              hash = keccak256(abi.encode(msg.sender)); // yul: let hash := keccak256(0, 32)
+              hash = keccak256(0, 32); // yul: let hash := keccak256(0, 32)
               memory[0] = hash; // yul: mstore(0, hash)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               check = o[hash]; // yul: check := sload(keccak256(0, 64))
@@ -846,7 +847,7 @@ Function TKM.setfeeRouter(address, bool)
           bool check;
           assembly /* s-seir solidity-like view */ {
               memory[0] = msg.sender; // yul: mstore(0, caller())
-              hash = keccak256(abi.encode(msg.sender)); // yul: let hash := keccak256(0, 32)
+              hash = keccak256(0, 32); // yul: let hash := keccak256(0, 32)
               memory[0] = hash; // yul: mstore(0, hash)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               check = o[hash]; // yul: check := sload(keccak256(0, 64))
@@ -890,7 +891,7 @@ Function TKM.setToRouterFlag(address, bool)
           bool check;
           assembly /* s-seir solidity-like view */ {
               memory[0] = msg.sender; // yul: mstore(0, caller())
-              hash = keccak256(abi.encode(msg.sender)); // yul: let hash := keccak256(0, 32)
+              hash = keccak256(0, 32); // yul: let hash := keccak256(0, 32)
               memory[0] = hash; // yul: mstore(0, hash)
               memory[32] = o.slot; // yul: mstore(32, o.slot)
               check = o[hash]; // yul: check := sload(keccak256(0, 64))

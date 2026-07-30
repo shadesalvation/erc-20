@@ -264,11 +264,7 @@ def memory_range_path_resolutions(
         if key in seen:
             continue
         seen.add(key)
-        normalized = (
-            f"keccak256(abi.encodePacked({', '.join(parts)}))"
-            if hash_mode
-            else f"MemorySlice({', '.join(parts)})"
-        )
+        normalized = hash_normalized(parts, slices) if hash_mode else f"MemorySlice({', '.join(parts)})"
         resolutions.append(SinkPathResolution(
             path_id=f"path_{index}",
             condition=condition,
@@ -296,6 +292,24 @@ def path_resolution_signature(path: SinkPathResolution) -> tuple[Any, ...]:
         (name, arg.normalized, slice_signature(arg.memory_slice))
         for name, arg in sorted(path.arg_resolutions.items())
     )
+
+
+def hash_normalized(parts: tuple[str, ...], slices: list[dict[str, Any]]) -> str:
+    encoding = "abi.encode" if is_full_word_pair(slices) else "abi.encodePacked"
+    return f"keccak256({encoding}({', '.join(parts)}))"
+
+
+def is_full_word_pair(slices: list[dict[str, Any]]) -> bool:
+    if len(slices) != 2:
+        return False
+    try:
+        first_offset = int(slices[0].get("query_offset") or 0)
+        second_offset = int(slices[1].get("query_offset") or 0)
+        first_size = int(slices[0].get("size") or 0)
+        second_size = int(slices[1].get("size") or 0)
+    except Exception:
+        return False
+    return first_offset == 0 and second_offset == 32 and first_size == 32 and second_size == 32
 
 
 def slice_signature(memory_slice: dict[str, Any] | None) -> tuple[Any, ...]:

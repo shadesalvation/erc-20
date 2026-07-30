@@ -360,21 +360,211 @@ def test_path_conditioned_storage_renders_as_condition_blocks() -> None:
             {
                 "status": "resolved",
                 "condition": "cond",
-                "solidity_like": "storage[keccak256(abi.encodePacked(a, p.slot))] = 1;",
+                "solidity_like": "storage[keccak256(abi.encode(a, p.slot))] = 1;",
             },
             {
                 "status": "resolved",
                 "condition": "!(cond)",
-                "solidity_like": "storage[keccak256(abi.encodePacked(b, p.slot))] = 1;",
+                "solidity_like": "storage[keccak256(abi.encode(b, p.slot))] = 1;",
             },
         ]
     }))
     expect("path_conditioned_storage_lines", lines, [
         "if ((cond != 0)) {",
-        "    storage[keccak256(abi.encodePacked(a, p.slot))] = 1;",
+        "    storage[keccak256(abi.encode(a, p.slot))] = 1;",
         "}",
         "if (!(cond)) {",
-        "    storage[keccak256(abi.encodePacked(b, p.slot))] = 1;",
+        "    storage[keccak256(abi.encode(b, p.slot))] = 1;",
+        "}",
+    ])
+
+
+def test_require_overlay_keeps_outer_path_condition() -> None:
+    stmt = yul_stmt("asm_s_1", "revert(0, 0)", 100)
+    effects = [
+        eff("eff_revert", "Revert", ["asm_s_1"], {
+            "path_states": ["am && iszero(an)"],
+        })
+    ]
+    overlays = [
+        SemanticOverlay("ov_req", "RequireOverlay", ["eff_revert"], ["asm_s_1"], {
+            "nearest_condition": "iszero(an)",
+            "require_conditions": ["iszero(an)"],
+            "require_like": "require((an != 0));",
+        })
+    ]
+    fn = FunctionSSEIR("C.f()", "C", "f", "f()", [stmt], {}, [], effects, overlays)
+    out = render_body(fn)
+    expect("require_outer_path", out.splitlines(), [
+        "if ((am != 0)) {",
+        "    require((an != 0)); // yul: revert(0, 0)",
+        "}",
+    ])
+
+
+def test_path_conditioned_overlay_drops_duplicate_outer_guard() -> None:
+    stmt = yul_stmt("asm_s_1", "log3(0, 32, topic, owner_, spender)", 100)
+    effects = [
+        eff("eff_branch", "Branch", ["asm_s_0"], {
+            "condition": "or(iszero(owner_), iszero(spender))",
+            "condition_final_temp": "__guard",
+        }),
+        eff("eff_event", "EventLog", ["asm_s_1"], {
+            "path_states": ["!(or(iszero(owner_), iszero(spender)))"],
+        }),
+    ]
+    overlays = [
+        SemanticOverlay("ov_event", "PathConditionedEventEmit", ["eff_event"], ["asm_s_1"], {
+            "candidates": [
+                {
+                    "status": "resolved",
+                    "condition": "!(or(iszero(owner_), iszero(spender)))",
+                    "solidity_like": "emit Approval(owner_, spender, amount);",
+                }
+            ]
+        })
+    ]
+    fn = FunctionSSEIR("C.f()", "C", "f", "f()", [stmt], {}, [], effects, overlays)
+    out = render_body(fn)
+    expect("dedupe_outer_guard", out.splitlines(), [
+        "if (!(__guard)) {",
+        "    emit Approval(owner_, spender, amount); // yul: log3(0, 32, topic, owner_, spender)",
+        "}",
+    ])
+
+
+def test_division_guard_and_assignment_both_render() -> None:
+    stmt = yul_stmt("asm_s_1", "let feeAmount := div(mul(amount, 5), 100)", 100)
+    effects = [
+        eff("eff_value", "ValueDef", ["asm_s_1"], {
+            "path_states": ["guard"],
+        })
+    ]
+    overlays = [
+        SemanticOverlay("ov_req", "RequireOverlay", ["eff_value"], ["asm_s_1"], {
+            "condition": "100 != 0",
+            "require_like": "require(100 != 0);",
+        }),
+        SemanticOverlay("ov_expr", "ExpressionNormalization", ["eff_value"], ["asm_s_1"], {
+            "target": "feeAmount",
+            "solidity_like": "feeAmount = ((amount * 5) / 100);",
+            "context": "value",
+        }),
+    ]
+    fn = FunctionSSEIR("C.f()", "C", "f", "f()", [stmt], {}, [], effects, overlays)
+    out = render_body(fn)
+    expect("division_guard_assignment", out.splitlines(), [
+        "if ((guard != 0)) {",
+        "    require(100 != 0); // yul: let feeAmount := div(mul(amount, 5), 100)",
+        "    feeAmount = ((amount * 5) / 100);",
+        "}",
+    ])
+
+
+def test_raw_yul_if_scaffold_without_effect_is_not_rendered() -> None:
+    if_stmt = SourceStatement(
+        "asm_s_1",
+        "yul",
+        "if eq(a, b)",
+        "100:20:0",
+        "C.f()",
+        "asm_block_1",
+        {"nodeType": "YulIf"},
+    )
+    write_stmt = yul_stmt("asm_s_2", "mstore(ptr, value)", 130)
+    effects = [memory_effect("eff_write", "asm_s_2", "ptr", "value", ["eq(a, b)"])]
+    fn = FunctionSSEIR("C.f()", "C", "f", "f()", [if_stmt, write_stmt], {}, [], effects, [])
+    out = render_body(fn)
+    expect("skip_raw_if_scaffold", out.splitlines(), [
+        "if ((a == b)) {",
+        "    memory[ptr] = value; // yul: mstore(ptr, value)",
+        "}",
+    ])
+
+
+def test_dnf_condition_renders_as_nested_condition_tree() -> None:
+    stmt = yul_stmt("asm_s_1", "mstore(ptr, value)", 100)
+    effects = [
+        memory_effect("eff_write", "asm_s_1", "ptr", "value", [
+            "a && b",
+            "a && c",
+        ])
+    ]
+    fn = FunctionSSEIR("C.f()", "C", "f", "f()", [stmt], {}, [], effects, [])
+    out = render_body(fn)
+    expect("dnf_condition_tree", out.splitlines(), [
+        "if (a != 0) {",
+        "    if (b != 0) {",
+        "        memory[ptr] = value; // yul: mstore(ptr, value)",
+        "    }",
+        "    if (c != 0) {",
+        "        memory[ptr] = value;",
+        "    }",
+        "}",
+    ])
+
+
+def test_dnf_condition_with_impossible_branch_renders_simplified_single_guard() -> None:
+    stmt = yul_stmt("asm_s_1", "mstore(ptr, value)", 100)
+    effects = [
+        memory_effect("eff_write", "asm_s_1", "ptr", "value", [
+            "a && b",
+            "a && !(a) && b",
+        ])
+    ]
+    fn = FunctionSSEIR("C.f()", "C", "f", "f()", [stmt], {}, [], effects, [])
+    out = render_body(fn)
+    expect("dnf_impossible_branch", out.splitlines(), [
+        "if (a != 0 && b != 0) {",
+        "    memory[ptr] = value; // yul: mstore(ptr, value)",
+        "}",
+    ])
+
+
+def test_path_conditioned_overlay_suppressed_by_loop_condition() -> None:
+    stmt = yul_stmt("asm_s_1", "log3(ptr, 32, topic, from, to)", 100)
+    effects = [
+        eff("eff_event", "EventLog", ["asm_s_1"], {
+            "path_states": ["lt(i, len)"],
+        })
+    ]
+    overlays = [
+        SemanticOverlay("ov_event", "PathConditionedEventEmit", ["eff_event"], ["asm_s_1"], {
+            "candidates": [
+                {
+                    "status": "resolved",
+                    "condition": "(i < len)",
+                    "solidity_like": "emit Transfer(from, to, value);",
+                }
+            ]
+        })
+    ]
+    fn = FunctionSSEIR("C.f()", "C", "f", "f()", [stmt], {}, [], effects, overlays)
+    rendered = SolidityLikeRenderer(fn).render_stmt(stmt, suppress_predicates=["lt(i, len)"])
+    expect("loop_suppressed_path_conditioned_event", rendered, [
+        "emit Transfer(from, to, value);",
+    ])
+
+
+def test_minified_function_view_is_indented_for_audit() -> None:
+    source = (
+        "function f() public {\n"
+        "assembly {\n"
+        "mstore(0, 1)\n"
+        "}\n"
+        "return;\n"
+        "}"
+    )
+    stmt = yul_stmt("asm_s_1", "mstore(0, 1)", 20)
+    effects = [memory_effect("eff_write", "asm_s_1", "0", "1", ["entry"])]
+    fn = FunctionSSEIR("C.f()", "C", "f", "f()", [stmt], {}, [], effects, [])
+    out = SolidityLikeRenderer(fn).function_solidity_like_text(source)
+    expect("minified_indent", out.splitlines(), [
+        "function f() public {",
+        "    assembly /* s-seir solidity-like view */ {",
+        "        memory[0] = 1; // yul: mstore(0, 1)",
+        "    }",
+        "    return;",
         "}",
     ])
 
@@ -395,6 +585,14 @@ if __name__ == "__main__":
         test_function_return_keeps_source_and_adds_unique_recovered_assignment_note,
         test_function_return_not_rewritten_for_path_dependent_assignment,
         test_path_conditioned_storage_renders_as_condition_blocks,
+        test_require_overlay_keeps_outer_path_condition,
+        test_path_conditioned_overlay_drops_duplicate_outer_guard,
+        test_division_guard_and_assignment_both_render,
+        test_raw_yul_if_scaffold_without_effect_is_not_rendered,
+        test_dnf_condition_renders_as_nested_condition_tree,
+        test_dnf_condition_with_impossible_branch_renders_simplified_single_guard,
+        test_path_conditioned_overlay_suppressed_by_loop_condition,
+        test_minified_function_view_is_indented_for_audit,
     ]
     for test in tests:
         test()

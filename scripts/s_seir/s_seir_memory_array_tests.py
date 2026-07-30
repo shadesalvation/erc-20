@@ -82,6 +82,45 @@ def test_parameter_array_element_read_nested_bitset_expression() -> None:
     assert expr["solidity_like"] == "roles = ((1 << ordinals[((i - 32) / 32)]) | roles);"
 
 
+def test_parameter_array_element_read_loop_plus_one_offset() -> None:
+    fn = unit([VariableInfo("to", "parameter", "address[]", "memory")])
+    overlays = overlays_for(fn, [
+        effect("MemoryRead", {"read_from": "add(to, mul(add(i, 1), 0x20))", "value": "account"}),
+        effect("ValueDef", {"targets": ["account"], "value": "mload(add(to, mul(add(i, 1), 0x20)))"}),
+    ])
+    element = first(overlays, "MemoryArrayElementRead").attrs
+    assert element["index"] == "i"
+    assert element["access"] == "to[i]"
+    expr = first([o for o in overlays if o.kind == "ExpressionNormalization" and o.attrs.get("target") == "account"], "ExpressionNormalization").attrs
+    assert expr["solidity_like"] == "account = to[i];"
+
+
+def test_parameter_array_element_read_data_base_plus_index_stride() -> None:
+    fn = unit([VariableInfo("users", "parameter", "address[]", "memory")])
+    overlays = overlays_for(fn, [
+        effect("MemoryRead", {"read_from": "add(users, add(0x20, mul(i, 0x20)))", "value": "account"}),
+        effect("ValueDef", {"targets": ["account"], "value": "mload(add(users, add(0x20, mul(i, 0x20))))"}),
+    ])
+    element = first(overlays, "MemoryArrayElementRead").attrs
+    assert element["index"] == "i"
+    assert element["access"] == "users[i]"
+    expr = first([o for o in overlays if o.kind == "ExpressionNormalization" and o.attrs.get("target") == "account"], "ExpressionNormalization").attrs
+    assert expr["solidity_like"] == "account = users[i];"
+
+
+def test_parameter_array_element_read_commuted_array_add() -> None:
+    fn = unit([VariableInfo("users", "parameter", "address[]", "memory")])
+    overlays = overlays_for(fn, [
+        effect("MemoryRead", {"read_from": "add(mul(add(i, 1), 0x20), users)", "value": "account"}),
+        effect("ValueDef", {"targets": ["account"], "value": "mload(add(mul(add(i, 1), 0x20), users))"}),
+    ])
+    element = first(overlays, "MemoryArrayElementRead").attrs
+    assert element["index"] == "i"
+    assert element["access"] == "users[i]"
+    expr = first([o for o in overlays if o.kind == "ExpressionNormalization" and o.attrs.get("target") == "account"], "ExpressionNormalization").attrs
+    assert expr["solidity_like"] == "account = users[i];"
+
+
 def test_local_array_is_not_parameter_array() -> None:
     fn = unit([], [VariableInfo("localArray", "local", "uint256[]", "memory")])
     overlays = overlays_for(fn, [
@@ -146,6 +185,9 @@ if __name__ == "__main__":
         test_parameter_array_length_read,
         test_parameter_array_element_read_constant_offset,
         test_parameter_array_element_read_nested_bitset_expression,
+        test_parameter_array_element_read_loop_plus_one_offset,
+        test_parameter_array_element_read_data_base_plus_index_stride,
+        test_parameter_array_element_read_commuted_array_add,
         test_local_array_is_not_parameter_array,
         test_return_array_construction_cursor_pattern,
         test_memory_region_allocate_semantic_dedupe,

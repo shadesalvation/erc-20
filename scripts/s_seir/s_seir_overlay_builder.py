@@ -237,15 +237,26 @@ class SemanticOverlayBuilder:
                 discarded.append({'effect': effect.effect_id, 'kind': effect.kind, 'stmt_refs': effect.stmt_refs})
         return discarded
 
-    @staticmethod
-    def require_condition(conditions: list[str], type_env: Any) -> str:
+    def require_condition(self, conditions: list[str], type_env: Any) -> str:
         clean = [condition for condition in conditions if condition]
         if not clean:
             return 'false'
+        clean = [self.normalize_condition_state_reads(type_env, condition) for condition in clean]
         if len(clean) == 1:
             return invert_condition(clean[0], type_env)
         joined = ' && '.join(f'({normalize_expr(condition)})' for condition in clean)
         return f'!({joined})'
+
+    def normalize_condition_state_reads(self, type_env: Any, expr: Any, leaf_context: str = 'value') -> str:
+        text = str(expr or '').strip()
+        name, args = call_parts(text)
+        if not name:
+            return normalize_expr(text, context=leaf_context)
+        direct_state = self.direct_state_read_from_sload_expr(type_env, text)
+        if direct_state:
+            return str(direct_state['solidity_like'])
+        rendered = [self.normalize_condition_state_reads(type_env, arg, 'value') for arg in args]
+        return f"{name}({', '.join(rendered)})"
 
     @classmethod
     def common_condition_suffix(cls, path_states: list[str]) -> list[str]:
@@ -467,6 +478,7 @@ class SemanticOverlayBuilder:
         slot_expr_by_var: dict[str, dict[str, Any]] = {}
         hash_effect_by_var: dict[str, EffectNode] = {}
         value_defs_by_version = self.value_defs_by_version(effects)
+        ambiguous_hash_aliases: set[str] = set()
 
         for e in effects:
             if e.kind != 'MemoryHash':
@@ -476,7 +488,7 @@ class SemanticOverlayBuilder:
                 continue
             slot_expr = (
                 self.mapping_slot_expr(type_env, e, slot_expr_by_var | {k: v for k, v in hash_candidates_values(hash_candidates).items()})
-                or self.packed_hash_slot_expr(e)
+                or self.packed_hash_slot_expr(type_env, e, hash_candidates_values(hash_candidates))
             )
             if not slot_expr:
                 continue
@@ -484,6 +496,16 @@ class SemanticOverlayBuilder:
             slot_expr['target_keys'] = keys
             for key in keys:
                 hash_candidates[key] = (e, slot_expr)
+            alias = self.hash_result_alias(e)
+            if alias:
+                if alias in ambiguous_hash_aliases:
+                    continue
+                previous = hash_candidates.get(alias)
+                if previous and previous[0].effect_id != e.effect_id:
+                    hash_candidates.pop(alias, None)
+                    ambiguous_hash_aliases.add(alias)
+                elif not previous:
+                    hash_candidates[alias] = (e, slot_expr)
 
         def activate(slot_key: str | None) -> None:
             if not slot_key or slot_key in activated or slot_key not in hash_candidates:
@@ -592,6 +614,7 @@ class SemanticOverlayBuilder:
                     'slot_key': slot_key,
                     'slot_versions': e.attrs.get('slot_versions'),
                     'slot_effect': hash_effect_by_var.get(slot_key).effect_id if slot_key in hash_effect_by_var else None,
+                    'slot_derivation': slot_expr.get('slot_derivation'),
                     'sink_resolution': slot_expr.get('sink_resolution'),
                     'solidity_like': self.storage_solidity_like(kind, slot_expr['access'], value, e),
                     'notes': slot_expr.get('notes', []),
@@ -767,10 +790,33 @@ class SemanticOverlayBuilder:
         expr: Any,
         value_defs_by_name: dict[str, list[EffectNode]],
     ) -> tuple[str, dict[str, Any] | None]:
+        direct_state = self.direct_state_read_from_sload_expr(type_env, expr)
+        if direct_state:
+            return str(direct_state['solidity_like']), direct_state
         state_read = self.manual_slot_state_read_from_expr(type_env, expr, value_defs_by_name)
         if state_read:
             return str(state_read['solidity_like']), state_read
         return self.normalize_expression_with_memory_arrays(type_env, expr), None
+
+    def direct_state_read_from_sload_expr(self, type_env: Any, expr: Any) -> dict[str, Any] | None:
+        name, args = call_parts(str(expr or '').strip())
+        if name != 'sload' or len(args) != 1:
+            return None
+        slot_expr = args[0].strip()
+        state = getattr(type_env, 'state_var_by_slot', lambda _slot: None)(slot_expr)
+        if not state:
+            return None
+        return self.clean({
+            'original': str(expr),
+            'access': state.name,
+            'slot': slot_expr,
+            'state_variable': state.name,
+            'storage_model': 'direct_state_slot',
+            'state_access': True,
+            'state_mutation': False,
+            'solidity_like': state.name,
+            'notes': ['direct_state_slot', 'reads_contract_state'],
+        })
 
     def normalize_expression_with_memory_arrays(self, type_env: Any, expr: Any) -> str:
         text = str(expr or '').strip()
@@ -975,7 +1021,8 @@ class SemanticOverlayBuilder:
                 }
             return None
 
-    def packed_hash_slot_expr(self, effect: EffectNode) -> dict[str, Any] | None:
+    def packed_hash_slot_expr(self, type_env: Any, effect: EffectNode, known: dict[str, dict[str, Any]] | None = None) -> dict[str, Any] | None:
+        known = known or {}
         sink_resolution = packed_hash_sink_resolution(effect)
         if sink_resolution and sink_resolution.path_sensitive:
             candidates = []
@@ -992,17 +1039,27 @@ class SemanticOverlayBuilder:
                 memory_slice = slot_arg.memory_slice or {}
                 slices = memory_slice.get('slices') or []
                 parts = [str(item.get('extraction')) for item in slices if item.get('extraction')]
-                notes = list(dict.fromkeys(['manual_packed_hash_slot', *(slot_arg.notes or [])]))
+                notes = list(dict.fromkeys(['byte_axis_memory_slice', 'path_sensitive_sink', *(slot_arg.notes or [])]))
+                mapping_slot = self.byte_slice_mapping_slot_expr(type_env, parts, memory_slice, notes, sink_resolution.to_dict(), known)
+                if mapping_slot:
+                    candidates.append(self.clean({
+                        'status': 'resolved',
+                        'condition': path.condition,
+                        **mapping_slot,
+                    }))
+                    continue
+                notes = list(dict.fromkeys(['manual_packed_hash_slot', *notes]))
                 candidates.append(self.clean({
                     'status': 'resolved',
                     'condition': path.condition,
                     'access': access,
+                    'slot_kind': 'manual_packed_hash_slot',
                     'packed_inputs': parts,
                     'byte_slice': memory_slice,
                     'slot_derivation': {
                         'kind': 'manual_packed_hash_slot',
                         'hash': 'keccak256',
-                        'encoding': 'abi.encodePacked',
+                        'encoding': self.byte_slice_hash_encoding(memory_slice),
                         'expression': access,
                         'slot_key': slot_arg.ssa_key,
                         'packed_inputs': parts,
@@ -1015,6 +1072,25 @@ class SemanticOverlayBuilder:
             all_resolved = all(item.get('status') == 'resolved' for item in candidates)
             if len(resolved_accesses) == 1 and all_resolved:
                 only = next(item for item in candidates if item.get('status') == 'resolved')
+                if only.get('slot_kind') != 'manual_packed_hash_slot':
+                    return self.clean({
+                        'access': only.get('access'),
+                        'key': only.get('key'),
+                        'base': only.get('base'),
+                        'base_key': only.get('base_key'),
+                        'state_variable': only.get('state_variable'),
+                        'storage_reference': only.get('storage_reference'),
+                        'storage_reference_type': only.get('storage_reference_type'),
+                        'storage_reference_kind': only.get('storage_reference_kind'),
+                        'storage_field': only.get('storage_field'),
+                        'slot_kind': only.get('slot_kind'),
+                        'resolved_inputs': only.get('resolved_inputs'),
+                        'byte_slice': only.get('byte_slice'),
+                        'packed_semantics': only.get('packed_semantics'),
+                        'slot_derivation': only.get('slot_derivation'),
+                        'sink_resolution': sink_resolution.to_dict(),
+                        'notes': list(dict.fromkeys((only.get('notes') or []) + ['path_sensitive_sink_collapsed_same_access'])),
+                    })
                 return self.clean({
                     'access': only.get('access'),
                     'key': ', '.join(only.get('packed_inputs') or []),
@@ -1047,7 +1123,18 @@ class SemanticOverlayBuilder:
         parts = [str(item.get('extraction')) for item in slices]
         if len(parts) == 1 and int(byte_slice.get('size') or 0) == 32:
             return None
-        access = f"storage[keccak256(abi.encodePacked({', '.join(parts)}))]"
+        mapping_slot = self.byte_slice_mapping_slot_expr(
+            type_env,
+            parts,
+            byte_slice,
+            ['byte_axis_memory_slice'],
+            sink_resolution.to_dict() if sink_resolution else None,
+            known,
+        )
+        if mapping_slot:
+            return mapping_slot
+        encoding = self.byte_slice_hash_encoding(byte_slice)
+        access = f"storage[keccak256({encoding}({', '.join(parts)}))]"
         return self.clean({
             'access': access,
             'key': ', '.join(parts),
@@ -1058,7 +1145,146 @@ class SemanticOverlayBuilder:
             'byte_slice': byte_slice,
             'packed_semantics': parts,
             'sink_resolution': sink_resolution.to_dict() if sink_resolution else None,
+            'encoding': encoding,
             'notes': ['manual_packed_hash_slot', 'byte_axis_memory_slice'],
+        })
+
+    def byte_slice_mapping_slot_expr(
+        self,
+        type_env: Any,
+        parts: list[str],
+        byte_slice: dict[str, Any],
+        notes: list[str] | None = None,
+        sink_resolution: dict[str, Any] | None = None,
+        known: dict[str, dict[str, Any]] | None = None,
+    ) -> dict[str, Any] | None:
+        if len(parts) != 2 or not self.is_full_word_pair(byte_slice):
+            return None
+        known = known or {}
+        key, base = parts[0], parts[1]
+        key_norm = normalize_expr(key)
+        base_key = self.first_known_key([base], known)
+        if base_key:
+            prev = known[base_key]
+            access = f"{prev['access']}[{key_norm}]"
+            all_notes = list(dict.fromkeys(['nested_mapping_slot_from_byte_axis', *(notes or [])]))
+            return self.clean({
+                'access': access,
+                'key': key_norm,
+                'base': base,
+                'base_key': base_key,
+                'state_variable': prev.get('state_variable'),
+                'storage_reference': prev.get('storage_reference'),
+                'storage_reference_type': prev.get('storage_reference_type'),
+                'storage_reference_kind': prev.get('storage_reference_kind'),
+                'storage_field': prev.get('storage_field'),
+                'slot_kind': 'nested_mapping_slot',
+                'resolved_inputs': parts,
+                'byte_slice': byte_slice,
+                'packed_semantics': parts,
+                'slot_derivation': {
+                    'kind': 'nested_mapping_slot',
+                    'hash': 'keccak256',
+                    'encoding': 'abi.encode',
+                    'expression': access,
+                    'key': key_norm,
+                    'base': base,
+                    'base_key': base_key,
+                    'base_expression': prev.get('access'),
+                    'state_variable': prev.get('state_variable'),
+                    'byte_slice': byte_slice,
+                    'notes': all_notes,
+                },
+                'sink_resolution': sink_resolution,
+                'notes': all_notes,
+            })
+        state = getattr(type_env, 'state_var_by_slot', lambda _slot: None)(base)
+        if not state:
+            return None
+        is_mapping = getattr(type_env, 'is_mapping_type', lambda _type: False)(getattr(state, 'type_string', None))
+        if not is_mapping:
+            return None
+        access = f'{state.name}[{key_norm}]'
+        all_notes = list(dict.fromkeys(['mapping_slot_from_byte_axis', *(notes or [])]))
+        return self.clean({
+            'access': access,
+            'key': key_norm,
+            'base': base,
+            'base_key': base,
+            'state_variable': state.name,
+            'slot_kind': 'mapping_slot',
+            'resolved_inputs': parts,
+            'byte_slice': byte_slice,
+            'packed_semantics': parts,
+            'slot_derivation': {
+                'kind': 'mapping_slot',
+                'hash': 'keccak256',
+                'encoding': 'abi.encode',
+                'expression': access,
+                'key': key_norm,
+                'base': base,
+                'state_variable': state.name,
+                'byte_slice': byte_slice,
+                'notes': all_notes,
+            },
+            'sink_resolution': sink_resolution,
+            'notes': all_notes,
+        })
+
+    @staticmethod
+    def is_full_word_pair(byte_slice: dict[str, Any]) -> bool:
+        slices = byte_slice.get('slices') or []
+        if len(slices) != 2:
+            return False
+        try:
+            first_offset = int(slices[0].get('query_offset') or 0)
+            second_offset = int(slices[1].get('query_offset') or 0)
+            first_size = int(slices[0].get('size') or 0)
+            second_size = int(slices[1].get('size') or 0)
+        except Exception:
+            return False
+        return first_offset == 0 and second_offset == 32 and first_size == 32 and second_size == 32
+
+    @classmethod
+    def byte_slice_hash_encoding(cls, byte_slice: dict[str, Any]) -> str:
+        slices = byte_slice.get('slices') or []
+        try:
+            total_size = int(byte_slice.get('size') or 0)
+        except Exception:
+            total_size = 0
+        if slices and total_size > 0 and total_size % 32 == 0:
+            expected_offset = 0
+            full_words = True
+            for item in slices:
+                try:
+                    offset = int(item.get('query_offset') or 0)
+                    size = int(item.get('size') or 0)
+                except Exception:
+                    full_words = False
+                    break
+                if offset != expected_offset or size != 32:
+                    full_words = False
+                    break
+                expected_offset += 32
+            if full_words and expected_offset == total_size:
+                return 'abi.encode'
+        return 'abi.encodePacked'
+
+    def memory_hash_expression(self, effect: EffectNode) -> dict[str, Any] | None:
+        byte_slice = ((effect.attrs.get('memory_read') or {}).get('byte_slice') or {})
+        if not byte_slice.get('complete'):
+            return None
+        slices = byte_slice.get('slices') or []
+        if not slices or any(not item.get('extraction') for item in slices):
+            return None
+        parts = [normalize_expr(item.get('extraction')) for item in slices]
+        encoding = self.byte_slice_hash_encoding(byte_slice)
+        return self.clean({
+            'expression': f"keccak256({encoding}({', '.join(parts)}))",
+            'encoding': encoding,
+            'resolved_inputs': parts,
+            'byte_slice': byte_slice,
+            'notes': ['memory_hash_from_byte_axis'],
         })
 
     def path_conditioned_storage_overlay_from_slot_expr(
@@ -1076,7 +1302,12 @@ class SemanticOverlayBuilder:
                 candidates.append(candidate)
                 continue
             access = candidate.get('access')
-            kind = 'StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite'
+            manual_packed = candidate.get('slot_kind') == 'manual_packed_hash_slot'
+            kind = (
+                ('StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite')
+                if manual_packed
+                else ('MappingRead' if effect.kind == 'StorageRead' else 'MappingWrite')
+            )
             solidity_like = (
                 f"{value} = {access};"
                 if effect.kind == 'StorageRead' and value
@@ -1088,10 +1319,10 @@ class SemanticOverlayBuilder:
                 'solidity_like': solidity_like,
                 'value': normalize_expr(value) if effect.kind == 'StorageWrite' else None,
                 'target': value if effect.kind == 'StorageRead' else None,
-                'storage_model': 'manual_packed_hash_slot',
-                'state_access': True,
-                'state_mutation': effect.kind == 'StorageWrite',
-                'variable_name_inferred': False,
+                'storage_model': 'manual_packed_hash_slot' if manual_packed else None,
+                'state_access': True if manual_packed else None,
+                'state_mutation': effect.kind == 'StorageWrite' if manual_packed else None,
+                'variable_name_inferred': False if manual_packed else None,
             }))
         effects_used = [x for x in [slot_effect.effect_id if slot_effect else None, effect.effect_id] if x]
         refs = list(dict.fromkeys((slot_effect.stmt_refs if slot_effect else []) + effect.stmt_refs))
@@ -1118,7 +1349,7 @@ class SemanticOverlayBuilder:
         return {
             'kind': 'manual_packed_hash_slot',
             'hash': 'keccak256',
-            'encoding': 'abi.encodePacked',
+            'encoding': slot_expr.get('encoding') or 'abi.encodePacked',
             'expression': slot_expr.get('access'),
             'slot_key': slot_key,
             'slot_effect': slot_effect.effect_id if slot_effect else None,
@@ -1167,6 +1398,15 @@ class SemanticOverlayBuilder:
         if value and isinstance(value_versions, dict):
             versions = list(value_versions.get(str(value)) or [])
         return versions or ([str(value)] if value else [])
+
+    @staticmethod
+    def hash_result_alias(effect: EffectNode) -> str | None:
+        value = str(effect.attrs.get('value') or '').strip()
+        if not value:
+            return None
+        if call_parts(value)[0]:
+            return None
+        return value
 
     @staticmethod
     def storage_slot_keys(effect: EffectNode) -> list[str]:
@@ -2754,12 +2994,10 @@ class SemanticOverlayBuilder:
                 'element_type': getattr(type_env, 'memory_array_element_type', lambda _name: None)(text),
                 'layout': 'solidity_memory_dynamic_array_length_at_base',
             })
-        parsed = self.array_base_and_offset(text)
+        parsed = self.memory_array_base_and_offset(type_env, text)
         if not parsed:
             return None
         base, offset = parsed
-        if not getattr(type_env, 'is_memory_array_parameter', lambda _name: False)(base):
-            return None
         variable = type_env.memory_array_parameter(base)
         index_expr = self.memory_array_index_from_offset(offset)
         return self.clean({
@@ -2773,6 +3011,19 @@ class SemanticOverlayBuilder:
             'access': f'{base}[{index_expr}]',
             'layout': 'solidity_memory_dynamic_array_elements_after_length_word',
         })
+
+    @classmethod
+    def memory_array_base_and_offset(cls, type_env: Any, expr: str) -> tuple[str, str] | None:
+        parsed = cls.array_base_and_offset(expr)
+        if not parsed:
+            return None
+        left, right = parsed
+        is_array = getattr(type_env, 'is_memory_array_parameter', lambda _name: False)
+        if is_array(left):
+            return left, right
+        if is_array(right):
+            return right, left
+        return None
 
     @staticmethod
     def array_base_and_offset(expr: str) -> tuple[str, str] | None:
@@ -2792,11 +3043,80 @@ class SemanticOverlayBuilder:
             index = (value - 32) // 32
             if value >= 32 and (value - 32) % 32 == 0:
                 return str(index)
+        affine = SemanticOverlayBuilder.memory_array_affine_word_index(text)
+        if affine:
+            return affine
         return f"(({normalize_expr(text)} - 32) / 32)"
+
+    @staticmethod
+    def memory_array_affine_word_index(offset: Any) -> str | None:
+        """Recognize common memory-array element offsets.
+
+        Solidity dynamic memory arrays store the length at base + 0 and the
+        first element at base + 32. Yul often spells element i as either
+        add(base, mul(add(i, 1), 0x20)) or add(base, add(0x20, mul(i, 0x20))).
+        Only these linear word-stride forms are simplified here.
+        """
+
+        text = str(offset or '').strip()
+        mul = SemanticOverlayBuilder.word_stride_mul(text)
+        if mul is not None:
+            plus_one = SemanticOverlayBuilder.add_constant(mul, 1)
+            if plus_one is not None:
+                return plus_one
+            return f"({normalize_expr(mul)} - 1)"
+
+        name, args = call_parts(text)
+        if name != 'add' or len(args) != 2:
+            return None
+        left, right = args[0].strip(), args[1].strip()
+        for const_side, mul_side in ((left, right), (right, left)):
+            if parse_int_literal(const_side) != 32:
+                continue
+            inner = SemanticOverlayBuilder.word_stride_mul(mul_side)
+            if inner is not None:
+                return normalize_expr(inner)
+        return None
+
+    @staticmethod
+    def word_stride_mul(expr: Any) -> str | None:
+        name, args = call_parts(str(expr or '').strip())
+        if name != 'mul' or len(args) != 2:
+            return None
+        left, right = args[0].strip(), args[1].strip()
+        if parse_int_literal(left) == 32:
+            return right
+        if parse_int_literal(right) == 32:
+            return left
+        return None
+
+    @staticmethod
+    def add_constant(expr: Any, expected: int) -> str | None:
+        name, args = call_parts(str(expr or '').strip())
+        if name != 'add' or len(args) != 2:
+            return None
+        left, right = args[0].strip(), args[1].strip()
+        if parse_int_literal(left) == expected:
+            return normalize_expr(right)
+        if parse_int_literal(right) == expected:
+            return normalize_expr(left)
+        return None
 
     def expression_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []
         value_defs_by_name = self.value_defs_by_name(effects)
+        memory_hash_by_stmt_target: dict[tuple[str, str], dict[str, Any]] = {}
+        for e in effects:
+            if e.kind != 'MemoryHash':
+                continue
+            target = e.attrs.get('value')
+            if not target:
+                continue
+            rendered = self.memory_hash_expression(e)
+            if not rendered:
+                continue
+            for ref in e.stmt_refs:
+                memory_hash_by_stmt_target[(str(ref), str(target))] = rendered
         for e in effects:
             if e.kind == 'ValueDef':
                 target = e.attrs.get('targets', [None])[0]
@@ -2813,6 +3133,18 @@ class SemanticOverlayBuilder:
                     }))
                     continue
                 expr = self.normalize_expression_with_memory_arrays(type_env, e.attrs.get('value'))
+                memory_hash = None
+                if target:
+                    memory_hash = next(
+                        (
+                            memory_hash_by_stmt_target.get((str(ref), str(target)))
+                            for ref in e.stmt_refs
+                            if memory_hash_by_stmt_target.get((str(ref), str(target)))
+                        ),
+                        None,
+                    )
+                if memory_hash:
+                    expr = str(memory_hash['expression'])
                 out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {
                     'target': target,
                     'expression': e.attrs.get('value'),
@@ -2820,6 +3152,7 @@ class SemanticOverlayBuilder:
                     'solidity_like': f"{target} = {expr};" if target else None,
                     'context': 'value',
                     'division_guards': division_guards(e.attrs.get('value')),
+                    'memory_hash': memory_hash,
                 }))
             elif e.kind == 'Branch':
                 condition_text = e.attrs.get('condition_final_temp') or e.attrs.get('condition_normalized') or normalize_expr(e.attrs.get('condition'))

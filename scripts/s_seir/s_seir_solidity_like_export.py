@@ -133,7 +133,32 @@ class SolidityLikeRenderer:
         for start, end, replacement in reversed(replacements):
             result = result[:start] + replacement + result[end:]
         result = self.annotate_return_expressions(result)
-        return result
+        return self.format_solidity_like_source(result)
+
+    @staticmethod
+    def format_solidity_like_source(source_text: str) -> str:
+        """Indent the derived function view without changing source semantics.
+
+        Some verified contracts are flattened or minified with every line at
+        column zero. The Solidity-like view is an audit artifact, so it can use
+        brace-based indentation even when the original source did not.
+        """
+
+        lines: list[str] = []
+        depth = 0
+        for raw in source_text.strip("\n").splitlines():
+            stripped = raw.strip()
+            if not stripped:
+                lines.append("")
+                continue
+            leading_closes = len(stripped) - len(stripped.lstrip("}"))
+            if leading_closes:
+                depth = max(depth - leading_closes, 0)
+            lines.append(f"{'    ' * depth}{stripped}")
+            opens = stripped.count("{")
+            closes = stripped.count("}")
+            depth = max(depth + opens - max(closes - leading_closes, 0), 0)
+        return "\n".join(lines)
 
     def annotate_return_expressions(self, source_text: str) -> str:
         replacements = self.semantic_assignment_replacements()
@@ -382,7 +407,7 @@ class SolidityLikeRenderer:
         memory = self.memory_write_line(stmt)
         if memory:
             return memory
-        if self.branch_effect(stmt) is not None or self.is_loop_scaffold(stmt):
+        if self.branch_effect(stmt) is not None or self.is_control_scaffold(stmt):
             return None
         return self.raw_statement_line(stmt)
 
@@ -417,7 +442,7 @@ class SolidityLikeRenderer:
         if memory:
             return self.with_path_condition(stmt, overlays, [memory], suppress_predicates=suppress_predicates)
 
-        if self.is_loop_scaffold(stmt):
+        if self.is_control_scaffold(stmt):
             return None
         return self.with_path_condition(stmt, overlays, [self.raw_statement_line(stmt)], suppress_predicates=suppress_predicates)
 
@@ -430,14 +455,244 @@ class SolidityLikeRenderer:
         return 0
 
     def with_path_condition(self, stmt: SourceStatement, overlays: list[SemanticOverlay], lines: list[str], suppress_predicates: list[str] | None = None) -> list[str]:
-        if any(overlay.kind == "RequireOverlay" for overlay in overlays):
-            return lines
+        suppress_predicates = list(suppress_predicates or [])
+        for overlay in overlays:
+            if overlay.kind != "RequireOverlay":
+                continue
+            attrs = overlay.attrs
+            nearest = attrs.get("nearest_condition")
+            if nearest:
+                suppress_predicates.append(str(nearest))
+            for condition in attrs.get("require_conditions") or []:
+                if condition:
+                    suppress_predicates.append(str(condition))
+        for predicate in suppress_predicates:
+            lines = self.remove_redundant_inner_condition(lines, predicate)
         condition = self.statement_condition(stmt, overlays, suppress_predicates=suppress_predicates)
         if not condition:
             return lines
+        lines = self.remove_redundant_inner_condition(lines, condition)
+        tree_lines = self.condition_tree_block(condition, lines)
+        if tree_lines:
+            return tree_lines
         out = [f"if ({condition}) {{"]
         out.extend(f"    {line}" for line in lines)
         out.append("}")
+        return out
+
+    @classmethod
+    def condition_tree_block(cls, condition: str, lines: list[str]) -> list[str]:
+        """Render a long DNF condition as nested condition scopes.
+
+        This is only a Solidity-like presentation optimization. The S-SEIR
+        path state remains unchanged; the renderer simply expands a large
+        `if ((a && b) || (a && c))` into a condition tree with shared parents.
+        """
+
+        if "||" not in str(condition):
+            return []
+        terms = cls.parse_condition_dnf(condition)
+        if not terms:
+            return []
+        if len(terms) == 1:
+            term = terms[0]
+            if not term:
+                return lines
+            simplified = cls.condition_term_text(term)
+            out = [f"if ({simplified}) {{"]
+            out.extend(f"    {line}" for line in lines)
+            out.append("}")
+            return out
+        return cls.render_condition_terms(terms, lines, 0)
+
+    @classmethod
+    def parse_condition_dnf(cls, condition: str) -> list[frozenset[str]]:
+        text = cls.strip_outer_parens(str(condition or "").strip())
+        if not text or text == "entry":
+            return [frozenset()]
+        terms: list[frozenset[str]] = []
+        for disjunct in cls.split_top_level(text, "||"):
+            atoms = [
+                cls.normalize_condition_atom(part)
+                for part in cls.split_top_level(cls.strip_outer_parens(disjunct), "&&")
+            ]
+            terms.append(frozenset(atom for atom in atoms if atom))
+        return cls.simplify_condition_terms(terms)
+
+    @classmethod
+    def simplify_condition_terms(cls, terms: list[frozenset[str]]) -> list[frozenset[str]]:
+        cleaned: set[frozenset[str]] = set()
+        for term in terms:
+            atoms = set(term)
+            if any(cls.negated_condition_atom(atom) in atoms for atom in atoms):
+                continue
+            cleaned.add(frozenset(atoms))
+
+        absorbed = set(cleaned)
+        for left in cleaned:
+            for right in cleaned:
+                if left != right and left.issubset(right):
+                    absorbed.discard(right)
+
+        return sorted(absorbed, key=lambda item: (len(item), sorted(item)))
+
+    @classmethod
+    def render_condition_terms(cls, terms: list[frozenset[str]], lines: list[str], indent: int) -> list[str]:
+        out: list[str] = []
+        current = [term for term in terms if not term]
+        remaining = [term for term in terms if term]
+        for _term in current:
+            out.extend(f"{'    ' * indent}{line}" for line in lines)
+
+        while remaining:
+            atom = cls.choose_condition_tree_atom(remaining)
+            if atom is None:
+                for term in sorted(remaining, key=lambda item: (len(item), sorted(item))):
+                    condition = cls.condition_term_text(term)
+                    out.append(f"{'    ' * indent}if ({condition}) {{")
+                    out.extend(f"{'    ' * (indent + 1)}{line}" for line in lines)
+                    out.append(f"{'    ' * indent}}}")
+                break
+
+            grouped = [term for term in remaining if atom in term]
+            remaining = [term for term in remaining if atom not in term]
+            child_terms = [frozenset(set(term) - {atom}) for term in grouped]
+            out.append(f"{'    ' * indent}if ({atom}) {{")
+            out.extend(cls.render_condition_terms(child_terms, lines, indent + 1))
+            out.append(f"{'    ' * indent}}}")
+        return out
+
+    @classmethod
+    def choose_condition_tree_atom(cls, terms: list[frozenset[str]]) -> str | None:
+        counts: dict[str, int] = {}
+        for term in terms:
+            for atom in term:
+                counts[atom] = counts.get(atom, 0) + 1
+        if not counts:
+            return None
+        atom, count = max(counts.items(), key=lambda item: (item[1], -cls.condition_atom_sort_key(item[0])[0], item[0]))
+        return atom if count > 1 else None
+
+    @staticmethod
+    def condition_atom_sort_key(atom: str) -> tuple[int, str]:
+        return (atom.count("__sseir_eval"), atom)
+
+    @classmethod
+    def condition_term_text(cls, term: frozenset[str]) -> str:
+        atoms = sorted(term, key=cls.condition_atom_sort_key)
+        return " && ".join(atoms) if atoms else "true"
+
+    @classmethod
+    def strip_outer_parens(cls, text: str) -> str:
+        value = str(text or "").strip()
+        while value.startswith("(") and value.endswith(")") and cls.parens_enclose_all(value):
+            value = value[1:-1].strip()
+        return value
+
+    @staticmethod
+    def parens_enclose_all(text: str) -> bool:
+        depth = 0
+        for index, ch in enumerate(text):
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+                if depth == 0 and index != len(text) - 1:
+                    return False
+                if depth < 0:
+                    return False
+        return depth == 0
+
+    @classmethod
+    def split_top_level(cls, text: str, op: str) -> list[str]:
+        parts: list[str] = []
+        start = 0
+        depth = 0
+        index = 0
+        while index < len(text):
+            ch = text[index]
+            if ch == "(":
+                depth += 1
+                index += 1
+                continue
+            if ch == ")":
+                depth -= 1
+                index += 1
+                continue
+            if depth == 0 and text.startswith(op, index):
+                parts.append(text[start:index].strip())
+                index += len(op)
+                start = index
+                continue
+            index += 1
+        parts.append(text[start:].strip())
+        return [part for part in parts if part]
+
+    @classmethod
+    def normalize_condition_atom(cls, text: str) -> str:
+        value = cls.strip_outer_parens(text)
+        if value.startswith("!(") and value.endswith(")") and cls.parens_enclose_all(value[1:]):
+            return f"!({cls.normalize_condition_atom(value[2:-1])})"
+        return value
+
+    @classmethod
+    def negated_condition_atom(cls, atom: str) -> str:
+        value = str(atom or "").strip()
+        if value.startswith("!(") and value.endswith(")") and cls.parens_enclose_all(value[1:]):
+            return cls.normalize_condition_atom(value[2:-1])
+        return f"!({value})"
+
+    def remove_redundant_inner_condition(self, lines: list[str], outer_condition: str) -> list[str]:
+        """Drop a nested `if` whose guard is already guaranteed by the caller.
+
+        Path-conditioned overlays can carry the same path predicate that the
+        source-ordered statement renderer has already materialized around the
+        statement. This presentation-only cleanup removes that duplicate scope
+        while keeping non-equivalent candidate conditions intact.
+        """
+
+        parsed = self.parse_if_block(lines, 0)
+        if parsed is None:
+            return lines
+        opener, inner, closer, end_index = parsed
+        if end_index != len(lines) - 1 or closer.strip() != "}":
+            return lines
+        condition = self.if_opener_condition(opener)
+        if not condition or not self.conditions_equivalent(condition, outer_condition):
+            return lines
+        return [line[4:] if line.startswith("    ") else line for line in inner]
+
+    @staticmethod
+    def if_opener_condition(opener: str) -> str | None:
+        match = re.match(r"^\s*if \((.+)\) \{$", opener)
+        return match.group(1).strip() if match else None
+
+    def conditions_equivalent(self, left: str, right: str) -> bool:
+        return self.condition_fingerprints(left) & self.condition_fingerprints(right) != set()
+
+    def condition_fingerprints(self, condition: str) -> set[str]:
+        out: set[str] = set()
+        stack = [str(condition or "").strip()]
+        inverse_aliases = {value: key for key, value in self.condition_aliases.items()}
+        while stack:
+            text = self.strip_outer_parens(stack.pop().strip())
+            if not text:
+                continue
+            normalized = normalize_expr(text, context="condition")
+            out.add(normalized)
+            out.add(self.strip_outer_parens(normalized))
+            if text.startswith("!(") and text.endswith(")"):
+                inner = text[2:-1].strip()
+                normalized_inner = normalize_expr(inner, context="condition")
+                out.add(f"!({normalized_inner})")
+                out.add(f"!({self.strip_outer_parens(normalized_inner)})")
+                if inner in inverse_aliases:
+                    stack.append(f"!({inverse_aliases[inner]})")
+                continue
+            if text in self.condition_aliases:
+                stack.append(self.condition_aliases[text])
+            if text in inverse_aliases:
+                stack.append(inverse_aliases[text])
         return out
 
     @classmethod
@@ -637,6 +892,16 @@ class SolidityLikeRenderer:
         text = stmt.text.strip()
         node_type = stmt.origin.get("nodeType") if isinstance(stmt.origin, dict) else None
         return text == "for" or node_type == "YulForLoop"
+
+    @staticmethod
+    def is_branch_scaffold(stmt: SourceStatement) -> bool:
+        text = stmt.text.strip()
+        node_type = stmt.origin.get("nodeType") if isinstance(stmt.origin, dict) else None
+        return text.startswith("if ") or node_type == "YulIf"
+
+    @classmethod
+    def is_control_scaffold(cls, stmt: SourceStatement) -> bool:
+        return cls.is_loop_scaffold(stmt) or cls.is_branch_scaffold(stmt)
 
     @staticmethod
     def raw_statement_line(stmt: SourceStatement) -> str:
@@ -994,6 +1259,9 @@ class SolidityLikeRenderer:
         return out
 
     def overlay_lines(self, overlays: list[SemanticOverlay]) -> list[str]:
+        guarded_expression = self.require_and_expression_lines(overlays)
+        if guarded_expression:
+            return guarded_expression
         for kind in (
             "PathConditionedEventEmit",
             "PathConditionedCustomErrorRevert",
@@ -1031,6 +1299,21 @@ class SolidityLikeRenderer:
                 if line:
                     return [line]
         return []
+
+    def require_and_expression_lines(self, overlays: list[SemanticOverlay]) -> list[str]:
+        require_lines = [
+            line
+            for overlay in overlays
+            if overlay.kind == "RequireOverlay"
+            for line in [self.line_for_overlay(overlay)]
+            if line
+        ]
+        if not require_lines:
+            return []
+        expression = self.expression_normalization(overlays)
+        if not expression:
+            return []
+        return [*require_lines, expression]
 
     @staticmethod
     def evaluation_step_lines(overlays: list[SemanticOverlay]) -> list[str]:
