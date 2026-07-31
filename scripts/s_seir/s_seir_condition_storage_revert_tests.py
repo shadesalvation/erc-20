@@ -92,6 +92,104 @@ def test_condition_sload_lifted_to_storage_read() -> None:
     assert read.attrs["nested_in_condition"] is True
 
 
+def test_direct_state_read_without_assignment_target_is_read_effect() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({"fgMs.slot": FakeStateVariable("fgMs", "uint256")})
+    effects = [
+        effect("StorageRead", {
+            "slot": "fgMs.slot",
+            "slot_versions": [],
+            "value": None,
+            "value_versions": {},
+        }, "eff_read"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    reads = [item for item in overlays if item.kind == "StateVariableRead"]
+    assert len(reads) == 1, [item.kind for item in overlays]
+    assert reads[0].attrs["access"] == "fgMs"
+    assert reads[0].attrs["solidity_like"] == "read fgMs;"
+
+
+def test_sstore_value_nested_sload_is_lifted_as_read_expression() -> None:
+    reads = EffectLifter.sload_reads_in_expr("add(sload(c.slot), mul(2, sload(d.slot)))")
+    assert reads == [("sload(c.slot)", "c.slot"), ("sload(d.slot)", "d.slot")]
+
+
+def test_direct_state_write_value_normalizes_nested_sload() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({
+        "c.slot": FakeStateVariable("c", "uint256"),
+        "g.slot": FakeStateVariable("g", "uint256"),
+    })
+    effects = [
+        effect("StorageRead", {
+            "slot": "c.slot",
+            "slot_versions": [],
+            "value": None,
+            "nested_in_storage_value": True,
+            "expression": "sload(c.slot)",
+        }, "eff_read"),
+        effect("StorageWrite", {
+            "slot": "g.slot",
+            "slot_versions": [],
+            "value": "sload(c.slot)",
+        }, "eff_write"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    reads = [item for item in overlays if item.kind == "StateVariableRead"]
+    writes = [item for item in overlays if item.kind == "StateVariableWrite"]
+    assert len(reads) == 1, [item.kind for item in overlays]
+    assert reads[0].attrs["access"] == "c"
+    assert len(writes) == 1, [item.kind for item in overlays]
+    assert writes[0].attrs["value"] == "c"
+    assert writes[0].attrs["value_yul"] == "sload(c.slot)"
+    assert writes[0].attrs["solidity_like"] == "g = c;"
+    assert writes[0].attrs["value_state_read"]["access"] == "c"
+
+
+def test_mapping_write_value_normalizes_nested_sload() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({
+        "c.slot": FakeStateVariable("c", "uint256"),
+        "h.slot": FakeStateVariable("h", "mapping(address => uint256)"),
+    })
+    effects = [
+        effect("StorageRead", {
+            "slot": "c.slot",
+            "slot_versions": [],
+            "value": None,
+            "nested_in_storage_value": True,
+            "expression": "sload(c.slot)",
+        }, "eff_read"),
+        effect("MemoryHash", {
+            "value": "r",
+            "value_versions": {"r": ["r__ssa1"]},
+            "memory_read": {"byte_slice": {
+                "complete": True,
+                "size": 64,
+                "slices": [
+                    {"query_offset": 0, "size": 32, "extraction": "q"},
+                    {"query_offset": 32, "size": 32, "extraction": "h.slot"},
+                ],
+            }},
+        }, "eff_hash"),
+        effect("StorageWrite", {
+            "slot": "r",
+            "slot_versions": ["r__ssa1"],
+            "value": "sload(c.slot)",
+        }, "eff_write"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    writes = [item for item in overlays if item.kind == "MappingWrite"]
+    assert len(writes) == 1, [item.kind for item in overlays]
+    attrs = writes[0].attrs
+    assert attrs["access"] == "h[q]"
+    assert attrs["value"] == "c"
+    assert attrs["value_yul"] == "sload(c.slot)"
+    assert attrs["solidity_like"] == "h[q] = c;"
+    assert attrs["value_state_read"]["access"] == "c"
+
+
 def test_inline_hash_slot_key_is_assembly_block_scoped() -> None:
     first = EffectLifter.inline_hash_slot_key("keccak256(0, 64)", "asm_s_5", FakeScopedMemorySSA(1), 6)
     second = EffectLifter.inline_hash_slot_key("keccak256(0, 64)", "asm_s_12", FakeScopedMemorySSA(3), 6)
@@ -447,6 +545,102 @@ def test_byte_axis_nested_mapping_write_recovers_all_dimensions() -> None:
     assert writes[0].attrs["solidity_like"] == "allowances[owner][spender] = amount;"
 
 
+def test_mapping_key_direct_state_read_is_normalized() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({
+        "1": FakeStateVariable("BVNo", "mapping(uint256 => mapping(address => uint256))"),
+        "fgMs.slot": FakeStateVariable("fgMs", "uint256"),
+    })
+    effects = [
+        effect("MemoryHash", {
+            "value": "base",
+            "value_versions": {"base": ["base__ssa1"]},
+            "memory_read": {"byte_slice": {
+                "complete": True,
+                "size": 64,
+                "slices": [
+                    {"query_offset": 0, "size": 32, "extraction": "sload(fgMs.slot)"},
+                    {"query_offset": 32, "size": 32, "extraction": "1"},
+                ],
+            }},
+        }, "eff_hash_inner"),
+        effect("MemoryHash", {
+            "value": "slot",
+            "value_versions": {"slot": ["slot__ssa1"]},
+            "memory_read": {"byte_slice": {
+                "complete": True,
+                "size": 64,
+                "slices": [
+                    {"query_offset": 0, "size": 32, "extraction": "_owner"},
+                    {"query_offset": 32, "size": 32, "extraction": "base"},
+                ],
+            }},
+        }, "eff_hash_outer"),
+        effect("StorageRead", {
+            "slot": "slot",
+            "slot_versions": ["slot__ssa1"],
+            "value": "IUGo",
+        }, "eff_read"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    reads = [item for item in overlays if item.kind == "MappingRead"]
+    assert len(reads) == 1, [item.kind for item in overlays]
+    assert reads[0].attrs["access"] == "BVNo[fgMs][_owner]"
+    assert reads[0].attrs["solidity_like"] == "IUGo = BVNo[fgMs][_owner];"
+
+
+def test_redefined_mapping_base_uses_memoryssa_value_version() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({
+        "1": FakeStateVariable("BVNo", "mapping(uint256 => mapping(address => uint256))"),
+        "fgMs.slot": FakeStateVariable("fgMs", "uint256"),
+    })
+    effects = [
+        effect("MemoryHash", {
+            "value": "MuuR",
+            "value_versions": {"MuuR": ["MuuR__ssa2"]},
+            "memory_read": {"words": [
+                {"offset": 0, "value": "sload(fgMs.slot)"},
+                {"offset": 32, "value": "1"},
+            ]},
+        }, "eff_hash_base_1"),
+        effect("MemoryHash", {
+            "value": "LjAi",
+            "value_versions": {"LjAi": ["LjAi__ssa3"]},
+            "memory_read": {"words": [
+                {"offset": 0, "value": "_owner"},
+                {"offset": 32, "value": "MuuR", "value_versions": ["MuuR__ssa2"]},
+            ]},
+        }, "eff_hash_slot_owner"),
+        effect("MemoryHash", {
+            "value": "MuuR",
+            "value_versions": {"MuuR": ["MuuR__ssa9"]},
+            "memory_read": {"words": [
+                {"offset": 0, "value": "_owner"},
+                {"offset": 32, "value": "1"},
+            ]},
+        }, "eff_hash_base_2"),
+        effect("MemoryHash", {
+            "value": "LjAi",
+            "value_versions": {"LjAi": ["LjAi__ssa11"]},
+            "memory_read": {"words": [
+                {"offset": 0, "value": "_spender"},
+                {"offset": 32, "value": "MuuR", "value_versions": ["MuuR__ssa9"]},
+            ]},
+        }, "eff_hash_slot_spender"),
+        effect("StorageRead", {
+            "slot": "LjAi",
+            "slot_versions": ["LjAi__ssa11"],
+            "value": "dhzw",
+        }, "eff_read"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    reads = [item for item in overlays if item.kind == "MappingRead"]
+    assert len(reads) == 1, [item.kind for item in overlays]
+    assert reads[0].attrs["access"] == "BVNo[_owner][_spender]"
+    assert reads[0].attrs["solidity_like"] == "dhzw = BVNo[_owner][_spender];"
+
+
 def test_byte_axis_three_dimensional_mapping_read_recovers_all_dimensions() -> None:
     builder = SemanticOverlayBuilder()
     type_env = FakeMappingTypeEnv({"root.slot": FakeStateVariable("root", "mapping(uint256 => mapping(address => mapping(bytes32 => uint256)))")})
@@ -594,6 +788,199 @@ def test_path_sensitive_inline_keccak_same_access_collapses() -> None:
     assert "path_sensitive_sink_collapsed_same_access" in normal[0].attrs["notes"]
 
 
+def test_memoryssa_word_candidates_recover_path_conditioned_mapping_write() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({"balances.slot": FakeStateVariable("balances", "mapping(address => uint256)")})
+    effects = [
+        effect("MemoryHash", {
+            "value": "slot",
+            "value_versions": {"slot": ["slot__ssa1"]},
+            "memory_read": {
+                "complete": False,
+                "has_unknown": True,
+                "words": [
+                    {
+                        "offset": 0,
+                        "value": "unknown",
+                        "branch_candidates": [
+                            {"path": "cond", "value": "user", "source": "mstore"},
+                            {"path": "!(cond)", "value": "unknown", "source": "uninitialized"},
+                        ],
+                    },
+                    {
+                        "offset": 32,
+                        "value": "unknown",
+                        "branch_candidates": [
+                            {"path": "cond", "value": "balances.slot", "source": "mstore"},
+                            {"path": "!(cond)", "value": "unknown", "source": "uninitialized"},
+                        ],
+                    },
+                ],
+            },
+        }, "eff_hash"),
+        effect("StorageWrite", {
+            "slot": "slot",
+            "slot_versions": ["slot__ssa1"],
+            "value": "amount",
+            "path_states": ["cond", "!(cond)"],
+        }, "eff_write"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    writes = [item for item in overlays if item.kind == "PathConditionedStorageWrite"]
+    assert len(writes) == 1, [item.kind for item in overlays]
+    candidates = writes[0].attrs["candidates"]
+    assert any(item.get("status") == "resolved" and item.get("solidity_like") == "balances[user] = amount;" for item in candidates), candidates
+    assert any(item.get("status") == "unresolved" and item.get("reason") == "unknown_memory_word_candidate" for item in candidates), candidates
+    assert writes[0].attrs.get("sink_resolution") is None
+
+
+def test_memoryssa_word_candidates_recover_nested_mapping_write() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({"allowances.slot": FakeStateVariable("allowances", "mapping(address => mapping(address => uint256))")})
+    effects = [
+        effect("MemoryHash", {
+            "value": "ownerSlot",
+            "value_versions": {"ownerSlot": ["ownerSlot__ssa1"]},
+            "memory_read": {
+                "complete": False,
+                "has_unknown": True,
+                "words": [
+                    {
+                        "offset": 0,
+                        "value": "unknown",
+                        "branch_candidates": [
+                            {"path": "owner_ready", "value": "caller()", "source": "mstore"},
+                            {"path": "!(owner_ready)", "value": "unknown", "source": "uninitialized"},
+                        ],
+                    },
+                    {
+                        "offset": 32,
+                        "value": "unknown",
+                        "branch_candidates": [
+                            {"path": "owner_ready", "value": "allowances.slot", "source": "mstore"},
+                            {"path": "!(owner_ready)", "value": "unknown", "source": "uninitialized"},
+                        ],
+                    },
+                ],
+            },
+        }, "eff_hash_owner"),
+        effect("MemoryHash", {
+            "value": "spenderSlot",
+            "value_versions": {"spenderSlot": ["spenderSlot__ssa1"]},
+            "memory_read": {
+                "complete": False,
+                "has_unknown": True,
+                "words": [
+                    {
+                        "offset": 0,
+                        "value": "unknown",
+                        "branch_candidates": [
+                            {"path": "owner_ready && spender_ready", "value": "spender", "source": "mstore"},
+                            {"path": "owner_ready && !(spender_ready)", "value": "caller()", "source": "mstore"},
+                        ],
+                    },
+                    {
+                        "offset": 32,
+                        "value": "unknown",
+                        "branch_candidates": [
+                            {"path": "owner_ready && spender_ready", "value": "ownerSlot", "source": "mstore"},
+                            {"path": "owner_ready && !(spender_ready)", "value": "ownerSlot", "source": "mstore"},
+                        ],
+                    },
+                ],
+            },
+        }, "eff_hash_spender"),
+        effect("StorageWrite", {
+            "slot": "spenderSlot",
+            "slot_versions": ["spenderSlot__ssa1"],
+            "value": "amount",
+            "path_states": ["owner_ready && spender_ready", "owner_ready && !(spender_ready)"],
+        }, "eff_write"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    writes = [item for item in overlays if item.kind == "PathConditionedStorageWrite"]
+    assert len(writes) == 1, [item.kind for item in overlays]
+    candidates = writes[0].attrs["candidates"]
+    lines = {item.get("solidity_like") for item in candidates if item.get("status") == "resolved"}
+    assert "allowances[msg.sender][spender] = amount;" in lines, candidates
+    assert "allowances[msg.sender][msg.sender] = amount;" in lines, candidates
+    assert all("owner_ready" in item.get("condition", "") for item in candidates if item.get("status") == "resolved"), candidates
+
+
+def test_memoryssa_word_candidates_do_not_project_intermediate_nested_mapping_slot() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({"allowances.slot": FakeStateVariable("allowances", "mapping(address => mapping(address => uint256))")})
+    effects = [
+        effect("MemoryHash", {
+            "value": "slot",
+            "value_versions": {"slot": ["slot__ssa1"]},
+            "memory_read": {
+                "complete": False,
+                "has_unknown": True,
+                "words": [
+                    {
+                        "offset": 0,
+                        "value": "unknown",
+                        "branch_candidates": [
+                            {"path": "cond", "value": "owner", "source": "mstore"},
+                            {"path": "!(cond)", "value": "unknown", "source": "uninitialized"},
+                        ],
+                    },
+                    {
+                        "offset": 32,
+                        "value": "unknown",
+                        "branch_candidates": [
+                            {"path": "cond", "value": "allowances.slot", "source": "mstore"},
+                            {"path": "!(cond)", "value": "unknown", "source": "uninitialized"},
+                        ],
+                    },
+                ],
+            },
+        }, "eff_hash"),
+        effect("StorageWrite", {
+            "slot": "slot",
+            "slot_versions": ["slot__ssa1"],
+            "value": "amount",
+            "path_states": ["cond", "!(cond)"],
+        }, "eff_write"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    writes = [item for item in overlays if item.kind == "PathConditionedStorageWrite"]
+    assert len(writes) == 1, [item.kind for item in overlays]
+    candidates = writes[0].attrs["candidates"]
+    assert not any(item.get("solidity_like") == "allowances[owner] = amount;" for item in candidates), candidates
+    assert any(item.get("status") == "unresolved" and item.get("reason") == "intermediate_mapping_slot_requires_additional_key" for item in candidates), candidates
+
+
+def test_byte_axis_does_not_project_intermediate_nested_mapping_slot() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({"allowances.slot": FakeStateVariable("allowances", "mapping(address => mapping(address => uint256))")})
+    effects = [
+        effect("MemoryHash", {
+            "value": "slot",
+            "value_versions": {"slot": ["slot__ssa1"]},
+            "memory_read": {"byte_slice": {
+                "complete": True,
+                "size": 64,
+                "slices": [
+                    {"query_offset": 0, "size": 32, "extraction": "owner"},
+                    {"query_offset": 32, "size": 32, "extraction": "allowances.slot"},
+                ],
+            }},
+        }, "eff_hash"),
+        effect("StorageWrite", {
+            "slot": "slot",
+            "slot_versions": ["slot__ssa1"],
+            "value": "amount",
+        }, "eff_write"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    writes = [item for item in overlays if item.kind == "StateVariableWrite"]
+    assert len(writes) == 1, [item.kind for item in overlays]
+    assert writes[0].attrs["unresolved_reason"] == "intermediate_mapping_slot_requires_additional_key"
+    assert "allowances[owner] = amount;" not in writes[0].attrs.get("solidity_like", "")
+
+
 def test_revert_selector_from_byte_slice() -> None:
     builder = SemanticOverlayBuilder(selector_registry={
         "0x6f5e8818": [{
@@ -631,9 +1018,46 @@ def test_revert_selector_from_byte_slice() -> None:
     assert attrs["revert_like"] == "revert NoHandoverRequest();"
 
 
+def test_empty_revert_payload_is_require_not_custom_error_path_overlay() -> None:
+    builder = SemanticOverlayBuilder()
+    revert = effect("Revert", {
+        "payload_ptr": "0",
+        "payload_size": "0",
+        "cfg_node_id": 3,
+        "path_states": ["cond"],
+        "sink_resolution": {
+            "path_sensitive": True,
+            "path_resolutions": [{
+                "status": "resolved",
+                "condition": "cond",
+                "arg_resolutions": {
+                    "payload": {
+                        "normalized": "empty",
+                        "memory_slice": {"query_kind": "EmptyMemorySlice", "slices": []},
+                        "notes": ["revert_payload", "empty_payload"],
+                    }
+                },
+            }],
+        },
+    }, "eff_revert")
+    assert builder.custom_error_selector_overlays([revert]) == []
+    overlays = builder.require_overlays(FakeTypeEnv(), [
+        effect("Branch", {"condition": "cond", "cfg_node_id": 2, "path_states": ["entry"]}, "eff_branch"),
+        revert,
+    ])
+    assert len(overlays) == 1, [item.kind for item in overlays]
+    assert overlays[0].kind == "RequireOverlay"
+    assert overlays[0].attrs["revert_payload"] == "empty"
+    assert overlays[0].attrs["sink_resolution"]["path_resolutions"][0]["arg_resolutions"]["payload"]["normalized"] == "empty"
+
+
 if __name__ == "__main__":
     tests = [
         test_condition_sload_lifted_to_storage_read,
+        test_direct_state_read_without_assignment_target_is_read_effect,
+        test_sstore_value_nested_sload_is_lifted_as_read_expression,
+        test_direct_state_write_value_normalizes_nested_sload,
+        test_mapping_write_value_normalizes_nested_sload,
         test_inline_hash_slot_key_is_assembly_block_scoped,
         test_condition_sload_uses_manual_slot_derivation,
         test_require_condition_keeps_comparison_operands_as_values,
@@ -646,10 +1070,17 @@ if __name__ == "__main__":
         test_path_sensitive_byte_axis_mapping_candidates_recover_mapping_accesses,
         test_byte_axis_nested_mapping_read_recovers_all_dimensions,
         test_byte_axis_nested_mapping_write_recovers_all_dimensions,
+        test_mapping_key_direct_state_read_is_normalized,
+        test_redefined_mapping_base_uses_memoryssa_value_version,
         test_byte_axis_three_dimensional_mapping_read_recovers_all_dimensions,
         test_path_sensitive_inline_keccak_storage_write_gets_candidates,
         test_path_sensitive_inline_keccak_same_access_collapses,
+        test_memoryssa_word_candidates_recover_path_conditioned_mapping_write,
+        test_memoryssa_word_candidates_recover_nested_mapping_write,
+        test_memoryssa_word_candidates_do_not_project_intermediate_nested_mapping_slot,
+        test_byte_axis_does_not_project_intermediate_nested_mapping_slot,
         test_revert_selector_from_byte_slice,
+        test_empty_revert_payload_is_require_not_custom_error_path_overlay,
     ]
     for test in tests:
         test()

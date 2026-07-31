@@ -42,6 +42,7 @@ from assembly_memory_ssa import (
     direct_call,
     statement_expression,
 )
+from s_seir_opaque_preprocess import prune_opaque_yul_ifs
 
 
 Json = dict[str, Any]
@@ -60,13 +61,28 @@ class BranchPreprocessResult:
 
 
 def build_branch_preprocessed_source(source: Path, solc_bin: str, destination: Path) -> BranchPreprocessResult:
-    ast = compile_source_ast(source, solc_bin)
-    blocks = extract_inline_assembly_blocks(ast, source)
+    opaque_result = prune_opaque_yul_ifs(source, solc_bin)
+    analysis_source = source
+    if opaque_result.rewrite_count:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(opaque_result.source, encoding="utf-8")
+        analysis_source = destination
+    ast = compile_source_ast(analysis_source, solc_bin)
+    blocks = extract_inline_assembly_blocks(ast, analysis_source)
     results = [analyze_block(block) for block in blocks]
-    rewritten, rewrite_count, report = rewrite_source_with_memory_sink_expansions(
-        source.read_text(encoding="utf-8"),
+    rewritten, branch_rewrite_count, branch_report = rewrite_source_with_memory_sink_expansions(
+        analysis_source.read_text(encoding="utf-8"),
         results,
     )
+    rewrite_count = opaque_result.rewrite_count + branch_rewrite_count
+    report = "\n".join([
+        opaque_result.report,
+        "",
+        branch_report,
+        f"INFO:SSEIRBranchPreprocess:opaque_rewrites {opaque_result.rewrite_count}",
+        f"INFO:SSEIRBranchPreprocess:branch_rewrites {branch_rewrite_count}",
+        f"INFO:SSEIRBranchPreprocess:total_rewrites {rewrite_count}",
+    ])
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(rewritten, encoding="utf-8")
     return BranchPreprocessResult(

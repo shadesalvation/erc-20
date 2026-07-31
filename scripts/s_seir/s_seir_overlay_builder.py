@@ -139,6 +139,8 @@ class SemanticOverlayBuilder:
         for e in effects:
             if e.kind != 'Revert':
                 continue
+            if self.is_empty_revert_payload(e):
+                continue
             path_overlay = self.path_conditioned_revert_overlay(e)
             if path_overlay:
                 out.append(path_overlay)
@@ -158,6 +160,10 @@ class SemanticOverlayBuilder:
             }
             out.append(self.ov('CustomErrorRevert', e.effect_id, e.stmt_refs, attrs))
         return out
+
+    @staticmethod
+    def is_empty_revert_payload(effect: EffectNode) -> bool:
+        return parse_int_literal(str(effect.attrs.get('payload_size') or '')) == 0
 
     def selector_info_from_payload(self, effect: EffectNode, preferred_kind: str | None = None) -> dict[str, Any] | None:
         byte_slice = (effect.attrs.get('payload_memory') or {}).get('byte_slice') or {}
@@ -184,12 +190,14 @@ class SemanticOverlayBuilder:
             merged = self.mergeable_revert_conditions(e, effects)
             guard = merged[-1] if merged else self.nearest_guard(e, effects, branches)
             condition = self.require_condition(merged or ([guard] if guard else []), type_env)
+            path_states = self.path_states(e)
             out.append(self.ov('RequireOverlay', e.effect_id, e.stmt_refs, {
                 'condition': condition,
                 'nearest_condition': guard,
                 'require_like': f'require({condition});',
                 'revert_payload': 'empty',
-                'control_path': self.path_states(e),
+                'control_path': path_states,
+                'path_states': path_states,
                 'merged_conditions': merged,
                 'require_conditions': merged or ([guard] if guard else []),
                 'discarded_before_revert': self.discarded_before_revert(e, merged, effects),
@@ -478,6 +486,7 @@ class SemanticOverlayBuilder:
         slot_expr_by_var: dict[str, dict[str, Any]] = {}
         hash_effect_by_var: dict[str, EffectNode] = {}
         value_defs_by_version = self.value_defs_by_version(effects)
+        value_defs_by_name = self.value_defs_by_name(effects)
         ambiguous_hash_aliases: set[str] = set()
 
         for e in effects:
@@ -533,6 +542,8 @@ class SemanticOverlayBuilder:
                 'base': slot_expr.get('base'),
                 'base_key': slot_expr.get('base_key'),
                 'slot_kind': slot_expr.get('slot_kind') or ('mapping_slot' if base_key not in slot_expr_by_var else 'nested_mapping_slot'),
+                'result_type': slot_expr.get('result_type'),
+                'terminal_storage_value': slot_expr.get('terminal_storage_value'),
                 'activation': 'storage_consumer',
                 'resolved_inputs': slot_expr.get('resolved_inputs'),
                 'byte_slice': slot_expr.get('byte_slice'),
@@ -551,7 +562,13 @@ class SemanticOverlayBuilder:
             slot = str(e.attrs.get('slot') or '')
             version_keys = list(e.attrs.get('slot_versions') or [])
             if len(version_keys) > 1:
-                path_overlay = self.path_conditioned_storage_overlay(e, type_env, version_keys, slot_expr_by_var, hash_effect_by_var)
+                has_slot_expr_path_candidates = any(
+                    (slot_expr_by_var.get(key) or {}).get('path_candidates')
+                    for key in version_keys
+                )
+                path_overlay = None if has_slot_expr_path_candidates else self.path_conditioned_storage_overlay(
+                    e, type_env, version_keys, slot_expr_by_var, hash_effect_by_var, value_defs_by_name
+                )
                 if path_overlay:
                     out.append(path_overlay)
                     statuses = {candidate.get('status') for candidate in path_overlay.attrs.get('candidates', [])}
@@ -564,12 +581,35 @@ class SemanticOverlayBuilder:
                         continue
             slot_key = self.first_known_key(self.storage_slot_keys(e), slot_expr_by_var)
             value = e.attrs.get('value')
+            value_normalized, value_state_read = self.storage_write_value(type_env, e, value_defs_by_name)
             direct_state = type_env.state_var_by_slot(slot)
             direct_slot = self.direct_storage_slot_info(type_env, e, value_defs_by_version)
             if slot_key:
                 slot_expr = slot_expr_by_var[slot_key]
                 if slot_expr.get('path_candidates'):
-                    out.append(self.path_conditioned_storage_overlay_from_slot_expr(e, slot_key, slot_expr, hash_effect_by_var.get(slot_key)))
+                    out.append(self.path_conditioned_storage_overlay_from_slot_expr(
+                        e, slot_key, slot_expr, hash_effect_by_var.get(slot_key), type_env, value_defs_by_name
+                    ))
+                    continue
+                if slot_expr.get('terminal_storage_value') is False:
+                    kind = 'StateVariableRead' if e.kind == 'StorageRead' else 'StateVariableWrite'
+                    access = f'storage[{slot_key}]'
+                    attrs = {
+                        'access': access,
+                        'target': value if e.kind == 'StorageRead' else None,
+                        'value': value_normalized if e.kind == 'StorageWrite' else None,
+                        'value_yul': value if e.kind == 'StorageWrite' else None,
+                        'value_state_read': value_state_read,
+                        'slot': slot,
+                        'slot_key': slot_key,
+                        'slot_versions': e.attrs.get('slot_versions'),
+                        'unresolved_reason': 'intermediate_mapping_slot_requires_additional_key',
+                        'intermediate_access': slot_expr.get('access'),
+                        'intermediate_type': slot_expr.get('result_type'),
+                        'solidity_like': self.storage_solidity_like(kind, access, value_normalized, e),
+                        'notes': list(dict.fromkeys((slot_expr.get('notes') or []) + ['intermediate_mapping_slot_not_projected'])),
+                    }
+                    out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
                     continue
                 if slot_expr.get('slot_kind') == 'manual_packed_hash_slot':
                     kind = 'StateVariableRead' if e.kind == 'StorageRead' else 'StateVariableWrite'
@@ -578,8 +618,9 @@ class SemanticOverlayBuilder:
                     attrs = {
                         'access': slot_expr['access'],
                         'target': value if e.kind == 'StorageRead' else None,
-                        'value': normalize_expr(value) if e.kind == 'StorageWrite' else None,
+                        'value': value_normalized if e.kind == 'StorageWrite' else None,
                         'value_yul': value if e.kind == 'StorageWrite' else None,
+                        'value_state_read': value_state_read,
                         'slot': slot,
                         'slot_key': slot_key,
                         'slot_versions': e.attrs.get('slot_versions'),
@@ -591,7 +632,7 @@ class SemanticOverlayBuilder:
                         'state_mutation': e.kind == 'StorageWrite',
                         'mutation_kind': 'state_write' if e.kind == 'StorageWrite' else None,
                         'variable_name_inferred': False,
-                        'solidity_like': f"{value} = {slot_expr['access']};" if e.kind == 'StorageRead' and value else f"{slot_expr['access']} = {normalize_expr(value)};",
+                        'solidity_like': f"{value} = {slot_expr['access']};" if e.kind == 'StorageRead' and value else f"{slot_expr['access']} = {value_normalized};",
                         'notes': slot_expr.get('notes', []),
                     }
                     effects_used = [x for x in [slot_effect.effect_id if slot_effect else None, e.effect_id] if x]
@@ -602,8 +643,9 @@ class SemanticOverlayBuilder:
                 attrs = {
                     'access': slot_expr['access'],
                     'target': value if e.kind == 'StorageRead' else None,
-                    'value': normalize_expr(value) if e.kind == 'StorageWrite' else None,
+                    'value': value_normalized if e.kind == 'StorageWrite' else None,
                     'value_yul': value if e.kind == 'StorageWrite' else None,
+                    'value_state_read': value_state_read,
                     'state_variable': slot_expr.get('state_variable'),
                     'storage_reference': slot_expr.get('storage_reference'),
                     'storage_reference_type': slot_expr.get('storage_reference_type'),
@@ -616,7 +658,9 @@ class SemanticOverlayBuilder:
                     'slot_effect': hash_effect_by_var.get(slot_key).effect_id if slot_key in hash_effect_by_var else None,
                     'slot_derivation': slot_expr.get('slot_derivation'),
                     'sink_resolution': slot_expr.get('sink_resolution'),
-                    'solidity_like': self.storage_solidity_like(kind, slot_expr['access'], value, e),
+                    'result_type': slot_expr.get('result_type'),
+                    'terminal_storage_value': slot_expr.get('terminal_storage_value'),
+                    'solidity_like': self.storage_solidity_like(kind, slot_expr['access'], value_normalized, e),
                     'notes': slot_expr.get('notes', []),
                 }
                 effects_used = [x for x in [hash_effect_by_var.get(slot_key).effect_id if slot_key in hash_effect_by_var else None, e.effect_id] if x]
@@ -627,10 +671,12 @@ class SemanticOverlayBuilder:
                 attrs = {
                     'access': direct_state.name,
                     'target': value if e.kind == 'StorageRead' else None,
-                    'value': normalize_expr(value) if e.kind == 'StorageWrite' else None,
+                    'value': value_normalized if e.kind == 'StorageWrite' else None,
+                    'value_yul': value if e.kind == 'StorageWrite' else None,
+                    'value_state_read': value_state_read,
                     'state_variable': direct_state.name,
                     'slot': slot,
-                    'solidity_like': f"{value} = {direct_state.name};" if e.kind == 'StorageRead' and value else f"{direct_state.name} = {normalize_expr(value)};",
+                    'solidity_like': self.storage_solidity_like(kind, direct_state.name, value_normalized, e),
                 }
                 out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
             elif direct_slot:
@@ -640,12 +686,14 @@ class SemanticOverlayBuilder:
                 solidity_like = (
                     f"{value} = {access}; /* {state_note} */"
                     if e.kind == 'StorageRead' and value
-                    else f"{access} = {normalize_expr(value)}; /* {state_note} */"
+                    else f"{access} = {value_normalized}; /* {state_note} */"
                 )
                 attrs = {
                     'access': access,
                     'target': value if e.kind == 'StorageRead' else None,
-                    'value': normalize_expr(value) if e.kind == 'StorageWrite' else None,
+                    'value': value_normalized if e.kind == 'StorageWrite' else None,
+                    'value_yul': value if e.kind == 'StorageWrite' else None,
+                    'value_state_read': value_state_read,
                     'slot': slot,
                     'slot_versions': e.attrs.get('slot_versions'),
                     'slot_constant': direct_slot.get('name'),
@@ -665,11 +713,13 @@ class SemanticOverlayBuilder:
                 attrs = {
                     'access': access,
                     'target': value if e.kind == 'StorageRead' else None,
-                    'value': normalize_expr(value) if e.kind == 'StorageWrite' else None,
+                    'value': value_normalized if e.kind == 'StorageWrite' else None,
+                    'value_yul': value if e.kind == 'StorageWrite' else None,
+                    'value_state_read': value_state_read,
                     'slot': slot,
                     'slot_versions': e.attrs.get('slot_versions'),
                     'unresolved_reason': 'unknown_storage_slot',
-                    'solidity_like': self.storage_solidity_like(kind, access, value, e),
+                    'solidity_like': self.storage_solidity_like(kind, access, value_normalized, e),
                 }
                 out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
         return out
@@ -790,13 +840,29 @@ class SemanticOverlayBuilder:
         expr: Any,
         value_defs_by_name: dict[str, list[EffectNode]],
     ) -> tuple[str, dict[str, Any] | None]:
+        text = str(expr or '').strip()
+        if not text:
+            return text, None
         direct_state = self.direct_state_read_from_sload_expr(type_env, expr)
         if direct_state:
             return str(direct_state['solidity_like']), direct_state
         state_read = self.manual_slot_state_read_from_expr(type_env, expr, value_defs_by_name)
         if state_read:
             return str(state_read['solidity_like']), state_read
-        return self.normalize_expression_with_memory_arrays(type_env, expr), None
+        array_read = self.memory_array_read_from_mload_expr(type_env, text)
+        if array_read:
+            return str(array_read['access']), None
+        name, args = call_parts(text)
+        if not name:
+            return normalize_expr(expr), None
+        rendered_args: list[str] = []
+        first_state_read = None
+        for arg in args:
+            rendered, nested_state_read = self.normalize_expression_with_state_reads(type_env, arg, value_defs_by_name)
+            rendered_args.append(rendered)
+            if nested_state_read and first_state_read is None:
+                first_state_read = nested_state_read
+        return self.render_normalized_call(name, rendered_args, text), first_state_read
 
     def direct_state_read_from_sload_expr(self, type_env: Any, expr: Any) -> dict[str, Any] | None:
         name, args = call_parts(str(expr or '').strip())
@@ -889,10 +955,12 @@ class SemanticOverlayBuilder:
         version_keys: list[str],
         slot_expr_by_var: dict[str, dict[str, Any]],
         hash_effect_by_var: dict[str, EffectNode],
+        value_defs_by_name: dict[str, list[EffectNode]],
     ) -> SemanticOverlay | None:
         candidates: list[dict[str, Any]] = []
         seen: set[str] = set()
         value = effect.attrs.get('value')
+        value_normalized, value_state_read = self.storage_write_value(type_env, effect, value_defs_by_name)
         for key in version_keys:
             if key in seen:
                 continue
@@ -920,11 +988,16 @@ class SemanticOverlayBuilder:
                     'key': slot_expr.get('key'),
                     'slot_effect': slot_effect.effect_id if slot_effect else None,
                     'slot_derivation': self.manual_packed_slot_derivation(slot_expr, key, slot_effect) if manual_packed else None,
+                    'result_type': slot_expr.get('result_type'),
+                    'terminal_storage_value': slot_expr.get('terminal_storage_value'),
                     'storage_model': 'manual_packed_hash_slot' if manual_packed else None,
                     'state_access': True if manual_packed else None,
                     'state_mutation': effect.kind == 'StorageWrite' if manual_packed else None,
                     'variable_name_inferred': False if manual_packed else None,
-                    'solidity_like': self.storage_solidity_like(kind, access, value, effect),
+                    'solidity_like': self.storage_solidity_like(kind, access, value_normalized, effect),
+                    'value': value_normalized if effect.kind == 'StorageWrite' else None,
+                    'value_yul': value if effect.kind == 'StorageWrite' else None,
+                    'value_state_read': value_state_read,
                     'notes': slot_expr.get('notes', []),
                 }))
                 continue
@@ -937,7 +1010,10 @@ class SemanticOverlayBuilder:
                     'overlay_kind': kind,
                     'access': direct_state.name,
                     'state_variable': direct_state.name,
-                    'solidity_like': f"{value} = {direct_state.name};" if effect.kind == 'StorageRead' and value else f"{direct_state.name} = {normalize_expr(value)};",
+                    'solidity_like': self.storage_solidity_like(kind, direct_state.name, value_normalized, effect),
+                    'value': value_normalized if effect.kind == 'StorageWrite' else None,
+                    'value_yul': value if effect.kind == 'StorageWrite' else None,
+                    'value_state_read': value_state_read,
                 }))
                 continue
             candidates.append({
@@ -954,8 +1030,9 @@ class SemanticOverlayBuilder:
             'slot': effect.attrs.get('slot'),
             'slot_versions': version_keys,
             'target': value if effect.kind == 'StorageRead' else None,
-            'value': normalize_expr(value) if effect.kind == 'StorageWrite' else None,
+            'value': value_normalized if effect.kind == 'StorageWrite' else None,
             'value_yul': value if effect.kind == 'StorageWrite' else None,
+            'value_state_read': value_state_read,
             'path_states': effect.attrs.get('path_states'),
             'candidates': candidates,
             'note': 'storage_effect_has_multiple_ssa_slot_versions',
@@ -963,25 +1040,42 @@ class SemanticOverlayBuilder:
         return self.ov(overlay_kind, effect.effect_id, effect.stmt_refs, attrs)
 
     def mapping_slot_expr(self, type_env: Any, effect: EffectNode, known: dict[str, dict[str, Any]]) -> dict[str, Any] | None:
-        words = words_from_memory_query(effect.attrs.get('memory_read'))
+        words = words_from_memory_query(effect.attrs.get('memory_read'), prefer_known_branch=False)
         if len(words) < 2:
             return None
         key = words[0].get('value')
         base = words[1].get('value')
         if self.is_unknown_value(key) or self.is_unknown_value(base):
-            return None
+            return self.path_conditioned_mapping_slot_expr_from_words(type_env, effect, words[:2], known)
         notes: list[str] = []
         for w in words[:2]:
             if w.get('discarded_unknown_branch'):
                 notes.append('discarded_unknown_memory_branch')
         key_norm = self.value_text(key)
         base_text = self.value_text(base)
-        base_key = self.first_known_key(self.word_value_keys(words[1]), known)
+        return self.mapping_slot_expr_from_key_base(type_env, key_norm, base_text, known, words[:2], notes, self.word_value_keys(words[1]))
+
+    def mapping_slot_expr_from_key_base(
+        self,
+        type_env: Any,
+        key_norm: str,
+        base_text: str,
+        known: dict[str, dict[str, Any]],
+        resolved_inputs: Any,
+        notes: list[str] | None = None,
+        base_lookup_keys: list[str] | None = None,
+    ) -> dict[str, Any] | None:
+        notes = notes or []
+        key_norm = self.storage_key_expr(type_env, key_norm)
+        base_key = self.first_known_key(base_lookup_keys or [base_text], known)
         state_var = None
         if base_key:
             prev = known[base_key]
+            if prev.get('path_candidates'):
+                return None
             access = f"{prev['access']}[{key_norm}]"
             state_var = prev.get('state_variable')
+            result_type = self.mapping_value_type(prev.get('result_type'))
             return {
                 'access': access,
                 'key': key_norm,
@@ -993,33 +1087,215 @@ class SemanticOverlayBuilder:
                 'storage_reference_kind': prev.get('storage_reference_kind'),
                 'storage_field': prev.get('storage_field'),
                 'slot_kind': 'nested_mapping_slot',
-                'resolved_inputs': words[:2],
+                'result_type': result_type,
+                'terminal_storage_value': not self.is_mapping_type_text(result_type),
+                'resolved_inputs': resolved_inputs,
                 'notes': notes,
             }
-        else:
-            var = type_env.state_var_by_slot(base_text)
-            if var:
-                state_var = var.name
-                access = f'{var.name}[{key_norm}]'
-                base_key = base_text
-                return {'access': access, 'key': key_norm, 'base': base_text, 'base_key': base_key, 'state_variable': state_var, 'slot_kind': 'mapping_slot', 'resolved_inputs': words[:2], 'notes': notes}
-            storage_ref = self.storage_ref_mapping_access(type_env, base, key_norm)
-            if storage_ref:
-                return {
-                    'access': storage_ref['access'],
-                    'key': key_norm,
-                    'base': base_text,
-                    'base_key': base_text,
-                    'state_variable': None,
-                    'storage_reference': storage_ref.get('root'),
-                    'storage_reference_type': storage_ref.get('root_type'),
-                    'storage_reference_kind': storage_ref.get('kind'),
-                    'storage_field': self.field_ref(storage_ref.get('field')),
-                    'slot_kind': 'storage_ref_mapping_slot',
-                    'resolved_inputs': words[:2],
-                    'notes': list(dict.fromkeys(notes + ['storage_reference_mapping_slot'])),
-                }
+        var = type_env.state_var_by_slot(base_text)
+        if var:
+            state_var = var.name
+            access = f'{var.name}[{key_norm}]'
+            base_key = base_text
+            result_type = self.mapping_value_type(getattr(var, 'type_string', None))
+            return {
+                'access': access,
+                'key': key_norm,
+                'base': base_text,
+                'base_key': base_key,
+                'state_variable': state_var,
+                'slot_kind': 'mapping_slot',
+                'result_type': result_type,
+                'terminal_storage_value': not self.is_mapping_type_text(result_type),
+                'resolved_inputs': resolved_inputs,
+                'notes': notes,
+            }
+        storage_ref = self.storage_ref_mapping_access(type_env, base_text, key_norm)
+        if storage_ref:
+            result_type = self.mapping_value_type(storage_ref.get('mapping_type'))
+            return {
+                'access': storage_ref['access'],
+                'key': key_norm,
+                'base': base_text,
+                'base_key': base_text,
+                'state_variable': None,
+                'storage_reference': storage_ref.get('root'),
+                'storage_reference_type': storage_ref.get('root_type'),
+                'storage_reference_kind': storage_ref.get('kind'),
+                'storage_field': self.field_ref(storage_ref.get('field')),
+                'slot_kind': 'storage_ref_mapping_slot',
+                'result_type': result_type,
+                'terminal_storage_value': not self.is_mapping_type_text(result_type),
+                'resolved_inputs': resolved_inputs,
+                'notes': list(dict.fromkeys(notes + ['storage_reference_mapping_slot'])),
+            }
+        return None
+
+    def path_conditioned_mapping_slot_expr_from_words(
+        self,
+        type_env: Any,
+        effect: EffectNode,
+        words: list[dict[str, Any]],
+        known: dict[str, dict[str, Any]],
+    ) -> dict[str, Any] | None:
+        if len(words) < 2:
             return None
+        candidates: list[dict[str, Any]] = []
+        for key_candidate, base_candidate in self.aligned_word_branch_candidates(words[0], words[1]):
+            condition = self.join_conditions(key_candidate.get('path'), base_candidate.get('path'))
+            key_value = key_candidate.get('value')
+            base_value = base_candidate.get('value')
+            if self.is_unknown_value(key_value) or self.is_unknown_value(base_value):
+                candidates.append(self.clean({
+                    'status': 'unresolved',
+                    'condition': condition,
+                    'reason': 'unknown_memory_word_candidate',
+                    'key_value': key_value,
+                    'base_value': base_value,
+                }))
+                continue
+            key_norm = self.value_text(key_value)
+            base_text = self.value_text(base_value)
+            resolved = self.mapping_slot_expr_from_key_base(
+                type_env,
+                key_norm,
+                base_text,
+                known,
+                [key_candidate, base_candidate],
+                ['memoryssa_word_branch_candidate'],
+                self.word_value_keys(base_candidate),
+            )
+            if resolved:
+                candidates.append(self.clean({
+                    'status': 'resolved',
+                    'condition': condition,
+                    **resolved,
+                }))
+                continue
+            nested = self.path_conditioned_nested_mapping_slot_expr(type_env, key_norm, base_text, condition, known, [key_candidate, base_candidate])
+            if nested:
+                candidates.extend(nested)
+                continue
+            candidates.append(self.clean({
+                'status': 'unresolved',
+                'condition': condition,
+                'reason': 'unresolved_word_candidate_mapping_slot',
+                'key_value': key_value,
+                'base_value': base_value,
+            }))
+        if not candidates:
+            return None
+        resolved_accesses = {item.get('access') for item in candidates if item.get('status') == 'resolved'}
+        all_resolved = all(item.get('status') == 'resolved' for item in candidates)
+        if len(resolved_accesses) == 1 and all_resolved:
+            only = next(item for item in candidates if item.get('status') == 'resolved')
+            return self.clean({
+                key: only.get(key)
+                for key in (
+                    'access', 'key', 'base', 'base_key', 'state_variable',
+                    'storage_reference', 'storage_reference_type',
+                    'storage_reference_kind', 'storage_field', 'slot_kind',
+                    'resolved_inputs', 'notes',
+                )
+            })
+        if not resolved_accesses:
+            return None
+        return self.clean({
+            'access': 'path_conditioned_storage',
+            'key': 'path_conditioned',
+            'base': 'memoryssa_word_candidates',
+            'base_key': None,
+            'slot_kind': 'path_conditioned_mapping_slot',
+            'path_candidates': candidates,
+            'notes': ['memoryssa_word_branch_candidates', 'path_sensitive_memoryssa'],
+        })
+
+    def path_conditioned_nested_mapping_slot_expr(
+        self,
+        type_env: Any,
+        key_norm: str,
+        base_text: str,
+        condition: str | None,
+        known: dict[str, dict[str, Any]],
+        resolved_inputs: Any,
+    ) -> list[dict[str, Any]]:
+        base_key = self.first_known_key([base_text], known)
+        if not base_key:
+            return []
+        prev = known[base_key]
+        out: list[dict[str, Any]] = []
+        for base_candidate in prev.get('path_candidates') or []:
+            if base_candidate.get('status') != 'resolved':
+                continue
+            merged_condition = self.merge_compatible_conditions(condition, base_candidate.get('condition'))
+            if merged_condition is None:
+                continue
+            access = f"{base_candidate.get('access')}[{key_norm}]"
+            result_type = self.mapping_value_type(base_candidate.get('result_type'))
+            out.append(self.clean({
+                'status': 'resolved',
+                'condition': merged_condition,
+                'access': access,
+                'key': key_norm,
+                'base': base_text,
+                'base_key': base_key,
+                'state_variable': base_candidate.get('state_variable'),
+                'storage_reference': base_candidate.get('storage_reference'),
+                'storage_reference_type': base_candidate.get('storage_reference_type'),
+                'storage_reference_kind': base_candidate.get('storage_reference_kind'),
+                'storage_field': base_candidate.get('storage_field'),
+                'slot_kind': 'nested_mapping_slot',
+                'result_type': result_type,
+                'terminal_storage_value': not self.is_mapping_type_text(result_type),
+                'resolved_inputs': resolved_inputs,
+                'notes': list(dict.fromkeys((base_candidate.get('notes') or []) + ['nested_mapping_slot_from_memoryssa_word_candidate'])),
+            }))
+        return out
+
+    @classmethod
+    def aligned_word_branch_candidates(cls, key_word: dict[str, Any], base_word: dict[str, Any]) -> list[tuple[dict[str, Any], dict[str, Any]]]:
+        key_candidates = key_word.get('branch_candidates') or []
+        base_candidates = base_word.get('branch_candidates') or []
+        if not key_candidates or not base_candidates:
+            return []
+        out: list[tuple[dict[str, Any], dict[str, Any]]] = []
+        for key_candidate in key_candidates:
+            for base_candidate in base_candidates:
+                if cls.merge_compatible_conditions(key_candidate.get('path'), base_candidate.get('path')) is None:
+                    continue
+                out.append((key_candidate, base_candidate))
+        return out
+
+    @classmethod
+    def merge_compatible_conditions(cls, left: Any, right: Any) -> str | None:
+        parts: list[str] = []
+        for condition in (left, right):
+            for part in cls.condition_parts(condition):
+                if part not in parts:
+                    parts.append(part)
+        atoms = set(parts)
+        for atom in list(atoms):
+            if cls.negated_condition(atom) in atoms:
+                return None
+        return ' && '.join(parts) if parts else None
+
+    @classmethod
+    def join_conditions(cls, left: Any, right: Any) -> str | None:
+        return cls.merge_compatible_conditions(left, right)
+
+    @staticmethod
+    def condition_parts(condition: Any) -> list[str]:
+        text = str(condition or '').strip()
+        if not text or text == 'entry':
+            return []
+        return [part.strip() for part in text.split(' && ') if part.strip() and part.strip() != 'entry']
+
+    @staticmethod
+    def negated_condition(condition: str) -> str:
+        text = str(condition or '').strip()
+        if text.startswith('!(') and text.endswith(')'):
+            return text[2:-1].strip()
+        return f'!({text})'
 
     def packed_hash_slot_expr(self, type_env: Any, effect: EffectNode, known: dict[str, dict[str, Any]] | None = None) -> dict[str, Any] | None:
         known = known or {}
@@ -1162,12 +1438,13 @@ class SemanticOverlayBuilder:
             return None
         known = known or {}
         key, base = parts[0], parts[1]
-        key_norm = normalize_expr(key)
+        key_norm = self.storage_key_expr(type_env, normalize_expr(key))
         base_key = self.first_known_key([base], known)
         if base_key:
             prev = known[base_key]
             access = f"{prev['access']}[{key_norm}]"
             all_notes = list(dict.fromkeys(['nested_mapping_slot_from_byte_axis', *(notes or [])]))
+            result_type = self.mapping_value_type(prev.get('result_type'))
             return self.clean({
                 'access': access,
                 'key': key_norm,
@@ -1179,6 +1456,8 @@ class SemanticOverlayBuilder:
                 'storage_reference_kind': prev.get('storage_reference_kind'),
                 'storage_field': prev.get('storage_field'),
                 'slot_kind': 'nested_mapping_slot',
+                'result_type': result_type,
+                'terminal_storage_value': not self.is_mapping_type_text(result_type),
                 'resolved_inputs': parts,
                 'byte_slice': byte_slice,
                 'packed_semantics': parts,
@@ -1206,6 +1485,7 @@ class SemanticOverlayBuilder:
             return None
         access = f'{state.name}[{key_norm}]'
         all_notes = list(dict.fromkeys(['mapping_slot_from_byte_axis', *(notes or [])]))
+        result_type = self.mapping_value_type(getattr(state, 'type_string', None))
         return self.clean({
             'access': access,
             'key': key_norm,
@@ -1213,6 +1493,8 @@ class SemanticOverlayBuilder:
             'base_key': base,
             'state_variable': state.name,
             'slot_kind': 'mapping_slot',
+            'result_type': result_type,
+            'terminal_storage_value': not self.is_mapping_type_text(result_type),
             'resolved_inputs': parts,
             'byte_slice': byte_slice,
             'packed_semantics': parts,
@@ -1230,6 +1512,37 @@ class SemanticOverlayBuilder:
             'sink_resolution': sink_resolution,
             'notes': all_notes,
         })
+
+    @classmethod
+    def is_mapping_type_text(cls, type_string: Any) -> bool:
+        return str(type_string or '').strip().startswith('mapping(')
+
+    @classmethod
+    def mapping_value_type(cls, type_string: Any) -> str | None:
+        text = str(type_string or '').strip()
+        if not cls.is_mapping_type_text(text):
+            return None
+        body = text[len('mapping('):]
+        if body.endswith(')'):
+            body = body[:-1]
+        depth = 0
+        index = 0
+        while index < len(body):
+            ch = body[index]
+            if ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+            elif depth == 0 and body[index:index + 2] == '=>':
+                return body[index + 2:].strip()
+            index += 1
+        return None
+
+    def storage_key_expr(self, type_env: Any, expr: Any) -> str:
+        direct_state = self.direct_state_read_from_sload_expr(type_env, expr)
+        if direct_state:
+            return str(direct_state.get('access') or direct_state.get('solidity_like') or normalize_expr(expr))
+        return normalize_expr(expr)
 
     @staticmethod
     def is_full_word_pair(byte_slice: dict[str, Any]) -> bool:
@@ -1293,37 +1606,62 @@ class SemanticOverlayBuilder:
         slot_key: str,
         slot_expr: dict[str, Any],
         slot_effect: EffectNode | None,
+        type_env: Any,
+        value_defs_by_name: dict[str, list[EffectNode]],
     ) -> SemanticOverlay:
         value = effect.attrs.get('value')
+        value_normalized, value_state_read = self.storage_write_value(type_env, effect, value_defs_by_name)
         overlay_kind = 'PathConditionedStorageRead' if effect.kind == 'StorageRead' else 'PathConditionedStorageWrite'
         candidates: list[dict[str, Any]] = []
+        effect_paths = self.path_states(effect) or [None]
         for candidate in slot_expr.get('path_candidates') or []:
-            if candidate.get('status') != 'resolved':
-                candidates.append(candidate)
+            merged_conditions = self.compatible_sink_candidate_conditions(effect_paths, candidate.get('condition'))
+            if not merged_conditions:
                 continue
-            access = candidate.get('access')
-            manual_packed = candidate.get('slot_kind') == 'manual_packed_hash_slot'
-            kind = (
-                ('StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite')
-                if manual_packed
-                else ('MappingRead' if effect.kind == 'StorageRead' else 'MappingWrite')
-            )
-            solidity_like = (
-                f"{value} = {access};"
-                if effect.kind == 'StorageRead' and value
-                else f"{access} = {normalize_expr(value)};"
-            )
-            candidates.append(self.clean({
-                **candidate,
-                'overlay_kind': kind,
-                'solidity_like': solidity_like,
-                'value': normalize_expr(value) if effect.kind == 'StorageWrite' else None,
-                'target': value if effect.kind == 'StorageRead' else None,
-                'storage_model': 'manual_packed_hash_slot' if manual_packed else None,
-                'state_access': True if manual_packed else None,
-                'state_mutation': effect.kind == 'StorageWrite' if manual_packed else None,
-                'variable_name_inferred': False if manual_packed else None,
-            }))
+            for merged_condition in merged_conditions:
+                if candidate.get('status') != 'resolved':
+                    clone = dict(candidate)
+                    if merged_condition:
+                        clone['condition'] = merged_condition
+                    candidates.append(self.clean(clone))
+                    continue
+                if candidate.get('terminal_storage_value') is False:
+                    candidates.append(self.clean({
+                        'status': 'unresolved',
+                        'condition': merged_condition,
+                        'reason': 'intermediate_mapping_slot_requires_additional_key',
+                        'access_candidate': candidate.get('access'),
+                        'result_type': candidate.get('result_type'),
+                        'resolved_inputs': candidate.get('resolved_inputs'),
+                        'notes': list(dict.fromkeys((candidate.get('notes') or []) + ['intermediate_mapping_slot_not_projected'])),
+                    }))
+                    continue
+                access = candidate.get('access')
+                manual_packed = candidate.get('slot_kind') == 'manual_packed_hash_slot'
+                kind = (
+                    ('StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite')
+                    if manual_packed
+                    else ('MappingRead' if effect.kind == 'StorageRead' else 'MappingWrite')
+                )
+                solidity_like = (
+                    f"{value} = {access};"
+                    if effect.kind == 'StorageRead' and value
+                    else f"{access} = {value_normalized};"
+                )
+                candidates.append(self.clean({
+                    **candidate,
+                    'condition': merged_condition,
+                    'overlay_kind': kind,
+                    'solidity_like': solidity_like,
+                    'value': value_normalized if effect.kind == 'StorageWrite' else None,
+                    'value_yul': value if effect.kind == 'StorageWrite' else None,
+                    'value_state_read': value_state_read,
+                    'target': value if effect.kind == 'StorageRead' else None,
+                    'storage_model': 'manual_packed_hash_slot' if manual_packed else None,
+                    'state_access': True if manual_packed else None,
+                    'state_mutation': effect.kind == 'StorageWrite' if manual_packed else None,
+                    'variable_name_inferred': False if manual_packed else None,
+                }))
         effects_used = [x for x in [slot_effect.effect_id if slot_effect else None, effect.effect_id] if x]
         refs = list(dict.fromkeys((slot_effect.stmt_refs if slot_effect else []) + effect.stmt_refs))
         return self.ov(overlay_kind, effects_used, refs, self.clean({
@@ -1331,14 +1669,26 @@ class SemanticOverlayBuilder:
             'slot_key': slot_key,
             'slot_versions': effect.attrs.get('slot_versions'),
             'target': value if effect.kind == 'StorageRead' else None,
-            'value': normalize_expr(value) if effect.kind == 'StorageWrite' else None,
+            'value': value_normalized if effect.kind == 'StorageWrite' else None,
             'value_yul': value if effect.kind == 'StorageWrite' else None,
+            'value_state_read': value_state_read,
             'path_states': effect.attrs.get('path_states'),
             'candidates': candidates,
             'sink_resolution': slot_expr.get('sink_resolution'),
-            'storage_model': 'manual_packed_hash_slot',
+            'storage_model': 'manual_packed_hash_slot' if slot_expr.get('slot_kind') == 'path_conditioned_manual_packed_hash_slot' else None,
             'note': 'storage_effect_has_path_sensitive_sink_resolution',
         }))
+
+    @classmethod
+    def compatible_sink_candidate_conditions(cls, effect_paths: list[str | None], candidate_condition: Any) -> list[str | None]:
+        out: list[str | None] = []
+        for effect_path in effect_paths:
+            merged = cls.merge_compatible_conditions(effect_path, candidate_condition)
+            if merged is None:
+                continue
+            if merged not in out:
+                out.append(merged)
+        return out
 
     @staticmethod
     def manual_packed_slot_derivation(
@@ -1442,12 +1792,23 @@ class SemanticOverlayBuilder:
             return vals[0] if len(vals) == 1 else 'phi(' + ', '.join(vals) + ')'
         return normalize_expr(value)
 
+    def storage_write_value(
+        self,
+        type_env: Any,
+        effect: EffectNode,
+        value_defs_by_name: dict[str, list[EffectNode]],
+    ) -> tuple[Any, dict[str, Any] | None]:
+        value = effect.attrs.get('value')
+        if effect.kind != 'StorageWrite':
+            return value, None
+        return self.normalize_expression_with_state_reads(type_env, value, value_defs_by_name)
+
     @staticmethod
     def storage_solidity_like(kind: str, access: str, value: Any, effect: EffectNode) -> str:
         if kind in {'MappingRead', 'StateVariableRead'}:
             target = effect.attrs.get('value')
             return f'{target} = {access};' if target else f'read {access};'
-        return f'{access} = {normalize_expr(value)};'
+        return f'{access} = {value};'
 
     def path_conditioned_event_overlay(self, effect: EffectNode, event: EventDecl | None, topics: list[Any]) -> SemanticOverlay | None:
         paths = self.sink_path_values(effect, 'data')

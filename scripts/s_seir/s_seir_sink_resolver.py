@@ -218,6 +218,30 @@ def memory_range_path_resolutions(
     semantic_role: str,
     hash_mode: bool = False,
 ) -> list[SinkPathResolution]:
+    if semantic_role == "revert_payload" and is_zero_size(size):
+        attrs = getattr(effect, "attrs", {}) or {}
+        paths = attrs.get("path_states") or ["entry"]
+        out: list[SinkPathResolution] = []
+        for index, path in enumerate(paths):
+            out.append(SinkPathResolution(
+                path_id=f"path_{index}",
+                condition=path_condition(path),
+                arg_resolutions={
+                    role: SinkArgResolution(
+                        expr=f"{ptr}:{size}",
+                        normalized="empty",
+                        memory_slice={
+                            "query_kind": "EmptyMemorySlice",
+                            "path": path,
+                            "complete": True,
+                            "slices": [],
+                        },
+                        notes=[semantic_role, "empty_payload", "zero_length_memory_range"],
+                    )
+                },
+            ))
+        return out
+
     byte_slice = memory_read.get("byte_slice") or {}
     if not byte_slice or not byte_slice.get("complete"):
         return []
@@ -310,6 +334,16 @@ def is_full_word_pair(slices: list[dict[str, Any]]) -> bool:
     except Exception:
         return False
     return first_offset == 0 and second_offset == 32 and first_size == 32 and second_size == 32
+
+
+def is_zero_size(value: Any) -> bool:
+    text = str(value or "").strip().lower()
+    if not text:
+        return False
+    try:
+        return int(text, 0) == 0
+    except Exception:
+        return False
 
 
 def slice_signature(memory_slice: dict[str, Any] | None) -> tuple[Any, ...]:

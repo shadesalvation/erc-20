@@ -51,6 +51,8 @@ class SolidityLikeRenderer:
         self.struct_field_lines_by_effect = self._struct_field_lines_by_effect(fn.semantic_overlays)
         self.loop_groups = self._loop_groups()
         self.loop_exit_suppressions_by_stmt = self._loop_exit_suppressions_by_stmt()
+        self._condition_fingerprint_cache: dict[str, set[str]] = {}
+        self._condition_equivalence_cache: dict[tuple[str, str], bool] = {}
 
     def render_function(self) -> list[str]:
         lines = [f"Function {self.fn.contract}.{self.fn.signature}"]
@@ -110,7 +112,7 @@ class SolidityLikeRenderer:
             for index, line in enumerate(rendered):
                 comment = f" // yul: {stmt.text}" if index == comment_index else ""
                 body_lines.append(f"{line}{comment}")
-        return self.coalesce_adjacent_condition_blocks(body_lines)
+        return self.optimize_condition_blocks(body_lines)
 
     def function_solidity_like_text(self, source_text: str) -> str | None:
         block_ids = []
@@ -369,7 +371,7 @@ class SolidityLikeRenderer:
                 continue
             for line in self.attach_yul_comments(rendered, stmt):
                 body_lines.append(f"    {line}")
-        lines.extend(self.coalesce_adjacent_condition_blocks(body_lines))
+        lines.extend(self.optimize_condition_blocks(body_lines))
         lines.append("}")
         return lines
 
@@ -668,24 +670,70 @@ class SolidityLikeRenderer:
         return match.group(1).strip() if match else None
 
     def conditions_equivalent(self, left: str, right: str) -> bool:
-        return self.condition_fingerprints(left) & self.condition_fingerprints(right) != set()
+        left_text = self.strip_outer_parens(str(left or "").strip())
+        right_text = self.strip_outer_parens(str(right or "").strip())
+        key = tuple(sorted((left_text, right_text)))
+        if key in self._condition_equivalence_cache:
+            return self._condition_equivalence_cache[key]
+        if left_text == right_text:
+            self._condition_equivalence_cache[key] = True
+            return True
+        if self.long_condition(left) or self.long_condition(right):
+            self._condition_equivalence_cache[key] = False
+            return False
+        result = self.conditions_equivalent_cheap(left_text, right_text)
+        self._condition_equivalence_cache[key] = result
+        return result
+
+    def conditions_equivalent_cheap(self, left: str, right: str) -> bool:
+        pairs = {
+            (left, right),
+            (self.strip_outer_parens(left), self.strip_outer_parens(right)),
+        }
+        for a, b in list(pairs):
+            if a == b:
+                return True
+            if self.condition_aliases.get(a) == b or self.condition_aliases.get(b) == a:
+                return True
+            if self.negated_alias(a) == b or self.negated_alias(b) == a:
+                return True
+            if self.simple_comparison_key(a) and self.simple_comparison_key(a) == self.simple_comparison_key(b):
+                return True
+        return False
+
+    def negated_alias(self, condition: str) -> str | None:
+        text = str(condition or "").strip()
+        if not (text.startswith("!(") and text.endswith(")")):
+            return None
+        inner = self.strip_outer_parens(text[2:-1].strip())
+        alias = self.condition_aliases.get(inner)
+        return f"!({alias})" if alias else None
+
+    @staticmethod
+    def long_condition(condition: Any) -> bool:
+        text = str(condition or "")
+        return len(text) > 512 or text.count("&&") + text.count("||") > 16
 
     def condition_fingerprints(self, condition: str) -> set[str]:
+        cache_key = str(condition or "").strip()
+        cached = self._condition_fingerprint_cache.get(cache_key)
+        if cached is not None:
+            return cached
         out: set[str] = set()
-        stack = [str(condition or "").strip()]
+        stack = [cache_key]
         inverse_aliases = {value: key for key, value in self.condition_aliases.items()}
         while stack:
             text = self.strip_outer_parens(stack.pop().strip())
             if not text:
                 continue
-            normalized = normalize_expr(text, context="condition")
-            out.add(normalized)
-            out.add(self.strip_outer_parens(normalized))
+            out.add(text)
+            out.add(self.strip_outer_parens(text))
+            out.update(self.simple_condition_variants(text))
             if text.startswith("!(") and text.endswith(")"):
                 inner = text[2:-1].strip()
-                normalized_inner = normalize_expr(inner, context="condition")
-                out.add(f"!({normalized_inner})")
-                out.add(f"!({self.strip_outer_parens(normalized_inner)})")
+                out.add(f"!({self.strip_outer_parens(inner)})")
+                for variant in self.simple_condition_variants(inner):
+                    out.add(f"!({variant})")
                 if inner in inverse_aliases:
                     stack.append(f"!({inverse_aliases[inner]})")
                 continue
@@ -693,7 +741,54 @@ class SolidityLikeRenderer:
                 stack.append(self.condition_aliases[text])
             if text in inverse_aliases:
                 stack.append(inverse_aliases[text])
+        self._condition_fingerprint_cache[cache_key] = out
         return out
+
+    @classmethod
+    def simple_condition_variants(cls, condition: Any) -> set[str]:
+        key = cls.simple_comparison_key(condition)
+        if not key:
+            return set()
+        op, left, right = key
+        infix_op = {"eq": "==", "ne": "!=", "lt": "<", "gt": ">", "le": "<=", "ge": ">="}[op]
+        return {
+            f"{op}({left}, {right})",
+            f"{op}({left},{right})",
+            f"{left} {infix_op} {right}",
+            f"({left} {infix_op} {right})",
+        }
+
+    @classmethod
+    def simple_comparison_key(cls, condition: Any) -> tuple[str, str, str] | None:
+        text = cls.strip_outer_parens(str(condition or "").strip())
+        call = cls.parse_simple_yul_comparison(text)
+        if call:
+            return call
+        return cls.parse_simple_infix_comparison(text)
+
+    @staticmethod
+    def parse_simple_yul_comparison(text: str) -> tuple[str, str, str] | None:
+        for op in ("eq", "ne", "lt", "gt", "le", "ge"):
+            prefix = f"{op}("
+            if not text.startswith(prefix) or not text.endswith(")"):
+                continue
+            inner = text[len(prefix):-1]
+            if inner.count(",") != 1:
+                return None
+            left, right = (part.strip() for part in inner.split(",", 1))
+            if left and right:
+                return op, left, right
+        return None
+
+    @staticmethod
+    def parse_simple_infix_comparison(text: str) -> tuple[str, str, str] | None:
+        for symbol, op in (("==", "eq"), ("!=", "ne"), ("<=", "le"), (">=", "ge"), ("<", "lt"), (">", "gt")):
+            if symbol not in text:
+                continue
+            left, right = (part.strip() for part in text.split(symbol, 1))
+            if left and right and all(sep not in left + right for sep in ("&&", "||", "(", ")", ",")):
+                return op, left, right
+        return None
 
     @classmethod
     def coalesce_adjacent_condition_blocks(cls, lines: list[str]) -> list[str]:
@@ -727,6 +822,94 @@ class SolidityLikeRenderer:
             out.extend(inner)
             out.append(closer)
         return out
+
+    @classmethod
+    def optimize_condition_blocks(cls, lines: list[str]) -> list[str]:
+        """Presentation-only condition compaction for rendered lines.
+
+        The S-SEIR graph remains unchanged. This pass only rewrites adjacent
+        rendered `if` blocks when their body text is identical, or when their
+        opener is textually identical. That keeps the optimization conservative:
+        distinct semantic statements are never merged.
+        """
+
+        previous: list[str] | None = None
+        current = list(lines)
+        for _ in range(4):
+            current = cls.coalesce_duplicate_single_line_if_blocks(current)
+            current = cls.coalesce_adjacent_condition_blocks(current)
+            if current == previous:
+                break
+            previous = list(current)
+        return current
+
+    @classmethod
+    def coalesce_duplicate_single_line_if_blocks(cls, lines: list[str]) -> list[str]:
+        out: list[str] = []
+        index = 0
+        while index < len(lines):
+            parsed = cls.parse_if_block(lines, index)
+            if parsed is None:
+                out.append(lines[index])
+                index += 1
+                continue
+
+            opener, inner, closer, end_index = parsed
+            optimized_inner = cls.optimize_condition_blocks([line[4:] if line.startswith("    ") else line for line in inner])
+            normalized_inner = [f"    {line}" for line in optimized_inner]
+            condition = cls.if_opener_condition(opener)
+            if not condition or len(optimized_inner) != 1 or optimized_inner[0].lstrip().startswith("if "):
+                out.append(opener)
+                out.extend(normalized_inner)
+                out.append(closer)
+                index = end_index + 1
+                continue
+
+            body_line = optimized_inner[0]
+            body_key = cls.rendered_line_semantic_key(body_line)
+            conditions = [condition]
+            index = end_index + 1
+            while index < len(lines):
+                next_block = cls.parse_if_block(lines, index)
+                if next_block is None:
+                    break
+                next_opener, next_inner, _next_closer, next_end = next_block
+                next_optimized = cls.optimize_condition_blocks([line[4:] if line.startswith("    ") else line for line in next_inner])
+                next_condition = cls.if_opener_condition(next_opener)
+                if not next_condition or len(next_optimized) != 1 or cls.rendered_line_semantic_key(next_optimized[0]) != body_key:
+                    break
+                if " // yul:" not in body_line and " // yul:" in next_optimized[0]:
+                    body_line = next_optimized[0]
+                conditions.append(next_condition)
+                index = next_end + 1
+
+            if len(conditions) == 1:
+                out.append(opener)
+                out.append(f"    {body_line}")
+                out.append(closer)
+                continue
+
+            combined = cls.combined_condition_text(conditions)
+            if not combined:
+                out.append(body_line)
+                continue
+            out.append(f"if ({combined}) {{")
+            out.append(f"    {body_line}")
+            out.append("}")
+        return out
+
+    @classmethod
+    def combined_condition_text(cls, conditions: list[str]) -> str | None:
+        simplified = cls.simplify_disjunction([condition for condition in conditions if condition.strip()])
+        if not simplified:
+            return None
+        if len(simplified) == 1:
+            return normalize_expr(simplified[0], context="condition")
+        return " || ".join(f"({normalize_expr(item, context='condition')})" for item in simplified)
+
+    @staticmethod
+    def rendered_line_semantic_key(line: str) -> str:
+        return str(line or "").split(" // yul:", 1)[0].strip()
 
     @staticmethod
     def parse_if_block(lines: list[str], index: int) -> tuple[str, list[str], str, int] | None:
@@ -855,6 +1038,12 @@ class SolidityLikeRenderer:
                     break
                 if changed:
                     break
+            if changed:
+                continue
+            reduced = cls.reduce_complement_absorption(term_sets)
+            if reduced != term_sets:
+                term_sets = reduced
+                changed = True
         if frozenset() in term_sets:
             return []
         rendered = [" && ".join(sorted(term, key=str)) for term in term_sets]
@@ -874,6 +1063,43 @@ class SolidityLikeRenderer:
         right_lit = next(iter(only_right))
         if cls.negates(left_lit, right_lit):
             return frozenset(left & right)
+        return None
+
+    @classmethod
+    def reduce_complement_absorption(cls, term_sets: set[frozenset[str]]) -> set[frozenset[str]]:
+        """Apply exact boolean absorption on DNF terms.
+
+        Example:
+            A || (!A && B)  -> A || B
+
+        The pass only removes one explicit complement literal when the remaining
+        literals are already covered by the opposite term. It does not try to
+        prove semantic equivalence between arbitrary expressions.
+        """
+
+        out = set(term_sets)
+        for left in list(term_sets):
+            for right in list(term_sets):
+                if left == right:
+                    continue
+                replacement = cls.absorb_complement_term(left, right)
+                if replacement is None or replacement == right:
+                    continue
+                out.discard(right)
+                out.add(replacement)
+                return cls.simplify_condition_terms(list(out))
+        return out
+
+    @classmethod
+    def absorb_complement_term(cls, left: frozenset[str], right: frozenset[str]) -> frozenset[str] | None:
+        for atom in left:
+            negated = cls.negated_condition_atom(atom)
+            if negated not in right:
+                continue
+            left_rest = set(left) - {atom}
+            right_rest = set(right) - {negated}
+            if left_rest.issubset(right_rest):
+                return frozenset(right_rest)
         return None
 
     @classmethod
@@ -1419,33 +1645,67 @@ class SolidityLikeRenderer:
             return " ".join(lines)
         return None
 
-    @staticmethod
-    def path_conditioned_lines(overlay: SemanticOverlay) -> list[str]:
+    @classmethod
+    def path_conditioned_lines(cls, overlay: SemanticOverlay) -> list[str]:
         candidates = overlay.attrs.get("candidates") or []
-        resolved: list[tuple[str | None, str]] = []
-        seen = set()
+        grouped: dict[str, list[str | None]] = {}
+        line_order: list[str] = []
+        seen: set[tuple[str, str]] = set()
         for candidate in candidates:
             line = candidate.get("solidity_like")
             condition = candidate.get("condition")
             key = (str(condition or ""), str(line or ""))
             if candidate.get("status") != "resolved" or not line or key in seen:
                 continue
-            resolved.append((str(condition) if condition else None, str(line)))
+            line_text = str(line)
+            if line_text not in grouped:
+                grouped[line_text] = []
+                line_order.append(line_text)
+            grouped[line_text].append(str(condition) if condition else None)
             seen.add(key)
-        if len(resolved) == 1:
-            condition, line = resolved[0]
-            if not condition:
-                return [line]
-            return [f"if ({normalize_expr(condition, context='condition')}) {{", f"    {line}", "}"]
+
         out: list[str] = []
-        for condition, line in resolved:
-            if condition:
-                out.append(f"if ({normalize_expr(condition, context='condition')}) {{")
-                out.append(f"    {line}")
-                out.append("}")
-            else:
+        for line in line_order:
+            conditions = grouped[line]
+            rendered_conditions = cls.simplify_candidate_conditions(conditions)
+            if not rendered_conditions:
                 out.append(line)
+                continue
+            if len(rendered_conditions) == 1:
+                out.extend(cls.render_conditioned_lines(rendered_conditions[0], [line]))
+            else:
+                condition = " || ".join(f"({item})" for item in rendered_conditions)
+                out.extend(cls.render_conditioned_lines(condition, [line]))
         return out
+
+    @classmethod
+    def simplify_candidate_conditions(cls, conditions: list[str | None]) -> list[str]:
+        """Collapse equivalent path conditions for identical rendered semantics.
+
+        This is a display-only optimization. It is intentionally limited to
+        candidates with the same `solidity_like` text, so it can simplify
+        `A && B` plus `!A && B` into `B` without merging distinct effects.
+        """
+
+        if any(condition is None or str(condition).strip() in {"", "entry"} for condition in conditions):
+            return []
+        raw = [
+            str(condition)
+            for condition in conditions
+            if str(condition).strip()
+        ]
+        if not raw:
+            return []
+        simplified = cls.simplify_disjunction(raw)
+        return simplified
+
+    @classmethod
+    def render_conditioned_lines(cls, condition: str, lines: list[str]) -> list[str]:
+        normalized = normalize_expr(condition, context="condition")
+        tree_lines = cls.condition_tree_block(normalized, lines)
+        if tree_lines:
+            return tree_lines
+        return [f"if ({normalized}) {{", *(f"    {line}" for line in lines), "}"]
 
     @staticmethod
     def expression_normalization(overlays: list[SemanticOverlay]) -> str | None:

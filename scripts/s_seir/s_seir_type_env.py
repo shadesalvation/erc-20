@@ -121,12 +121,12 @@ class TypeEnv:
         if not v or not self.is_storage_reference(v):
             return None
         if self.is_mapping_type(v.type_string) and slot_offset==0:
-            return {'root':root,'root_type':v.type_string,'field':None,'access':f'{root}[{key}]','slot_offset':slot_offset,'kind':'mapping_storage_ref'}
+            return {'root':root,'root_type':v.type_string,'mapping_type':v.type_string,'field':None,'access':f'{root}[{key}]','slot_offset':slot_offset,'kind':'mapping_storage_ref'}
         field=self.struct_field_by_storage_slot_offset(root,slot_offset)
         if not field or not self.is_mapping_type(field.get('type_string')):
             return None
         name=field.get('name')
-        return {'root':root,'root_type':v.type_string,'field':field,'access':f'{root}.{name}[{key}]','slot_offset':slot_offset,'kind':'struct_mapping_storage_ref'}
+        return {'root':root,'root_type':v.type_string,'mapping_type':field.get('type_string'),'field':field,'access':f'{root}.{name}[{key}]','slot_offset':slot_offset,'kind':'struct_mapping_storage_ref'}
     def state_var_by_slot(self,slot:str):
         text=str(slot).strip()
         if text.endswith('.slot'):

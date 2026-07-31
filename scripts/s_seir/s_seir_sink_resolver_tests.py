@@ -89,10 +89,71 @@ def test_return_and_call_attach_sink_resolution() -> None:
     assert effects[1].attrs["sink_resolution"]["path_resolutions"][0]["arg_resolutions"]["input"]["normalized"] == "MemorySlice(selector, arg0)"
 
 
+def test_zero_length_revert_resolves_empty_payload_before_memory_slice() -> None:
+    e = effect("Revert", {
+        "payload_ptr": "0",
+        "payload_size": "0",
+        "cfg_node_id": 9,
+        "path_states": ["cond"],
+        "payload_memory": {},
+    })
+    resolution = SinkResolver().resolve_effect(e)
+    assert resolution is not None
+    assert resolution.sink_kind == "Revert"
+    assert resolution.path_sensitive is True
+    path = resolution.path_resolutions[0]
+    assert path.status == "resolved"
+    assert path.reason is None
+    payload = path.arg_resolutions["payload"]
+    assert payload.normalized == "empty"
+    assert payload.memory_slice["query_kind"] == "EmptyMemorySlice"
+    assert payload.memory_slice["slices"] == []
+    assert "empty_payload" in payload.notes
+
+
+def test_nonzero_revert_still_uses_memory_slice_resolution() -> None:
+    e = effect("Revert", {
+        "payload_ptr": "0x1c",
+        "payload_size": "0x04",
+        "cfg_node_id": 10,
+        "payload_memory": byte_slice([("entry", ["selector"])]),
+    })
+    resolution = SinkResolver().resolve_effect(e)
+    assert resolution is not None
+    path = resolution.path_resolutions[0]
+    assert path.status == "resolved"
+    assert path.arg_resolutions["payload"].normalized == "MemorySlice(selector)"
+    assert "empty_payload" not in path.arg_resolutions["payload"].notes
+
+
+def test_nonzero_revert_incomplete_memory_remains_unresolved() -> None:
+    e = effect("Revert", {
+        "payload_ptr": "0",
+        "payload_size": "0x20",
+        "cfg_node_id": 11,
+        "payload_memory": {"byte_slice": {
+            "complete": True,
+            "path_slices": [{
+                "path": "entry",
+                "complete": True,
+                "slices": [],
+            }],
+        }},
+    })
+    resolution = SinkResolver().resolve_effect(e)
+    assert resolution is not None
+    path = resolution.path_resolutions[0]
+    assert path.status == "unresolved"
+    assert path.reason == "incomplete_memory_slice"
+
+
 if __name__ == "__main__":
     tests = [
         test_event_log_data_gets_path_sensitive_sink_resolution,
         test_return_and_call_attach_sink_resolution,
+        test_zero_length_revert_resolves_empty_payload_before_memory_slice,
+        test_nonzero_revert_still_uses_memory_slice_resolution,
+        test_nonzero_revert_incomplete_memory_remains_unresolved,
     ]
     for test in tests:
         test()

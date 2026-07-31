@@ -1487,3 +1487,515 @@ JSON 用于后续程序处理；Text 用于人工检查。
 8. external call 未知 ABI 不强行恢复为高级调用。
 9. precompile 可以按原模块规则提升为 Solidity 内置语义。
 10. ProjectionPolicy 当前不参与输出，后续需要成熟规则后再考虑恢复。
+
+## 19. 近期补充实现
+
+本节记录 6.25 / 7.4 之后继续补充到 S-SEIR 中的实现。核心目标仍然是：
+
+- 不重新臆造轻量算法；
+- 保留原模块中 CFG、MemorySSA、语义终点倒推、path-sensitive 恢复等关键思路；
+- 将新的修复统一进入 S-SEIR 的 effect / overlay / solidity-like 输出。
+
+### 19.1 Opaque If 预处理
+
+解决的问题：
+
+混淆样例中存在大量恒真或恒假的 Yul `if`，如果直接进入 MemorySSA 和后续 slot 恢复，会产生多余 path，甚至让本来可以恢复的 slot 被保守标记为 unknown。
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_opaque_preprocess.py
+scripts/s_seir/s_seir_branch_preprocess.py
+```
+
+实现方法：
+
+1. 在 branch materialization 之前，先调用 solc AST 定位 Yul `if`。
+2. 只识别保守代数恒等式，不做符号证明。
+3. 如果条件静态恒真，则去掉 `if` 外壳并保留 body。
+4. 如果条件静态恒假，则删除 body。
+5. 预处理报告中记录每次 rewrite 的源码位置、条件、判断原因。
+
+当前支持的典型模式：
+
+```Yul
+if eq(x, add(x, 0)) { ... }
+if eq(mul(a, b), mul(b, a)) { ... }
+if iszero(sub(x, x)) { ... }
+if iszero(xor(x, x)) { ... }
+if eq(x, and(x, x)) { ... }
+```
+
+示例：
+
+```Yul
+if eq(gcf9eyl, add(gcf9eyl, 0)) {
+    mstore(ptr, value)
+}
+```
+
+预处理后：
+
+```Yul
+mstore(ptr, value)
+```
+
+在 EUROS 样例中，预处理报告显示：
+
+```Plain
+opaque_rewrites 11
+branch_rewrites 0
+total_rewrites 11
+```
+
+含义是：该样例实际只需要剪掉 opaque 条件，不需要进一步做分支物化。
+
+### 19.2 MemorySSA 与 SinkResolver 的职责边界
+
+解决的问题：
+
+引入 SinkResolver 后，需要避免它替代 MemorySSA，导致原有 word-level / path-sensitive / lazy resolve 能力被削弱。
+
+当前规则：
+
+```Plain
+MemorySSA 是主查询层。
+SinkResolver 是语义终点补充整理层。
+```
+
+实现方式：
+
+1. `EffectLifter` 在 `keccak256 / log / return / revert / call` 等语义终点处调用 MemorySSA。
+2. MemorySSA 查询结果仍保存在 effect attrs 中，例如：
+
+```Plain
+memory_read
+data_memory
+input_memory
+payload_memory
+```
+
+3. `SemanticOverlayBuilder.build()` 开头调用：
+
+```Python
+effects = SinkResolver().attach_all(effects)
+```
+
+4. SinkResolver 只把已有 MemorySSA / byte-axis 查询统一整理为：
+
+```Plain
+effect.attrs.sink_resolution
+```
+
+5. Overlay 恢复时优先消费 MemorySSA word / value_versions；当 byte slice、packed hash、path-sensitive data 更适合表达时，再使用 `sink_resolution`。
+
+示例：
+
+```Yul
+mstore(0, amount)
+log3(0, 32, APPROVAL_TOPIC, owner_, spender)
+```
+
+MemorySSA 记录：
+
+```Plain
+memory[0..32] = amount
+```
+
+SinkResolver 补充：
+
+```Plain
+sink_kind = EventLog
+data path = amount
+```
+
+Overlay 生成：
+
+```Solidity
+emit Approval(owner_, spender, amount);
+```
+
+### 19.3 状态变量读取作为 Mapping Key 的归一
+
+解决的问题：
+
+有些代码先通过 `sload(x.slot)` 读取状态变量，再把读取值写入 memory 参与 mapping slot 计算。旧展示中会出现：
+
+```Solidity
+p[sload(d.slot)] = 1;
+```
+
+甚至曾出现无目标读取展示为：
+
+```Solidity
+d = ;
+```
+
+这既不利于审计，也不符合 S-SEIR 对状态变量读写的表达习惯。
+
+实现方法：
+
+1. `sload(d.slot)` 被识别为 `StateVariableRead`。
+2. 如果该读取没有显式赋值目标，则 overlay 中展示为：
+
+```Solidity
+read d;
+```
+
+3. 如果该读取进入 MemorySSA word，并最终被 `keccak256` / `sload` / `sstore` 消费，则在 mapping key 中归一为状态变量名。
+
+示例，TKM constructor：
+
+```Yul
+mstore(0, sload(d.slot))
+mstore(32, p.slot)
+sstore(keccak256(0, 64), 1)
+```
+
+恢复前：
+
+```Solidity
+p[sload(d.slot)] = 1;
+```
+
+恢复后：
+
+```Solidity
+read d; // yul: mstore(0, sload(d.slot))
+p[d] = 1; // yul: sstore(keccak256(0, 64), 1)
+```
+
+语义模型记录：
+
+```Json
+{
+  "kind": "StateVariableRead",
+  "attrs": {
+    "access": "d",
+    "state_variable": "d",
+    "solidity_like": "read d;"
+  }
+}
+```
+
+以及：
+
+```Json
+{
+  "kind": "MappingWrite",
+  "attrs": {
+    "access": "p[d]",
+    "state_variable": "p",
+    "key": "d",
+    "value": "1",
+    "solidity_like": "p[d] = 1;"
+  }
+}
+```
+
+### 19.4 Mapping Slot 类型与终端值标记
+
+解决的问题：
+
+多维 mapping 的中间 slot 本身不是最终 storage value。例如：
+
+```Solidity
+mapping(address => mapping(address => uint256)) m;
+```
+
+其中：
+
+```Plain
+m[owner_]
+```
+
+只是下一层 mapping 的 base slot，不应当被当作最终 `uint256` storage value。
+
+实现方法：
+
+在 `MappingSlot / MappingRead / MappingWrite / PathConditionedStorage*` 的 attrs 中补充：
+
+```Plain
+result_type
+terminal_storage_value
+```
+
+规则：
+
+```Plain
+result_type 仍是 mapping(...) -> terminal_storage_value = false
+result_type 是 uint/bool/address 等普通类型 -> terminal_storage_value = true
+无法判断 -> null
+```
+
+示例，TKM allowance：
+
+```Yul
+mstore(0, owner_)
+mstore(32, m.slot)
+let ac := keccak256(0, 64)
+mstore(0, spender)
+mstore(32, ac)
+ab := sload(keccak256(0, 64))
+```
+
+恢复：
+
+```Solidity
+ac = slot(m[owner_]);
+ab = m[owner_][spender];
+```
+
+语义模型中：
+
+```Json
+{
+  "kind": "MappingSlot",
+  "attrs": {
+    "expression": "m[owner_]",
+    "result_type": "mapping(address => uint256)",
+    "terminal_storage_value": false
+  }
+}
+```
+
+```Json
+{
+  "kind": "MappingRead",
+  "attrs": {
+    "access": "m[owner_][spender]",
+    "result_type": "uint256",
+    "terminal_storage_value": true,
+    "solidity_like": "ab = m[owner_][spender];"
+  }
+}
+```
+
+### 19.5 SSA 版本驱动的 Nested Mapping Base 追踪
+
+解决的问题：
+
+同一个 Yul 变量名可能在不同位置被重新定义。如果只按变量名查找 mapping base，会把不同 SSA 版本错误合并，或者得到 `unknown_storage_slot_version`。
+
+典型场景：
+
+```Yul
+let MuuR := keccak256(ptr, 64)   // BVNo[fgMs]
+let LjAi := keccak256(ptr, 64)   // BVNo[fgMs][_owner]
+...
+MuuR := keccak256(ptr, 64)       // BVNo[_owner]
+LjAi := keccak256(ptr, 64)       // BVNo[_owner][_spender]
+sstore(LjAi, sub(dhzw, _amount))
+```
+
+实现方法：
+
+1. MemorySSA query word 中附加 value SSA versions。
+2. overlay builder 在恢复 `keccak256(ptr, len)` 时，不只查询文本变量名，也查询对应 SSA version。
+3. nested mapping 的 base lookup 使用 `word_value_keys()`，优先匹配当前 reaching definition。
+4. 如果同一 storage sink 有多个 path/SSA 候选，则生成 `PathConditionedStorageRead/Write`，而不是猜一个结果。
+
+EUROS `_spendAllowance` 当前恢复：
+
+```Solidity
+IUGo = BVNo[fgMs][_owner];
+dhzw = BVNo[_owner][_spender];
+BVNo[fgMs][_owner] = (dhzw - _amount);
+BVNo[_owner][_spender] = (dhzw - _amount);
+```
+
+语义模型中最后的写入为：
+
+```Json
+{
+  "kind": "PathConditionedStorageWrite",
+  "attrs": {
+    "candidates": [
+      {
+        "status": "resolved",
+        "access": "BVNo[fgMs][_owner]",
+        "solidity_like": "BVNo[fgMs][_owner] = (dhzw - _amount);"
+      },
+      {
+        "status": "resolved",
+        "access": "BVNo[_owner][_spender]",
+        "solidity_like": "BVNo[_owner][_spender] = (dhzw - _amount);"
+      }
+    ]
+  }
+}
+```
+
+这符合当前规则：同一语义终点在不同 SSA/path 下存在多个可达版本时，全部结构化保留。
+
+### 19.6 单 Word Hash 与 Mapping Hash 的展示区分
+
+解决的问题：
+
+同样是：
+
+```Yul
+keccak256(0, 32)
+```
+
+它可能不是 mapping slot，而是对单个 word 做 hash。例如 TKM 中用于生成权限 key：
+
+```Yul
+mstore(0, caller())
+let ad := keccak256(0, 32)
+```
+
+实现规则：
+
+```Plain
+keccak256(ptr, 64) 且 memory words 形如 key + stateVar.slot
+-> mapping slot
+
+keccak256(ptr, 32) 且只有一个完整 word
+-> keccak256(abi.encode(value))
+
+packed / overlapping memory
+-> keccak256(abi.encodePacked(...))
+```
+
+示例：
+
+```Yul
+mstore(0, caller())
+let ad := keccak256(0, 32)
+```
+
+恢复：
+
+```Solidity
+ad = keccak256(abi.encode(msg.sender));
+```
+
+而：
+
+```Yul
+mstore(0, owner_)
+mstore(32, m.slot)
+let ac := keccak256(0, 64)
+```
+
+恢复：
+
+```Solidity
+ac = slot(m[owner_]);
+```
+
+### 19.7 Path-sensitive 展示层更新
+
+解决的问题：
+
+语义模型中已经能记录 `PathConditionedStorageWrite`、`PathConditionedEventEmit` 等路径敏感结果，但 solidity-like 如果直接线性输出，会丢失“该语句在哪个 condition 下成立”的审计信息。
+
+当前展示规则：
+
+1. 每个 path-conditioned candidate 带有自己的 condition。
+2. 如果不同 candidate 恢复为同一语义，语义模型仍可保留多条 path；展示层可以合并或拆分。
+3. 对相同语义但不同 condition 的事件、状态读写，会按 condition 展开。
+4. 对已知条件树关系，展示层尽量生成嵌套 `if`。
+
+示例，TKM `C()` 中 `Transfer` 事件：
+
+语义模型记录为 `PathConditionedEventEmit`：
+
+```Json
+{
+  "kind": "PathConditionedEventEmit",
+  "attrs": {
+    "event": "Transfer",
+    "candidates": [
+      {
+        "condition": "!(condition) && !(lt(fromBalance, amount)) && !(and(shouldTakeFee, isFeeRouter))",
+        "args": ["from", "to", "amount"]
+      },
+      {
+        "condition": "condition && !(lt(fromBalance, amount)) && and(shouldTakeFee, isFeeRouter)",
+        "args": ["from", "to", "amount"]
+      }
+    ]
+  }
+}
+```
+
+solidity-like 展示为：
+
+```Solidity
+if (!(condition) && !(lt(fromBalance, amount)) && !(and(shouldTakeFee, isFeeRouter))) {
+    emit Transfer(from, to, amount);
+}
+if (condition && !(lt(fromBalance, amount)) && and(shouldTakeFee, isFeeRouter)) {
+    emit Transfer(from, to, amount);
+}
+```
+
+当前边界：
+
+展示层可能比源码更啰嗦，但不会为了美观合并掉必要条件。后续可继续做 condition tree 归并和公共前缀提升。
+
+### 19.8 TKM 样例重跑结果
+
+重跑目标：
+
+```Plain
+TOKENS/assembly样本/0x1e0847e537f75e6a983828c7f8ebf5a8108107d6/TKM.sol
+```
+
+输出目录：
+
+```Plain
+outputs/assembly样本_sseir_by_contract/0x1e0847e537f75e6a983828c7f8ebf5a8108107d6__TKM
+```
+
+重跑后语义检查：
+
+```Plain
+A:
+  require(i == address(0))
+  factoryAddr = j
+  usdtAddr = h
+
+totalSupply:
+  z = k
+
+balanceOf:
+  aa = l[acc]
+
+allowance:
+  ab = m[owner_][spender]
+
+approve:
+  check = o[ad]
+  require(check != 0)
+
+setMaxs:
+  check = o[ae]
+  o[af] = 1
+
+transferFrom:
+  currentAllowance = m[from][msg.sender]
+  m[from][msg.sender] = ah
+
+B:
+  m[owner_][spender] = amount
+  emit Approval(owner_, spender, amount)
+```
+
+本次重跑相对旧输出的主要变化：
+
+```Plain
+1. constructor 中 sload(d.slot) 类 mapping key 已归一为 d/e/f/g。
+2. MappingSlot / MappingRead / MappingWrite 增加 result_type 与 terminal_storage_value。
+3. D() 的 solidity-like 条件展示更 path-sensitive，但语义模型未回退。
+```
+
+### 19.9 当前仍保守保留的情况
+
+1. event topic0 必须完整 32 字节匹配。近似 topic 不强行识别为标准事件。
+2. unknownEvent 仍作为保守事件恢复结果保留。
+3. `read d;` 这类无目标状态读取是正确语义，但展示形式后续可继续优化。
+4. Path-conditioned 展示可能存在重复候选或长 condition，当前优先保证语义不丢失。

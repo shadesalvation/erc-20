@@ -173,6 +173,26 @@ class EffectLifter:
                     slot_versions = self.reaching_value_versions(res, nid, vals[0])
                     if inline_hash and inline_hash.attrs.get("inline_slot_key") not in slot_versions:
                         slot_versions = [inline_hash.attrs["inline_slot_key"]] + slot_versions
+                    for read_expr, read_slot in self.sload_reads_in_expr(vals[1]):
+                        nested_inline_hash = self.inline_keccak_hash_effect(stmt, res, nid, read_slot, block_loop_context)
+                        if nested_inline_hash:
+                            effects.append(nested_inline_hash)
+                        read_slot_versions = self.reaching_value_versions(res, nid, read_slot)
+                        if nested_inline_hash and nested_inline_hash.attrs.get("inline_slot_key") not in read_slot_versions:
+                            read_slot_versions = [nested_inline_hash.attrs["inline_slot_key"]] + read_slot_versions
+                        effects.append(self.effect("StorageRead", [stmt], {
+                            "slot": read_slot,
+                            "slot_versions": read_slot_versions,
+                            "value": None,
+                            "value_versions": {},
+                            "cfg_node_id": nid,
+                            "path_states": self.node_path_states(res, nid),
+                            "expression": read_expr,
+                            "nested_in_storage_value": True,
+                            "parent_call": "sstore",
+                            "parent_slot": vals[0],
+                            "parent_value": vals[1],
+                        }))
                     effects.append(self.effect("StorageWrite", [stmt], {
                         "slot": vals[0],
                         "slot_versions": slot_versions,
@@ -382,6 +402,19 @@ class EffectLifter:
             out.append((text, args[0]))
         for arg in args:
             out.extend(cls.mload_reads_in_expr(arg))
+        return out
+
+    @classmethod
+    def sload_reads_in_expr(cls, expr: Any) -> list[tuple[str, str]]:
+        text = str(expr or "").strip()
+        if not text:
+            return []
+        name, args = call_parts(text)
+        out: list[tuple[str, str]] = []
+        if name == "sload" and len(args) == 1:
+            out.append((text, args[0]))
+        for arg in args:
+            out.extend(cls.sload_reads_in_expr(arg))
         return out
 
     def inline_keccak_hash_effect(self, stmt: str | None, res: Any, nid: int, slot: str, block_loop_context: list[Any]) -> EffectNode | None:

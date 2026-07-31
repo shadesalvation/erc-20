@@ -379,6 +379,94 @@ def test_path_conditioned_storage_renders_as_condition_blocks() -> None:
     ])
 
 
+def test_path_conditioned_same_line_complement_conditions_become_unconditional() -> None:
+    lines = SolidityLikeRenderer.path_conditioned_lines(ov("PathConditionedEventEmit", {
+        "candidates": [
+            {
+                "status": "resolved",
+                "condition": "cond && fee",
+                "solidity_like": "emit Transfer(from, to, amount);",
+            },
+            {
+                "status": "resolved",
+                "condition": "!(cond) && fee",
+                "solidity_like": "emit Transfer(from, to, amount);",
+            },
+        ]
+    }))
+    expect("path_conditioned_same_line_complement", lines, [
+        "if ((fee != 0)) {",
+        "    emit Transfer(from, to, amount);",
+        "}",
+    ])
+
+
+def test_path_conditioned_same_line_all_complements_become_unconditional() -> None:
+    lines = SolidityLikeRenderer.path_conditioned_lines(ov("PathConditionedStorageWrite", {
+        "candidates": [
+            {
+                "status": "resolved",
+                "condition": "cond",
+                "solidity_like": "x = value;",
+            },
+            {
+                "status": "resolved",
+                "condition": "!(cond)",
+                "solidity_like": "x = value;",
+            },
+        ]
+    }))
+    expect("path_conditioned_same_line_unconditional", lines, ["x = value;"])
+
+
+def test_path_conditioned_different_lines_are_not_merged() -> None:
+    lines = SolidityLikeRenderer.path_conditioned_lines(ov("PathConditionedStorageWrite", {
+        "candidates": [
+            {
+                "status": "resolved",
+                "condition": "cond",
+                "solidity_like": "x = left;",
+            },
+            {
+                "status": "resolved",
+                "condition": "!(cond)",
+                "solidity_like": "x = right;",
+            },
+        ]
+    }))
+    expect("path_conditioned_different_lines", lines, [
+        "if ((cond != 0)) {",
+        "    x = left;",
+        "}",
+        "if (!(cond)) {",
+        "    x = right;",
+        "}",
+    ])
+
+
+def test_adjacent_identical_single_line_if_blocks_are_compacted() -> None:
+    lines = SolidityLikeRenderer.optimize_condition_blocks([
+        "if (!(am)) {",
+        "    ao = (to == pairAddr); // yul: let ao := eq(to, pairAddr)",
+        "}",
+        "if (am && !(__reverted)) {",
+        "    ao = (to == pairAddr);",
+        "}",
+        "if (!(am)) {",
+        "    ap = (ao & flagVal);",
+        "}",
+        "if (am && !(__reverted)) {",
+        "    ap = (ao & flagVal);",
+        "}",
+    ])
+    expect("adjacent_identical_if_compaction", lines, [
+        "if ((!(__reverted)) || (!(am))) {",
+        "    ao = (to == pairAddr); // yul: let ao := eq(to, pairAddr)",
+        "    ap = (ao & flagVal);",
+        "}",
+    ])
+
+
 def test_require_overlay_keeps_outer_path_condition() -> None:
     stmt = yul_stmt("asm_s_1", "revert(0, 0)", 100)
     effects = [
@@ -494,11 +582,8 @@ def test_dnf_condition_renders_as_nested_condition_tree() -> None:
     out = render_body(fn)
     expect("dnf_condition_tree", out.splitlines(), [
         "if (a != 0) {",
-        "    if (b != 0) {",
+        "    if ((b != 0) || (c != 0)) {",
         "        memory[ptr] = value; // yul: mstore(ptr, value)",
-        "    }",
-        "    if (c != 0) {",
-        "        memory[ptr] = value;",
         "    }",
         "}",
     ])
@@ -515,7 +600,7 @@ def test_dnf_condition_with_impossible_branch_renders_simplified_single_guard() 
     fn = FunctionSSEIR("C.f()", "C", "f", "f()", [stmt], {}, [], effects, [])
     out = render_body(fn)
     expect("dnf_impossible_branch", out.splitlines(), [
-        "if (a != 0 && b != 0) {",
+        "if ((a != 0) && (b != 0)) {",
         "    memory[ptr] = value; // yul: mstore(ptr, value)",
         "}",
     ])
@@ -585,6 +670,10 @@ if __name__ == "__main__":
         test_function_return_keeps_source_and_adds_unique_recovered_assignment_note,
         test_function_return_not_rewritten_for_path_dependent_assignment,
         test_path_conditioned_storage_renders_as_condition_blocks,
+        test_path_conditioned_same_line_complement_conditions_become_unconditional,
+        test_path_conditioned_same_line_all_complements_become_unconditional,
+        test_path_conditioned_different_lines_are_not_merged,
+        test_adjacent_identical_single_line_if_blocks_are_compacted,
         test_require_overlay_keeps_outer_path_condition,
         test_path_conditioned_overlay_drops_duplicate_outer_guard,
         test_division_guard_and_assignment_both_render,
