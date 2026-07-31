@@ -61,7 +61,29 @@ class EffectLifter:
                 ],
             })
             for d in getattr(res, "memory_definitions", {}).values():
-                effects.append(self.effect("MemoryWrite", [self.ref(res, d.node_id, lookup, text_lookup, label)], {
+                ref = self.ref(res, d.node_id, lookup, text_lookup, label)
+                for read_expr, read_slot in self.sload_reads_in_expr(getattr(d, "value", None)):
+                    nested_inline_hash = self.inline_keccak_hash_effect(ref, res, d.node_id, read_slot, block_loop_context)
+                    if nested_inline_hash:
+                        effects.append(nested_inline_hash)
+                    read_slot_versions = self.reaching_value_versions(res, d.node_id, read_slot)
+                    if nested_inline_hash and nested_inline_hash.attrs.get("inline_slot_key") not in read_slot_versions:
+                        read_slot_versions = [nested_inline_hash.attrs["inline_slot_key"]] + read_slot_versions
+                    effects.append(self.effect("StorageRead", [ref], {
+                        "slot": read_slot,
+                        "slot_versions": read_slot_versions,
+                        "value": None,
+                        "value_versions": {},
+                        "cfg_node_id": d.node_id,
+                        "path_states": self.node_path_states(res, d.node_id),
+                        "expression": read_expr,
+                        "nested_in_memory_value": True,
+                        "parent_call": d.kind,
+                        "parent_memory_address": d.address,
+                        "parent_memory_value": d.value,
+                        "parent_memory_version": d.version,
+                    }))
+                effects.append(self.effect("MemoryWrite", [ref], {
                     "address": d.address,
                     "value": d.value,
                     "memory_version": d.version,
@@ -88,8 +110,9 @@ class EffectLifter:
                 stmt = self.stmt_ref(node, lookup, text_lookup, label)
                 expr = statement_expression(node) or node.get("condition")
                 call, args = direct_call(expr)
-                if call not in self.SEMANTIC_CALLS:
-                    call, args = self.find_semantic_call(expr)
+                direct_semantic_call = call in self.SEMANTIC_CALLS
+                if not direct_semantic_call:
+                    call, args = None, []
                 vals = [yul_expression(a) for a in args]
                 names = self.assigned(node)
                 if node.get("nodeType") == "YulIf":
@@ -118,9 +141,12 @@ class EffectLifter:
                         "path_states": self.node_path_states(res, nid),
                     }))
                 value_expr = self.value_expression(node)
+                value_effect: EffectNode | None = None
+                atomized_value: dict[str, Any] | None = None
                 if names and value_expr is not None:
                     raw_value = yul_expression(value_expr)
-                    effects.append(self.effect("ValueDef", [stmt], {
+                    atomized_value = self.atomize_value(stmt, value_expr, direct_semantic_call)
+                    value_attrs = {
                         "targets": names,
                         "value": raw_value,
                         "value_normalized": normalize_expr(raw_value),
@@ -128,7 +154,21 @@ class EffectLifter:
                         "language": "yul",
                         "path_states": self.node_path_states(res, nid),
                         "target_versions": self.created_value_versions(res, nid, names),
-                    }))
+                    }
+                    if atomized_value:
+                        value_attrs["atomized_value"] = atomized_value
+                    value_effect = self.effect("ValueDef", [stmt], value_attrs)
+                    if atomized_value:
+                        effects.extend(self.evaluation_effects(
+                            stmt,
+                            res,
+                            nid,
+                            atomized_value,
+                            value_effect.effect_id,
+                            block_loop_context,
+                            context="value",
+                        ))
+                    effects.append(value_effect)
                 if call == "mload" and len(vals) == 1:
                     effects.append(self.effect("MemoryRead", [stmt], {
                         "read_from": vals[0],
@@ -256,6 +296,7 @@ class EffectLifter:
         evaluation: dict[str, Any],
         branch_effect_id: str,
         block_loop_context: list[dict[str, Any]],
+        context: str = "condition",
     ) -> list[EffectNode]:
         out: list[EffectNode] = []
         previous_output_writes: list[dict[str, Any]] = []
@@ -266,9 +307,11 @@ class EffectLifter:
                 "language": "yul",
                 "path_states": self.node_path_states(res, nid),
                 "parent_effect": branch_effect_id,
+                "evaluation_context": context,
             }
             call = step.get("call")
             vals = [str(v) for v in step.get("raw_args") or []]
+            nested_attr = "nested_in_condition" if context == "condition" else "nested_in_value"
             if call == "mload" and len(vals) == 1:
                 matching_outputs = [
                     item for item in previous_output_writes
@@ -286,7 +329,7 @@ class EffectLifter:
                     "value_versions": {},
                     "cfg_node_id": nid,
                     "path_states": self.node_path_states(res, nid),
-                    "nested_in_condition": True,
+                    nested_attr: True,
                     "evaluation_step": dict(attrs),
                     "memory_read": memory_read,
                 }))
@@ -299,7 +342,7 @@ class EffectLifter:
                     "value_versions": {},
                     "cfg_node_id": nid,
                     "path_states": self.node_path_states(res, nid),
-                    "nested_in_condition": True,
+                    nested_attr: True,
                     "evaluation_step": dict(attrs),
                     "memory_read": self.memory_query(res, nid, vals[0], vals[1], "keccak256", block_loop_context),
                 }))
@@ -307,14 +350,17 @@ class EffectLifter:
                 inline_hash = self.inline_keccak_hash_effect(stmt, res, nid, vals[0], block_loop_context)
                 if inline_hash:
                     out.append(inline_hash)
+                slot_versions = self.reaching_value_versions(res, nid, vals[0])
+                if inline_hash and inline_hash.attrs.get("inline_slot_key") not in slot_versions:
+                    slot_versions = [inline_hash.attrs["inline_slot_key"]] + slot_versions
                 out.append(self.effect("StorageRead", [stmt], {
                     "slot": vals[0],
-                    "slot_versions": self.reaching_value_versions(res, nid, vals[0]),
+                    "slot_versions": slot_versions,
                     "value": step.get("temp"),
                     "value_versions": {},
                     "cfg_node_id": nid,
                     "path_states": self.node_path_states(res, nid),
-                    "nested_in_condition": True,
+                    nested_attr: True,
                     "evaluation_step": dict(attrs),
                 }))
             elif call in {"call", "staticcall", "delegatecall", "callcode"}:
@@ -325,7 +371,7 @@ class EffectLifter:
                     "result": step.get("temp"),
                     "cfg_node_id": nid,
                     "path_states": self.node_path_states(res, nid),
-                    "nested_in_condition": True,
+                    nested_attr: True,
                     "evaluation_step": dict(attrs),
                 }
                 self.attach_call_memory(call_attrs, res, nid, vals, call, block_loop_context)
@@ -342,6 +388,27 @@ class EffectLifter:
                     })
             out.append(self.effect("EvaluationStep", [stmt], attrs))
         return out
+
+    @staticmethod
+    def atomize_value(stmt: str | None, value_expr: Any, direct_semantic_call: bool) -> dict[str, Any] | None:
+        """Build an atomic view for non-sink RHS expressions.
+
+        Direct semantic sinks such as ``x := sload(slot)`` stay as the original
+        single effect so storage/call/log/revert overlays can match their exact
+        source pattern. Composite RHS expressions are materialized into the same
+        right-to-left Yul evaluation steps used for conditions.
+        """
+        if direct_semantic_call:
+            return None
+        call, _args = direct_call(value_expr)
+        if not call:
+            return None
+        atomized = YulEvaluationOrder(stmt).materialize(value_expr, context="value")
+        steps = atomized.get("steps") or []
+        if not steps:
+            return None
+        atomized["atomization_model"] = "rhs_atomic_single_operation_steps"
+        return atomized
 
     def is_replayed_branch_node(self, res: Any, nid: int, condition: str) -> bool:
         condition_text = str(condition or "").strip()

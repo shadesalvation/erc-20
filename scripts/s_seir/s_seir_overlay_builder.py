@@ -676,6 +676,11 @@ class SemanticOverlayBuilder:
                     'value_state_read': value_state_read,
                     'state_variable': direct_state.name,
                     'slot': slot,
+                    'nested_in_memory_value': e.attrs.get('nested_in_memory_value'),
+                    'nested_in_storage_value': e.attrs.get('nested_in_storage_value'),
+                    'parent_call': e.attrs.get('parent_call'),
+                    'parent_memory_address': e.attrs.get('parent_memory_address'),
+                    'parent_memory_value': e.attrs.get('parent_memory_value'),
                     'solidity_like': self.storage_solidity_like(kind, direct_state.name, value_normalized, e),
                 }
                 out.append(self.ov(kind, e.effect_id, e.stmt_refs, self.clean(attrs)))
@@ -961,10 +966,12 @@ class SemanticOverlayBuilder:
         seen: set[str] = set()
         value = effect.attrs.get('value')
         value_normalized, value_state_read = self.storage_write_value(type_env, effect, value_defs_by_name)
+        candidate_conditions = self.storage_candidate_conditions_by_version(effect, version_keys, hash_effect_by_var)
         for key in version_keys:
             if key in seen:
                 continue
             seen.add(key)
+            condition = candidate_conditions.get(key)
             slot_expr = slot_expr_by_var.get(key)
             if slot_expr:
                 access = slot_expr['access']
@@ -978,6 +985,7 @@ class SemanticOverlayBuilder:
                 candidates.append(self.clean({
                     'slot_key': key,
                     'status': 'resolved',
+                    'condition': condition,
                     'overlay_kind': kind,
                     'access': access,
                     'state_variable': slot_expr.get('state_variable'),
@@ -1007,6 +1015,7 @@ class SemanticOverlayBuilder:
                 candidates.append(self.clean({
                     'slot_key': key,
                     'status': 'resolved',
+                    'condition': condition,
                     'overlay_kind': kind,
                     'access': direct_state.name,
                     'state_variable': direct_state.name,
@@ -1019,6 +1028,7 @@ class SemanticOverlayBuilder:
             candidates.append({
                 'slot_key': key,
                 'status': 'unresolved',
+                'condition': condition,
                 'overlay_kind': 'StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite',
                 'access': f'storage[{key}]',
                 'unresolved_reason': 'unknown_storage_slot_version',
@@ -1038,6 +1048,38 @@ class SemanticOverlayBuilder:
             'note': 'storage_effect_has_multiple_ssa_slot_versions',
         })
         return self.ov(overlay_kind, effect.effect_id, effect.stmt_refs, attrs)
+
+    @classmethod
+    def storage_candidate_conditions_by_version(
+        cls,
+        effect: EffectNode,
+        version_keys: list[str],
+        hash_effect_by_var: dict[str, EffectNode],
+    ) -> dict[str, str | None]:
+        effect_paths = cls.path_states(effect)
+        unique_keys = list(dict.fromkeys(str(key) for key in version_keys))
+        unique_paths = list(dict.fromkeys(str(path) for path in effect_paths if path))
+        if len(unique_keys) > 1 and len(unique_paths) == len(unique_keys):
+            return {key: unique_paths[index] for index, key in enumerate(unique_keys)}
+
+        out: dict[str, str | None] = {}
+        for key in unique_keys:
+            slot_effect = hash_effect_by_var.get(key)
+            slot_paths = cls.path_states(slot_effect) if slot_effect else []
+            merged: list[str | None] = []
+            if slot_paths:
+                for slot_path in slot_paths:
+                    for effect_path in effect_paths or [None]:
+                        condition = cls.merge_compatible_conditions(effect_path, slot_path)
+                        if condition is not None and condition not in merged:
+                            merged.append(condition)
+            if len(merged) == 1:
+                out[key] = merged[0]
+            elif not merged and len(effect_paths) == 1:
+                out[key] = effect_paths[0]
+            else:
+                out[key] = None
+        return out
 
     def mapping_slot_expr(self, type_env: Any, effect: EffectNode, known: dict[str, dict[str, Any]]) -> dict[str, Any] | None:
         words = words_from_memory_query(effect.attrs.get('memory_read'), prefer_known_branch=False)
@@ -3493,6 +3535,7 @@ class SemanticOverlayBuilder:
                         'solidity_like': f"/* storage pointer binding: {pointer}.slot := {normalize_expr(value)} */",
                     }))
                     continue
+                atomized_value = e.attrs.get('atomized_value') if isinstance(e.attrs.get('atomized_value'), dict) else None
                 expr = self.normalize_expression_with_memory_arrays(type_env, e.attrs.get('value'))
                 memory_hash = None
                 if target:
@@ -3506,6 +3549,8 @@ class SemanticOverlayBuilder:
                     )
                 if memory_hash:
                     expr = str(memory_hash['expression'])
+                if atomized_value and atomized_value.get('final'):
+                    expr = str(atomized_value.get('final'))
                 out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {
                     'target': target,
                     'expression': e.attrs.get('value'),
@@ -3514,6 +3559,7 @@ class SemanticOverlayBuilder:
                     'context': 'value',
                     'division_guards': division_guards(e.attrs.get('value')),
                     'memory_hash': memory_hash,
+                    'atomized_value': atomized_value,
                 }))
             elif e.kind == 'Branch':
                 condition_text = e.attrs.get('condition_final_temp') or e.attrs.get('condition_normalized') or normalize_expr(e.attrs.get('condition'))
@@ -3544,6 +3590,7 @@ class SemanticOverlayBuilder:
                     'evaluated_args': e.attrs.get('evaluated_args'),
                     'parent_effect': e.attrs.get('parent_effect'),
                     'evaluation_model': 'yul_ast_right_to_left_function_call_arguments',
+                    'evaluation_context': e.attrs.get('evaluation_context'),
                     'reads_after_call_output': e.attrs.get('reads_after_call_output'),
                     'value_from_call_output': e.attrs.get('value_from_call_output'),
                 }

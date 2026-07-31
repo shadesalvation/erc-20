@@ -97,29 +97,32 @@ Function TKM.constructor()
           u = 0x66eF522bB1d269eB9c328218cF0620A7C4c6ef8C; // yul: sstore(u.slot, 0x66eF522bB1d269eB9c328218cF0620A7C4c6ef8C)
           s = 1; // yul: sstore(s.slot, 1)
           t = 1; // yul: sstore(t.slot, 1)
-          v = (210000 * yulExp(10, 18)); // yul: let v := mul(210000, exp(10, 18))
+          __sseir_eval_asm_s_10_1 = yulExp(10, 18); // yul: let v := mul(210000, exp(10, 18))
+          __sseir_eval_asm_s_10_2 = (210000 * __sseir_eval_asm_s_10_1);
+          v = __sseir_eval_asm_s_10_2;
           k = v; // yul: sstore(k.slot, v)
-          w = msg.sender; // yul: let w := caller()
+          __sseir_eval_asm_s_12_1 = msg.sender; // yul: let w := caller()
+          w = __sseir_eval_asm_s_12_1;
           memory[0] = w; // yul: mstore(0, w)
           memory[32] = l.slot; // yul: mstore(32, l.slot)
           x = slot(l[w]); // yul: let x := keccak256(0, 64)
           l[w] = v; // yul: sstore(x, v)
-          read d; // yul: mstore(0, sload(d.slot))
+          memory[0] = d; // yul: mstore(0, sload(d.slot))
           memory[32] = p.slot; // yul: mstore(32, p.slot)
           p[d] = 1; // yul: sstore(keccak256(0, 64), 1)
           memory[32] = q.slot; // yul: mstore(32, q.slot)
           q[d] = 1; // yul: sstore(keccak256(0, 64), 1)
-          read e; // yul: mstore(0, sload(e.slot))
+          memory[0] = e; // yul: mstore(0, sload(e.slot))
           memory[32] = p.slot; // yul: mstore(32, p.slot)
           p[e] = 0; // yul: sstore(keccak256(0, 64), 0)
           memory[32] = q.slot; // yul: mstore(32, q.slot)
           q[e] = 0; // yul: sstore(keccak256(0, 64), 0)
-          read f; // yul: mstore(0, sload(f.slot))
+          memory[0] = f; // yul: mstore(0, sload(f.slot))
           memory[32] = p.slot; // yul: mstore(32, p.slot)
           p[f] = 0; // yul: sstore(keccak256(0, 64), 0)
           memory[32] = q.slot; // yul: mstore(32, q.slot)
           q[f] = 0; // yul: sstore(keccak256(0, 64), 0)
-          read g; // yul: mstore(0, sload(g.slot))
+          memory[0] = g; // yul: mstore(0, sload(g.slot))
           memory[32] = p.slot; // yul: mstore(32, p.slot)
           p[g] = 0; // yul: sstore(keccak256(0, 64), 0)
           memory[32] = q.slot; // yul: mstore(32, q.slot)
@@ -412,7 +415,8 @@ Function TKM.transferFrom(address, address, uint256)
       }
   
       assembly /* s-seir solidity-like view */ {
-          ah = (currentAllowance - amount); // yul: let ah := sub(currentAllowance, amount)
+          __sseir_eval_asm_s_9_1 = (currentAllowance - amount); // yul: let ah := sub(currentAllowance, amount)
+          ah = __sseir_eval_asm_s_9_1;
           memory[0] = from; // yul: mstore(0, from)
           memory[32] = m.slot; // yul: mstore(32, m.slot)
           ai = slot(m[from]); // yul: let ai := keccak256(0, 64)
@@ -472,10 +476,14 @@ Function TKM.D(address, address, address, uint256)
       assembly /* s-seir solidity-like view */ {
           flagVal = t; // yul: flagVal := sload(t.slot)
           pairAddr = i; // yul: pairAddr := sload(i.slot)
-          aj = (operator == pairAddr); // yul: let aj := eq(operator, pairAddr)
-          ak = (from == pairAddr); // yul: let ak := eq(from, pairAddr)
-          al = (aj | ak); // yul: let al := or(aj, ak)
-          am = (al & flagVal); // yul: let am := and(al, flagVal)
+          __sseir_eval_asm_s_3_1 = (operator == pairAddr); // yul: let aj := eq(operator, pairAddr)
+          aj = __sseir_eval_asm_s_3_1;
+          __sseir_eval_asm_s_4_1 = (from == pairAddr); // yul: let ak := eq(from, pairAddr)
+          ak = __sseir_eval_asm_s_4_1;
+          __sseir_eval_asm_s_5_1 = (aj | ak); // yul: let al := or(aj, ak)
+          al = __sseir_eval_asm_s_5_1;
+          __sseir_eval_asm_s_6_1 = (al & flagVal); // yul: let am := and(al, flagVal)
+          am = __sseir_eval_asm_s_6_1;
           if (am) {
               memory[0] = to; // yul: mstore(0, to)
               memory[32] = q.slot; // yul: mstore(32, q.slot)
@@ -483,9 +491,21 @@ Function TKM.D(address, address, address, uint256)
               __sseir_eval_asm_s_11_1 = (an == 0); // yul: if iszero(an)
               require((an != 0)); // yul: revert(0, 0)
           }
-          if ((!(__sseir_eval_asm_s_11_1)) || (!(am))) {
-              ao = (to == pairAddr); // yul: let ao := eq(to, pairAddr)
-              ap = (ao & flagVal); // yul: let ap := and(ao, flagVal)
+          if (!(__sseir_eval_asm_s_11_1)) {
+              __sseir_eval_asm_s_13_1 = (to == pairAddr); // yul: let ao := eq(to, pairAddr)
+              ao = __sseir_eval_asm_s_13_1;
+          }
+          if (!(am)) {
+              __sseir_eval_asm_s_13_1 = (to == pairAddr);
+              ao = __sseir_eval_asm_s_13_1;
+          }
+          if (!(__sseir_eval_asm_s_11_1)) {
+              __sseir_eval_asm_s_14_1 = (ao & flagVal); // yul: let ap := and(ao, flagVal)
+              ap = __sseir_eval_asm_s_14_1;
+          }
+          if (!(am)) {
+              __sseir_eval_asm_s_14_1 = (ao & flagVal);
+              ap = __sseir_eval_asm_s_14_1;
           }
           if (ap) {
               if ((!(__sseir_eval_asm_s_11_1)) || (!(am))) {
@@ -670,8 +690,10 @@ Function TKM.C(address, address, uint256)
           memory[0] = from; // yul: mstore(0, from)
           memory[32] = l.slot; // yul: mstore(32, l.slot)
           fromBalance = l[from]; // yul: fromBalance := sload(keccak256(0, 64))
-          balanceLess = (fromBalance < amount); // yul: let balanceLess := lt(fromBalance, amount)
-          condition = (check & balanceLess); // yul: let condition := and(check, balanceLess)
+          __sseir_eval_asm_s_9_1 = (fromBalance < amount); // yul: let balanceLess := lt(fromBalance, amount)
+          balanceLess = __sseir_eval_asm_s_9_1;
+          __sseir_eval_asm_s_10_1 = (check & balanceLess); // yul: let condition := and(check, balanceLess)
+          condition = __sseir_eval_asm_s_10_1;
           if (condition) {
               fromBalance = amount; // yul: fromBalance := amount
           }
@@ -679,7 +701,8 @@ Function TKM.C(address, address, uint256)
           require((fromBalance >= amount)); // yul: revert(0, 0)
           if (!(__sseir_eval_asm_s_13_1)) {
               fromSlot = slot(l[from]); // yul: let fromSlot := keccak256(0, 64)
-              newFromBalance = (fromBalance - amount); // yul: let newFromBalance := sub(fromBalance, amount)
+              __sseir_eval_asm_s_16_1 = (fromBalance - amount); // yul: let newFromBalance := sub(fromBalance, amount)
+              newFromBalance = __sseir_eval_asm_s_16_1;
               l[from] = newFromBalance; // yul: sstore(fromSlot, newFromBalance)
               memory[0] = to; // yul: mstore(0, to)
               memory[32] = l.slot; // yul: mstore(32, l.slot)
@@ -687,7 +710,11 @@ Function TKM.C(address, address, uint256)
               toBalance = l[to]; // yul: let toBalance := sload(toSlot)
               isfeeVal = s; // yul: let isfeeVal := sload(s.slot)
               pairAddr = i; // yul: let pairAddr := sload(i.slot)
-              shouldTakeFee = ((isfeeVal & (to == pairAddr)) & (amount > 0)); // yul: let shouldTakeFee := and(and(isfeeVal, eq(to, pairAddr)), gt(amount, 0))
+              __sseir_eval_asm_s_24_1 = (amount > 0); // yul: let shouldTakeFee := and(and(isfeeVal, eq(to, pairAddr)), gt(amount, 0))
+              __sseir_eval_asm_s_24_2 = (to == pairAddr);
+              __sseir_eval_asm_s_24_3 = (isfeeVal & __sseir_eval_asm_s_24_2);
+              __sseir_eval_asm_s_24_4 = (__sseir_eval_asm_s_24_3 & __sseir_eval_asm_s_24_1);
+              shouldTakeFee = __sseir_eval_asm_s_24_4;
               memory[0] = from; // yul: mstore(0, from)
               memory[32] = r.slot; // yul: mstore(32, r.slot)
               isFeeRouter = r[from]; // yul: let isFeeRouter := sload(keccak256(0, 64))
@@ -695,9 +722,11 @@ Function TKM.C(address, address, uint256)
               __sseir_eval_asm_s_29_1 = (shouldTakeFee & isFeeRouter); // yul: if and(shouldTakeFee, isFeeRouter)
           }
           if (!(__sseir_eval_asm_s_13_1) && __sseir_eval_asm_s_29_1) {
-              require(100 != 0); // yul: let feeAmount := div(mul(amount, 5), 100)
-              feeAmount = ((amount * 5) / 100);
-              finalAmount = (amount - feeAmount); // yul: finalAmount := sub(amount, feeAmount)
+              __sseir_eval_asm_s_30_1 = (amount * 5); // yul: let feeAmount := div(mul(amount, 5), 100)
+              __sseir_eval_asm_s_30_2 = (__sseir_eval_asm_s_30_1 / 100);
+              feeAmount = __sseir_eval_asm_s_30_2;
+              __sseir_eval_asm_s_31_1 = (amount - feeAmount); // yul: finalAmount := sub(amount, feeAmount)
+              finalAmount = __sseir_eval_asm_s_31_1;
               feeToAddr = u; // yul: let feeToAddr := sload(u.slot)
               memory[0] = feeToAddr; // yul: mstore(0, feeToAddr)
               memory[32] = l.slot; // yul: mstore(32, l.slot)

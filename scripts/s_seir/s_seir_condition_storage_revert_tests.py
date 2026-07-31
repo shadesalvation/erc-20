@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import sys
 
@@ -25,6 +25,7 @@ class FakeValueDef:
 class FakeState:
     predicates: list[str]
     values: dict[str, FakeValueDef]
+    memory: dict[str, object] = field(default_factory=dict)
 
 
 class FakeMemorySSA:
@@ -69,6 +70,14 @@ def effect(kind: str, attrs: dict, effect_id: str = "eff_x") -> EffectNode:
     return EffectNode(effect_id, kind, ["asm_s_1"], attrs)
 
 
+def yid(name: str) -> dict:
+    return {"nodeType": "YulIdentifier", "name": name}
+
+
+def ycall(name: str, *args: dict) -> dict:
+    return {"nodeType": "YulFunctionCall", "functionName": yid(name), "arguments": list(args)}
+
+
 def test_condition_sload_lifted_to_storage_read() -> None:
     lifter = EffectLifter()
     res = FakeMemorySSA([FakeState(["cond"], {"handoverSlot": FakeValueDef("handoverSlot__ssa1")})])
@@ -92,6 +101,126 @@ def test_condition_sload_lifted_to_storage_read() -> None:
     assert read.attrs["nested_in_condition"] is True
 
 
+def test_condition_inline_keccak_sload_gets_inline_slot_version() -> None:
+    lifter = EffectLifter()
+    res = FakeMemorySSA([FakeState(["cond"], {})])
+    res.assembly_block_id = 23
+    evaluation = {
+        "steps": [{
+            "order": 1,
+            "temp": "__tmp_1",
+            "expression": "sload(keccak256(0x0c, 0x20))",
+            "call": "sload",
+            "raw_args": ["keccak256(0x0c, 0x20)"],
+            "evaluated_args": ["keccak256(0x0c, 0x20)"],
+        }]
+    }
+    effects = lifter.evaluation_effects("asm_s_3", res, 7, evaluation, "eff_branch", [])
+    hashes = [item for item in effects if item.kind == "MemoryHash"]
+    reads = [item for item in effects if item.kind == "StorageRead"]
+    assert len(hashes) == 1
+    assert len(reads) == 1
+    inline_key = hashes[0].attrs["inline_slot_key"]
+    assert reads[0].attrs["slot_versions"] == [inline_key]
+    assert reads[0].attrs["nested_in_condition"] is True
+
+
+def test_value_atomization_splits_nested_sload_before_add() -> None:
+    expr = ycall("add", ycall("sload", yid("LjAi")), yid("IUGo"))
+    atomized = EffectLifter.atomize_value("asm_s_21", expr, direct_semantic_call=False)
+    assert atomized is not None
+    steps = atomized["steps"]
+    assert [step["call"] for step in steps] == ["sload", "add"]
+    assert steps[0]["expression"] == "sload(LjAi)"
+    assert steps[1]["evaluated_args"][0] == steps[0]["temp"]
+    assert atomized["final"] == steps[1]["temp"]
+
+
+def test_value_atomization_storage_read_is_nested_in_value_not_condition() -> None:
+    lifter = EffectLifter()
+    res = FakeMemorySSA([FakeState(["cond"], {"LjAi": FakeValueDef("LjAi__ssa11")})])
+    expr = ycall("add", ycall("sload", yid("LjAi")), yid("IUGo"))
+    atomized = EffectLifter.atomize_value("asm_s_21", expr, direct_semantic_call=False)
+    effects = lifter.evaluation_effects("asm_s_21", res, 24, atomized, "eff_value", [], context="value")
+    reads = [item for item in effects if item.kind == "StorageRead"]
+    assert len(reads) == 1
+    read = reads[0]
+    assert read.attrs["value"] == atomized["steps"][0]["temp"]
+    assert read.attrs["nested_in_value"] is True
+    assert "nested_in_condition" not in read.attrs
+
+
+def test_atomized_nested_sload_does_not_bind_mapping_read_to_parent_target() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({"1": FakeStateVariable("BVNo", "mapping(address => mapping(address => uint256))")})
+    atomized = {
+        "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+        "final": "__sseir_eval_asm_s_21_2",
+        "steps": [
+            {
+                "order": 1,
+                "temp": "__sseir_eval_asm_s_21_1",
+                "expression": "sload(LjAi)",
+                "expression_normalized": "sload(LjAi)",
+                "call": "sload",
+                "raw_args": ["LjAi"],
+                "evaluated_args": ["LjAi"],
+            },
+            {
+                "order": 2,
+                "temp": "__sseir_eval_asm_s_21_2",
+                "expression": "add(__sseir_eval_asm_s_21_1, IUGo)",
+                "expression_normalized": "(__sseir_eval_asm_s_21_1 + IUGo)",
+                "call": "add",
+                "raw_args": ["sload(LjAi)", "IUGo"],
+                "evaluated_args": ["__sseir_eval_asm_s_21_1", "IUGo"],
+            },
+        ],
+        "atomization_model": "rhs_atomic_single_operation_steps",
+    }
+    effects = [
+        effect("MemoryHash", {
+            "value": "MuuR",
+            "value_versions": {"MuuR": ["MuuR__ssa9"]},
+            "memory_read": {"words": [
+                {"offset": 0, "value": "_owner"},
+                {"offset": 32, "value": "1"},
+            ]},
+        }, "eff_hash_base"),
+        effect("MemoryHash", {
+            "value": "LjAi",
+            "value_versions": {"LjAi": ["LjAi__ssa11"]},
+            "memory_read": {"words": [
+                {"offset": 0, "value": "_spender"},
+                {"offset": 32, "value": "MuuR", "value_versions": ["MuuR__ssa9"]},
+            ]},
+        }, "eff_hash_slot"),
+        effect("StorageRead", {
+            "slot": "LjAi",
+            "slot_versions": ["LjAi__ssa11"],
+            "value": "__sseir_eval_asm_s_21_1",
+            "nested_in_value": True,
+            "evaluation_step": atomized["steps"][0],
+        }, "eff_read_tmp"),
+        effect("ValueDef", {
+            "targets": ["dhzw"],
+            "value": "add(sload(LjAi), IUGo)",
+            "atomized_value": atomized,
+        }, "eff_value"),
+    ]
+    storage = builder.storage_overlays(type_env, effects)
+    reads = [item for item in storage if item.kind == "MappingRead"]
+    assert len(reads) == 1, [item.attrs for item in reads]
+    assert reads[0].attrs["target"] == "__sseir_eval_asm_s_21_1"
+    assert reads[0].attrs["solidity_like"] == "__sseir_eval_asm_s_21_1 = BVNo[_owner][_spender];"
+    assert not any(item.attrs.get("target") == "dhzw" for item in reads)
+
+    exprs = [item for item in builder.expression_overlays(type_env, effects) if item.kind == "ExpressionNormalization"]
+    parent = next(item for item in exprs if item.attrs.get("target") == "dhzw")
+    assert parent.attrs["solidity_like"] == "dhzw = __sseir_eval_asm_s_21_2;"
+    assert parent.attrs["atomized_value"]["final"] == "__sseir_eval_asm_s_21_2"
+
+
 def test_direct_state_read_without_assignment_target_is_read_effect() -> None:
     builder = SemanticOverlayBuilder()
     type_env = FakeMappingTypeEnv({"fgMs.slot": FakeStateVariable("fgMs", "uint256")})
@@ -108,6 +237,34 @@ def test_direct_state_read_without_assignment_target_is_read_effect() -> None:
     assert len(reads) == 1, [item.kind for item in overlays]
     assert reads[0].attrs["access"] == "fgMs"
     assert reads[0].attrs["solidity_like"] == "read fgMs;"
+
+
+def test_memory_write_nested_sload_is_recorded_as_state_read() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({"qBQC.slot": FakeStateVariable("qBQC", "uint256")})
+    effects = [
+        effect("StorageRead", {
+            "slot": "qBQC.slot",
+            "slot_versions": [],
+            "value": None,
+            "nested_in_memory_value": True,
+            "expression": "sload(qBQC.slot)",
+            "parent_call": "mstore",
+            "parent_memory_address": "ptr",
+            "parent_memory_value": "sload(qBQC.slot)",
+        }, "eff_nested_read"),
+        effect("MemoryWrite", {
+            "address": "ptr",
+            "value": "sload(qBQC.slot)",
+            "memory_version": "mem_1",
+        }, "eff_memory_write"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    reads = [item for item in overlays if item.kind == "StateVariableRead"]
+    assert len(reads) == 1, [item.kind for item in overlays]
+    attrs = reads[0].attrs
+    assert attrs["access"] == "qBQC"
+    assert attrs["solidity_like"] == "read qBQC;"
 
 
 def test_sstore_value_nested_sload_is_lifted_as_read_expression() -> None:
@@ -457,6 +614,42 @@ def test_path_sensitive_byte_axis_mapping_candidates_recover_mapping_accesses() 
         "p[a] = 1;",
         "p[b] = 1;",
     ]
+
+
+def test_path_conditioned_storage_write_candidates_keep_conditions() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({"balances.slot": FakeStateVariable("balances", "mapping(address => uint256)")})
+    effects = [
+        effect("MemoryHash", {
+            "value": "slot",
+            "value_versions": {"slot": ["slot__ssa1"]},
+            "path_states": ["!(flag)"],
+            "memory_read": {"words": [
+                {"offset": 0, "value": "left"},
+                {"offset": 32, "value": "balances.slot"},
+            ]},
+        }, "eff_hash_left"),
+        effect("MemoryHash", {
+            "value": "slot",
+            "value_versions": {"slot": ["slot__ssa2"]},
+            "path_states": ["flag"],
+            "memory_read": {"words": [
+                {"offset": 0, "value": "right"},
+                {"offset": 32, "value": "balances.slot"},
+            ]},
+        }, "eff_hash_right"),
+        effect("StorageWrite", {
+            "slot": "slot",
+            "slot_versions": ["slot__ssa1", "slot__ssa2"],
+            "value": "amount",
+            "path_states": ["!(flag) && ok", "flag && ok"],
+        }, "eff_write"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    path = next(item for item in overlays if item.kind == "PathConditionedStorageWrite")
+    by_access = {item["access"]: item for item in path.attrs["candidates"]}
+    assert by_access["balances[left]"]["condition"] == "!(flag) && ok"
+    assert by_access["balances[right]"]["condition"] == "flag && ok"
 
 
 def test_byte_axis_nested_mapping_read_recovers_all_dimensions() -> None:
@@ -1054,7 +1247,12 @@ def test_empty_revert_payload_is_require_not_custom_error_path_overlay() -> None
 if __name__ == "__main__":
     tests = [
         test_condition_sload_lifted_to_storage_read,
+        test_condition_inline_keccak_sload_gets_inline_slot_version,
+        test_value_atomization_splits_nested_sload_before_add,
+        test_value_atomization_storage_read_is_nested_in_value_not_condition,
+        test_atomized_nested_sload_does_not_bind_mapping_read_to_parent_target,
         test_direct_state_read_without_assignment_target_is_read_effect,
+        test_memory_write_nested_sload_is_recorded_as_state_read,
         test_sstore_value_nested_sload_is_lifted_as_read_expression,
         test_direct_state_write_value_normalizes_nested_sload,
         test_mapping_write_value_normalizes_nested_sload,
@@ -1068,6 +1266,7 @@ if __name__ == "__main__":
         test_byte_axis_standard_mapping_read_recovers_mapping_access,
         test_byte_axis_standard_mapping_write_recovers_mapping_access,
         test_path_sensitive_byte_axis_mapping_candidates_recover_mapping_accesses,
+        test_path_conditioned_storage_write_candidates_keep_conditions,
         test_byte_axis_nested_mapping_read_recovers_all_dimensions,
         test_byte_axis_nested_mapping_write_recovers_all_dimensions,
         test_mapping_key_direct_state_read_is_normalized,

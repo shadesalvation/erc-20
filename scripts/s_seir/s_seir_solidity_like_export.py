@@ -427,6 +427,9 @@ class SolidityLikeRenderer:
             return None
         evaluation_lines = self.evaluation_step_lines(overlays)
         if evaluation_lines:
+            value_expression = self.value_expression_normalization(overlays)
+            if value_expression and value_expression not in evaluation_lines:
+                evaluation_lines = [*evaluation_lines, value_expression]
             return self.with_path_condition(stmt, overlays, evaluation_lines, suppress_predicates=suppress_predicates)
         overlay_lines = self.overlay_lines(overlays)
         if overlay_lines:
@@ -1615,6 +1618,8 @@ class SolidityLikeRenderer:
         if overlay.kind == "RawReturnData":
             return attrs.get("solidity_like")
         if overlay.kind in {"MappingRead", "MappingWrite", "StateVariableRead", "StateVariableWrite"}:
+            if overlay.kind in {"MappingRead", "StateVariableRead"} and attrs.get("nested_in_memory_value") and not attrs.get("target"):
+                return None
             line = attrs.get("solidity_like")
             if line and not line.replace(" ", "").endswith("=;"):
                 return line
@@ -1711,6 +1716,13 @@ class SolidityLikeRenderer:
     def expression_normalization(overlays: list[SemanticOverlay]) -> str | None:
         for overlay in overlays:
             if overlay.kind == "ExpressionNormalization":
+                return overlay.attrs.get("solidity_like")
+        return None
+
+    @staticmethod
+    def value_expression_normalization(overlays: list[SemanticOverlay]) -> str | None:
+        for overlay in overlays:
+            if overlay.kind == "ExpressionNormalization" and overlay.attrs.get("context") == "value":
                 return overlay.attrs.get("solidity_like")
         return None
 
