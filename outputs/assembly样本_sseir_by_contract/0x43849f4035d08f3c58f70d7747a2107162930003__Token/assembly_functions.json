@@ -562,26 +562,28 @@
                   "0",
                   "0"
                 ],
-                "path_sensitive": true,
+                "path_sensitive": false,
                 "path_resolutions": [
                   {
                     "path_id": "path_0",
                     "condition": null,
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "entry",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -609,6 +611,9 @@
               "control_path": [
                 "entry"
               ],
+              "path_states": [
+                "entry"
+              ],
               "merged_conditions": [
                 "entry"
               ],
@@ -628,26 +633,28 @@
                   "0",
                   "0"
                 ],
-                "path_sensitive": true,
+                "path_sensitive": false,
                 "path_resolutions": [
                   {
                     "path_id": "path_0",
                     "condition": null,
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "entry",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -1776,7 +1783,7 @@
             "type_hint": "address",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10",
+              "effect": "eff_12",
               "call_kind": "staticcall"
             }
           },
@@ -1788,7 +1795,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -1799,7 +1806,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -1810,7 +1817,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -1821,7 +1828,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -1832,7 +1839,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -1843,7 +1850,7 @@
             "type_hint": "bool",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_8"
+              "effect": "eff_10"
             }
           },
           {
@@ -1854,7 +1861,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_9",
             "attrs": {
-              "effect": "eff_15",
+              "effect": "eff_17",
               "semantic": "memory_read"
             }
           },
@@ -1866,7 +1873,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_9",
             "attrs": {
-              "effect": "eff_15",
+              "effect": "eff_17",
               "value_versions": {
                 "computedHash": [
                   "computedHash__ssa5"
@@ -1882,7 +1889,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "effect": "eff_18",
+              "effect": "eff_20",
               "slot_versions": [
                 "storedHashSlot__ssa6"
               ]
@@ -1896,7 +1903,7 @@
             "type_hint": "bool",
             "stmt_ref": "asm_s_12",
             "attrs": {
-              "effect": "eff_19"
+              "effect": "eff_21"
             }
           },
           {
@@ -2132,6 +2139,35 @@
             }
           },
           {
+            "effect_id": "eff_6",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "add(ptr, 0x0c)",
+              "expression_normalized": "(ptr + 0x0c)",
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "cfg_node_id": 4,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_5",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_5",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -2152,11 +2188,34 @@
                 "input": [
                   "input__ssa2"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "add(ptr, 0x0c)",
+                    "expression_normalized": "(ptr + 0x0c)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x0c"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x0c"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_6",
+            "effect_id": "eff_7",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_4"
@@ -2180,7 +2239,36 @@
             }
           },
           {
-            "effect_id": "eff_7",
+            "effect_id": "eff_9",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_5_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "cfg_node_id": 6,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_8",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_8",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_5"
@@ -2200,11 +2288,34 @@
                 "output": [
                   "output__ssa4"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_5_1",
+                "final_normalized": "__sseir_eval_asm_s_5_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_5_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_9",
+            "effect_id": "eff_11",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -2222,11 +2333,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_10",
+            "effect_id": "eff_12",
             "kind": "StaticCall",
             "stmt_refs": [
               "asm_s_7"
@@ -2282,7 +2394,8 @@
                 "path_states": [
                   "entry"
                 ],
-                "parent_effect": "eff_8"
+                "parent_effect": "eff_10",
+                "evaluation_context": "condition"
               },
               "gas": "gas()",
               "target": "2",
@@ -2337,7 +2450,7 @@
             }
           },
           {
-            "effect_id": "eff_11",
+            "effect_id": "eff_13",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -2369,11 +2482,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_12",
+            "effect_id": "eff_14",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -2395,11 +2509,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_8",
+            "effect_id": "eff_10",
             "kind": "Branch",
             "stmt_refs": [
               "asm_s_7"
@@ -2468,7 +2583,7 @@
             }
           },
           {
-            "effect_id": "eff_13",
+            "effect_id": "eff_15",
             "kind": "Revert",
             "stmt_refs": [
               "asm_s_8"
@@ -2566,21 +2681,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -2590,7 +2707,7 @@
             }
           },
           {
-            "effect_id": "eff_14",
+            "effect_id": "eff_16",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_9"
@@ -2614,7 +2731,7 @@
             }
           },
           {
-            "effect_id": "eff_15",
+            "effect_id": "eff_17",
             "kind": "MemoryRead",
             "stmt_refs": [
               "asm_s_9"
@@ -2672,7 +2789,7 @@
             }
           },
           {
-            "effect_id": "eff_16",
+            "effect_id": "eff_18",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_10"
@@ -2696,7 +2813,7 @@
             }
           },
           {
-            "effect_id": "eff_17",
+            "effect_id": "eff_19",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_11"
@@ -2720,7 +2837,7 @@
             }
           },
           {
-            "effect_id": "eff_18",
+            "effect_id": "eff_20",
             "kind": "StorageRead",
             "stmt_refs": [
               "asm_s_11"
@@ -2743,7 +2860,7 @@
             }
           },
           {
-            "effect_id": "eff_20",
+            "effect_id": "eff_22",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_12"
@@ -2767,11 +2884,12 @@
               "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20)))"
               ],
-              "parent_effect": "eff_19"
+              "parent_effect": "eff_21",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_21",
+            "effect_id": "eff_23",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_12"
@@ -2793,11 +2911,12 @@
               "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20)))"
               ],
-              "parent_effect": "eff_19"
+              "parent_effect": "eff_21",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_19",
+            "effect_id": "eff_21",
             "kind": "Branch",
             "stmt_refs": [
               "asm_s_12"
@@ -2849,7 +2968,7 @@
             }
           },
           {
-            "effect_id": "eff_22",
+            "effect_id": "eff_24",
             "kind": "Revert",
             "stmt_refs": [
               "asm_s_13"
@@ -2947,21 +3066,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -3014,7 +3135,7 @@
             "overlay_id": "ov_1",
             "kind": "RequireOverlay",
             "effects": [
-              "eff_13"
+              "eff_15"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -3025,6 +3146,9 @@
               "require_like": "require((staticcall(gasleft(), 2, input, inputSize, output, 0x20) != 0));",
               "revert_payload": "empty",
               "control_path": [
+                "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))"
+              ],
+              "path_states": [
                 "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))"
               ],
               "merged_conditions": [
@@ -3051,21 +3175,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -3078,7 +3204,7 @@
             "overlay_id": "ov_2",
             "kind": "RequireOverlay",
             "effects": [
-              "eff_22"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_13"
@@ -3089,6 +3215,9 @@
               "require_like": "require((computedHash == storedHash));",
               "revert_payload": "empty",
               "control_path": [
+                "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))"
+              ],
+              "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))"
               ],
               "merged_conditions": [
@@ -3115,21 +3244,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -3142,7 +3273,7 @@
             "overlay_id": "ov_3",
             "kind": "StateVariableRead",
             "effects": [
-              "eff_18"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -3162,7 +3293,7 @@
             "overlay_id": "ov_4",
             "kind": "PrecompileCall",
             "effects": [
-              "eff_10"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -3218,7 +3349,8 @@
                 "path_states": [
                   "entry"
                 ],
-                "parent_effect": "eff_8"
+                "parent_effect": "eff_10",
+                "evaluation_context": "condition"
               },
               "gas": "gasleft()",
               "target": "2",
@@ -3319,11 +3451,42 @@
               "expression_normalized": "mload(0x40)",
               "solidity_like": "ptr = mload(0x40);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
             "overlay_id": "ov_7",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_6"
+            ],
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "add(ptr, 0x0c)",
+              "expression_normalized": "(ptr + 0x0c)",
+              "solidity_like": "__sseir_eval_asm_s_3_1 = (ptr + 0x0c);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "parent_effect": "eff_5",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_8",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_5"
@@ -3334,17 +3497,41 @@
             "attrs": {
               "target": "input",
               "expression": "add(ptr, 0x0c)",
-              "expression_normalized": "(ptr + 0x0c)",
-              "solidity_like": "input = (ptr + 0x0c);",
+              "expression_normalized": "__sseir_eval_asm_s_3_1",
+              "solidity_like": "input = __sseir_eval_asm_s_3_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "add(ptr, 0x0c)",
+                    "expression_normalized": "(ptr + 0x0c)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x0c"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x0c"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_8",
+            "overlay_id": "ov_9",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_6"
+              "eff_7"
             ],
             "stmt_refs": [
               "asm_s_4"
@@ -3355,25 +3542,9 @@
               "expression_normalized": "0x14",
               "solidity_like": "inputSize = 0x14;",
               "context": "value",
-              "division_guards": []
-            }
-          },
-          {
-            "overlay_id": "ov_9",
-            "kind": "ExpressionNormalization",
-            "effects": [
-              "eff_7"
-            ],
-            "stmt_refs": [
-              "asm_s_5"
-            ],
-            "attrs": {
-              "target": "output",
-              "expression": "add(ptr, 0x20)",
-              "expression_normalized": "(ptr + 0x20)",
-              "solidity_like": "output = (ptr + 0x20);",
-              "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -3381,6 +3552,77 @@
             "kind": "EvaluationStep",
             "effects": [
               "eff_9"
+            ],
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_5_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "solidity_like": "__sseir_eval_asm_s_5_1 = (ptr + 0x20);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "parent_effect": "eff_8",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_11",
+            "kind": "ExpressionNormalization",
+            "effects": [
+              "eff_8"
+            ],
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "target": "output",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "__sseir_eval_asm_s_5_1",
+              "solidity_like": "output = __sseir_eval_asm_s_5_1;",
+              "context": "value",
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_5_1",
+                "final_normalized": "__sseir_eval_asm_s_5_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_5_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
+            }
+          },
+          {
+            "overlay_id": "ov_12",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_11"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -3394,15 +3636,16 @@
               "call": "gas",
               "raw_args": [],
               "evaluated_args": [],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_11",
+            "overlay_id": "ov_13",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_11"
+              "eff_13"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -3430,15 +3673,16 @@
                 "output",
                 "0x20"
               ],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_12",
+            "overlay_id": "ov_14",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_12"
+              "eff_14"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -3456,15 +3700,16 @@
               "evaluated_args": [
                 "__sseir_eval_asm_s_7_2"
               ],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_13",
+            "overlay_id": "ov_15",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_8"
+              "eff_10"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -3530,10 +3775,10 @@
             }
           },
           {
-            "overlay_id": "ov_14",
+            "overlay_id": "ov_16",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_14"
+              "eff_16"
             ],
             "stmt_refs": [
               "asm_s_9"
@@ -3544,14 +3789,16 @@
               "expression_normalized": "mload(output)",
               "solidity_like": "computedHash = mload(output);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_15",
+            "overlay_id": "ov_17",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_16"
+              "eff_18"
             ],
             "stmt_refs": [
               "asm_s_10"
@@ -3562,14 +3809,16 @@
               "expression_normalized": "_zpewsnjt.slot",
               "solidity_like": "storedHashSlot = _zpewsnjt.slot;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_16",
+            "overlay_id": "ov_18",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_17"
+              "eff_19"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -3580,14 +3829,16 @@
               "expression_normalized": "sload(storedHashSlot)",
               "solidity_like": "storedHash = sload(storedHashSlot);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_17",
+            "overlay_id": "ov_19",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_20"
+              "eff_22"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -3607,15 +3858,16 @@
                 "computedHash",
                 "storedHash"
               ],
-              "parent_effect": "eff_19",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_21",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_18",
+            "overlay_id": "ov_20",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_21"
+              "eff_23"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -3633,15 +3885,16 @@
               "evaluated_args": [
                 "__sseir_eval_asm_s_12_1"
               ],
-              "parent_effect": "eff_19",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_21",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_19",
+            "overlay_id": "ov_21",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_19"
+              "eff_21"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -3702,7 +3955,7 @@
               "ov_1"
             ],
             "source_effects": [
-              "eff_13"
+              "eff_15"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -3719,7 +3972,7 @@
               "ov_2"
             ],
             "source_effects": [
-              "eff_22"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_13"
@@ -3735,7 +3988,7 @@
               "ov_3"
             ],
             "source_effects": [
-              "eff_18"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -3753,7 +4006,7 @@
               "ov_4"
             ],
             "source_effects": [
-              "eff_10"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -3914,7 +4167,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_10",
+            "effect": "eff_12",
             "effect_kind": "StaticCall",
             "query_field": "input_memory",
             "has_phi": false,
@@ -3927,7 +4180,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_13",
+            "effect": "eff_15",
             "effect_kind": "Revert",
             "query_field": "payload_memory",
             "has_phi": false,
@@ -3940,7 +4193,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_15",
+            "effect": "eff_17",
             "effect_kind": "MemoryRead",
             "query_field": "memory_read",
             "has_phi": false,
@@ -3953,7 +4206,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_22",
+            "effect": "eff_24",
             "effect_kind": "Revert",
             "query_field": "payload_memory",
             "has_phi": false,
@@ -4906,7 +5159,7 @@
             "type_hint": "address",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10",
+              "effect": "eff_12",
               "call_kind": "staticcall"
             }
           },
@@ -4918,7 +5171,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -4929,7 +5182,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -4940,7 +5193,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -4951,7 +5204,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -4962,7 +5215,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -4973,7 +5226,7 @@
             "type_hint": "bool",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_8"
+              "effect": "eff_10"
             }
           },
           {
@@ -4984,7 +5237,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_9",
             "attrs": {
-              "effect": "eff_15",
+              "effect": "eff_17",
               "semantic": "memory_read"
             }
           },
@@ -4996,7 +5249,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_9",
             "attrs": {
-              "effect": "eff_15",
+              "effect": "eff_17",
               "value_versions": {
                 "computedHash": [
                   "computedHash__ssa5"
@@ -5012,7 +5265,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "effect": "eff_18",
+              "effect": "eff_20",
               "slot_versions": [
                 "storedHashSlot__ssa6"
               ]
@@ -5026,7 +5279,7 @@
             "type_hint": "bool",
             "stmt_ref": "asm_s_12",
             "attrs": {
-              "effect": "eff_19"
+              "effect": "eff_21"
             }
           },
           {
@@ -5262,6 +5515,35 @@
             }
           },
           {
+            "effect_id": "eff_6",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "add(ptr, 0x0c)",
+              "expression_normalized": "(ptr + 0x0c)",
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "cfg_node_id": 4,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_5",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_5",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -5282,11 +5564,34 @@
                 "input": [
                   "input__ssa2"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "add(ptr, 0x0c)",
+                    "expression_normalized": "(ptr + 0x0c)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x0c"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x0c"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_6",
+            "effect_id": "eff_7",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_4"
@@ -5310,7 +5615,36 @@
             }
           },
           {
-            "effect_id": "eff_7",
+            "effect_id": "eff_9",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_5_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "cfg_node_id": 6,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_8",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_8",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_5"
@@ -5330,11 +5664,34 @@
                 "output": [
                   "output__ssa4"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_5_1",
+                "final_normalized": "__sseir_eval_asm_s_5_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_5_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_9",
+            "effect_id": "eff_11",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -5352,11 +5709,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_10",
+            "effect_id": "eff_12",
             "kind": "StaticCall",
             "stmt_refs": [
               "asm_s_7"
@@ -5412,7 +5770,8 @@
                 "path_states": [
                   "entry"
                 ],
-                "parent_effect": "eff_8"
+                "parent_effect": "eff_10",
+                "evaluation_context": "condition"
               },
               "gas": "gas()",
               "target": "2",
@@ -5467,7 +5826,7 @@
             }
           },
           {
-            "effect_id": "eff_11",
+            "effect_id": "eff_13",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -5499,11 +5858,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_12",
+            "effect_id": "eff_14",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -5525,11 +5885,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_8",
+            "effect_id": "eff_10",
             "kind": "Branch",
             "stmt_refs": [
               "asm_s_7"
@@ -5598,7 +5959,7 @@
             }
           },
           {
-            "effect_id": "eff_13",
+            "effect_id": "eff_15",
             "kind": "Revert",
             "stmt_refs": [
               "asm_s_8"
@@ -5696,21 +6057,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -5720,7 +6083,7 @@
             }
           },
           {
-            "effect_id": "eff_14",
+            "effect_id": "eff_16",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_9"
@@ -5744,7 +6107,7 @@
             }
           },
           {
-            "effect_id": "eff_15",
+            "effect_id": "eff_17",
             "kind": "MemoryRead",
             "stmt_refs": [
               "asm_s_9"
@@ -5802,7 +6165,7 @@
             }
           },
           {
-            "effect_id": "eff_16",
+            "effect_id": "eff_18",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_10"
@@ -5826,7 +6189,7 @@
             }
           },
           {
-            "effect_id": "eff_17",
+            "effect_id": "eff_19",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_11"
@@ -5850,7 +6213,7 @@
             }
           },
           {
-            "effect_id": "eff_18",
+            "effect_id": "eff_20",
             "kind": "StorageRead",
             "stmt_refs": [
               "asm_s_11"
@@ -5873,7 +6236,7 @@
             }
           },
           {
-            "effect_id": "eff_20",
+            "effect_id": "eff_22",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_12"
@@ -5897,11 +6260,12 @@
               "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20)))"
               ],
-              "parent_effect": "eff_19"
+              "parent_effect": "eff_21",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_21",
+            "effect_id": "eff_23",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_12"
@@ -5923,11 +6287,12 @@
               "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20)))"
               ],
-              "parent_effect": "eff_19"
+              "parent_effect": "eff_21",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_19",
+            "effect_id": "eff_21",
             "kind": "Branch",
             "stmt_refs": [
               "asm_s_12"
@@ -5979,7 +6344,7 @@
             }
           },
           {
-            "effect_id": "eff_22",
+            "effect_id": "eff_24",
             "kind": "Revert",
             "stmt_refs": [
               "asm_s_13"
@@ -6077,21 +6442,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -6144,7 +6511,7 @@
             "overlay_id": "ov_1",
             "kind": "RequireOverlay",
             "effects": [
-              "eff_13"
+              "eff_15"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -6155,6 +6522,9 @@
               "require_like": "require((staticcall(gasleft(), 2, input, inputSize, output, 0x20) != 0));",
               "revert_payload": "empty",
               "control_path": [
+                "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))"
+              ],
+              "path_states": [
                 "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))"
               ],
               "merged_conditions": [
@@ -6181,21 +6551,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -6208,7 +6580,7 @@
             "overlay_id": "ov_2",
             "kind": "RequireOverlay",
             "effects": [
-              "eff_22"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_13"
@@ -6219,6 +6591,9 @@
               "require_like": "require((computedHash == storedHash));",
               "revert_payload": "empty",
               "control_path": [
+                "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))"
+              ],
+              "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))"
               ],
               "merged_conditions": [
@@ -6245,21 +6620,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -6272,7 +6649,7 @@
             "overlay_id": "ov_3",
             "kind": "StateVariableRead",
             "effects": [
-              "eff_18"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -6292,7 +6669,7 @@
             "overlay_id": "ov_4",
             "kind": "PrecompileCall",
             "effects": [
-              "eff_10"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -6348,7 +6725,8 @@
                 "path_states": [
                   "entry"
                 ],
-                "parent_effect": "eff_8"
+                "parent_effect": "eff_10",
+                "evaluation_context": "condition"
               },
               "gas": "gasleft()",
               "target": "2",
@@ -6449,11 +6827,42 @@
               "expression_normalized": "mload(0x40)",
               "solidity_like": "ptr = mload(0x40);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
             "overlay_id": "ov_7",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_6"
+            ],
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "add(ptr, 0x0c)",
+              "expression_normalized": "(ptr + 0x0c)",
+              "solidity_like": "__sseir_eval_asm_s_3_1 = (ptr + 0x0c);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "parent_effect": "eff_5",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_8",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_5"
@@ -6464,17 +6873,41 @@
             "attrs": {
               "target": "input",
               "expression": "add(ptr, 0x0c)",
-              "expression_normalized": "(ptr + 0x0c)",
-              "solidity_like": "input = (ptr + 0x0c);",
+              "expression_normalized": "__sseir_eval_asm_s_3_1",
+              "solidity_like": "input = __sseir_eval_asm_s_3_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "add(ptr, 0x0c)",
+                    "expression_normalized": "(ptr + 0x0c)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x0c"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x0c"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_8",
+            "overlay_id": "ov_9",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_6"
+              "eff_7"
             ],
             "stmt_refs": [
               "asm_s_4"
@@ -6485,25 +6918,9 @@
               "expression_normalized": "0x14",
               "solidity_like": "inputSize = 0x14;",
               "context": "value",
-              "division_guards": []
-            }
-          },
-          {
-            "overlay_id": "ov_9",
-            "kind": "ExpressionNormalization",
-            "effects": [
-              "eff_7"
-            ],
-            "stmt_refs": [
-              "asm_s_5"
-            ],
-            "attrs": {
-              "target": "output",
-              "expression": "add(ptr, 0x20)",
-              "expression_normalized": "(ptr + 0x20)",
-              "solidity_like": "output = (ptr + 0x20);",
-              "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -6511,6 +6928,77 @@
             "kind": "EvaluationStep",
             "effects": [
               "eff_9"
+            ],
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_5_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "solidity_like": "__sseir_eval_asm_s_5_1 = (ptr + 0x20);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "parent_effect": "eff_8",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_11",
+            "kind": "ExpressionNormalization",
+            "effects": [
+              "eff_8"
+            ],
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "target": "output",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "__sseir_eval_asm_s_5_1",
+              "solidity_like": "output = __sseir_eval_asm_s_5_1;",
+              "context": "value",
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_5_1",
+                "final_normalized": "__sseir_eval_asm_s_5_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_5_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
+            }
+          },
+          {
+            "overlay_id": "ov_12",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_11"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -6524,15 +7012,16 @@
               "call": "gas",
               "raw_args": [],
               "evaluated_args": [],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_11",
+            "overlay_id": "ov_13",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_11"
+              "eff_13"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -6560,15 +7049,16 @@
                 "output",
                 "0x20"
               ],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_12",
+            "overlay_id": "ov_14",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_12"
+              "eff_14"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -6586,15 +7076,16 @@
               "evaluated_args": [
                 "__sseir_eval_asm_s_7_2"
               ],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_13",
+            "overlay_id": "ov_15",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_8"
+              "eff_10"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -6660,10 +7151,10 @@
             }
           },
           {
-            "overlay_id": "ov_14",
+            "overlay_id": "ov_16",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_14"
+              "eff_16"
             ],
             "stmt_refs": [
               "asm_s_9"
@@ -6674,14 +7165,16 @@
               "expression_normalized": "mload(output)",
               "solidity_like": "computedHash = mload(output);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_15",
+            "overlay_id": "ov_17",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_16"
+              "eff_18"
             ],
             "stmt_refs": [
               "asm_s_10"
@@ -6692,14 +7185,16 @@
               "expression_normalized": "_zpewsnjt.slot",
               "solidity_like": "storedHashSlot = _zpewsnjt.slot;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_16",
+            "overlay_id": "ov_18",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_17"
+              "eff_19"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -6710,14 +7205,16 @@
               "expression_normalized": "sload(storedHashSlot)",
               "solidity_like": "storedHash = sload(storedHashSlot);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_17",
+            "overlay_id": "ov_19",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_20"
+              "eff_22"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -6737,15 +7234,16 @@
                 "computedHash",
                 "storedHash"
               ],
-              "parent_effect": "eff_19",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_21",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_18",
+            "overlay_id": "ov_20",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_21"
+              "eff_23"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -6763,15 +7261,16 @@
               "evaluated_args": [
                 "__sseir_eval_asm_s_12_1"
               ],
-              "parent_effect": "eff_19",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_21",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_19",
+            "overlay_id": "ov_21",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_19"
+              "eff_21"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -6832,7 +7331,7 @@
               "ov_1"
             ],
             "source_effects": [
-              "eff_13"
+              "eff_15"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -6849,7 +7348,7 @@
               "ov_2"
             ],
             "source_effects": [
-              "eff_22"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_13"
@@ -6865,7 +7364,7 @@
               "ov_3"
             ],
             "source_effects": [
-              "eff_18"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -6883,7 +7382,7 @@
               "ov_4"
             ],
             "source_effects": [
-              "eff_10"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -7044,7 +7543,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_10",
+            "effect": "eff_12",
             "effect_kind": "StaticCall",
             "query_field": "input_memory",
             "has_phi": false,
@@ -7057,7 +7556,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_13",
+            "effect": "eff_15",
             "effect_kind": "Revert",
             "query_field": "payload_memory",
             "has_phi": false,
@@ -7070,7 +7569,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_15",
+            "effect": "eff_17",
             "effect_kind": "MemoryRead",
             "query_field": "memory_read",
             "has_phi": false,
@@ -7083,7 +7582,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_22",
+            "effect": "eff_24",
             "effect_kind": "Revert",
             "query_field": "payload_memory",
             "has_phi": false,
@@ -8093,7 +8592,7 @@
             "type_hint": "address",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10",
+              "effect": "eff_12",
               "call_kind": "staticcall"
             }
           },
@@ -8105,7 +8604,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -8116,7 +8615,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -8127,7 +8626,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -8138,7 +8637,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -8149,7 +8648,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -8160,7 +8659,7 @@
             "type_hint": "bool",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_8"
+              "effect": "eff_10"
             }
           },
           {
@@ -8171,7 +8670,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_9",
             "attrs": {
-              "effect": "eff_15",
+              "effect": "eff_17",
               "semantic": "memory_read"
             }
           },
@@ -8183,7 +8682,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_9",
             "attrs": {
-              "effect": "eff_15",
+              "effect": "eff_17",
               "value_versions": {
                 "computedHash": [
                   "computedHash__ssa5"
@@ -8199,7 +8698,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "effect": "eff_18",
+              "effect": "eff_20",
               "slot_versions": [
                 "storedHashSlot__ssa6"
               ]
@@ -8213,7 +8712,7 @@
             "type_hint": "bool",
             "stmt_ref": "asm_s_12",
             "attrs": {
-              "effect": "eff_19"
+              "effect": "eff_21"
             }
           },
           {
@@ -8449,6 +8948,35 @@
             }
           },
           {
+            "effect_id": "eff_6",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "add(ptr, 0x0c)",
+              "expression_normalized": "(ptr + 0x0c)",
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "cfg_node_id": 4,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_5",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_5",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -8469,11 +8997,34 @@
                 "input": [
                   "input__ssa2"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "add(ptr, 0x0c)",
+                    "expression_normalized": "(ptr + 0x0c)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x0c"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x0c"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_6",
+            "effect_id": "eff_7",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_4"
@@ -8497,7 +9048,36 @@
             }
           },
           {
-            "effect_id": "eff_7",
+            "effect_id": "eff_9",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_5_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "cfg_node_id": 6,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_8",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_8",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_5"
@@ -8517,11 +9097,34 @@
                 "output": [
                   "output__ssa4"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_5_1",
+                "final_normalized": "__sseir_eval_asm_s_5_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_5_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_9",
+            "effect_id": "eff_11",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -8539,11 +9142,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_10",
+            "effect_id": "eff_12",
             "kind": "StaticCall",
             "stmt_refs": [
               "asm_s_7"
@@ -8599,7 +9203,8 @@
                 "path_states": [
                   "entry"
                 ],
-                "parent_effect": "eff_8"
+                "parent_effect": "eff_10",
+                "evaluation_context": "condition"
               },
               "gas": "gas()",
               "target": "2",
@@ -8654,7 +9259,7 @@
             }
           },
           {
-            "effect_id": "eff_11",
+            "effect_id": "eff_13",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -8686,11 +9291,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_12",
+            "effect_id": "eff_14",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -8712,11 +9318,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_8",
+            "effect_id": "eff_10",
             "kind": "Branch",
             "stmt_refs": [
               "asm_s_7"
@@ -8785,7 +9392,7 @@
             }
           },
           {
-            "effect_id": "eff_13",
+            "effect_id": "eff_15",
             "kind": "Revert",
             "stmt_refs": [
               "asm_s_8"
@@ -8883,21 +9490,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -8907,7 +9516,7 @@
             }
           },
           {
-            "effect_id": "eff_14",
+            "effect_id": "eff_16",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_9"
@@ -8931,7 +9540,7 @@
             }
           },
           {
-            "effect_id": "eff_15",
+            "effect_id": "eff_17",
             "kind": "MemoryRead",
             "stmt_refs": [
               "asm_s_9"
@@ -8989,7 +9598,7 @@
             }
           },
           {
-            "effect_id": "eff_16",
+            "effect_id": "eff_18",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_10"
@@ -9013,7 +9622,7 @@
             }
           },
           {
-            "effect_id": "eff_17",
+            "effect_id": "eff_19",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_11"
@@ -9037,7 +9646,7 @@
             }
           },
           {
-            "effect_id": "eff_18",
+            "effect_id": "eff_20",
             "kind": "StorageRead",
             "stmt_refs": [
               "asm_s_11"
@@ -9060,7 +9669,7 @@
             }
           },
           {
-            "effect_id": "eff_20",
+            "effect_id": "eff_22",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_12"
@@ -9084,11 +9693,12 @@
               "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20)))"
               ],
-              "parent_effect": "eff_19"
+              "parent_effect": "eff_21",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_21",
+            "effect_id": "eff_23",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_12"
@@ -9110,11 +9720,12 @@
               "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20)))"
               ],
-              "parent_effect": "eff_19"
+              "parent_effect": "eff_21",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_19",
+            "effect_id": "eff_21",
             "kind": "Branch",
             "stmt_refs": [
               "asm_s_12"
@@ -9166,7 +9777,7 @@
             }
           },
           {
-            "effect_id": "eff_22",
+            "effect_id": "eff_24",
             "kind": "Revert",
             "stmt_refs": [
               "asm_s_13"
@@ -9264,21 +9875,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -9331,7 +9944,7 @@
             "overlay_id": "ov_1",
             "kind": "RequireOverlay",
             "effects": [
-              "eff_13"
+              "eff_15"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -9342,6 +9955,9 @@
               "require_like": "require((staticcall(gasleft(), 2, input, inputSize, output, 0x20) != 0));",
               "revert_payload": "empty",
               "control_path": [
+                "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))"
+              ],
+              "path_states": [
                 "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))"
               ],
               "merged_conditions": [
@@ -9368,21 +9984,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -9395,7 +10013,7 @@
             "overlay_id": "ov_2",
             "kind": "RequireOverlay",
             "effects": [
-              "eff_22"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_13"
@@ -9406,6 +10024,9 @@
               "require_like": "require((computedHash == storedHash));",
               "revert_payload": "empty",
               "control_path": [
+                "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))"
+              ],
+              "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))"
               ],
               "merged_conditions": [
@@ -9432,21 +10053,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -9459,7 +10082,7 @@
             "overlay_id": "ov_3",
             "kind": "StateVariableRead",
             "effects": [
-              "eff_18"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -9479,7 +10102,7 @@
             "overlay_id": "ov_4",
             "kind": "PrecompileCall",
             "effects": [
-              "eff_10"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -9535,7 +10158,8 @@
                 "path_states": [
                   "entry"
                 ],
-                "parent_effect": "eff_8"
+                "parent_effect": "eff_10",
+                "evaluation_context": "condition"
               },
               "gas": "gasleft()",
               "target": "2",
@@ -9636,11 +10260,42 @@
               "expression_normalized": "mload(0x40)",
               "solidity_like": "ptr = mload(0x40);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
             "overlay_id": "ov_7",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_6"
+            ],
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "add(ptr, 0x0c)",
+              "expression_normalized": "(ptr + 0x0c)",
+              "solidity_like": "__sseir_eval_asm_s_3_1 = (ptr + 0x0c);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "parent_effect": "eff_5",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_8",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_5"
@@ -9651,17 +10306,41 @@
             "attrs": {
               "target": "input",
               "expression": "add(ptr, 0x0c)",
-              "expression_normalized": "(ptr + 0x0c)",
-              "solidity_like": "input = (ptr + 0x0c);",
+              "expression_normalized": "__sseir_eval_asm_s_3_1",
+              "solidity_like": "input = __sseir_eval_asm_s_3_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "add(ptr, 0x0c)",
+                    "expression_normalized": "(ptr + 0x0c)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x0c"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x0c"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_8",
+            "overlay_id": "ov_9",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_6"
+              "eff_7"
             ],
             "stmt_refs": [
               "asm_s_4"
@@ -9672,25 +10351,9 @@
               "expression_normalized": "0x14",
               "solidity_like": "inputSize = 0x14;",
               "context": "value",
-              "division_guards": []
-            }
-          },
-          {
-            "overlay_id": "ov_9",
-            "kind": "ExpressionNormalization",
-            "effects": [
-              "eff_7"
-            ],
-            "stmt_refs": [
-              "asm_s_5"
-            ],
-            "attrs": {
-              "target": "output",
-              "expression": "add(ptr, 0x20)",
-              "expression_normalized": "(ptr + 0x20)",
-              "solidity_like": "output = (ptr + 0x20);",
-              "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -9698,6 +10361,77 @@
             "kind": "EvaluationStep",
             "effects": [
               "eff_9"
+            ],
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_5_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "solidity_like": "__sseir_eval_asm_s_5_1 = (ptr + 0x20);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "parent_effect": "eff_8",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_11",
+            "kind": "ExpressionNormalization",
+            "effects": [
+              "eff_8"
+            ],
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "target": "output",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "__sseir_eval_asm_s_5_1",
+              "solidity_like": "output = __sseir_eval_asm_s_5_1;",
+              "context": "value",
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_5_1",
+                "final_normalized": "__sseir_eval_asm_s_5_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_5_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
+            }
+          },
+          {
+            "overlay_id": "ov_12",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_11"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -9711,15 +10445,16 @@
               "call": "gas",
               "raw_args": [],
               "evaluated_args": [],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_11",
+            "overlay_id": "ov_13",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_11"
+              "eff_13"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -9747,15 +10482,16 @@
                 "output",
                 "0x20"
               ],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_12",
+            "overlay_id": "ov_14",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_12"
+              "eff_14"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -9773,15 +10509,16 @@
               "evaluated_args": [
                 "__sseir_eval_asm_s_7_2"
               ],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_13",
+            "overlay_id": "ov_15",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_8"
+              "eff_10"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -9847,10 +10584,10 @@
             }
           },
           {
-            "overlay_id": "ov_14",
+            "overlay_id": "ov_16",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_14"
+              "eff_16"
             ],
             "stmt_refs": [
               "asm_s_9"
@@ -9861,14 +10598,16 @@
               "expression_normalized": "mload(output)",
               "solidity_like": "computedHash = mload(output);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_15",
+            "overlay_id": "ov_17",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_16"
+              "eff_18"
             ],
             "stmt_refs": [
               "asm_s_10"
@@ -9879,14 +10618,16 @@
               "expression_normalized": "_zpewsnjt.slot",
               "solidity_like": "storedHashSlot = _zpewsnjt.slot;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_16",
+            "overlay_id": "ov_18",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_17"
+              "eff_19"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -9897,14 +10638,16 @@
               "expression_normalized": "sload(storedHashSlot)",
               "solidity_like": "storedHash = sload(storedHashSlot);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_17",
+            "overlay_id": "ov_19",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_20"
+              "eff_22"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -9924,15 +10667,16 @@
                 "computedHash",
                 "storedHash"
               ],
-              "parent_effect": "eff_19",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_21",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_18",
+            "overlay_id": "ov_20",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_21"
+              "eff_23"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -9950,15 +10694,16 @@
               "evaluated_args": [
                 "__sseir_eval_asm_s_12_1"
               ],
-              "parent_effect": "eff_19",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_21",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_19",
+            "overlay_id": "ov_21",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_19"
+              "eff_21"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -10019,7 +10764,7 @@
               "ov_1"
             ],
             "source_effects": [
-              "eff_13"
+              "eff_15"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -10036,7 +10781,7 @@
               "ov_2"
             ],
             "source_effects": [
-              "eff_22"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_13"
@@ -10052,7 +10797,7 @@
               "ov_3"
             ],
             "source_effects": [
-              "eff_18"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -10070,7 +10815,7 @@
               "ov_4"
             ],
             "source_effects": [
-              "eff_10"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -10231,7 +10976,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_10",
+            "effect": "eff_12",
             "effect_kind": "StaticCall",
             "query_field": "input_memory",
             "has_phi": false,
@@ -10244,7 +10989,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_13",
+            "effect": "eff_15",
             "effect_kind": "Revert",
             "query_field": "payload_memory",
             "has_phi": false,
@@ -10257,7 +11002,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_15",
+            "effect": "eff_17",
             "effect_kind": "MemoryRead",
             "query_field": "memory_read",
             "has_phi": false,
@@ -10270,7 +11015,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_22",
+            "effect": "eff_24",
             "effect_kind": "Revert",
             "query_field": "payload_memory",
             "has_phi": false,
@@ -11462,7 +12207,7 @@
             "type_hint": "address",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10",
+              "effect": "eff_12",
               "call_kind": "staticcall"
             }
           },
@@ -11474,7 +12219,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -11485,7 +12230,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -11496,7 +12241,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -11507,7 +12252,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -11518,7 +12263,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_10"
+              "effect": "eff_12"
             }
           },
           {
@@ -11529,7 +12274,7 @@
             "type_hint": "bool",
             "stmt_ref": "asm_s_7",
             "attrs": {
-              "effect": "eff_8"
+              "effect": "eff_10"
             }
           },
           {
@@ -11540,7 +12285,7 @@
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_9",
             "attrs": {
-              "effect": "eff_15",
+              "effect": "eff_17",
               "semantic": "memory_read"
             }
           },
@@ -11552,7 +12297,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_9",
             "attrs": {
-              "effect": "eff_15",
+              "effect": "eff_17",
               "value_versions": {
                 "computedHash": [
                   "computedHash__ssa5"
@@ -11568,7 +12313,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "effect": "eff_18",
+              "effect": "eff_20",
               "slot_versions": [
                 "storedHashSlot__ssa6"
               ]
@@ -11582,7 +12327,7 @@
             "type_hint": "bool",
             "stmt_ref": "asm_s_12",
             "attrs": {
-              "effect": "eff_19"
+              "effect": "eff_21"
             }
           },
           {
@@ -11818,6 +12563,35 @@
             }
           },
           {
+            "effect_id": "eff_6",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "add(ptr, 0x0c)",
+              "expression_normalized": "(ptr + 0x0c)",
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "cfg_node_id": 4,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_5",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_5",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -11838,11 +12612,34 @@
                 "input": [
                   "input__ssa2"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "add(ptr, 0x0c)",
+                    "expression_normalized": "(ptr + 0x0c)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x0c"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x0c"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_6",
+            "effect_id": "eff_7",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_4"
@@ -11866,7 +12663,36 @@
             }
           },
           {
-            "effect_id": "eff_7",
+            "effect_id": "eff_9",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_5_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "cfg_node_id": 6,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_8",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_8",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_5"
@@ -11886,11 +12712,34 @@
                 "output": [
                   "output__ssa4"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_5_1",
+                "final_normalized": "__sseir_eval_asm_s_5_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_5_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_9",
+            "effect_id": "eff_11",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -11908,11 +12757,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_10",
+            "effect_id": "eff_12",
             "kind": "StaticCall",
             "stmt_refs": [
               "asm_s_7"
@@ -11968,7 +12818,8 @@
                 "path_states": [
                   "entry"
                 ],
-                "parent_effect": "eff_8"
+                "parent_effect": "eff_10",
+                "evaluation_context": "condition"
               },
               "gas": "gas()",
               "target": "2",
@@ -12023,7 +12874,7 @@
             }
           },
           {
-            "effect_id": "eff_11",
+            "effect_id": "eff_13",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -12055,11 +12906,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_12",
+            "effect_id": "eff_14",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_7"
@@ -12081,11 +12933,12 @@
               "path_states": [
                 "entry"
               ],
-              "parent_effect": "eff_8"
+              "parent_effect": "eff_10",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_8",
+            "effect_id": "eff_10",
             "kind": "Branch",
             "stmt_refs": [
               "asm_s_7"
@@ -12154,7 +13007,7 @@
             }
           },
           {
-            "effect_id": "eff_13",
+            "effect_id": "eff_15",
             "kind": "Revert",
             "stmt_refs": [
               "asm_s_8"
@@ -12252,21 +13105,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -12276,7 +13131,7 @@
             }
           },
           {
-            "effect_id": "eff_14",
+            "effect_id": "eff_16",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_9"
@@ -12300,7 +13155,7 @@
             }
           },
           {
-            "effect_id": "eff_15",
+            "effect_id": "eff_17",
             "kind": "MemoryRead",
             "stmt_refs": [
               "asm_s_9"
@@ -12358,7 +13213,7 @@
             }
           },
           {
-            "effect_id": "eff_16",
+            "effect_id": "eff_18",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_10"
@@ -12382,7 +13237,7 @@
             }
           },
           {
-            "effect_id": "eff_17",
+            "effect_id": "eff_19",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_11"
@@ -12406,7 +13261,7 @@
             }
           },
           {
-            "effect_id": "eff_18",
+            "effect_id": "eff_20",
             "kind": "StorageRead",
             "stmt_refs": [
               "asm_s_11"
@@ -12429,7 +13284,7 @@
             }
           },
           {
-            "effect_id": "eff_20",
+            "effect_id": "eff_22",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_12"
@@ -12453,11 +13308,12 @@
               "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20)))"
               ],
-              "parent_effect": "eff_19"
+              "parent_effect": "eff_21",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_21",
+            "effect_id": "eff_23",
             "kind": "EvaluationStep",
             "stmt_refs": [
               "asm_s_12"
@@ -12479,11 +13335,12 @@
               "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20)))"
               ],
-              "parent_effect": "eff_19"
+              "parent_effect": "eff_21",
+              "evaluation_context": "condition"
             }
           },
           {
-            "effect_id": "eff_19",
+            "effect_id": "eff_21",
             "kind": "Branch",
             "stmt_refs": [
               "asm_s_12"
@@ -12535,7 +13392,7 @@
             }
           },
           {
-            "effect_id": "eff_22",
+            "effect_id": "eff_24",
             "kind": "Revert",
             "stmt_refs": [
               "asm_s_13"
@@ -12633,21 +13490,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -12700,7 +13559,7 @@
             "overlay_id": "ov_1",
             "kind": "RequireOverlay",
             "effects": [
-              "eff_13"
+              "eff_15"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -12711,6 +13570,9 @@
               "require_like": "require((staticcall(gasleft(), 2, input, inputSize, output, 0x20) != 0));",
               "revert_payload": "empty",
               "control_path": [
+                "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))"
+              ],
+              "path_states": [
                 "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))"
               ],
               "merged_conditions": [
@@ -12737,21 +13599,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -12764,7 +13628,7 @@
             "overlay_id": "ov_2",
             "kind": "RequireOverlay",
             "effects": [
-              "eff_22"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_13"
@@ -12775,6 +13639,9 @@
               "require_like": "require((computedHash == storedHash));",
               "revert_payload": "empty",
               "control_path": [
+                "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))"
+              ],
+              "path_states": [
                 "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))"
               ],
               "merged_conditions": [
@@ -12801,21 +13668,23 @@
                   {
                     "path_id": "path_0",
                     "condition": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
-                    "status": "unresolved",
-                    "reason": "incomplete_memory_slice",
+                    "status": "resolved",
+                    "reason": null,
                     "arg_resolutions": {
                       "payload": {
                         "expr": "0:0",
-                        "normalized": null,
+                        "normalized": "empty",
                         "ssa_key": null,
                         "memory_slice": {
+                          "query_kind": "EmptyMemorySlice",
                           "path": "!(iszero(staticcall(gas(), 2, input, inputSize, output, 0x20))) && iszero(eq(computedHash, storedHash))",
                           "complete": true,
                           "slices": []
                         },
                         "notes": [
                           "revert_payload",
-                          "incomplete_memory_slice"
+                          "empty_payload",
+                          "zero_length_memory_range"
                         ]
                       }
                     }
@@ -12828,7 +13697,7 @@
             "overlay_id": "ov_3",
             "kind": "StateVariableRead",
             "effects": [
-              "eff_18"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -12848,7 +13717,7 @@
             "overlay_id": "ov_4",
             "kind": "PrecompileCall",
             "effects": [
-              "eff_10"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -12904,7 +13773,8 @@
                 "path_states": [
                   "entry"
                 ],
-                "parent_effect": "eff_8"
+                "parent_effect": "eff_10",
+                "evaluation_context": "condition"
               },
               "gas": "gasleft()",
               "target": "2",
@@ -13005,11 +13875,42 @@
               "expression_normalized": "mload(0x40)",
               "solidity_like": "ptr = mload(0x40);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
             "overlay_id": "ov_7",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_6"
+            ],
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "add(ptr, 0x0c)",
+              "expression_normalized": "(ptr + 0x0c)",
+              "solidity_like": "__sseir_eval_asm_s_3_1 = (ptr + 0x0c);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x0c"
+              ],
+              "parent_effect": "eff_5",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_8",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_5"
@@ -13020,17 +13921,41 @@
             "attrs": {
               "target": "input",
               "expression": "add(ptr, 0x0c)",
-              "expression_normalized": "(ptr + 0x0c)",
-              "solidity_like": "input = (ptr + 0x0c);",
+              "expression_normalized": "__sseir_eval_asm_s_3_1",
+              "solidity_like": "input = __sseir_eval_asm_s_3_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "add(ptr, 0x0c)",
+                    "expression_normalized": "(ptr + 0x0c)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x0c"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x0c"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_8",
+            "overlay_id": "ov_9",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_6"
+              "eff_7"
             ],
             "stmt_refs": [
               "asm_s_4"
@@ -13041,25 +13966,9 @@
               "expression_normalized": "0x14",
               "solidity_like": "inputSize = 0x14;",
               "context": "value",
-              "division_guards": []
-            }
-          },
-          {
-            "overlay_id": "ov_9",
-            "kind": "ExpressionNormalization",
-            "effects": [
-              "eff_7"
-            ],
-            "stmt_refs": [
-              "asm_s_5"
-            ],
-            "attrs": {
-              "target": "output",
-              "expression": "add(ptr, 0x20)",
-              "expression_normalized": "(ptr + 0x20)",
-              "solidity_like": "output = (ptr + 0x20);",
-              "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -13067,6 +13976,77 @@
             "kind": "EvaluationStep",
             "effects": [
               "eff_9"
+            ],
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_5_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "solidity_like": "__sseir_eval_asm_s_5_1 = (ptr + 0x20);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "parent_effect": "eff_8",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_11",
+            "kind": "ExpressionNormalization",
+            "effects": [
+              "eff_8"
+            ],
+            "stmt_refs": [
+              "asm_s_5"
+            ],
+            "attrs": {
+              "target": "output",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "__sseir_eval_asm_s_5_1",
+              "solidity_like": "output = __sseir_eval_asm_s_5_1;",
+              "context": "value",
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_5_1",
+                "final_normalized": "__sseir_eval_asm_s_5_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_5_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
+            }
+          },
+          {
+            "overlay_id": "ov_12",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_11"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -13080,15 +14060,16 @@
               "call": "gas",
               "raw_args": [],
               "evaluated_args": [],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_11",
+            "overlay_id": "ov_13",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_11"
+              "eff_13"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -13116,15 +14097,16 @@
                 "output",
                 "0x20"
               ],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_12",
+            "overlay_id": "ov_14",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_12"
+              "eff_14"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -13142,15 +14124,16 @@
               "evaluated_args": [
                 "__sseir_eval_asm_s_7_2"
               ],
-              "parent_effect": "eff_8",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_13",
+            "overlay_id": "ov_15",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_8"
+              "eff_10"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -13216,10 +14199,10 @@
             }
           },
           {
-            "overlay_id": "ov_14",
+            "overlay_id": "ov_16",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_14"
+              "eff_16"
             ],
             "stmt_refs": [
               "asm_s_9"
@@ -13230,14 +14213,16 @@
               "expression_normalized": "mload(output)",
               "solidity_like": "computedHash = mload(output);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_15",
+            "overlay_id": "ov_17",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_16"
+              "eff_18"
             ],
             "stmt_refs": [
               "asm_s_10"
@@ -13248,14 +14233,16 @@
               "expression_normalized": "_zpewsnjt.slot",
               "solidity_like": "storedHashSlot = _zpewsnjt.slot;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_16",
+            "overlay_id": "ov_18",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_17"
+              "eff_19"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -13266,14 +14253,16 @@
               "expression_normalized": "sload(storedHashSlot)",
               "solidity_like": "storedHash = sload(storedHashSlot);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_17",
+            "overlay_id": "ov_19",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_20"
+              "eff_22"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -13293,15 +14282,16 @@
                 "computedHash",
                 "storedHash"
               ],
-              "parent_effect": "eff_19",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_21",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_18",
+            "overlay_id": "ov_20",
             "kind": "EvaluationStep",
             "effects": [
-              "eff_21"
+              "eff_23"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -13319,15 +14309,16 @@
               "evaluated_args": [
                 "__sseir_eval_asm_s_12_1"
               ],
-              "parent_effect": "eff_19",
-              "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+              "parent_effect": "eff_21",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "condition"
             }
           },
           {
-            "overlay_id": "ov_19",
+            "overlay_id": "ov_21",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_19"
+              "eff_21"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -13388,7 +14379,7 @@
               "ov_1"
             ],
             "source_effects": [
-              "eff_13"
+              "eff_15"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -13405,7 +14396,7 @@
               "ov_2"
             ],
             "source_effects": [
-              "eff_22"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_13"
@@ -13421,7 +14412,7 @@
               "ov_3"
             ],
             "source_effects": [
-              "eff_18"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -13439,7 +14430,7 @@
               "ov_4"
             ],
             "source_effects": [
-              "eff_10"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -13600,7 +14591,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_10",
+            "effect": "eff_12",
             "effect_kind": "StaticCall",
             "query_field": "input_memory",
             "has_phi": false,
@@ -13613,7 +14604,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_13",
+            "effect": "eff_15",
             "effect_kind": "Revert",
             "query_field": "payload_memory",
             "has_phi": false,
@@ -13626,7 +14617,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_15",
+            "effect": "eff_17",
             "effect_kind": "MemoryRead",
             "query_field": "memory_read",
             "has_phi": false,
@@ -13639,7 +14630,7 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_22",
+            "effect": "eff_24",
             "effect_kind": "Revert",
             "query_field": "payload_memory",
             "has_phi": false,

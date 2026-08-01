@@ -1479,7 +1479,7 @@
           {
             "expr_id": "expr_14",
             "text": "mload(add(to, mul(add(i, 1), 0x20)))",
-            "normalized": "to[((((i + 1) * 0x20) - 32) / 32)]",
+            "normalized": "to[i]",
             "role": "memory_array_element_value",
             "type_hint": "address",
             "stmt_ref": "asm_s_5",
@@ -1487,7 +1487,7 @@
               "overlay": "ov_4",
               "array": "to",
               "array_type": "address[]",
-              "index": "((((i + 1) * 0x20) - 32) / 32)"
+              "index": "i"
             }
           }
         ],
@@ -1533,7 +1533,7 @@
               "asm_s_4"
             ],
             "attrs": {
-              "address": "0x0",
+              "address": "0x00",
               "value": "unknown(loop-carried-memory)",
               "memory_version": "mem_2",
               "origin_node": "N5",
@@ -1552,7 +1552,7 @@
               "asm_s_4"
             ],
             "attrs": {
-              "address": "0x00",
+              "address": "0x0",
               "value": "unknown(loop-carried-memory)",
               "memory_version": "mem_3",
               "origin_node": "N5",
@@ -2089,6 +2089,35 @@
             }
           },
           {
+            "effect_id": "eff_14",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_8"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_8_1",
+              "expression": "add(i, 1)",
+              "expression_normalized": "(i + 1)",
+              "call": "add",
+              "raw_args": [
+                "i",
+                "1"
+              ],
+              "evaluated_args": [
+                "i",
+                "1"
+              ],
+              "cfg_node_id": 11,
+              "language": "yul",
+              "path_states": [
+                "lt(i, len)"
+              ],
+              "parent_effect": "eff_13",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_13",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -2110,6 +2139,29 @@
                   "i__ssa5",
                   "i__ssa9"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_8_1",
+                "final_normalized": "__sseir_eval_asm_s_8_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_8_1",
+                    "expression": "add(i, 1)",
+                    "expression_normalized": "(i + 1)",
+                    "call": "add",
+                    "raw_args": [
+                      "i",
+                      "1"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "1"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
@@ -2371,8 +2423,8 @@
               "data_location": "memory",
               "element_type": "address",
               "offset": "mul(add(i, 1), 0x20)",
-              "index": "((((i + 1) * 0x20) - 32) / 32)",
-              "access": "to[((((i + 1) * 0x20) - 32) / 32)]",
+              "index": "i",
+              "access": "to[i]",
               "layout": "solidity_memory_dynamic_array_elements_after_length_word",
               "source_expression": "mload(add(to, mul(add(i, 1), 0x20)))",
               "read_from": "add(to, mul(add(i, 1), 0x20))",
@@ -2440,7 +2492,9 @@
               "expression_normalized": "to.length",
               "solidity_like": "len = to.length;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -2458,7 +2512,9 @@
               "expression_normalized": "0",
               "solidity_like": "i = 0;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -2476,7 +2532,9 @@
               "expression_normalized": "sload(giftAmount.slot)",
               "solidity_like": "v = sload(giftAmount.slot);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -2491,14 +2549,45 @@
             "attrs": {
               "target": "account",
               "expression": "mload(add(to, mul(add(i, 1), 0x20)))",
-              "expression_normalized": "to[((((i + 1) * 0x20) - 32) / 32)]",
-              "solidity_like": "account = to[((((i + 1) * 0x20) - 32) / 32)];",
+              "expression_normalized": "to[i]",
+              "solidity_like": "account = to[i];",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
             "overlay_id": "ov_9",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_14"
+            ],
+            "stmt_refs": [
+              "asm_s_8"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_8_1",
+              "expression": "add(i, 1)",
+              "expression_normalized": "(i + 1)",
+              "solidity_like": "__sseir_eval_asm_s_8_1 = (i + 1);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "i",
+                "1"
+              ],
+              "evaluated_args": [
+                "i",
+                "1"
+              ],
+              "parent_effect": "eff_13",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_10",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_13"
@@ -2509,10 +2598,34 @@
             "attrs": {
               "target": "i",
               "expression": "add(i, 1)",
-              "expression_normalized": "(i + 1)",
-              "solidity_like": "i = (i + 1);",
+              "expression_normalized": "__sseir_eval_asm_s_8_1",
+              "solidity_like": "i = __sseir_eval_asm_s_8_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_8_1",
+                "final_normalized": "__sseir_eval_asm_s_8_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_8_1",
+                    "expression": "add(i, 1)",
+                    "expression_normalized": "(i + 1)",
+                    "call": "add",
+                    "raw_args": [
+                      "i",
+                      "1"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "1"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           }
         ],

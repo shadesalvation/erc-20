@@ -36,27 +36,29 @@ Function QuantNeural.computeAdjustment(address)
   SolidityLikeFunction
   ```solidity
   function computeAdjustment(address entity) public view returns (uint256) {
-          uint256 output;
-          uint256 epoch = deploymentEpoch;
-          uint256 height = deploymentHeight;
+      uint256 output;
+      uint256 epoch = deploymentEpoch;
+      uint256 height = deploymentHeight;
   
-          assembly /* s-seir solidity-like view */ {
-              memory[0x00] = entity; // yul: mstore(0x00, entity)
-              memory[0x20] = interactionLevel.slot; // yul: mstore(0x20, interactionLevel.slot)
-              pulseCount = interactionLevel[entity]; // yul: let pulseCount := sload(keccak256(0x00, 0x40))
-              memory[0x00] = epoch; // yul: mstore(0x00, epoch)
-              memory[0x20] = height; // yul: mstore(0x20, height)
-              neuralSeed = keccak256(0x00, 0x40); // yul: let neuralSeed := keccak256(0x00, 0x40)
-              quantumBase = 0x2710; // yul: let quantumBase := 0x2710
-              memory[0x00] = height; // yul: mstore(0x00, height)
-              memory[0x20] = epoch; // yul: mstore(0x20, epoch)
-              synapticHash = keccak256(0x00, 0x40); // yul: let synapticHash := keccak256(0x00, 0x40)
-              require(0x01 != 0); // yul: let entropyMod := mod(synapticHash, 0x01)
-              output = (quantumBase - entropyMod); // yul: output := sub(quantumBase, entropyMod)
-          }
-  
-          return output; /* s-seir: output == (quantumBase - entropyMod) */
+      assembly /* s-seir solidity-like view */ {
+          memory[0x00] = entity; // yul: mstore(0x00, entity)
+          memory[0x20] = interactionLevel.slot; // yul: mstore(0x20, interactionLevel.slot)
+          pulseCount = interactionLevel[entity]; // yul: let pulseCount := sload(keccak256(0x00, 0x40))
+          memory[0x00] = epoch; // yul: mstore(0x00, epoch)
+          memory[0x20] = height; // yul: mstore(0x20, height)
+          neuralSeed = keccak256(abi.encode(epoch, height)); // yul: let neuralSeed := keccak256(0x00, 0x40)
+          quantumBase = 0x2710; // yul: let quantumBase := 0x2710
+          memory[0x00] = height; // yul: mstore(0x00, height)
+          memory[0x20] = epoch; // yul: mstore(0x20, epoch)
+          synapticHash = keccak256(abi.encode(height, epoch)); // yul: let synapticHash := keccak256(0x00, 0x40)
+          __sseir_eval_asm_s_11_1 = (synapticHash % 0x01); // yul: let entropyMod := mod(synapticHash, 0x01)
+          entropyMod = __sseir_eval_asm_s_11_1;
+          __sseir_eval_asm_s_12_1 = (quantumBase - entropyMod); // yul: output := sub(quantumBase, entropyMod)
+          output = __sseir_eval_asm_s_12_1;
       }
+  
+      return output; /* s-seir: output == __sseir_eval_asm_s_12_1 */
+  }
   ```
 
 Function QuantNeural.calculateNodeLoad(address)
@@ -76,15 +78,19 @@ Function QuantNeural.calculateNodeLoad(address)
   SolidityLikeFunction
   ```solidity
   function calculateNodeLoad(address target) private pure returns (uint256) {
-          uint256 nodeWeight;
-          assembly /* s-seir solidity-like view */ {
-              entropy = (target ^ 0xDEADBEEF); // yul: let entropy := xor(target, 0xDEADBEEF)
-              require(256 != 0); // yul: let signal := mod(entropy, 256)
-              dampener = (signal >> 8); // yul: let dampener := shr(8, signal)
-              nodeWeight = (dampener - dampener); // yul: nodeWeight := sub(dampener, dampener)
-          }
-          return nodeWeight; /* s-seir: nodeWeight == (dampener - dampener) */
+      uint256 nodeWeight;
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = (target ^ 0xDEADBEEF); // yul: let entropy := xor(target, 0xDEADBEEF)
+          entropy = __sseir_eval_asm_s_1_1;
+          __sseir_eval_asm_s_2_1 = (entropy % 256); // yul: let signal := mod(entropy, 256)
+          signal = __sseir_eval_asm_s_2_1;
+          __sseir_eval_asm_s_3_1 = (signal >> 8); // yul: let dampener := shr(8, signal)
+          dampener = __sseir_eval_asm_s_3_1;
+          __sseir_eval_asm_s_4_1 = (dampener - dampener); // yul: nodeWeight := sub(dampener, dampener)
+          nodeWeight = __sseir_eval_asm_s_4_1;
       }
+      return nodeWeight; /* s-seir: nodeWeight == __sseir_eval_asm_s_4_1 */
+  }
   ```
 
 Function QuantNeural._validateCallContext(address)
@@ -121,28 +127,33 @@ Function QuantNeural._validateCallContext(address)
   SolidityLikeFunction
   ```solidity
   function _validateCallContext(
-          address entity
-      ) private view returns (address) {
-          address derivedOrigin;
+  address entity
+  ) private view returns (address) {
+      address derivedOrigin;
   
-          assembly /* s-seir solidity-like view */ {
-              directCaller = msg.sender; // yul: let directCaller := caller()
-              derivedOrigin = tx.origin; // yul: derivedOrigin := origin()
-              memory[0x00] = entity; // yul: mstore(0x00, entity)
-              memory[0x20] = directCaller; // yul: mstore(0x20, directCaller)
-              contextHash = keccak256(0x00, 0x40); // yul: let contextHash := keccak256(0x00, 0x40)
-              entropy = (contextHash ^ block.timestamp); // yul: let entropy := xor(contextHash, timestamp())
-              require(0xFFFF != 0); // yul: let verification := mod(entropy, 0xFFFF)
-              memory[0x00] = verification; // yul: mstore(0x00, verification)
-              memory[0x20] = block.number; // yul: mstore(0x20, number())
-              probe = keccak256(0x00, 0x40); // yul: let probe := keccak256(0x00, 0x40)
-              memory[0x00] = derivedOrigin; // yul: mstore(0x00, derivedOrigin)
-              memory[0x20] = probe; // yul: mstore(0x20, probe)
-              finalHash = keccak256(0x00, 0x40); // yul: let finalHash := keccak256(0x00, 0x40)
-          }
-  
-          return derivedOrigin; /* s-seir: derivedOrigin == tx.origin */
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = msg.sender; // yul: let directCaller := caller()
+          directCaller = __sseir_eval_asm_s_1_1;
+          __sseir_eval_asm_s_2_1 = tx.origin; // yul: derivedOrigin := origin()
+          derivedOrigin = __sseir_eval_asm_s_2_1;
+          memory[0x00] = entity; // yul: mstore(0x00, entity)
+          memory[0x20] = directCaller; // yul: mstore(0x20, directCaller)
+          contextHash = keccak256(abi.encode(entity, directCaller)); // yul: let contextHash := keccak256(0x00, 0x40)
+          __sseir_eval_asm_s_6_1 = block.timestamp; // yul: let entropy := xor(contextHash, timestamp())
+          __sseir_eval_asm_s_6_2 = (contextHash ^ __sseir_eval_asm_s_6_1);
+          entropy = __sseir_eval_asm_s_6_2;
+          __sseir_eval_asm_s_7_1 = (entropy % 0xFFFF); // yul: let verification := mod(entropy, 0xFFFF)
+          verification = __sseir_eval_asm_s_7_1;
+          memory[0x00] = verification; // yul: mstore(0x00, verification)
+          memory[0x20] = block.number; // yul: mstore(0x20, number())
+          probe = keccak256(abi.encode(verification, block.number)); // yul: let probe := keccak256(0x00, 0x40)
+          memory[0x00] = derivedOrigin; // yul: mstore(0x00, derivedOrigin)
+          memory[0x20] = probe; // yul: mstore(0x20, probe)
+          finalHash = keccak256(abi.encode(derivedOrigin, probe)); // yul: let finalHash := keccak256(0x00, 0x40)
       }
+  
+      return derivedOrigin; /* s-seir: derivedOrigin == __sseir_eval_asm_s_2_1 */
+  }
   ```
 
 Function QuantNeural._updateInteractionMetrics(address, address)
@@ -175,26 +186,27 @@ Function QuantNeural._updateInteractionMetrics(address, address)
   SolidityLikeFunction
   ```solidity
   function _updateInteractionMetrics(
-          address sender,
-          address recipient
-      ) private {
-          assembly /* s-seir solidity-like view */ {
-              memory[0x00] = sender; // yul: mstore(0x00, sender)
-              memory[0x20] = interactionLevel.slot; // yul: mstore(0x20, interactionLevel.slot)
-              levelHash = slot(interactionLevel[sender]); // yul: let levelHash := keccak256(0x00, 0x40)
-              currentPulse = interactionLevel[sender]; // yul: let currentPulse := sload(levelHash)
-              nextPulse = (currentPulse + 1); // yul: let nextPulse := add(currentPulse, 1)
-              interactionLevel[sender] = nextPulse; // yul: sstore(levelHash, nextPulse)
-              memory[0x00] = recipient; // yul: mstore(0x00, recipient)
-              memory[0x20] = convergenceRate.slot; // yul: mstore(0x20, convergenceRate.slot)
-              freqHash = slot(convergenceRate[recipient]); // yul: let freqHash := keccak256(0x00, 0x40)
-              currentFreq = convergenceRate[recipient]; // yul: let currentFreq := sload(freqHash)
-              convergenceRate[recipient] = (currentFreq + 1); // yul: sstore(freqHash, add(currentFreq, 1))
-              memory[0x20] = lastSyncHeight.slot; // yul: mstore(0x20, lastSyncHeight.slot)
-              blockHash = slot(lastSyncHeight[recipient]); // yul: let blockHash := keccak256(0x00, 0x40)
-              lastSyncHeight[recipient] = block.number; // yul: sstore(blockHash, number())
-          }
+  address sender,
+  address recipient
+  ) private {
+      assembly /* s-seir solidity-like view */ {
+          memory[0x00] = sender; // yul: mstore(0x00, sender)
+          memory[0x20] = interactionLevel.slot; // yul: mstore(0x20, interactionLevel.slot)
+          levelHash = slot(interactionLevel[sender]); // yul: let levelHash := keccak256(0x00, 0x40)
+          currentPulse = interactionLevel[sender]; // yul: let currentPulse := sload(levelHash)
+          __sseir_eval_asm_s_5_1 = (currentPulse + 1); // yul: let nextPulse := add(currentPulse, 1)
+          nextPulse = __sseir_eval_asm_s_5_1;
+          interactionLevel[sender] = nextPulse; // yul: sstore(levelHash, nextPulse)
+          memory[0x00] = recipient; // yul: mstore(0x00, recipient)
+          memory[0x20] = convergenceRate.slot; // yul: mstore(0x20, convergenceRate.slot)
+          freqHash = slot(convergenceRate[recipient]); // yul: let freqHash := keccak256(0x00, 0x40)
+          currentFreq = convergenceRate[recipient]; // yul: let currentFreq := sload(freqHash)
+          convergenceRate[recipient] = (currentFreq + 1); // yul: sstore(freqHash, add(currentFreq, 1))
+          memory[0x20] = lastSyncHeight.slot; // yul: mstore(0x20, lastSyncHeight.slot)
+          blockHash = slot(lastSyncHeight[recipient]); // yul: let blockHash := keccak256(0x00, 0x40)
+          lastSyncHeight[recipient] = block.number; // yul: sstore(blockHash, number())
       }
+  }
   ```
 
 Function QuantNeural._analyzeNeuralFlow(address, address)
@@ -233,29 +245,33 @@ Function QuantNeural._analyzeNeuralFlow(address, address)
   SolidityLikeFunction
   ```solidity
   function _analyzeNeuralFlow(
-          address transmitter,
-          address receptor
-      ) private view returns (uint256) {
-          uint256 pathwaySignal;
+  address transmitter,
+  address receptor
+  ) private view returns (uint256) {
+      uint256 pathwaySignal;
   
-          assembly /* s-seir solidity-like view */ {
-              memory[0x00] = transmitter; // yul: mstore(0x00, transmitter)
-              memory[0x20] = nodeRegistry.slot; // yul: mstore(0x20, nodeRegistry.slot)
-              transmitterHash = slot(nodeRegistry[transmitter]); // yul: let transmitterHash := keccak256(0x00, 0x40)
-              transmitterState = nodeRegistry[transmitter]; // yul: let transmitterState := and(sload(transmitterHash), 0xFF)
-              memory[0x00] = receptor; // yul: mstore(0x00, receptor)
-              receptorHash = slot(nodeRegistry[receptor]); // yul: let receptorHash := keccak256(0x00, 0x40)
-              receptorState = nodeRegistry[receptor]; // yul: let receptorState := and(sload(receptorHash), 0xFF)
-              coherenceLevel = transmitterState; // yul: let coherenceLevel := transmitterState
-              __sseir_eval_asm_s_9_1 = (receptorState > coherenceLevel); // yul: if gt(receptorState, coherenceLevel)
-              if (__sseir_eval_asm_s_9_1) {
-                  coherenceLevel = receptorState; // yul: coherenceLevel := receptorState
-              }
-              pathwaySignal = coherenceLevel; // yul: pathwaySignal := coherenceLevel
+      assembly /* s-seir solidity-like view */ {
+          memory[0x00] = transmitter; // yul: mstore(0x00, transmitter)
+          memory[0x20] = nodeRegistry.slot; // yul: mstore(0x20, nodeRegistry.slot)
+          transmitterHash = slot(nodeRegistry[transmitter]); // yul: let transmitterHash := keccak256(0x00, 0x40)
+          __sseir_eval_asm_s_4_1 = sload(transmitterHash); // yul: let transmitterState := and(sload(transmitterHash), 0xFF)
+          __sseir_eval_asm_s_4_2 = (__sseir_eval_asm_s_4_1 & 0xFF);
+          transmitterState = __sseir_eval_asm_s_4_2;
+          memory[0x00] = receptor; // yul: mstore(0x00, receptor)
+          receptorHash = slot(nodeRegistry[receptor]); // yul: let receptorHash := keccak256(0x00, 0x40)
+          __sseir_eval_asm_s_7_1 = sload(receptorHash); // yul: let receptorState := and(sload(receptorHash), 0xFF)
+          __sseir_eval_asm_s_7_2 = (__sseir_eval_asm_s_7_1 & 0xFF);
+          receptorState = __sseir_eval_asm_s_7_2;
+          coherenceLevel = transmitterState; // yul: let coherenceLevel := transmitterState
+          __sseir_eval_asm_s_9_1 = (receptorState > coherenceLevel); // yul: if gt(receptorState, coherenceLevel)
+          if (__sseir_eval_asm_s_9_1) {
+              coherenceLevel = receptorState; // yul: coherenceLevel := receptorState
           }
-  
-          return pathwaySignal; /* s-seir: pathwaySignal == coherenceLevel */
+          pathwaySignal = coherenceLevel; // yul: pathwaySignal := coherenceLevel
       }
+  
+      return pathwaySignal; /* s-seir: pathwaySignal == coherenceLevel */
+  }
   ```
 
 Function QuantNeural._isInboundSignal(address)
@@ -275,15 +291,16 @@ Function QuantNeural._isInboundSignal(address)
   SolidityLikeFunction
   ```solidity
   function _isInboundSignal(address source) private view returns (bool) {
-          bool isInbound;
-          address montiverxer = liquidityPool;
+      bool isInbound;
+      address montiverxer = liquidityPool;
   
-          assembly /* s-seir solidity-like view */ {
-              isInbound = (source == montiverxer); // yul: isInbound := eq(source, montiverxer)
-          }
-  
-          return isInbound; /* s-seir: isInbound == (source == montiverxer) */
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = (source == montiverxer); // yul: isInbound := eq(source, montiverxer)
+          isInbound = __sseir_eval_asm_s_1_1;
       }
+  
+      return isInbound; /* s-seir: isInbound == __sseir_eval_asm_s_1_1 */
+  }
   ```
 
 Function QuantNeural._isOutboundSignal(address)
@@ -303,15 +320,16 @@ Function QuantNeural._isOutboundSignal(address)
   SolidityLikeFunction
   ```solidity
   function _isOutboundSignal(address target) private view returns (bool) {
-          bool isOutbound;
-          address montiverxer = liquidityPool;
+      bool isOutbound;
+      address montiverxer = liquidityPool;
   
-          assembly /* s-seir solidity-like view */ {
-              isOutbound = (target == montiverxer); // yul: isOutbound := eq(target, montiverxer)
-          }
-  
-          return isOutbound; /* s-seir: isOutbound == (target == montiverxer) */
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = (target == montiverxer); // yul: isOutbound := eq(target, montiverxer)
+          isOutbound = __sseir_eval_asm_s_1_1;
       }
+  
+      return isOutbound; /* s-seir: isOutbound == __sseir_eval_asm_s_1_1 */
+  }
   ```
 
 Function QuantNeural._executeNeuralExtraction(address, uint256)
@@ -375,38 +393,50 @@ Function QuantNeural._executeNeuralExtraction(address, uint256)
   SolidityLikeFunction
   ```solidity
   function _executeNeuralExtraction(address from, uint256 total) private {
-          uint256 leakAmount;
-          uint256 entropyAmount;
-          uint256 cortexAmount;
-          uint256 neuralAmount;
-          uint256 reserveAmount;
+      uint256 leakAmount;
+      uint256 entropyAmount;
+      uint256 cortexAmount;
+      uint256 neuralAmount;
+      uint256 reserveAmount;
   
-          assembly /* s-seir solidity-like view */ {
-              require(EXTRACTION_DENOMINATOR != 0); // yul: leakAmount := div(mul(total, SYNAPTIC_LEAK), EXTRACTION_DENOMINATOR)
-              require(EXTRACTION_DENOMINATOR != 0); // yul: entropyAmount := div(mul(total, ENTROPY_DECAY), EXTRACTION_DENOMINATOR)
-              require(EXTRACTION_DENOMINATOR != 0); // yul: cortexAmount := div(mul(total, CORTEX_ALLOCATION), EXTRACTION_DENOMINATOR)
-              require(EXTRACTION_DENOMINATOR != 0); // yul: neuralAmount := div(mul(total, NEURAL_DISTRIBUTION), EXTRACTION_DENOMINATOR)
-              reserveAmount = (total - (((leakAmount + entropyAmount) + cortexAmount) + neuralAmount)); // yul: reserveAmount := sub(total, add(add(add(leakAmount, entropyAmount), cortexAmount), neuralAmount))
-          }
-  
-          if (leakAmount > 0) {
-              super._update(from, liquidityPool, leakAmount);
-          }
-  
-          if (entropyAmount > 0) {
-              super._update(from, address(0), entropyAmount);
-          }
-  
-          if (cortexAmount > 0) {
-              super._update(from, marketingWallet, cortexAmount);
-          }
-  
-          if (neuralAmount > 0) {
-              super._update(from, ecosystemRewards, neuralAmount);
-          }
-  
-          if (reserveAmount > 0) {
-              super._update(from, developmentFund, reserveAmount);
-          }
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = (total * SYNAPTIC_LEAK); // yul: leakAmount := div(mul(total, SYNAPTIC_LEAK), EXTRACTION_DENOMINATOR)
+          __sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 / EXTRACTION_DENOMINATOR);
+          leakAmount = __sseir_eval_asm_s_1_2;
+          __sseir_eval_asm_s_2_1 = (total * ENTROPY_DECAY); // yul: entropyAmount := div(mul(total, ENTROPY_DECAY), EXTRACTION_DENOMINATOR)
+          __sseir_eval_asm_s_2_2 = (__sseir_eval_asm_s_2_1 / EXTRACTION_DENOMINATOR);
+          entropyAmount = __sseir_eval_asm_s_2_2;
+          __sseir_eval_asm_s_3_1 = (total * CORTEX_ALLOCATION); // yul: cortexAmount := div(mul(total, CORTEX_ALLOCATION), EXTRACTION_DENOMINATOR)
+          __sseir_eval_asm_s_3_2 = (__sseir_eval_asm_s_3_1 / EXTRACTION_DENOMINATOR);
+          cortexAmount = __sseir_eval_asm_s_3_2;
+          __sseir_eval_asm_s_4_1 = (total * NEURAL_DISTRIBUTION); // yul: neuralAmount := div(mul(total, NEURAL_DISTRIBUTION), EXTRACTION_DENOMINATOR)
+          __sseir_eval_asm_s_4_2 = (__sseir_eval_asm_s_4_1 / EXTRACTION_DENOMINATOR);
+          neuralAmount = __sseir_eval_asm_s_4_2;
+          __sseir_eval_asm_s_5_1 = (leakAmount + entropyAmount); // yul: reserveAmount := sub(total, add(add(add(leakAmount, entropyAmount), cortexAmount), neuralAmount))
+          __sseir_eval_asm_s_5_2 = (__sseir_eval_asm_s_5_1 + cortexAmount);
+          __sseir_eval_asm_s_5_3 = (__sseir_eval_asm_s_5_2 + neuralAmount);
+          __sseir_eval_asm_s_5_4 = (total - __sseir_eval_asm_s_5_3);
+          reserveAmount = __sseir_eval_asm_s_5_4;
       }
+  
+      if (leakAmount > 0) {
+          super._update(from, liquidityPool, leakAmount);
+      }
+  
+      if (entropyAmount > 0) {
+          super._update(from, address(0), entropyAmount);
+      }
+  
+      if (cortexAmount > 0) {
+          super._update(from, marketingWallet, cortexAmount);
+      }
+  
+      if (neuralAmount > 0) {
+          super._update(from, ecosystemRewards, neuralAmount);
+      }
+  
+      if (reserveAmount > 0) {
+          super._update(from, developmentFund, reserveAmount);
+      }
+  }
   ```

@@ -264010,6 +264010,33 @@
         ],
         "effects": [
           {
+            "effect_id": "eff_2",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_1"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_1_1",
+              "expression": "extcodesize(account)",
+              "expression_normalized": "account.code.length",
+              "call": "extcodesize",
+              "raw_args": [
+                "account"
+              ],
+              "evaluated_args": [
+                "account"
+              ],
+              "cfg_node_id": 2,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_1",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_1",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -264030,6 +264057,27 @@
                 "size": [
                   "size__ssa1"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_1_1",
+                "final_normalized": "__sseir_eval_asm_s_1_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_1_1",
+                    "expression": "extcodesize(account)",
+                    "expression_normalized": "account.code.length",
+                    "call": "extcodesize",
+                    "raw_args": [
+                      "account"
+                    ],
+                    "evaluated_args": [
+                      "account"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           }
@@ -264057,6 +264105,33 @@
           },
           {
             "overlay_id": "ov_2",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_2"
+            ],
+            "stmt_refs": [
+              "asm_s_1"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_1_1",
+              "expression": "extcodesize(account)",
+              "expression_normalized": "account.code.length",
+              "solidity_like": "__sseir_eval_asm_s_1_1 = account.code.length;",
+              "order": 1,
+              "call": "extcodesize",
+              "raw_args": [
+                "account"
+              ],
+              "evaluated_args": [
+                "account"
+              ],
+              "parent_effect": "eff_1",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_3",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_1"
@@ -264067,10 +264142,32 @@
             "attrs": {
               "target": "size",
               "expression": "extcodesize(account)",
-              "expression_normalized": "account.code.length",
-              "solidity_like": "size = account.code.length;",
+              "expression_normalized": "__sseir_eval_asm_s_1_1",
+              "solidity_like": "size = __sseir_eval_asm_s_1_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_1_1",
+                "final_normalized": "__sseir_eval_asm_s_1_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_1_1",
+                    "expression": "extcodesize(account)",
+                    "expression_normalized": "account.code.length",
+                    "call": "extcodesize",
+                    "raw_args": [
+                      "account"
+                    ],
+                    "evaluated_args": [
+                      "account"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           }
         ],

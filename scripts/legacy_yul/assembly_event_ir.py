@@ -21,6 +21,19 @@ from assembly_semantic_ir import build_report, parse_int_literal, strip_ssa
 from assembly_storage_ir import yul_expr_to_solidity
 
 
+try:
+    from eth_hash.auto import keccak as _eth_keccak
+except Exception:
+    _eth_keccak = None
+
+if _eth_keccak is None:
+    try:
+        from Crypto.Hash import keccak as _crypto_keccak
+    except Exception:
+        _crypto_keccak = None
+else:
+    _crypto_keccak = None
+
 
 MASK_64 = (1 << 64) - 1
 KECCAK_RC = [
@@ -68,7 +81,7 @@ def keccak_f1600(state: list[int]) -> None:
         state[0] ^= rc
 
 
-def keccak256(data: bytes) -> bytes:
+def _keccak256_fallback(data: bytes) -> bytes:
     rate = 136
     state = [0] * 25
     padded = bytearray(data)
@@ -92,6 +105,22 @@ def keccak256(data: bytes) -> bytes:
         if len(output) < 32:
             keccak_f1600(state)
     return bytes(output[:32])
+
+
+def keccak256(data: bytes) -> bytes:
+    """Ethereum Keccak-256, not NIST SHA3-256.
+
+    Prefer the audited library implementation when available. The local
+    fallback is retained only for standalone script use in minimal
+    environments.
+    """
+    if _eth_keccak is not None:
+        return bytes(_eth_keccak(data))
+    if _crypto_keccak is not None:
+        h = _crypto_keccak.new(digest_bits=256)
+        h.update(data)
+        return h.digest()
+    return _keccak256_fallback(data)
 
 
 EVENT_PARAM_QUALIFIERS = {"indexed", "memory", "calldata", "storage", "payable"}

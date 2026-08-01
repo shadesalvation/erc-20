@@ -2932,6 +2932,35 @@
             }
           },
           {
+            "effect_id": "eff_10",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_6"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_6_1",
+              "expression": "or(v2, v3)",
+              "expression_normalized": "(v2 | v3)",
+              "call": "or",
+              "raw_args": [
+                "v2",
+                "v3"
+              ],
+              "evaluated_args": [
+                "v2",
+                "v3"
+              ],
+              "cfg_node_id": 7,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_9",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_9",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -2952,6 +2981,29 @@
                 "iD_": [
                   "iD___ssa4"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_6_1",
+                "final_normalized": "__sseir_eval_asm_s_6_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_6_1",
+                    "expression": "or(v2, v3)",
+                    "expression_normalized": "(v2 | v3)",
+                    "call": "or",
+                    "raw_args": [
+                      "v2",
+                      "v3"
+                    ],
+                    "evaluated_args": [
+                      "v2",
+                      "v3"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           }
@@ -3182,7 +3234,9 @@
               "expression_normalized": "mload(0x40)",
               "solidity_like": "p = mload(0x40);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -3200,7 +3254,9 @@
               "expression_normalized": "staticcall(gasleft(), t_, p, 0x04, 0, 0)",
               "solidity_like": "v2 = staticcall(gasleft(), t_, p, 0x04, 0, 0);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -3218,11 +3274,42 @@
               "expression_normalized": "staticcall(gasleft(), t_, p, 0x04, 0, 0)",
               "solidity_like": "v3 = staticcall(gasleft(), t_, p, 0x04, 0, 0);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
             "overlay_id": "ov_6",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_10"
+            ],
+            "stmt_refs": [
+              "asm_s_6"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_6_1",
+              "expression": "or(v2, v3)",
+              "expression_normalized": "(v2 | v3)",
+              "solidity_like": "__sseir_eval_asm_s_6_1 = (v2 | v3);",
+              "order": 1,
+              "call": "or",
+              "raw_args": [
+                "v2",
+                "v3"
+              ],
+              "evaluated_args": [
+                "v2",
+                "v3"
+              ],
+              "parent_effect": "eff_9",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_7",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_9"
@@ -3233,10 +3320,34 @@
             "attrs": {
               "target": "iD_",
               "expression": "or(v2, v3)",
-              "expression_normalized": "(v2 | v3)",
-              "solidity_like": "iD_ = (v2 | v3);",
+              "expression_normalized": "__sseir_eval_asm_s_6_1",
+              "solidity_like": "iD_ = __sseir_eval_asm_s_6_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_6_1",
+                "final_normalized": "__sseir_eval_asm_s_6_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_6_1",
+                    "expression": "or(v2, v3)",
+                    "expression_normalized": "(v2 | v3)",
+                    "call": "or",
+                    "raw_args": [
+                      "v2",
+                      "v3"
+                    ],
+                    "evaluated_args": [
+                      "v2",
+                      "v3"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           }
         ],
@@ -4923,6 +5034,35 @@
         "expr_roles": [],
         "effects": [
           {
+            "effect_id": "eff_2",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_1"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_1_1",
+              "expression": "mul(i, i)",
+              "expression_normalized": "(i * i)",
+              "call": "mul",
+              "raw_args": [
+                "i",
+                "i"
+              ],
+              "evaluated_args": [
+                "i",
+                "i"
+              ],
+              "cfg_node_id": 2,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_1",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_1",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -4943,6 +5083,29 @@
                 "x": [
                   "x__ssa1"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_1_1",
+                "final_normalized": "__sseir_eval_asm_s_1_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_1_1",
+                    "expression": "mul(i, i)",
+                    "expression_normalized": "(i * i)",
+                    "call": "mul",
+                    "raw_args": [
+                      "i",
+                      "i"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "i"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           }
@@ -4950,6 +5113,35 @@
         "semantic_overlays": [
           {
             "overlay_id": "ov_1",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_2"
+            ],
+            "stmt_refs": [
+              "asm_s_1"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_1_1",
+              "expression": "mul(i, i)",
+              "expression_normalized": "(i * i)",
+              "solidity_like": "__sseir_eval_asm_s_1_1 = (i * i);",
+              "order": 1,
+              "call": "mul",
+              "raw_args": [
+                "i",
+                "i"
+              ],
+              "evaluated_args": [
+                "i",
+                "i"
+              ],
+              "parent_effect": "eff_1",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_2",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_1"
@@ -4960,10 +5152,34 @@
             "attrs": {
               "target": "x",
               "expression": "mul(i, i)",
-              "expression_normalized": "(i * i)",
-              "solidity_like": "x = (i * i);",
+              "expression_normalized": "__sseir_eval_asm_s_1_1",
+              "solidity_like": "x = __sseir_eval_asm_s_1_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_1_1",
+                "final_normalized": "__sseir_eval_asm_s_1_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_1_1",
+                    "expression": "mul(i, i)",
+                    "expression_normalized": "(i * i)",
+                    "call": "mul",
+                    "raw_args": [
+                      "i",
+                      "i"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "i"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           }
         ],

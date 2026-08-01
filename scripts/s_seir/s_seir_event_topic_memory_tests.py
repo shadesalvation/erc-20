@@ -10,7 +10,7 @@ for path in (ROOT / "legacy_yul", ROOT / "s_seir"):
     if text not in sys.path:
         sys.path.insert(0, text)
 
-from assembly_event_ir import EventDecl, EventParam
+from assembly_event_ir import EventDecl, EventParam, keccak256
 from s_seir_model import EffectNode
 from s_seir_overlay_builder import SemanticOverlayBuilder
 
@@ -127,11 +127,21 @@ def test_unmatched_topic_memory_keeps_expression() -> None:
     assert memory_reads == []
 
 
+def test_event_topic0_uses_ethereum_keccak256() -> None:
+    assert "0x" + keccak256(b"Transfer(address,address,uint256)").hex() == (
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+    )
+    assert "0x" + keccak256(b"Approval(address,address,uint256)").hex() == (
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
+    )
+
+
 if __name__ == "__main__":
     tests = [
         test_indexed_address_topic_from_packed_memory,
         test_indexed_address_topic_from_caller_memory,
         test_unmatched_topic_memory_keeps_expression,
+        test_event_topic0_uses_ethereum_keccak256,
     ]
     for test in tests:
         test()
