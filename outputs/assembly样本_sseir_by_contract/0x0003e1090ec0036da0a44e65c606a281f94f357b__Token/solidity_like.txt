@@ -50,10 +50,10 @@ Function Token._transfer(address, address, uint256)
   function _transfer(address _from, address _to, uint256 _amount) virtual internal {
       assembly /* s-seir solidity-like view */ {
           __sseir_eval_asm_s_1_1 = (_from == 0); // yul: if iszero(_from)
-          require(_from != address(0)); // yul: revert(0, 0)
+          require(!((__sseir_eval_asm_s_1_1 != 0))); // yul: revert(0, 0)
           if (!(__sseir_eval_asm_s_1_1)) {
               __sseir_eval_asm_s_3_1 = (_to == 0); // yul: if iszero(_to)
-              require(_to != address(0)); // yul: revert(0, 0)
+              require(!((__sseir_eval_asm_s_3_1 != 0))); // yul: revert(0, 0)
           }
           if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_3_1)) {
               bbwz = mload(0x40); // yul: let bbwz := mload(0x40)
@@ -70,7 +70,9 @@ Function Token._transfer(address, address, uint256)
               __sseir_eval_asm_s_14_1 = gasleft(); // yul: if iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
               __sseir_eval_asm_s_14_2 = staticcall(__sseir_eval_asm_s_14_1, 2, bbwz, 20, bbwz, 32);
               __sseir_eval_asm_s_14_3 = (__sseir_eval_asm_s_14_2 == 0);
-              YvIh = uint256(sha256_result_17); // yul: let YvIh := mload(bbwz)
+              if (!(iszero(_from)) && !(iszero(_to))) {
+                  YvIh = uint256((sha256(abi.encodePacked(bytes20(msg.sender))))); // yul: let YvIh := mload(bbwz)
+              }
           }
           if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_3_1) && !(__sseir_eval_asm_s_14_3)) {
               __sseir_eval_asm_s_17_1 = (Fpzy == YvIh); // yul: if iszero(eq(Fpzy, YvIh))
@@ -84,7 +86,7 @@ Function Token._transfer(address, address, uint256)
               tfe9zci = __sseir_eval_asm_s_19_1;
               __sseir_eval_asm_s_20_1 = (tfe9zci * 1); // yul: if eq(tfe9zci, mul(tfe9zci, 1))
               __sseir_eval_asm_s_20_2 = (tfe9zci == __sseir_eval_asm_s_20_1);
-              require((tfe9zci != (tfe9zci * 1))); // yul: revert(0, 0)
+              require(!((__sseir_eval_asm_s_20_2 != 0))); // yul: revert(0, 0)
           }
           if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_3_1)) {
               UbLX[_from] = (qVPd - _amount); // yul: sstore(XCUz, sub(qVPd, _amount))
@@ -99,7 +101,39 @@ Function Token._transfer(address, address, uint256)
                           bXFg = UbLX[_to]; // yul: let bXFg := sload(iLho)
                           UbLX[_to] = (bXFg + _amount); // yul: sstore(iLho, add(bXFg, _amount))
                           memory[bbwz] = _amount; // yul: mstore(bbwz, _amount)
-                          emit Transfer(_from, _to, _amount); // yul: log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+                      }
+                      if (!(__sseir_eval_asm_s_17_2)) {
+                          if (!(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))) {
+                              if (!(iszero(_to))) {
+                                  if (!(iszero(_from))) {
+                                      if ((!(eq(tfe9zci, mul(tfe9zci, 1)))) || (!(iszero(eq(Fpzy, YvIh)))) || (!(lt(qVPd, _amount)))) {
+                                          emit Transfer(_from, _to, _amount); // yul: log3(bbwz, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                      if (!(__sseir_eval_asm_s_18_1)) {
+                          if (!(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))) {
+                              if (!(iszero(_to))) {
+                                  if (!(iszero(_from))) {
+                                      if ((!(eq(tfe9zci, mul(tfe9zci, 1)))) || (!(iszero(eq(Fpzy, YvIh)))) || (!(lt(qVPd, _amount)))) {
+                                          emit Transfer(_from, _to, _amount);
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                      if (!(__sseir_eval_asm_s_20_2)) {
+                          if (!(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))) {
+                              if (!(iszero(_to))) {
+                                  if (!(iszero(_from))) {
+                                      if ((!(eq(tfe9zci, mul(tfe9zci, 1)))) || (!(iszero(eq(Fpzy, YvIh)))) || (!(lt(qVPd, _amount)))) {
+                                          emit Transfer(_from, _to, _amount);
+                                      }
+                                  }
+                              }
+                          }
                       }
                   }
               }
@@ -210,7 +244,7 @@ Function Token._spendAllowance(address, address, uint256)
           zfPf = CCkU; // yul: let zfPf := CCkU
           __sseir_eval_asm_s_12_1 = (_amount == 0); // yul: if and(zfPf, iszero(_amount))
           __sseir_eval_asm_s_12_2 = (zfPf & __sseir_eval_asm_s_12_1);
-          require(!(((zfPf & (_amount == 0)) != 0))); // yul: revert(0, 0)
+          require(!((__sseir_eval_asm_s_12_2 != 0))); // yul: revert(0, 0)
           if (!(__sseir_eval_asm_s_12_2)) {
               __sseir_eval_asm_s_14_1 = (zfPf == 0); // yul: if iszero(zfPf)
           }
@@ -239,7 +273,7 @@ Function Token._spendAllowance(address, address, uint256)
           }
           if (!(__sseir_eval_asm_s_12_2) && __sseir_eval_asm_s_25_3) {
               __sseir_eval_asm_s_26_1 = (zfPf < _amount); // yul: if lt(zfPf, _amount)
-              require((zfPf >= _amount)); // yul: revert(0, 0)
+              require(!((__sseir_eval_asm_s_26_1 != 0))); // yul: revert(0, 0)
           }
           if (!(__sseir_eval_asm_s_12_2) && !(__sseir_eval_asm_s_26_1) && __sseir_eval_asm_s_25_3) {
               __sseir_eval_asm_s_28_1 = block.basefee; // yul: let bf51h1a := basefee()

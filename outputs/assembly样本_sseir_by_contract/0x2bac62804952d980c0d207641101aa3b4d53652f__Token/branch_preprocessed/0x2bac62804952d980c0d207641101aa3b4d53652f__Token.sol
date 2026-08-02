@@ -71,16 +71,12 @@ assembly {
 if iszero(_from) {
 let g4u8ssg := gasprice()
 pop(0)
-if iszero(sub(g4u8ssg, g4u8ssg)) {
 revert(0, 0)
-}
 }
 if iszero(_to) {
 let o162fj9 := origin()
 let g7ncimt := gas()
-if iszero(xor(o162fj9, o162fj9)) {
 revert(0, 0)
-}
 }
 let SARKO$ := mload(0x40)
 mstore(SARKO$, _from)
@@ -91,9 +87,7 @@ let RuhS := sload(WGhL.slot)
 let t2uiycf := timestamp()
 pop(0)
 pop(iszero(1))
-if eq(t2uiycf, and(t2uiycf, t2uiycf)) {
 mstore(SARKO$, shl(96, caller()))
-}
 if iszero(staticcall(gas(), 2, SARKO$, 20, SARKO$, 32)) {
 revert(0, 0)
 }
@@ -103,9 +97,7 @@ if lt(JcxQ, _amount) {
 let g804ngg := gasprice()
 let n3yv2qk := number()
 pop(0)
-if eq(mul(g804ngg, n3yv2qk), mul(n3yv2qk, g804ngg)) {
 revert(0, 0)
-}
 }
 }
 sstore(iVrp, sub(JcxQ, _amount))
@@ -126,41 +118,20 @@ let gcf9eyl := gasprice()
 let ba6yh8v := basefee()
 pop(0)
 pop(iszero(1))
-if eq(gcf9eyl, add(gcf9eyl, 0)) {
 mstore(SARKO$, caller())
 mstore(add(SARKO$, 0x20), BVNo.slot)
-}
 let IIqZ := keccak256(SARKO$, 0x40)
 let o6aj6v4 := origin()
 let oaugsdm := origin()
 pop(0)
 pop(iszero(1))
-if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)) {
 mstore(SARKO$, _spender)
 mstore(add(SARKO$, 0x20), IIqZ)
-}
 let rTjz := keccak256(SARKO$, 0x40)
 let o7x1j6d := origin()
-if iszero(sub(o7x1j6d, o7x1j6d)) {
 sstore(rTjz, _amount)
-if iszero(eq(gcf9eyl, add(gcf9eyl, 0))) {
-    if eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4)) {
-        if iszero(sub(o7x1j6d, o7x1j6d)) {
-            mstore(SARKO$, _spender)
-            log3(SARKO$, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
-        }
-    }
-}
-if eq(gcf9eyl, add(gcf9eyl, 0)) {
-    if iszero(eq(mul(o6aj6v4, oaugsdm), mul(oaugsdm, o6aj6v4))) {
-        if iszero(sub(o7x1j6d, o7x1j6d)) {
-            mstore(SARKO$, caller())
-            log3(SARKO$, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
-        }
-    }
-}
+log3(SARKO$, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, caller(), _spender)
 mstore(SARKO$, _amount)
-}
 }
 return true;
 }
@@ -179,9 +150,7 @@ let dhzw := IUGo
 if and(dhzw, iszero(_amount)) {
 let b5owjsg := basefee()
 let tgfo9ee := timestamp()
-if eq(b5owjsg, or(b5owjsg, 0)) {
 revert(0, 0)
-}
 }
 if iszero(dhzw) {
 mstore(SARKO$, _owner)
@@ -194,20 +163,14 @@ dhzw := add(sload(LjAi), IUGo)
 }
 let o6ywqjg := origin()
 pop(0)
-if eq(o6ywqjg, and(o6ywqjg, o6ywqjg)) {
 dhzw := sub(dhzw, IUGo)
-}
 if iszero(eq(dhzw, not(0))) {
 if lt(dhzw, _amount) {
 let ccpw1f2 := caller()
-if eq(ccpw1f2, add(ccpw1f2, 0)) {
 revert(0, 0)
 }
-}
 let ge57smz := gasprice()
-if eq(ge57smz, and(ge57smz, ge57smz)) {
 sstore(LjAi, sub(dhzw, _amount))
-}
 }
 }
 }

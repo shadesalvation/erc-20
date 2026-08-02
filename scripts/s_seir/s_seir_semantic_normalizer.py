@@ -50,6 +50,8 @@ class SemanticNormalizer:
             key = (text_s, role, stmt_ref, norm_s)
             for r in out_roles:
                 if (r.text, r.role, r.stmt_ref, r.normalized) == key:
+                    if attrs:
+                        r.attrs.update(attrs)
                     return
             out_roles.append(ExpressionRole(f'expr_{next_expr}', text_s, norm_s, role, type_hint, stmt_ref, attrs or {}))
             next_expr += 1
@@ -57,11 +59,27 @@ class SemanticNormalizer:
         for e in effects:
             ref = e.stmt_refs[0] if e.stmt_refs else None
             if e.kind == 'MemoryHash':
-                add_role(e.attrs.get('ptr'), 'memory_slice_start', ref, e.attrs.get('ptr'), 'memory_ptr', {'effect': e.effect_id})
-                add_role(e.attrs.get('size'), 'memory_slice_size', ref, e.attrs.get('size'), 'uint256', {'effect': e.effect_id})
+                bytes_slice = getattr(type_env, 'dynamic_bytes_memory_slice', lambda *_args: None)(e.attrs.get('ptr'), e.attrs.get('size'))
+                ptr_normalized = bytes_slice.get('data_pointer_normalized') if bytes_slice else e.attrs.get('ptr')
+                size_normalized = bytes_slice.get('length_normalized') if bytes_slice else e.attrs.get('size')
+                add_role(e.attrs.get('ptr'), 'memory_slice_start', ref, ptr_normalized, 'memory_ptr', {'effect': e.effect_id})
+                add_role(e.attrs.get('size'), 'memory_slice_size', ref, size_normalized, 'uint256', {'effect': e.effect_id})
+                if bytes_slice:
+                    attrs = {'effect': e.effect_id, 'object': bytes_slice.get('object'), 'pattern': 'dynamic_bytes_memory_data_and_length'}
+                    add_role(e.attrs.get('ptr'), 'bytes_data_ptr', ref, ptr_normalized, 'memory_ptr', attrs)
+                    add_role(e.attrs.get('size'), 'bytes_length_value', ref, size_normalized, 'uint256', attrs)
             elif e.kind == 'MemoryRead':
                 add_role(e.attrs.get('read_from'), 'memory_slice_start', ref, e.attrs.get('read_from'), 'memory_ptr', {'effect': e.effect_id, 'semantic': 'memory_read'})
                 add_role(e.attrs.get('value'), 'memory_read_value', ref, e.attrs.get('value'), None, {'effect': e.effect_id, 'value_versions': e.attrs.get('value_versions')})
+                if self.is_free_memory_pointer_read(e.attrs.get('read_from')):
+                    add_role(
+                        f"mload({e.attrs.get('read_from')})",
+                        'free_memory_pointer',
+                        ref,
+                        'free_memory_pointer',
+                        'memory_ptr',
+                        {'effect': e.effect_id, 'memory_slot': '0x40', 'value': e.attrs.get('value')},
+                    )
             elif e.kind in {'StorageRead', 'StorageWrite'}:
                 add_role(e.attrs.get('slot'), 'storage_slot_expr', ref, e.attrs.get('slot'), 'storage_slot', {'effect': e.effect_id, 'slot_versions': e.attrs.get('slot_versions')})
                 if e.kind == 'StorageWrite':
@@ -111,7 +129,7 @@ class SemanticNormalizer:
                 add_role(o.attrs.get('topic0'), 'event_topic0', ref, o.attrs.get('topic0'), 'bytes32', {'overlay': o.overlay_id, 'event': o.attrs.get('event')})
                 for i, arg in enumerate(o.attrs.get('args') or []):
                     add_role(arg, 'abi_argument', ref, arg, None, {'overlay': o.overlay_id, 'event': o.attrs.get('event'), 'index': i})
-            elif o.kind in {'LowLevelCall', 'StaticCallOverlay', 'DelegateCallOverlay', 'PrecompileCall'}:
+            elif o.kind in {'LowLevelCall', 'StaticCallOverlay', 'DelegateCallOverlay', 'PrecompileCall', 'PathConditionedPrecompileCall'}:
                 add_role(o.attrs.get('target'), 'call_target', ref, o.attrs.get('target_solidity'), 'address', {'overlay': o.overlay_id})
                 if o.attrs.get('selector'):
                     add_role(o.attrs.get('selector'), 'abi_selector', ref, o.attrs.get('selector'), 'bytes4', {'overlay': o.overlay_id})
@@ -130,6 +148,10 @@ class SemanticNormalizer:
                     add_role(arg, 'abi_argument', ref, normalize_expr(arg), None, {'overlay': o.overlay_id, 'index': i})
             elif o.kind == 'RawRevertBytes':
                 add_role(o.attrs.get('payload'), 'revert_payload_ptr', ref, o.attrs.get('payload'), 'bytes', {'overlay': o.overlay_id})
+            elif o.kind == 'BytesContentHash':
+                add_role(o.attrs.get('data_pointer'), 'bytes_data_ptr', ref, o.attrs.get('data_pointer_normalized'), 'memory_ptr', {'overlay': o.overlay_id, 'object': o.attrs.get('object')})
+                add_role(o.attrs.get('length_expression'), 'bytes_length_value', ref, o.attrs.get('length_normalized'), 'uint256', {'overlay': o.overlay_id, 'object': o.attrs.get('object')})
+                add_role(o.attrs.get('hash_input'), 'hash_input', ref, o.attrs.get('hash_input'), o.attrs.get('object_type'), {'overlay': o.overlay_id, 'object': o.attrs.get('object')})
             elif o.kind == 'RawReturnData':
                 add_role(o.attrs.get('payload_ptr'), 'return_payload_ptr', ref, o.attrs.get('payload_ptr_normalized') or o.attrs.get('payload_ptr'), 'memory_ptr', {'overlay': o.overlay_id, 'encoding_hint': o.attrs.get('encoding_hint')})
                 add_role(o.attrs.get('payload_size'), 'return_payload_size', ref, o.attrs.get('payload_size_normalized') or o.attrs.get('payload_size'), 'uint256', {'overlay': o.overlay_id, 'encoding_hint': o.attrs.get('encoding_hint')})
@@ -171,7 +193,7 @@ class SemanticNormalizer:
                 add_role(o.attrs.get('address') or o.attrs.get('base'), 'memory_region_ptr', ref, o.attrs.get('address') or o.attrs.get('base'), 'memory_ptr', {'overlay': o.overlay_id, 'overlay_kind': o.kind})
                 add_role(o.attrs.get('value') or o.attrs.get('new_free_pointer'), 'memory_region_value', ref, o.attrs.get('value_normalized') or o.attrs.get('value') or o.attrs.get('new_free_pointer'), None, {'overlay': o.overlay_id, 'overlay_kind': o.kind})
 
-        facts.extend(self.branch_materialization_facts(effects))
+        facts.extend(self.branch_materialization_facts(effects, overlays, out_roles))
         facts.extend(self.unresolved_facts(overlays))
         return out_roles, effects, overlays, facts
 
@@ -184,25 +206,109 @@ class SemanticNormalizer:
                 max_seen = max(max_seen, int(m.group(1)))
         return max_seen + 1
 
-    @staticmethod
-    def branch_materialization_facts(effects: list[EffectNode]) -> list[dict[str, Any]]:
+    @classmethod
+    def branch_materialization_facts(
+        cls,
+        effects: list[EffectNode],
+        overlays: list[SemanticOverlay] | None = None,
+        roles: list[ExpressionRole] | None = None,
+    ) -> list[dict[str, Any]]:
         facts = []
+        overlays_by_effect: dict[str, list[SemanticOverlay]] = {}
+        for overlay in overlays or []:
+            for effect_id in overlay.effects:
+                overlays_by_effect.setdefault(effect_id, []).append(overlay)
+        roles_by_effect: dict[str, list[ExpressionRole]] = {}
+        for role in roles or []:
+            effect_id = role.attrs.get('effect')
+            if effect_id:
+                roles_by_effect.setdefault(str(effect_id), []).append(role)
         for e in effects:
             for key in ('memory_read', 'payload_memory', 'input_memory', 'data_memory'):
                 q = e.attrs.get(key)
-                if isinstance(q, dict) and (q.get('has_phi') or q.get('has_unknown') or q.get('loop_facts') or q.get('top_facts')):
+                if isinstance(q, dict) and (q.get('has_phi') or q.get('has_unknown') or q.get('empty_range') or q.get('loop_facts') or q.get('top_facts')):
+                    raw_unknown = bool(q.get('has_unknown', False))
+                    sink_status = cls.sink_resolution_status(e.attrs.get('sink_resolution'))
+                    resolving_overlays = cls.query_resolving_overlays(key, overlays_by_effect.get(e.effect_id, []))
+                    resolving_roles = cls.query_resolving_roles(key, roles_by_effect.get(e.effect_id, []))
+                    if q.get('complete') and not raw_unknown:
+                        final_status = 'resolved'
+                        resolved_by = 'memory_ssa'
+                    elif sink_status == 'resolved':
+                        final_status = 'resolved'
+                        resolved_by = 'sink_resolver'
+                    elif resolving_overlays:
+                        final_status = 'resolved'
+                        resolved_by = 'semantic_overlay_pattern'
+                    elif resolving_roles:
+                        final_status = 'resolved'
+                        resolved_by = 'expression_role'
+                    elif raw_unknown:
+                        final_status = 'unresolved'
+                        resolved_by = None
+                    else:
+                        final_status = 'resolved' if q.get('complete') else 'not_applicable'
+                        resolved_by = 'memory_ssa' if final_status == 'resolved' else None
                     facts.append({
                         'kind': 'SemanticSinkMemoryQuery',
                         'effect': e.effect_id,
                         'effect_kind': e.kind,
                         'query_field': key,
                         'has_phi': q.get('has_phi', False),
-                        'has_unknown': q.get('has_unknown', False),
+                        'has_unknown': raw_unknown and final_status != 'resolved',
+                        'memory_query_has_unknown': raw_unknown,
+                        'memory_query_complete': q.get('complete', False),
+                        'empty_range': q.get('empty_range', False),
+                        'final_status': final_status,
+                        'resolved_by': resolved_by,
+                        'resolution_overlays': [overlay.overlay_id for overlay in resolving_overlays],
+                        'resolution_roles': [role.expr_id for role in resolving_roles],
+                        'semantic_value': resolving_roles[0].normalized if resolving_roles else None,
                         'loop_facts': q.get('loop_facts', []),
                         'top_facts': q.get('top_facts', []),
                         'path_states': q.get('path_states', []),
                     })
         return facts
+
+    @staticmethod
+    def sink_resolution_status(resolution: Any) -> str | None:
+        if not isinstance(resolution, dict):
+            return None
+        paths = resolution.get('path_resolutions') or []
+        if not paths:
+            return None
+        statuses = {str(path.get('status') or 'resolved') for path in paths}
+        if statuses == {'resolved'}:
+            return 'resolved'
+        if 'resolved' in statuses:
+            return 'partially_resolved'
+        return 'unresolved'
+
+    @staticmethod
+    def query_resolving_overlays(query_field: str, overlays: list[SemanticOverlay]) -> list[SemanticOverlay]:
+        resolving_kinds = {
+            'input_memory': {'AbiCallDataConstruction', 'AbiEncodedLowLevelCall', 'PrecompileCall', 'PathConditionedPrecompileCall'},
+            'payload_memory': {'RequireOverlay', 'CustomErrorRevert', 'RawRevertBytes', 'PathConditionedCustomErrorRevert'},
+            'memory_read': {
+                'MappingSlot', 'MappingRead', 'MappingWrite', 'StateVariableRead', 'StateVariableWrite',
+                'StructFieldRead', 'MemoryArrayLengthRead', 'MemoryArrayElementRead',
+                'MemoryRegionAllocate', 'PrecompileOutputRead', 'PathConditionedPrecompileOutputRead',
+                'BytesContentHash',
+            },
+        }.get(query_field, set())
+        return [overlay for overlay in overlays if overlay.kind in resolving_kinds]
+
+    @staticmethod
+    def query_resolving_roles(query_field: str, roles: list[ExpressionRole]) -> list[ExpressionRole]:
+        resolving_kinds = {
+            'memory_read': {'free_memory_pointer'},
+        }.get(query_field, set())
+        return [role for role in roles if role.role in resolving_kinds]
+
+    @staticmethod
+    def is_free_memory_pointer_read(value: Any) -> bool:
+        text = str(value or '').strip().lower()
+        return text in {'0x40', '64'}
 
     @staticmethod
     def unresolved_facts(overlays: list[SemanticOverlay]) -> list[dict[str, Any]]:

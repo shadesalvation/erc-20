@@ -17,7 +17,7 @@
       "installed_dependencies": [
         {
           "dependency": "@openzeppelin/contracts",
-          "path": "/home/ubuntu/erc-20/outputs/sseir_deps/node_modules/@openzeppelin/contracts",
+          "path": "/home/ubuntu/erc-20/outputs/assembly样本_sseir_deps/node_modules/@openzeppelin/contracts",
           "action": "reused"
         }
       ],
@@ -603,6 +603,8 @@
             "function_level_cfg_from_slither",
             "assembly_subgraph_embedded_from_assembly_ast_cfg",
             "slither_assembly_nodes_replaced_by_local_yul_cfg",
+            "slither_compile_mode=normal",
+            "function_match_method=source_range",
             "slither_nodes=6",
             "assembly_blocks=1",
             "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors"
@@ -2343,6 +2345,8 @@
             "function_level_cfg_from_slither",
             "assembly_subgraph_embedded_from_assembly_ast_cfg",
             "slither_assembly_nodes_replaced_by_local_yul_cfg",
+            "slither_compile_mode=normal",
+            "function_match_method=source_range",
             "slither_nodes=16",
             "assembly_blocks=1",
             "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors"
@@ -2354,12 +2358,16 @@
         "expr_roles": [
           {
             "expr_id": "expr_1",
-            "text": "0x40",
-            "normalized": "0x40",
+            "text": "mload(0x40)",
+            "normalized": "free_memory_pointer",
             "role": "free_memory_pointer",
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_1",
-            "attrs": {}
+            "attrs": {
+              "memory_slot": "0x40",
+              "effect": "eff_4",
+              "value": "p"
+            }
           },
           {
             "expr_id": "expr_2",
@@ -2380,7 +2388,9 @@
             "type_hint": null,
             "stmt_ref": "asm_s_3",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_6",
+              "overlay": "ov_1"
             }
           },
           {
@@ -2391,7 +2401,8 @@
             "type_hint": null,
             "stmt_ref": "asm_s_3",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_6"
             }
           },
           {
@@ -2402,7 +2413,8 @@
             "type_hint": null,
             "stmt_ref": "asm_s_3",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_6"
             }
           },
           {
@@ -2413,7 +2425,8 @@
             "type_hint": null,
             "stmt_ref": "asm_s_3",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_6"
             }
           },
           {
@@ -2424,7 +2437,8 @@
             "type_hint": null,
             "stmt_ref": "asm_s_3",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_6"
             }
           },
           {
@@ -2446,7 +2460,9 @@
             "type_hint": null,
             "stmt_ref": "asm_s_5",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_8",
+              "overlay": "ov_2"
             }
           },
           {
@@ -2457,7 +2473,8 @@
             "type_hint": null,
             "stmt_ref": "asm_s_5",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_8"
             }
           },
           {
@@ -2468,7 +2485,8 @@
             "type_hint": null,
             "stmt_ref": "asm_s_5",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_8"
             }
           },
           {
@@ -2479,7 +2497,8 @@
             "type_hint": null,
             "stmt_ref": "asm_s_5",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_8"
             }
           },
           {
@@ -2490,7 +2509,8 @@
             "type_hint": null,
             "stmt_ref": "asm_s_5",
             "attrs": {
-              "call_kind": "staticcall"
+              "call_kind": "staticcall",
+              "effect": "eff_8"
             }
           },
           {
@@ -2729,8 +2749,10 @@
               "target": "t_",
               "input_ptr": "p",
               "input_size": "0x04",
+              "input_size_yul": "0x04",
               "output_ptr": "0",
               "output_size": "0",
+              "output_size_yul": "0",
               "input_memory": {
                 "query_kind": "MemoryReadResult",
                 "tracker_scope": "s_seir_memoryssa_query",
@@ -2753,39 +2775,21 @@
                     "offset": 0,
                     "offset_expr": "0",
                     "address_key": "p",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
-                    "value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                    "value": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                    "source": "byte_axis_memory_slice",
+                    "size": 4,
                     "memory_ssa": "mem_1",
-                    "definitions": [
-                      {
-                        "version": "mem_1",
-                        "node_id": 3,
-                        "address": "p",
-                        "value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
-                        "kind": "mstore",
-                        "origin_src": "13606:123:0",
-                        "aliases": [
-                          {
-                            "key": "p",
-                            "base": "p",
-                            "offset": 0,
-                            "expression": "p",
-                            "source": "identifier"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "p",
-                        "base": "p",
-                        "offset": 0,
-                        "expression": "p",
-                        "source": "identifier"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 3,
+                      "version": "mem_1",
+                      "address": null,
+                      "value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "constant",
+                      "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                    }
                   }
                 ],
                 "complete": true,
@@ -2793,16 +2797,298 @@
                 "has_phi": false,
                 "loop_facts": [],
                 "top_facts": [],
+                "byte_slice": {
+                  "query_kind": "MemoryByteSliceResult",
+                  "tracker_scope": "s_seir_memory_byte_axis",
+                  "node_id": 4,
+                  "reason": "staticcall_input",
+                  "pointer": "p",
+                  "length": "0x04",
+                  "address_aliases": [
+                    {
+                      "key": "p",
+                      "base": "p",
+                      "offset": 0,
+                      "expression": "p",
+                      "source": "identifier"
+                    }
+                  ],
+                  "size": 4,
+                  "complete": true,
+                  "has_overlap": false,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 4,
+                      "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                      "source_range": [
+                        0,
+                        4
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_1",
+                      "source_node_id": 3,
+                      "source_kind": "mstore",
+                      "origin_src": "13606:123:0",
+                      "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                      "known_value": {
+                        "known": true,
+                        "kind": "constant",
+                        "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                      },
+                      "overlap_count": 1
+                    }
+                  ],
+                  "path_slices": [
+                    {
+                      "path": "entry",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 4,
+                          "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                          "source_range": [
+                            0,
+                            4
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_1",
+                          "source_node_id": 3,
+                          "source_kind": "mstore",
+                          "origin_src": "13606:123:0",
+                          "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                          "known_value": {
+                            "known": true,
+                            "kind": "constant",
+                            "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "packed_semantics": [
+                    "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)"
+                  ]
+                },
                 "owner": "S-SEIR",
                 "assembly_block": 2,
                 "function_loop_context": [],
                 "loop_alignment": "function_level_solidity_loop_context_plus_yul_loop_memoryssa"
               },
-              "input_memory_partial": null,
+              "input_memory_partial": {
+                "query_kind": "PartialMemorySliceResult",
+                "reason": "staticcall_input_partial",
+                "pointer": "p",
+                "length": "0x04",
+                "size": 4,
+                "complete": true,
+                "slices": [
+                  {
+                    "query_offset": 0,
+                    "size": 4,
+                    "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                    "source_range": [
+                      0,
+                      4
+                    ],
+                    "source_offset": 0,
+                    "source_width": 32,
+                    "source_version": "mem_1",
+                    "source_node_id": 3,
+                    "source_kind": "mstore",
+                    "origin_src": "13606:123:0",
+                    "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                    "known_value": {
+                      "known": true,
+                      "kind": "constant",
+                      "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                    },
+                    "overlap_count": 1
+                  }
+                ],
+                "path_slices": [
+                  {
+                    "path": "entry",
+                    "complete": true,
+                    "slices": [
+                      {
+                        "query_offset": 0,
+                        "size": 4,
+                        "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                        "source_range": [
+                          0,
+                          4
+                        ],
+                        "source_offset": 0,
+                        "source_width": 32,
+                        "source_version": "mem_1",
+                        "source_node_id": 3,
+                        "source_kind": "mstore",
+                        "origin_src": "13606:123:0",
+                        "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                        "known_value": {
+                          "known": true,
+                          "kind": "constant",
+                          "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                        },
+                        "overlap_count": 1
+                      }
+                    ]
+                  }
+                ],
+                "abi_hint": {
+                  "kind": "selector",
+                  "selector": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                  "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                },
+                "byte_slice": {
+                  "query_kind": "MemoryByteSliceResult",
+                  "tracker_scope": "s_seir_memory_byte_axis",
+                  "node_id": 4,
+                  "reason": "staticcall_input_partial",
+                  "pointer": "p",
+                  "length": "0x04",
+                  "address_aliases": [
+                    {
+                      "key": "p",
+                      "base": "p",
+                      "offset": 0,
+                      "expression": "p",
+                      "source": "identifier"
+                    }
+                  ],
+                  "size": 4,
+                  "complete": true,
+                  "has_overlap": false,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 4,
+                      "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                      "source_range": [
+                        0,
+                        4
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_1",
+                      "source_node_id": 3,
+                      "source_kind": "mstore",
+                      "origin_src": "13606:123:0",
+                      "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                      "known_value": {
+                        "known": true,
+                        "kind": "constant",
+                        "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                      },
+                      "overlap_count": 1
+                    }
+                  ],
+                  "path_slices": [
+                    {
+                      "path": "entry",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 4,
+                          "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                          "source_range": [
+                            0,
+                            4
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_1",
+                          "source_node_id": 3,
+                          "source_kind": "mstore",
+                          "origin_src": "13606:123:0",
+                          "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                          "known_value": {
+                            "known": true,
+                            "kind": "constant",
+                            "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "packed_semantics": [
+                    "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)"
+                  ]
+                }
+              },
               "output_memory_query": {
                 "pointer": "0",
                 "length": "0",
                 "role": "staticcall_output_range"
+              },
+              "sink_resolution": {
+                "sink_id": "sink_asm_s_3_StaticCall_4",
+                "stmt_refs": [
+                  "asm_s_3"
+                ],
+                "cfg_node_id": 4,
+                "sink_kind": "StaticCall",
+                "args": [
+                  "p",
+                  "0x04"
+                ],
+                "path_sensitive": false,
+                "path_resolutions": [
+                  {
+                    "path_id": "path_0",
+                    "condition": null,
+                    "status": "resolved",
+                    "reason": null,
+                    "arg_resolutions": {
+                      "input": {
+                        "expr": "p:0x04",
+                        "normalized": "MemorySlice(high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4))",
+                        "ssa_key": null,
+                        "memory_slice": {
+                          "query_kind": "PathMemoryByteSlice",
+                          "path": "entry",
+                          "complete": true,
+                          "slices": [
+                            {
+                              "query_offset": 0,
+                              "size": 4,
+                              "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                              "source_range": [
+                                0,
+                                4
+                              ],
+                              "source_offset": 0,
+                              "source_width": 32,
+                              "source_version": "mem_1",
+                              "source_node_id": 3,
+                              "source_kind": "mstore",
+                              "origin_src": "13606:123:0",
+                              "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                              "known_value": {
+                                "known": true,
+                                "kind": "constant",
+                                "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                              },
+                              "overlap_count": 1
+                            }
+                          ]
+                        },
+                        "notes": [
+                          "staticcall_input",
+                          "byte_axis_memory_slice",
+                          "path_sensitive_sink"
+                        ]
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2854,8 +3140,10 @@
               "target": "t_",
               "input_ptr": "p",
               "input_size": "0x04",
+              "input_size_yul": "0x04",
               "output_ptr": "0",
               "output_size": "0",
+              "output_size_yul": "0",
               "input_memory": {
                 "query_kind": "MemoryReadResult",
                 "tracker_scope": "s_seir_memoryssa_query",
@@ -2878,39 +3166,21 @@
                     "offset": 0,
                     "offset_expr": "0",
                     "address_key": "p",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
-                    "value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                    "value": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                    "source": "byte_axis_memory_slice",
+                    "size": 4,
                     "memory_ssa": "mem_2",
-                    "definitions": [
-                      {
-                        "version": "mem_2",
-                        "node_id": 5,
-                        "address": "p",
-                        "value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
-                        "kind": "mstore",
-                        "origin_src": "13802:123:0",
-                        "aliases": [
-                          {
-                            "key": "p",
-                            "base": "p",
-                            "offset": 0,
-                            "expression": "p",
-                            "source": "identifier"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "p",
-                        "base": "p",
-                        "offset": 0,
-                        "expression": "p",
-                        "source": "identifier"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 5,
+                      "version": "mem_2",
+                      "address": null,
+                      "value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "constant",
+                      "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                    }
                   }
                 ],
                 "complete": true,
@@ -2918,17 +3188,328 @@
                 "has_phi": false,
                 "loop_facts": [],
                 "top_facts": [],
+                "byte_slice": {
+                  "query_kind": "MemoryByteSliceResult",
+                  "tracker_scope": "s_seir_memory_byte_axis",
+                  "node_id": 6,
+                  "reason": "staticcall_input",
+                  "pointer": "p",
+                  "length": "0x04",
+                  "address_aliases": [
+                    {
+                      "key": "p",
+                      "base": "p",
+                      "offset": 0,
+                      "expression": "p",
+                      "source": "identifier"
+                    }
+                  ],
+                  "size": 4,
+                  "complete": true,
+                  "has_overlap": false,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 4,
+                      "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                      "source_range": [
+                        0,
+                        4
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_2",
+                      "source_node_id": 5,
+                      "source_kind": "mstore",
+                      "origin_src": "13802:123:0",
+                      "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                      "known_value": {
+                        "known": true,
+                        "kind": "constant",
+                        "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                      },
+                      "overlap_count": 1
+                    }
+                  ],
+                  "path_slices": [
+                    {
+                      "path": "entry",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 4,
+                          "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                          "source_range": [
+                            0,
+                            4
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_2",
+                          "source_node_id": 5,
+                          "source_kind": "mstore",
+                          "origin_src": "13802:123:0",
+                          "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                          "known_value": {
+                            "known": true,
+                            "kind": "constant",
+                            "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "packed_semantics": [
+                    "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)"
+                  ]
+                },
                 "owner": "S-SEIR",
                 "assembly_block": 2,
                 "function_loop_context": [],
                 "loop_alignment": "function_level_solidity_loop_context_plus_yul_loop_memoryssa"
               },
-              "input_memory_partial": null,
+              "input_memory_partial": {
+                "query_kind": "PartialMemorySliceResult",
+                "reason": "staticcall_input_partial",
+                "pointer": "p",
+                "length": "0x04",
+                "size": 4,
+                "complete": true,
+                "slices": [
+                  {
+                    "query_offset": 0,
+                    "size": 4,
+                    "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                    "source_range": [
+                      0,
+                      4
+                    ],
+                    "source_offset": 0,
+                    "source_width": 32,
+                    "source_version": "mem_2",
+                    "source_node_id": 5,
+                    "source_kind": "mstore",
+                    "origin_src": "13802:123:0",
+                    "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                    "known_value": {
+                      "known": true,
+                      "kind": "constant",
+                      "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                    },
+                    "overlap_count": 1
+                  }
+                ],
+                "path_slices": [
+                  {
+                    "path": "entry",
+                    "complete": true,
+                    "slices": [
+                      {
+                        "query_offset": 0,
+                        "size": 4,
+                        "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                        "source_range": [
+                          0,
+                          4
+                        ],
+                        "source_offset": 0,
+                        "source_width": 32,
+                        "source_version": "mem_2",
+                        "source_node_id": 5,
+                        "source_kind": "mstore",
+                        "origin_src": "13802:123:0",
+                        "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                        "known_value": {
+                          "known": true,
+                          "kind": "constant",
+                          "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                        },
+                        "overlap_count": 1
+                      }
+                    ]
+                  }
+                ],
+                "abi_hint": {
+                  "kind": "selector",
+                  "selector": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                  "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                },
+                "byte_slice": {
+                  "query_kind": "MemoryByteSliceResult",
+                  "tracker_scope": "s_seir_memory_byte_axis",
+                  "node_id": 6,
+                  "reason": "staticcall_input_partial",
+                  "pointer": "p",
+                  "length": "0x04",
+                  "address_aliases": [
+                    {
+                      "key": "p",
+                      "base": "p",
+                      "offset": 0,
+                      "expression": "p",
+                      "source": "identifier"
+                    }
+                  ],
+                  "size": 4,
+                  "complete": true,
+                  "has_overlap": false,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 4,
+                      "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                      "source_range": [
+                        0,
+                        4
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_2",
+                      "source_node_id": 5,
+                      "source_kind": "mstore",
+                      "origin_src": "13802:123:0",
+                      "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                      "known_value": {
+                        "known": true,
+                        "kind": "constant",
+                        "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                      },
+                      "overlap_count": 1
+                    }
+                  ],
+                  "path_slices": [
+                    {
+                      "path": "entry",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 4,
+                          "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                          "source_range": [
+                            0,
+                            4
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_2",
+                          "source_node_id": 5,
+                          "source_kind": "mstore",
+                          "origin_src": "13802:123:0",
+                          "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                          "known_value": {
+                            "known": true,
+                            "kind": "constant",
+                            "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "packed_semantics": [
+                    "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)"
+                  ]
+                }
+              },
               "output_memory_query": {
                 "pointer": "0",
                 "length": "0",
                 "role": "staticcall_output_range"
+              },
+              "sink_resolution": {
+                "sink_id": "sink_asm_s_5_StaticCall_6",
+                "stmt_refs": [
+                  "asm_s_5"
+                ],
+                "cfg_node_id": 6,
+                "sink_kind": "StaticCall",
+                "args": [
+                  "p",
+                  "0x04"
+                ],
+                "path_sensitive": false,
+                "path_resolutions": [
+                  {
+                    "path_id": "path_0",
+                    "condition": null,
+                    "status": "resolved",
+                    "reason": null,
+                    "arg_resolutions": {
+                      "input": {
+                        "expr": "p:0x04",
+                        "normalized": "MemorySlice(high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4))",
+                        "ssa_key": null,
+                        "memory_slice": {
+                          "query_kind": "PathMemoryByteSlice",
+                          "path": "entry",
+                          "complete": true,
+                          "slices": [
+                            {
+                              "query_offset": 0,
+                              "size": 4,
+                              "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                              "source_range": [
+                                0,
+                                4
+                              ],
+                              "source_offset": 0,
+                              "source_width": 32,
+                              "source_version": "mem_2",
+                              "source_node_id": 5,
+                              "source_kind": "mstore",
+                              "origin_src": "13802:123:0",
+                              "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                              "known_value": {
+                                "known": true,
+                                "kind": "constant",
+                                "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                              },
+                              "overlap_count": 1
+                            }
+                          ]
+                        },
+                        "notes": [
+                          "staticcall_input",
+                          "byte_axis_memory_slice",
+                          "path_sensitive_sink"
+                        ]
+                      }
+                    }
+                  }
+                ]
               }
+            }
+          },
+          {
+            "effect_id": "eff_10",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_6"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_6_1",
+              "expression": "or(v2, v3)",
+              "expression_normalized": "(v2 | v3)",
+              "call": "or",
+              "raw_args": [
+                "v2",
+                "v3"
+              ],
+              "evaluated_args": [
+                "v2",
+                "v3"
+              ],
+              "cfg_node_id": 7,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_9",
+              "evaluation_context": "value"
             }
           },
           {
@@ -2952,6 +3533,29 @@
                 "iD_": [
                   "iD___ssa4"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_6_1",
+                "final_normalized": "__sseir_eval_asm_s_6_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_6_1",
+                    "expression": "or(v2, v3)",
+                    "expression_normalized": "(v2 | v3)",
+                    "call": "or",
+                    "raw_args": [
+                      "v2",
+                      "v3"
+                    ],
+                    "evaluated_args": [
+                      "v2",
+                      "v3"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           }
@@ -2984,8 +3588,10 @@
               "target": "t_",
               "input_ptr": "p",
               "input_size": "0x04",
+              "input_size_yul": "0x04",
               "output_ptr": "0",
               "output_size": "0",
+              "output_size_yul": "0",
               "input_memory": {
                 "query_kind": "MemoryReadResult",
                 "tracker_scope": "s_seir_memoryssa_query",
@@ -3008,39 +3614,21 @@
                     "offset": 0,
                     "offset_expr": "0",
                     "address_key": "p",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
-                    "value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                    "value": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                    "source": "byte_axis_memory_slice",
+                    "size": 4,
                     "memory_ssa": "mem_1",
-                    "definitions": [
-                      {
-                        "version": "mem_1",
-                        "node_id": 3,
-                        "address": "p",
-                        "value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
-                        "kind": "mstore",
-                        "origin_src": "13606:123:0",
-                        "aliases": [
-                          {
-                            "key": "p",
-                            "base": "p",
-                            "offset": 0,
-                            "expression": "p",
-                            "source": "identifier"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "p",
-                        "base": "p",
-                        "offset": 0,
-                        "expression": "p",
-                        "source": "identifier"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 3,
+                      "version": "mem_1",
+                      "address": null,
+                      "value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "constant",
+                      "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                    }
                   }
                 ],
                 "complete": true,
@@ -3048,16 +3636,298 @@
                 "has_phi": false,
                 "loop_facts": [],
                 "top_facts": [],
+                "byte_slice": {
+                  "query_kind": "MemoryByteSliceResult",
+                  "tracker_scope": "s_seir_memory_byte_axis",
+                  "node_id": 4,
+                  "reason": "staticcall_input",
+                  "pointer": "p",
+                  "length": "0x04",
+                  "address_aliases": [
+                    {
+                      "key": "p",
+                      "base": "p",
+                      "offset": 0,
+                      "expression": "p",
+                      "source": "identifier"
+                    }
+                  ],
+                  "size": 4,
+                  "complete": true,
+                  "has_overlap": false,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 4,
+                      "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                      "source_range": [
+                        0,
+                        4
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_1",
+                      "source_node_id": 3,
+                      "source_kind": "mstore",
+                      "origin_src": "13606:123:0",
+                      "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                      "known_value": {
+                        "known": true,
+                        "kind": "constant",
+                        "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                      },
+                      "overlap_count": 1
+                    }
+                  ],
+                  "path_slices": [
+                    {
+                      "path": "entry",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 4,
+                          "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                          "source_range": [
+                            0,
+                            4
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_1",
+                          "source_node_id": 3,
+                          "source_kind": "mstore",
+                          "origin_src": "13606:123:0",
+                          "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                          "known_value": {
+                            "known": true,
+                            "kind": "constant",
+                            "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "packed_semantics": [
+                    "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)"
+                  ]
+                },
                 "owner": "S-SEIR",
                 "assembly_block": 2,
                 "function_loop_context": [],
                 "loop_alignment": "function_level_solidity_loop_context_plus_yul_loop_memoryssa"
               },
-              "input_memory_partial": null,
+              "input_memory_partial": {
+                "query_kind": "PartialMemorySliceResult",
+                "reason": "staticcall_input_partial",
+                "pointer": "p",
+                "length": "0x04",
+                "size": 4,
+                "complete": true,
+                "slices": [
+                  {
+                    "query_offset": 0,
+                    "size": 4,
+                    "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                    "source_range": [
+                      0,
+                      4
+                    ],
+                    "source_offset": 0,
+                    "source_width": 32,
+                    "source_version": "mem_1",
+                    "source_node_id": 3,
+                    "source_kind": "mstore",
+                    "origin_src": "13606:123:0",
+                    "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                    "known_value": {
+                      "known": true,
+                      "kind": "constant",
+                      "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                    },
+                    "overlap_count": 1
+                  }
+                ],
+                "path_slices": [
+                  {
+                    "path": "entry",
+                    "complete": true,
+                    "slices": [
+                      {
+                        "query_offset": 0,
+                        "size": 4,
+                        "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                        "source_range": [
+                          0,
+                          4
+                        ],
+                        "source_offset": 0,
+                        "source_width": 32,
+                        "source_version": "mem_1",
+                        "source_node_id": 3,
+                        "source_kind": "mstore",
+                        "origin_src": "13606:123:0",
+                        "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                        "known_value": {
+                          "known": true,
+                          "kind": "constant",
+                          "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                        },
+                        "overlap_count": 1
+                      }
+                    ]
+                  }
+                ],
+                "abi_hint": {
+                  "kind": "selector",
+                  "selector": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                  "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                },
+                "byte_slice": {
+                  "query_kind": "MemoryByteSliceResult",
+                  "tracker_scope": "s_seir_memory_byte_axis",
+                  "node_id": 4,
+                  "reason": "staticcall_input_partial",
+                  "pointer": "p",
+                  "length": "0x04",
+                  "address_aliases": [
+                    {
+                      "key": "p",
+                      "base": "p",
+                      "offset": 0,
+                      "expression": "p",
+                      "source": "identifier"
+                    }
+                  ],
+                  "size": 4,
+                  "complete": true,
+                  "has_overlap": false,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 4,
+                      "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                      "source_range": [
+                        0,
+                        4
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_1",
+                      "source_node_id": 3,
+                      "source_kind": "mstore",
+                      "origin_src": "13606:123:0",
+                      "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                      "known_value": {
+                        "known": true,
+                        "kind": "constant",
+                        "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                      },
+                      "overlap_count": 1
+                    }
+                  ],
+                  "path_slices": [
+                    {
+                      "path": "entry",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 4,
+                          "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                          "source_range": [
+                            0,
+                            4
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_1",
+                          "source_node_id": 3,
+                          "source_kind": "mstore",
+                          "origin_src": "13606:123:0",
+                          "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                          "known_value": {
+                            "known": true,
+                            "kind": "constant",
+                            "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "packed_semantics": [
+                    "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)"
+                  ]
+                }
+              },
               "output_memory_query": {
                 "pointer": "0",
                 "length": "0",
                 "role": "staticcall_output_range"
+              },
+              "sink_resolution": {
+                "sink_id": "sink_asm_s_3_StaticCall_4",
+                "stmt_refs": [
+                  "asm_s_3"
+                ],
+                "cfg_node_id": 4,
+                "sink_kind": "StaticCall",
+                "args": [
+                  "p",
+                  "0x04"
+                ],
+                "path_sensitive": false,
+                "path_resolutions": [
+                  {
+                    "path_id": "path_0",
+                    "condition": null,
+                    "status": "resolved",
+                    "reason": null,
+                    "arg_resolutions": {
+                      "input": {
+                        "expr": "p:0x04",
+                        "normalized": "MemorySlice(high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4))",
+                        "ssa_key": null,
+                        "memory_slice": {
+                          "query_kind": "PathMemoryByteSlice",
+                          "path": "entry",
+                          "complete": true,
+                          "slices": [
+                            {
+                              "query_offset": 0,
+                              "size": 4,
+                              "source_value": "0x0902f1ac00000000000000000000000000000000000000000000000000000000",
+                              "source_range": [
+                                0,
+                                4
+                              ],
+                              "source_offset": 0,
+                              "source_width": 32,
+                              "source_version": "mem_1",
+                              "source_node_id": 3,
+                              "source_kind": "mstore",
+                              "origin_src": "13606:123:0",
+                              "extraction": "high_bytes(0x0902f1ac00000000000000000000000000000000000000000000000000000000, 4)",
+                              "known_value": {
+                                "known": true,
+                                "kind": "constant",
+                                "expr": "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
+                              },
+                              "overlap_count": 1
+                            }
+                          ]
+                        },
+                        "notes": [
+                          "staticcall_input",
+                          "byte_axis_memory_slice",
+                          "path_sensitive_sink"
+                        ]
+                      }
+                    }
+                  }
+                ]
               },
               "target_solidity": "t_"
             }
@@ -3089,8 +3959,10 @@
               "target": "t_",
               "input_ptr": "p",
               "input_size": "0x04",
+              "input_size_yul": "0x04",
               "output_ptr": "0",
               "output_size": "0",
+              "output_size_yul": "0",
               "input_memory": {
                 "query_kind": "MemoryReadResult",
                 "tracker_scope": "s_seir_memoryssa_query",
@@ -3113,39 +3985,21 @@
                     "offset": 0,
                     "offset_expr": "0",
                     "address_key": "p",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
-                    "value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                    "value": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                    "source": "byte_axis_memory_slice",
+                    "size": 4,
                     "memory_ssa": "mem_2",
-                    "definitions": [
-                      {
-                        "version": "mem_2",
-                        "node_id": 5,
-                        "address": "p",
-                        "value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
-                        "kind": "mstore",
-                        "origin_src": "13802:123:0",
-                        "aliases": [
-                          {
-                            "key": "p",
-                            "base": "p",
-                            "offset": 0,
-                            "expression": "p",
-                            "source": "identifier"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "p",
-                        "base": "p",
-                        "offset": 0,
-                        "expression": "p",
-                        "source": "identifier"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 5,
+                      "version": "mem_2",
+                      "address": null,
+                      "value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "constant",
+                      "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                    }
                   }
                 ],
                 "complete": true,
@@ -3153,16 +4007,298 @@
                 "has_phi": false,
                 "loop_facts": [],
                 "top_facts": [],
+                "byte_slice": {
+                  "query_kind": "MemoryByteSliceResult",
+                  "tracker_scope": "s_seir_memory_byte_axis",
+                  "node_id": 6,
+                  "reason": "staticcall_input",
+                  "pointer": "p",
+                  "length": "0x04",
+                  "address_aliases": [
+                    {
+                      "key": "p",
+                      "base": "p",
+                      "offset": 0,
+                      "expression": "p",
+                      "source": "identifier"
+                    }
+                  ],
+                  "size": 4,
+                  "complete": true,
+                  "has_overlap": false,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 4,
+                      "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                      "source_range": [
+                        0,
+                        4
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_2",
+                      "source_node_id": 5,
+                      "source_kind": "mstore",
+                      "origin_src": "13802:123:0",
+                      "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                      "known_value": {
+                        "known": true,
+                        "kind": "constant",
+                        "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                      },
+                      "overlap_count": 1
+                    }
+                  ],
+                  "path_slices": [
+                    {
+                      "path": "entry",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 4,
+                          "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                          "source_range": [
+                            0,
+                            4
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_2",
+                          "source_node_id": 5,
+                          "source_kind": "mstore",
+                          "origin_src": "13802:123:0",
+                          "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                          "known_value": {
+                            "known": true,
+                            "kind": "constant",
+                            "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "packed_semantics": [
+                    "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)"
+                  ]
+                },
                 "owner": "S-SEIR",
                 "assembly_block": 2,
                 "function_loop_context": [],
                 "loop_alignment": "function_level_solidity_loop_context_plus_yul_loop_memoryssa"
               },
-              "input_memory_partial": null,
+              "input_memory_partial": {
+                "query_kind": "PartialMemorySliceResult",
+                "reason": "staticcall_input_partial",
+                "pointer": "p",
+                "length": "0x04",
+                "size": 4,
+                "complete": true,
+                "slices": [
+                  {
+                    "query_offset": 0,
+                    "size": 4,
+                    "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                    "source_range": [
+                      0,
+                      4
+                    ],
+                    "source_offset": 0,
+                    "source_width": 32,
+                    "source_version": "mem_2",
+                    "source_node_id": 5,
+                    "source_kind": "mstore",
+                    "origin_src": "13802:123:0",
+                    "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                    "known_value": {
+                      "known": true,
+                      "kind": "constant",
+                      "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                    },
+                    "overlap_count": 1
+                  }
+                ],
+                "path_slices": [
+                  {
+                    "path": "entry",
+                    "complete": true,
+                    "slices": [
+                      {
+                        "query_offset": 0,
+                        "size": 4,
+                        "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                        "source_range": [
+                          0,
+                          4
+                        ],
+                        "source_offset": 0,
+                        "source_width": 32,
+                        "source_version": "mem_2",
+                        "source_node_id": 5,
+                        "source_kind": "mstore",
+                        "origin_src": "13802:123:0",
+                        "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                        "known_value": {
+                          "known": true,
+                          "kind": "constant",
+                          "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                        },
+                        "overlap_count": 1
+                      }
+                    ]
+                  }
+                ],
+                "abi_hint": {
+                  "kind": "selector",
+                  "selector": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                  "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                },
+                "byte_slice": {
+                  "query_kind": "MemoryByteSliceResult",
+                  "tracker_scope": "s_seir_memory_byte_axis",
+                  "node_id": 6,
+                  "reason": "staticcall_input_partial",
+                  "pointer": "p",
+                  "length": "0x04",
+                  "address_aliases": [
+                    {
+                      "key": "p",
+                      "base": "p",
+                      "offset": 0,
+                      "expression": "p",
+                      "source": "identifier"
+                    }
+                  ],
+                  "size": 4,
+                  "complete": true,
+                  "has_overlap": false,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 4,
+                      "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                      "source_range": [
+                        0,
+                        4
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_2",
+                      "source_node_id": 5,
+                      "source_kind": "mstore",
+                      "origin_src": "13802:123:0",
+                      "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                      "known_value": {
+                        "known": true,
+                        "kind": "constant",
+                        "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                      },
+                      "overlap_count": 1
+                    }
+                  ],
+                  "path_slices": [
+                    {
+                      "path": "entry",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 4,
+                          "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                          "source_range": [
+                            0,
+                            4
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_2",
+                          "source_node_id": 5,
+                          "source_kind": "mstore",
+                          "origin_src": "13802:123:0",
+                          "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                          "known_value": {
+                            "known": true,
+                            "kind": "constant",
+                            "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "packed_semantics": [
+                    "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)"
+                  ]
+                }
+              },
               "output_memory_query": {
                 "pointer": "0",
                 "length": "0",
                 "role": "staticcall_output_range"
+              },
+              "sink_resolution": {
+                "sink_id": "sink_asm_s_5_StaticCall_6",
+                "stmt_refs": [
+                  "asm_s_5"
+                ],
+                "cfg_node_id": 6,
+                "sink_kind": "StaticCall",
+                "args": [
+                  "p",
+                  "0x04"
+                ],
+                "path_sensitive": false,
+                "path_resolutions": [
+                  {
+                    "path_id": "path_0",
+                    "condition": null,
+                    "status": "resolved",
+                    "reason": null,
+                    "arg_resolutions": {
+                      "input": {
+                        "expr": "p:0x04",
+                        "normalized": "MemorySlice(high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4))",
+                        "ssa_key": null,
+                        "memory_slice": {
+                          "query_kind": "PathMemoryByteSlice",
+                          "path": "entry",
+                          "complete": true,
+                          "slices": [
+                            {
+                              "query_offset": 0,
+                              "size": 4,
+                              "source_value": "0x3850c7bd00000000000000000000000000000000000000000000000000000000",
+                              "source_range": [
+                                0,
+                                4
+                              ],
+                              "source_offset": 0,
+                              "source_width": 32,
+                              "source_version": "mem_2",
+                              "source_node_id": 5,
+                              "source_kind": "mstore",
+                              "origin_src": "13802:123:0",
+                              "extraction": "high_bytes(0x3850c7bd00000000000000000000000000000000000000000000000000000000, 4)",
+                              "known_value": {
+                                "known": true,
+                                "kind": "constant",
+                                "expr": "0x3850c7bd00000000000000000000000000000000000000000000000000000000"
+                              },
+                              "overlap_count": 1
+                            }
+                          ]
+                        },
+                        "notes": [
+                          "staticcall_input",
+                          "byte_axis_memory_slice",
+                          "path_sensitive_sink"
+                        ]
+                      }
+                    }
+                  }
+                ]
               },
               "target_solidity": "t_"
             }
@@ -3182,7 +4318,9 @@
               "expression_normalized": "mload(0x40)",
               "solidity_like": "p = mload(0x40);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -3200,7 +4338,9 @@
               "expression_normalized": "staticcall(gasleft(), t_, p, 0x04, 0, 0)",
               "solidity_like": "v2 = staticcall(gasleft(), t_, p, 0x04, 0, 0);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -3218,11 +4358,42 @@
               "expression_normalized": "staticcall(gasleft(), t_, p, 0x04, 0, 0)",
               "solidity_like": "v3 = staticcall(gasleft(), t_, p, 0x04, 0, 0);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
             "overlay_id": "ov_6",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_10"
+            ],
+            "stmt_refs": [
+              "asm_s_6"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_6_1",
+              "expression": "or(v2, v3)",
+              "expression_normalized": "(v2 | v3)",
+              "solidity_like": "__sseir_eval_asm_s_6_1 = (v2 | v3);",
+              "order": 1,
+              "call": "or",
+              "raw_args": [
+                "v2",
+                "v3"
+              ],
+              "evaluated_args": [
+                "v2",
+                "v3"
+              ],
+              "parent_effect": "eff_9",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_7",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_9"
@@ -3233,10 +4404,34 @@
             "attrs": {
               "target": "iD_",
               "expression": "or(v2, v3)",
-              "expression_normalized": "(v2 | v3)",
-              "solidity_like": "iD_ = (v2 | v3);",
+              "expression_normalized": "__sseir_eval_asm_s_6_1",
+              "solidity_like": "iD_ = __sseir_eval_asm_s_6_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_6_1",
+                "final_normalized": "__sseir_eval_asm_s_6_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_6_1",
+                    "expression": "or(v2, v3)",
+                    "expression_normalized": "(v2 | v3)",
+                    "call": "or",
+                    "raw_args": [
+                      "v2",
+                      "v3"
+                    ],
+                    "evaluated_args": [
+                      "v2",
+                      "v3"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           }
         ],
@@ -3365,7 +4560,17 @@
             "effect_kind": "MemoryRead",
             "query_field": "memory_read",
             "has_phi": false,
-            "has_unknown": true,
+            "has_unknown": false,
+            "memory_query_has_unknown": true,
+            "memory_query_complete": false,
+            "empty_range": false,
+            "final_status": "resolved",
+            "resolved_by": "expression_role",
+            "resolution_overlays": [],
+            "resolution_roles": [
+              "expr_1"
+            ],
+            "semantic_value": "free_memory_pointer",
             "loop_facts": [],
             "top_facts": [],
             "path_states": [
@@ -4899,6 +6104,8 @@
             "function_level_cfg_from_slither",
             "assembly_subgraph_embedded_from_assembly_ast_cfg",
             "slither_assembly_nodes_replaced_by_local_yul_cfg",
+            "slither_compile_mode=normal",
+            "function_match_method=source_range",
             "slither_nodes=10",
             "assembly_blocks=1",
             "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors",
@@ -4923,6 +6130,35 @@
         "expr_roles": [],
         "effects": [
           {
+            "effect_id": "eff_2",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_1"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_1_1",
+              "expression": "mul(i, i)",
+              "expression_normalized": "(i * i)",
+              "call": "mul",
+              "raw_args": [
+                "i",
+                "i"
+              ],
+              "evaluated_args": [
+                "i",
+                "i"
+              ],
+              "cfg_node_id": 2,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_1",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_1",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -4943,6 +6179,29 @@
                 "x": [
                   "x__ssa1"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_1_1",
+                "final_normalized": "__sseir_eval_asm_s_1_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_1_1",
+                    "expression": "mul(i, i)",
+                    "expression_normalized": "(i * i)",
+                    "call": "mul",
+                    "raw_args": [
+                      "i",
+                      "i"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "i"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           }
@@ -4950,6 +6209,35 @@
         "semantic_overlays": [
           {
             "overlay_id": "ov_1",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_2"
+            ],
+            "stmt_refs": [
+              "asm_s_1"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_1_1",
+              "expression": "mul(i, i)",
+              "expression_normalized": "(i * i)",
+              "solidity_like": "__sseir_eval_asm_s_1_1 = (i * i);",
+              "order": 1,
+              "call": "mul",
+              "raw_args": [
+                "i",
+                "i"
+              ],
+              "evaluated_args": [
+                "i",
+                "i"
+              ],
+              "parent_effect": "eff_1",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_2",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_1"
@@ -4960,10 +6248,34 @@
             "attrs": {
               "target": "x",
               "expression": "mul(i, i)",
-              "expression_normalized": "(i * i)",
-              "solidity_like": "x = (i * i);",
+              "expression_normalized": "__sseir_eval_asm_s_1_1",
+              "solidity_like": "x = __sseir_eval_asm_s_1_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_1_1",
+                "final_normalized": "__sseir_eval_asm_s_1_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_1_1",
+                    "expression": "mul(i, i)",
+                    "expression_normalized": "(i * i)",
+                    "call": "mul",
+                    "raw_args": [
+                      "i",
+                      "i"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "i"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           }
         ],
@@ -6420,6 +7732,8 @@
             "function_level_cfg_from_slither",
             "assembly_subgraph_embedded_from_assembly_ast_cfg",
             "slither_assembly_nodes_replaced_by_local_yul_cfg",
+            "slither_compile_mode=normal",
+            "function_match_method=source_range",
             "slither_nodes=5",
             "assembly_blocks=1",
             "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors"

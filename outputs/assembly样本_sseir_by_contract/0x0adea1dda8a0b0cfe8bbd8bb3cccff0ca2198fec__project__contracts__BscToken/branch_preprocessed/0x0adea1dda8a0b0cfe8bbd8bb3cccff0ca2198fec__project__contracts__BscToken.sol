@@ -9,13 +9,13 @@ pragma solidity ^0.8.28;
 pragma solidity ^0.8.28;
 
 
-/* S-SEIR flatten import: @openzeppelin/contracts/token/ERC20/ERC20.sol -> /home/ubuntu/erc-20/outputs/sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/ERC20.sol */
+/* S-SEIR flatten import: @openzeppelin/contracts/token/ERC20/ERC20.sol -> /home/ubuntu/erc-20/outputs/assembly样本_sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/ERC20.sol */
 // OpenZeppelin Contracts (last updated v5.5.0) (token/ERC20/ERC20.sol)
 
 pragma solidity ^0.8.20;
 
 
-/* S-SEIR flatten import: ./IERC20.sol -> /home/ubuntu/erc-20/outputs/sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/IERC20.sol */
+/* S-SEIR flatten import: ./IERC20.sol -> /home/ubuntu/erc-20/outputs/assembly样本_sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/IERC20.sol */
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/IERC20.sol)
 
 pragma solidity >=0.4.16;
@@ -97,14 +97,14 @@ interface IERC20 {
 /* S-SEIR end import: ./IERC20.sol */
 
 
-/* S-SEIR flatten import: ./extensions/IERC20Metadata.sol -> /home/ubuntu/erc-20/outputs/sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol */
+/* S-SEIR flatten import: ./extensions/IERC20Metadata.sol -> /home/ubuntu/erc-20/outputs/assembly样本_sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol */
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/IERC20Metadata.sol)
 
 pragma solidity >=0.6.2;
 
 
-/* S-SEIR flatten import: ../IERC20.sol -> /home/ubuntu/erc-20/outputs/sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/IERC20.sol */
-/* S-SEIR flatten: duplicate import skipped: /home/ubuntu/erc-20/outputs/sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/IERC20.sol */
+/* S-SEIR flatten import: ../IERC20.sol -> /home/ubuntu/erc-20/outputs/assembly样本_sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/IERC20.sol */
+/* S-SEIR flatten: duplicate import skipped: /home/ubuntu/erc-20/outputs/assembly样本_sseir_deps/node_modules/@openzeppelin/contracts/contracts/token/ERC20/IERC20.sol */
 /* S-SEIR end import: ../IERC20.sol */
 
 
@@ -130,7 +130,7 @@ interface IERC20Metadata is IERC20 {
 /* S-SEIR end import: ./extensions/IERC20Metadata.sol */
 
 
-/* S-SEIR flatten import: ../../utils/Context.sol -> /home/ubuntu/erc-20/outputs/sseir_deps/node_modules/@openzeppelin/contracts/contracts/utils/Context.sol */
+/* S-SEIR flatten import: ../../utils/Context.sol -> /home/ubuntu/erc-20/outputs/assembly样本_sseir_deps/node_modules/@openzeppelin/contracts/contracts/utils/Context.sol */
 // OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
 
 pragma solidity ^0.8.20;
@@ -161,7 +161,7 @@ abstract contract Context {
 /* S-SEIR end import: ../../utils/Context.sol */
 
 
-/* S-SEIR flatten import: ../../interfaces/draft-IERC6093.sol -> /home/ubuntu/erc-20/outputs/sseir_deps/node_modules/@openzeppelin/contracts/contracts/interfaces/draft-IERC6093.sol */
+/* S-SEIR flatten import: ../../interfaces/draft-IERC6093.sol -> /home/ubuntu/erc-20/outputs/assembly样本_sseir_deps/node_modules/@openzeppelin/contracts/contracts/interfaces/draft-IERC6093.sol */
 // OpenZeppelin Contracts (last updated v5.5.0) (interfaces/draft-IERC6093.sol)
 
 pragma solidity >=0.8.4;

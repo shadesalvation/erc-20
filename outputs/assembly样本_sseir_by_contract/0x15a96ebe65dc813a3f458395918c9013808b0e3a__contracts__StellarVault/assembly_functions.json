@@ -16,7 +16,7 @@
       "installed_dependencies": [
         {
           "dependency": "@openzeppelin/contracts",
-          "path": "/home/ubuntu/erc-20/outputs/sseir_deps/node_modules/@openzeppelin/contracts",
+          "path": "/home/ubuntu/erc-20/outputs/assembly样本_sseir_deps/node_modules/@openzeppelin/contracts",
           "action": "reused"
         }
       ],
@@ -883,6 +883,36 @@
         "control": {
           "blocks": [
             {
+              "block_id": "bb_sol_slither_n0",
+              "kind": "solidity",
+              "stmts": [],
+              "terminator": {
+                "kind": "Fallthrough",
+                "text": "entrypoint"
+              },
+              "attrs": {
+                "slither_node_id": 0,
+                "slither_node_type": "NodeType.ENTRYPOINT",
+                "src": "61733:855:slither",
+                "text": "entrypoint"
+              }
+            },
+            {
+              "block_id": "bb_sol_slither_n20",
+              "kind": "solidity",
+              "stmts": [],
+              "terminator": {
+                "kind": "Return",
+                "text": "(transmitterState,receptorState,pathwayPattern)"
+              },
+              "attrs": {
+                "slither_node_id": 20,
+                "slither_node_type": "NodeType.RETURN",
+                "src": "61609:119:slither",
+                "text": "(transmitterState,receptorState,pathwayPattern)"
+              }
+            },
+            {
               "block_id": "bb_asm15_n0",
               "kind": "yul",
               "assembly_block": 15,
@@ -1249,13 +1279,28 @@
               "from": "bb_asm15_n14",
               "to": "bb_asm15_n1",
               "kind": "next"
+            },
+            {
+              "from": "bb_sol_slither_n0",
+              "to": "bb_asm15_n0",
+              "kind": "fallthrough"
+            },
+            {
+              "from": "bb_asm15_n1",
+              "to": "bb_sol_slither_n20",
+              "kind": "fallthrough"
             }
           ],
           "notes": [
-            "function_level_control_skeleton",
-            "yul_cfg_embedded_from_assembly_ast_cfg",
-            "precise_solidity_cfg_adapter_unavailable",
-            "slither_error: SlitherError: Invalid compilation: \nInvalid solc compilation Error: Stack too deep. Try compiling with `--via-ir` (cli) or the equivalent `viaIR: true` (standard JSON) while enabling the optimizer. Otherwise, try removing local variables. When compiling inline assembly: Variable value0 is 2 slot(s) too deep inside the stack. Stack too deep. Try compiling with `--via-ir` (cli) or the equivalent `viaIR: true` (standard JSON) while enabling the optimizer. Otherwise, try removing local variables.\n\n"
+            "function_level_cfg_from_slither",
+            "assembly_subgraph_embedded_from_assembly_ast_cfg",
+            "slither_assembly_nodes_replaced_by_local_yul_cfg",
+            "slither_compile_mode=via_ir_retry",
+            "function_match_method=source_range",
+            "slither_primary_failure=stack_too_deep",
+            "slither_nodes=21",
+            "assembly_blocks=1",
+            "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors"
           ],
           "loop_contexts": {
             "15": []
@@ -1269,7 +1314,9 @@
             "role": "memory_slice_start",
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_8",
-            "attrs": {}
+            "attrs": {
+              "effect": "eff_14"
+            }
           },
           {
             "expr_id": "expr_2",
@@ -1278,7 +1325,9 @@
             "role": "memory_slice_size",
             "type_hint": "uint256",
             "stmt_ref": "asm_s_8",
-            "attrs": {}
+            "attrs": {
+              "effect": "eff_14"
+            }
           },
           {
             "expr_id": "expr_3",
@@ -1287,7 +1336,9 @@
             "role": "memory_slice_start",
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_11",
-            "attrs": {}
+            "attrs": {
+              "effect": "eff_18"
+            }
           },
           {
             "expr_id": "expr_4",
@@ -1296,7 +1347,9 @@
             "role": "memory_slice_size",
             "type_hint": "uint256",
             "stmt_ref": "asm_s_11",
-            "attrs": {}
+            "attrs": {
+              "effect": "eff_18"
+            }
           },
           {
             "expr_id": "expr_5",
@@ -1460,7 +1513,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_8",
             "attrs": {
-              "overlay": "ov_3",
+              "overlay": "ov_4",
               "state_variable": "routingMatrix",
               "storage_reference": null,
               "storage_reference_kind": null,
@@ -1475,7 +1528,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_8",
             "attrs": {
-              "overlay": "ov_3",
+              "overlay": "ov_4",
               "storage_reference": null
             }
           },
@@ -1487,7 +1540,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "overlay": "ov_5",
+              "overlay": "ov_6",
               "state_variable": "routingMatrix",
               "storage_reference": null,
               "storage_reference_kind": null,
@@ -1502,7 +1555,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "overlay": "ov_5",
+              "overlay": "ov_6",
               "storage_reference": null
             }
           },
@@ -1844,6 +1897,8 @@
                   "keccak256(0x00, 0x40)__inline_asm15_asm_s_3_n4"
                 ]
               },
+              "ptr_versions": [],
+              "size_versions": [],
               "cfg_node_id": 4,
               "path_states": [
                 "entry"
@@ -1870,91 +1925,41 @@
                     "offset": 0,
                     "offset_expr": "0",
                     "address_key": "0x00",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
                     "value": "transmitter",
+                    "source": "byte_axis_memory_slice",
+                    "size": 32,
                     "memory_ssa": "mem_1",
-                    "definitions": [
-                      {
-                        "version": "mem_1",
-                        "node_id": 2,
-                        "address": "0x00",
-                        "value": "transmitter",
-                        "kind": "mstore",
-                        "origin_src": "61829:25:0",
-                        "aliases": [
-                          {
-                            "key": "0x00",
-                            "base": "0x00",
-                            "offset": 0,
-                            "expression": "0x00",
-                            "source": "literal"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "0x00",
-                        "base": "0x00",
-                        "offset": 0,
-                        "expression": "0x00",
-                        "source": "literal"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 2,
+                      "version": "mem_1",
+                      "address": null,
+                      "value": "transmitter"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "symbolic_known",
+                      "expr": "transmitter"
+                    }
                   },
                   {
                     "offset": 32,
                     "offset_expr": "32",
-                    "address_key": "add(0x00,32)",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
+                    "address_key": "0x00",
                     "value": "nodeRegistry.slot",
+                    "source": "byte_axis_memory_slice",
+                    "size": 32,
                     "memory_ssa": "mem_2",
-                    "definitions": [
-                      {
-                        "version": "mem_2",
-                        "node_id": 3,
-                        "address": "32",
-                        "value": "nodeRegistry.slot",
-                        "kind": "mstore",
-                        "origin_src": "61867:31:0",
-                        "aliases": [
-                          {
-                            "key": "32",
-                            "base": "0x20",
-                            "offset": 0,
-                            "expression": "0x20",
-                            "source": "literal"
-                          },
-                          {
-                            "key": "add(0x00,32)",
-                            "base": "0x00",
-                            "offset": 32,
-                            "expression": "add(0x00, 32)",
-                            "source": "literal-zero-base"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "32",
-                        "base": "0x20",
-                        "offset": 0,
-                        "expression": "0x20",
-                        "source": "literal"
-                      },
-                      {
-                        "key": "add(0x00,32)",
-                        "base": "0x00",
-                        "offset": 32,
-                        "expression": "add(0x00, 32)",
-                        "source": "literal-zero-base"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 3,
+                      "version": "mem_2",
+                      "address": null,
+                      "value": "nodeRegistry.slot"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "symbolic_known",
+                      "expr": "nodeRegistry.slot"
+                    }
                   }
                 ],
                 "complete": true,
@@ -1969,7 +1974,22 @@
                   "reason": "keccak256",
                   "pointer": "0x00",
                   "length": "0x40",
-                  "start": 0,
+                  "address_aliases": [
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal-zero-base"
+                    },
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal"
+                    }
+                  ],
                   "size": 64,
                   "complete": true,
                   "has_overlap": false,
@@ -1989,6 +2009,11 @@
                       "source_kind": "mstore",
                       "origin_src": "61829:25:0",
                       "extraction": "transmitter",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "transmitter"
+                      },
                       "overlap_count": 1
                     },
                     {
@@ -2006,6 +2031,11 @@
                       "source_kind": "mstore",
                       "origin_src": "61867:31:0",
                       "extraction": "nodeRegistry.slot",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "nodeRegistry.slot"
+                      },
                       "overlap_count": 1
                     }
                   ],
@@ -2029,6 +2059,11 @@
                           "source_kind": "mstore",
                           "origin_src": "61829:25:0",
                           "extraction": "transmitter",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "transmitter"
+                          },
                           "overlap_count": 1
                         },
                         {
@@ -2046,6 +2081,11 @@
                           "source_kind": "mstore",
                           "origin_src": "61867:31:0",
                           "extraction": "nodeRegistry.slot",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "nodeRegistry.slot"
+                          },
                           "overlap_count": 1
                         }
                       ]
@@ -2106,6 +2146,11 @@
                               "source_kind": "mstore",
                               "origin_src": "61829:25:0",
                               "extraction": "transmitter",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "transmitter"
+                              },
                               "overlap_count": 1
                             },
                             {
@@ -2123,6 +2168,11 @@
                               "source_kind": "mstore",
                               "origin_src": "61867:31:0",
                               "extraction": "nodeRegistry.slot",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "nodeRegistry.slot"
+                              },
                               "overlap_count": 1
                             }
                           ]
@@ -2202,6 +2252,8 @@
                   "keccak256(0x00, 0x40)__inline_asm15_asm_s_5_n6"
                 ]
               },
+              "ptr_versions": [],
+              "size_versions": [],
               "cfg_node_id": 6,
               "path_states": [
                 "entry"
@@ -2228,91 +2280,41 @@
                     "offset": 0,
                     "offset_expr": "0",
                     "address_key": "0x00",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
                     "value": "receptor",
+                    "source": "byte_axis_memory_slice",
+                    "size": 32,
                     "memory_ssa": "mem_3",
-                    "definitions": [
-                      {
-                        "version": "mem_3",
-                        "node_id": 5,
-                        "address": "0x00",
-                        "value": "receptor",
-                        "kind": "mstore",
-                        "origin_src": "62033:22:0",
-                        "aliases": [
-                          {
-                            "key": "0x00",
-                            "base": "0x00",
-                            "offset": 0,
-                            "expression": "0x00",
-                            "source": "literal"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "0x00",
-                        "base": "0x00",
-                        "offset": 0,
-                        "expression": "0x00",
-                        "source": "literal"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 5,
+                      "version": "mem_3",
+                      "address": null,
+                      "value": "receptor"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "symbolic_known",
+                      "expr": "receptor"
+                    }
                   },
                   {
                     "offset": 32,
                     "offset_expr": "32",
-                    "address_key": "add(0x00,32)",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
+                    "address_key": "0x00",
                     "value": "nodeRegistry.slot",
+                    "source": "byte_axis_memory_slice",
+                    "size": 32,
                     "memory_ssa": "mem_2",
-                    "definitions": [
-                      {
-                        "version": "mem_2",
-                        "node_id": 3,
-                        "address": "32",
-                        "value": "nodeRegistry.slot",
-                        "kind": "mstore",
-                        "origin_src": "61867:31:0",
-                        "aliases": [
-                          {
-                            "key": "32",
-                            "base": "0x20",
-                            "offset": 0,
-                            "expression": "0x20",
-                            "source": "literal"
-                          },
-                          {
-                            "key": "add(0x00,32)",
-                            "base": "0x00",
-                            "offset": 32,
-                            "expression": "add(0x00, 32)",
-                            "source": "literal-zero-base"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "32",
-                        "base": "0x20",
-                        "offset": 0,
-                        "expression": "0x20",
-                        "source": "literal"
-                      },
-                      {
-                        "key": "add(0x00,32)",
-                        "base": "0x00",
-                        "offset": 32,
-                        "expression": "add(0x00, 32)",
-                        "source": "literal-zero-base"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 3,
+                      "version": "mem_2",
+                      "address": null,
+                      "value": "nodeRegistry.slot"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "symbolic_known",
+                      "expr": "nodeRegistry.slot"
+                    }
                   }
                 ],
                 "complete": true,
@@ -2327,7 +2329,22 @@
                   "reason": "keccak256",
                   "pointer": "0x00",
                   "length": "0x40",
-                  "start": 0,
+                  "address_aliases": [
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal-zero-base"
+                    },
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal"
+                    }
+                  ],
                   "size": 64,
                   "complete": true,
                   "has_overlap": false,
@@ -2347,6 +2364,11 @@
                       "source_kind": "mstore",
                       "origin_src": "62033:22:0",
                       "extraction": "receptor",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "receptor"
+                      },
                       "overlap_count": 1
                     },
                     {
@@ -2364,6 +2386,11 @@
                       "source_kind": "mstore",
                       "origin_src": "61867:31:0",
                       "extraction": "nodeRegistry.slot",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "nodeRegistry.slot"
+                      },
                       "overlap_count": 1
                     }
                   ],
@@ -2387,6 +2414,11 @@
                           "source_kind": "mstore",
                           "origin_src": "62033:22:0",
                           "extraction": "receptor",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "receptor"
+                          },
                           "overlap_count": 1
                         },
                         {
@@ -2404,6 +2436,11 @@
                           "source_kind": "mstore",
                           "origin_src": "61867:31:0",
                           "extraction": "nodeRegistry.slot",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "nodeRegistry.slot"
+                          },
                           "overlap_count": 1
                         }
                       ]
@@ -2464,6 +2501,11 @@
                               "source_kind": "mstore",
                               "origin_src": "62033:22:0",
                               "extraction": "receptor",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "receptor"
+                              },
                               "overlap_count": 1
                             },
                             {
@@ -2481,6 +2523,11 @@
                               "source_kind": "mstore",
                               "origin_src": "61867:31:0",
                               "extraction": "nodeRegistry.slot",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "nodeRegistry.slot"
+                              },
                               "overlap_count": 1
                             }
                           ]
@@ -2560,6 +2607,8 @@
                   "senderSlot__ssa3"
                 ]
               },
+              "ptr_versions": [],
+              "size_versions": [],
               "cfg_node_id": 9,
               "path_states": [
                 "entry"
@@ -2586,91 +2635,41 @@
                     "offset": 0,
                     "offset_expr": "0",
                     "address_key": "0x00",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
                     "value": "transmitter",
+                    "source": "byte_axis_memory_slice",
+                    "size": 32,
                     "memory_ssa": "mem_4",
-                    "definitions": [
-                      {
-                        "version": "mem_4",
-                        "node_id": 7,
-                        "address": "0x00",
-                        "value": "transmitter",
-                        "kind": "mstore",
-                        "origin_src": "62127:25:0",
-                        "aliases": [
-                          {
-                            "key": "0x00",
-                            "base": "0x00",
-                            "offset": 0,
-                            "expression": "0x00",
-                            "source": "literal"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "0x00",
-                        "base": "0x00",
-                        "offset": 0,
-                        "expression": "0x00",
-                        "source": "literal"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 7,
+                      "version": "mem_4",
+                      "address": null,
+                      "value": "transmitter"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "symbolic_known",
+                      "expr": "transmitter"
+                    }
                   },
                   {
                     "offset": 32,
                     "offset_expr": "32",
-                    "address_key": "add(0x00,32)",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
+                    "address_key": "0x00",
                     "value": "routingMatrix.slot",
+                    "source": "byte_axis_memory_slice",
+                    "size": 32,
                     "memory_ssa": "mem_5",
-                    "definitions": [
-                      {
-                        "version": "mem_5",
-                        "node_id": 8,
-                        "address": "32",
-                        "value": "routingMatrix.slot",
-                        "kind": "mstore",
-                        "origin_src": "62165:32:0",
-                        "aliases": [
-                          {
-                            "key": "32",
-                            "base": "0x20",
-                            "offset": 0,
-                            "expression": "0x20",
-                            "source": "literal"
-                          },
-                          {
-                            "key": "add(0x00,32)",
-                            "base": "0x00",
-                            "offset": 32,
-                            "expression": "add(0x00, 32)",
-                            "source": "literal-zero-base"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "32",
-                        "base": "0x20",
-                        "offset": 0,
-                        "expression": "0x20",
-                        "source": "literal"
-                      },
-                      {
-                        "key": "add(0x00,32)",
-                        "base": "0x00",
-                        "offset": 32,
-                        "expression": "add(0x00, 32)",
-                        "source": "literal-zero-base"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 8,
+                      "version": "mem_5",
+                      "address": null,
+                      "value": "routingMatrix.slot"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "symbolic_known",
+                      "expr": "routingMatrix.slot"
+                    }
                   }
                 ],
                 "complete": true,
@@ -2685,7 +2684,22 @@
                   "reason": "keccak256",
                   "pointer": "0x00",
                   "length": "0x40",
-                  "start": 0,
+                  "address_aliases": [
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal-zero-base"
+                    },
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal"
+                    }
+                  ],
                   "size": 64,
                   "complete": true,
                   "has_overlap": false,
@@ -2705,6 +2719,11 @@
                       "source_kind": "mstore",
                       "origin_src": "62127:25:0",
                       "extraction": "transmitter",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "transmitter"
+                      },
                       "overlap_count": 1
                     },
                     {
@@ -2722,6 +2741,11 @@
                       "source_kind": "mstore",
                       "origin_src": "62165:32:0",
                       "extraction": "routingMatrix.slot",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "routingMatrix.slot"
+                      },
                       "overlap_count": 1
                     }
                   ],
@@ -2745,6 +2769,11 @@
                           "source_kind": "mstore",
                           "origin_src": "62127:25:0",
                           "extraction": "transmitter",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "transmitter"
+                          },
                           "overlap_count": 1
                         },
                         {
@@ -2762,6 +2791,11 @@
                           "source_kind": "mstore",
                           "origin_src": "62165:32:0",
                           "extraction": "routingMatrix.slot",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "routingMatrix.slot"
+                          },
                           "overlap_count": 1
                         }
                       ]
@@ -2820,6 +2854,11 @@
                               "source_kind": "mstore",
                               "origin_src": "62127:25:0",
                               "extraction": "transmitter",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "transmitter"
+                              },
                               "overlap_count": 1
                             },
                             {
@@ -2837,6 +2876,11 @@
                               "source_kind": "mstore",
                               "origin_src": "62165:32:0",
                               "extraction": "routingMatrix.slot",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "routingMatrix.slot"
+                              },
                               "overlap_count": 1
                             }
                           ]
@@ -2940,6 +2984,8 @@
                   "recipientSlot__ssa5"
                 ]
               },
+              "ptr_versions": [],
+              "size_versions": [],
               "cfg_node_id": 12,
               "path_states": [
                 "entry"
@@ -2966,91 +3012,41 @@
                     "offset": 0,
                     "offset_expr": "0",
                     "address_key": "0x00",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
                     "value": "receptor",
+                    "source": "byte_axis_memory_slice",
+                    "size": 32,
                     "memory_ssa": "mem_6",
-                    "definitions": [
-                      {
-                        "version": "mem_6",
-                        "node_id": 11,
-                        "address": "0x00",
-                        "value": "receptor",
-                        "kind": "mstore",
-                        "origin_src": "62369:22:0",
-                        "aliases": [
-                          {
-                            "key": "0x00",
-                            "base": "0x00",
-                            "offset": 0,
-                            "expression": "0x00",
-                            "source": "literal"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "0x00",
-                        "base": "0x00",
-                        "offset": 0,
-                        "expression": "0x00",
-                        "source": "literal"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 11,
+                      "version": "mem_6",
+                      "address": null,
+                      "value": "receptor"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "symbolic_known",
+                      "expr": "receptor"
+                    }
                   },
                   {
                     "offset": 32,
                     "offset_expr": "32",
-                    "address_key": "add(0x00,32)",
-                    "cfg_path_states": [
-                      "entry"
-                    ],
+                    "address_key": "0x00",
                     "value": "routingMatrix.slot",
+                    "source": "byte_axis_memory_slice",
+                    "size": 32,
                     "memory_ssa": "mem_5",
-                    "definitions": [
-                      {
-                        "version": "mem_5",
-                        "node_id": 8,
-                        "address": "32",
-                        "value": "routingMatrix.slot",
-                        "kind": "mstore",
-                        "origin_src": "62165:32:0",
-                        "aliases": [
-                          {
-                            "key": "32",
-                            "base": "0x20",
-                            "offset": 0,
-                            "expression": "0x20",
-                            "source": "literal"
-                          },
-                          {
-                            "key": "add(0x00,32)",
-                            "base": "0x00",
-                            "offset": 32,
-                            "expression": "add(0x00, 32)",
-                            "source": "literal-zero-base"
-                          }
-                        ]
-                      }
-                    ],
-                    "aliases": [
-                      {
-                        "key": "32",
-                        "base": "0x20",
-                        "offset": 0,
-                        "expression": "0x20",
-                        "source": "literal"
-                      },
-                      {
-                        "key": "add(0x00,32)",
-                        "base": "0x00",
-                        "offset": 32,
-                        "expression": "add(0x00, 32)",
-                        "source": "literal-zero-base"
-                      }
-                    ]
+                    "definition": {
+                      "node_id": 8,
+                      "version": "mem_5",
+                      "address": null,
+                      "value": "routingMatrix.slot"
+                    },
+                    "known_value": {
+                      "known": true,
+                      "kind": "symbolic_known",
+                      "expr": "routingMatrix.slot"
+                    }
                   }
                 ],
                 "complete": true,
@@ -3065,7 +3061,22 @@
                   "reason": "keccak256",
                   "pointer": "0x00",
                   "length": "0x40",
-                  "start": 0,
+                  "address_aliases": [
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal-zero-base"
+                    },
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal"
+                    }
+                  ],
                   "size": 64,
                   "complete": true,
                   "has_overlap": false,
@@ -3085,6 +3096,11 @@
                       "source_kind": "mstore",
                       "origin_src": "62369:22:0",
                       "extraction": "receptor",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "receptor"
+                      },
                       "overlap_count": 1
                     },
                     {
@@ -3102,6 +3118,11 @@
                       "source_kind": "mstore",
                       "origin_src": "62165:32:0",
                       "extraction": "routingMatrix.slot",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "routingMatrix.slot"
+                      },
                       "overlap_count": 1
                     }
                   ],
@@ -3125,6 +3146,11 @@
                           "source_kind": "mstore",
                           "origin_src": "62369:22:0",
                           "extraction": "receptor",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "receptor"
+                          },
                           "overlap_count": 1
                         },
                         {
@@ -3142,6 +3168,11 @@
                           "source_kind": "mstore",
                           "origin_src": "62165:32:0",
                           "extraction": "routingMatrix.slot",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "routingMatrix.slot"
+                          },
                           "overlap_count": 1
                         }
                       ]
@@ -3200,6 +3231,11 @@
                               "source_kind": "mstore",
                               "origin_src": "62369:22:0",
                               "extraction": "receptor",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "receptor"
+                              },
                               "overlap_count": 1
                             },
                             {
@@ -3217,6 +3253,11 @@
                               "source_kind": "mstore",
                               "origin_src": "62165:32:0",
                               "extraction": "routingMatrix.slot",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "routingMatrix.slot"
+                              },
                               "overlap_count": 1
                             }
                           ]
@@ -3599,91 +3640,41 @@
                   "offset": 0,
                   "offset_expr": "0",
                   "address_key": "0x00",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
                   "value": "transmitter",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_1",
-                  "definitions": [
-                    {
-                      "version": "mem_1",
-                      "node_id": 2,
-                      "address": "0x00",
-                      "value": "transmitter",
-                      "kind": "mstore",
-                      "origin_src": "61829:25:0",
-                      "aliases": [
-                        {
-                          "key": "0x00",
-                          "base": "0x00",
-                          "offset": 0,
-                          "expression": "0x00",
-                          "source": "literal"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "0x00",
-                      "base": "0x00",
-                      "offset": 0,
-                      "expression": "0x00",
-                      "source": "literal"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 2,
+                    "version": "mem_1",
+                    "address": null,
+                    "value": "transmitter"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "transmitter"
+                  }
                 },
                 {
                   "offset": 32,
                   "offset_expr": "32",
-                  "address_key": "add(0x00,32)",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
+                  "address_key": "0x00",
                   "value": "nodeRegistry.slot",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_2",
-                  "definitions": [
-                    {
-                      "version": "mem_2",
-                      "node_id": 3,
-                      "address": "32",
-                      "value": "nodeRegistry.slot",
-                      "kind": "mstore",
-                      "origin_src": "61867:31:0",
-                      "aliases": [
-                        {
-                          "key": "32",
-                          "base": "0x20",
-                          "offset": 0,
-                          "expression": "0x20",
-                          "source": "literal"
-                        },
-                        {
-                          "key": "add(0x00,32)",
-                          "base": "0x00",
-                          "offset": 32,
-                          "expression": "add(0x00, 32)",
-                          "source": "literal-zero-base"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "32",
-                      "base": "0x20",
-                      "offset": 0,
-                      "expression": "0x20",
-                      "source": "literal"
-                    },
-                    {
-                      "key": "add(0x00,32)",
-                      "base": "0x00",
-                      "offset": 32,
-                      "expression": "add(0x00, 32)",
-                      "source": "literal-zero-base"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 3,
+                    "version": "mem_2",
+                    "address": null,
+                    "value": "nodeRegistry.slot"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "nodeRegistry.slot"
+                  }
                 }
               ],
               "byte_slice": null,
@@ -3724,91 +3715,41 @@
                   "offset": 0,
                   "offset_expr": "0",
                   "address_key": "0x00",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
                   "value": "receptor",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_3",
-                  "definitions": [
-                    {
-                      "version": "mem_3",
-                      "node_id": 5,
-                      "address": "0x00",
-                      "value": "receptor",
-                      "kind": "mstore",
-                      "origin_src": "62033:22:0",
-                      "aliases": [
-                        {
-                          "key": "0x00",
-                          "base": "0x00",
-                          "offset": 0,
-                          "expression": "0x00",
-                          "source": "literal"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "0x00",
-                      "base": "0x00",
-                      "offset": 0,
-                      "expression": "0x00",
-                      "source": "literal"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 5,
+                    "version": "mem_3",
+                    "address": null,
+                    "value": "receptor"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "receptor"
+                  }
                 },
                 {
                   "offset": 32,
                   "offset_expr": "32",
-                  "address_key": "add(0x00,32)",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
+                  "address_key": "0x00",
                   "value": "nodeRegistry.slot",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_2",
-                  "definitions": [
-                    {
-                      "version": "mem_2",
-                      "node_id": 3,
-                      "address": "32",
-                      "value": "nodeRegistry.slot",
-                      "kind": "mstore",
-                      "origin_src": "61867:31:0",
-                      "aliases": [
-                        {
-                          "key": "32",
-                          "base": "0x20",
-                          "offset": 0,
-                          "expression": "0x20",
-                          "source": "literal"
-                        },
-                        {
-                          "key": "add(0x00,32)",
-                          "base": "0x00",
-                          "offset": 32,
-                          "expression": "add(0x00, 32)",
-                          "source": "literal-zero-base"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "32",
-                      "base": "0x20",
-                      "offset": 0,
-                      "expression": "0x20",
-                      "source": "literal"
-                    },
-                    {
-                      "key": "add(0x00,32)",
-                      "base": "0x00",
-                      "offset": 32,
-                      "expression": "add(0x00, 32)",
-                      "source": "literal-zero-base"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 3,
+                    "version": "mem_2",
+                    "address": null,
+                    "value": "nodeRegistry.slot"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "nodeRegistry.slot"
+                  }
                 }
               ],
               "byte_slice": null,
@@ -3849,91 +3790,41 @@
                   "offset": 0,
                   "offset_expr": "0",
                   "address_key": "0x00",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
                   "value": "transmitter",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_4",
-                  "definitions": [
-                    {
-                      "version": "mem_4",
-                      "node_id": 7,
-                      "address": "0x00",
-                      "value": "transmitter",
-                      "kind": "mstore",
-                      "origin_src": "62127:25:0",
-                      "aliases": [
-                        {
-                          "key": "0x00",
-                          "base": "0x00",
-                          "offset": 0,
-                          "expression": "0x00",
-                          "source": "literal"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "0x00",
-                      "base": "0x00",
-                      "offset": 0,
-                      "expression": "0x00",
-                      "source": "literal"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 7,
+                    "version": "mem_4",
+                    "address": null,
+                    "value": "transmitter"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "transmitter"
+                  }
                 },
                 {
                   "offset": 32,
                   "offset_expr": "32",
-                  "address_key": "add(0x00,32)",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
+                  "address_key": "0x00",
                   "value": "routingMatrix.slot",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_5",
-                  "definitions": [
-                    {
-                      "version": "mem_5",
-                      "node_id": 8,
-                      "address": "32",
-                      "value": "routingMatrix.slot",
-                      "kind": "mstore",
-                      "origin_src": "62165:32:0",
-                      "aliases": [
-                        {
-                          "key": "32",
-                          "base": "0x20",
-                          "offset": 0,
-                          "expression": "0x20",
-                          "source": "literal"
-                        },
-                        {
-                          "key": "add(0x00,32)",
-                          "base": "0x00",
-                          "offset": 32,
-                          "expression": "add(0x00, 32)",
-                          "source": "literal-zero-base"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "32",
-                      "base": "0x20",
-                      "offset": 0,
-                      "expression": "0x20",
-                      "source": "literal"
-                    },
-                    {
-                      "key": "add(0x00,32)",
-                      "base": "0x00",
-                      "offset": 32,
-                      "expression": "add(0x00, 32)",
-                      "source": "literal-zero-base"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 8,
+                    "version": "mem_5",
+                    "address": null,
+                    "value": "routingMatrix.slot"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "routingMatrix.slot"
+                  }
                 }
               ],
               "byte_slice": null,
@@ -3974,91 +3865,41 @@
                   "offset": 0,
                   "offset_expr": "0",
                   "address_key": "0x00",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
                   "value": "transmitter",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_4",
-                  "definitions": [
-                    {
-                      "version": "mem_4",
-                      "node_id": 7,
-                      "address": "0x00",
-                      "value": "transmitter",
-                      "kind": "mstore",
-                      "origin_src": "62127:25:0",
-                      "aliases": [
-                        {
-                          "key": "0x00",
-                          "base": "0x00",
-                          "offset": 0,
-                          "expression": "0x00",
-                          "source": "literal"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "0x00",
-                      "base": "0x00",
-                      "offset": 0,
-                      "expression": "0x00",
-                      "source": "literal"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 7,
+                    "version": "mem_4",
+                    "address": null,
+                    "value": "transmitter"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "transmitter"
+                  }
                 },
                 {
                   "offset": 32,
                   "offset_expr": "32",
-                  "address_key": "add(0x00,32)",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
+                  "address_key": "0x00",
                   "value": "routingMatrix.slot",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_5",
-                  "definitions": [
-                    {
-                      "version": "mem_5",
-                      "node_id": 8,
-                      "address": "32",
-                      "value": "routingMatrix.slot",
-                      "kind": "mstore",
-                      "origin_src": "62165:32:0",
-                      "aliases": [
-                        {
-                          "key": "32",
-                          "base": "0x20",
-                          "offset": 0,
-                          "expression": "0x20",
-                          "source": "literal"
-                        },
-                        {
-                          "key": "add(0x00,32)",
-                          "base": "0x00",
-                          "offset": 32,
-                          "expression": "add(0x00, 32)",
-                          "source": "literal-zero-base"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "32",
-                      "base": "0x20",
-                      "offset": 0,
-                      "expression": "0x20",
-                      "source": "literal"
-                    },
-                    {
-                      "key": "add(0x00,32)",
-                      "base": "0x00",
-                      "offset": 32,
-                      "expression": "add(0x00, 32)",
-                      "source": "literal-zero-base"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 8,
+                    "version": "mem_5",
+                    "address": null,
+                    "value": "routingMatrix.slot"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "routingMatrix.slot"
+                  }
                 }
               ],
               "byte_slice": null,
@@ -4099,91 +3940,41 @@
                   "offset": 0,
                   "offset_expr": "0",
                   "address_key": "0x00",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
                   "value": "receptor",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_6",
-                  "definitions": [
-                    {
-                      "version": "mem_6",
-                      "node_id": 11,
-                      "address": "0x00",
-                      "value": "receptor",
-                      "kind": "mstore",
-                      "origin_src": "62369:22:0",
-                      "aliases": [
-                        {
-                          "key": "0x00",
-                          "base": "0x00",
-                          "offset": 0,
-                          "expression": "0x00",
-                          "source": "literal"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "0x00",
-                      "base": "0x00",
-                      "offset": 0,
-                      "expression": "0x00",
-                      "source": "literal"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 11,
+                    "version": "mem_6",
+                    "address": null,
+                    "value": "receptor"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "receptor"
+                  }
                 },
                 {
                   "offset": 32,
                   "offset_expr": "32",
-                  "address_key": "add(0x00,32)",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
+                  "address_key": "0x00",
                   "value": "routingMatrix.slot",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_5",
-                  "definitions": [
-                    {
-                      "version": "mem_5",
-                      "node_id": 8,
-                      "address": "32",
-                      "value": "routingMatrix.slot",
-                      "kind": "mstore",
-                      "origin_src": "62165:32:0",
-                      "aliases": [
-                        {
-                          "key": "32",
-                          "base": "0x20",
-                          "offset": 0,
-                          "expression": "0x20",
-                          "source": "literal"
-                        },
-                        {
-                          "key": "add(0x00,32)",
-                          "base": "0x00",
-                          "offset": 32,
-                          "expression": "add(0x00, 32)",
-                          "source": "literal-zero-base"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "32",
-                      "base": "0x20",
-                      "offset": 0,
-                      "expression": "0x20",
-                      "source": "literal"
-                    },
-                    {
-                      "key": "add(0x00,32)",
-                      "base": "0x00",
-                      "offset": 32,
-                      "expression": "add(0x00, 32)",
-                      "source": "literal-zero-base"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 8,
+                    "version": "mem_5",
+                    "address": null,
+                    "value": "routingMatrix.slot"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "routingMatrix.slot"
+                  }
                 }
               ],
               "byte_slice": null,
@@ -4224,91 +4015,41 @@
                   "offset": 0,
                   "offset_expr": "0",
                   "address_key": "0x00",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
                   "value": "receptor",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_6",
-                  "definitions": [
-                    {
-                      "version": "mem_6",
-                      "node_id": 11,
-                      "address": "0x00",
-                      "value": "receptor",
-                      "kind": "mstore",
-                      "origin_src": "62369:22:0",
-                      "aliases": [
-                        {
-                          "key": "0x00",
-                          "base": "0x00",
-                          "offset": 0,
-                          "expression": "0x00",
-                          "source": "literal"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "0x00",
-                      "base": "0x00",
-                      "offset": 0,
-                      "expression": "0x00",
-                      "source": "literal"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 11,
+                    "version": "mem_6",
+                    "address": null,
+                    "value": "receptor"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "receptor"
+                  }
                 },
                 {
                   "offset": 32,
                   "offset_expr": "32",
-                  "address_key": "add(0x00,32)",
-                  "cfg_path_states": [
-                    "entry"
-                  ],
+                  "address_key": "0x00",
                   "value": "routingMatrix.slot",
+                  "source": "byte_axis_memory_slice",
+                  "size": 32,
                   "memory_ssa": "mem_5",
-                  "definitions": [
-                    {
-                      "version": "mem_5",
-                      "node_id": 8,
-                      "address": "32",
-                      "value": "routingMatrix.slot",
-                      "kind": "mstore",
-                      "origin_src": "62165:32:0",
-                      "aliases": [
-                        {
-                          "key": "32",
-                          "base": "0x20",
-                          "offset": 0,
-                          "expression": "0x20",
-                          "source": "literal"
-                        },
-                        {
-                          "key": "add(0x00,32)",
-                          "base": "0x00",
-                          "offset": 32,
-                          "expression": "add(0x00, 32)",
-                          "source": "literal-zero-base"
-                        }
-                      ]
-                    }
-                  ],
-                  "aliases": [
-                    {
-                      "key": "32",
-                      "base": "0x20",
-                      "offset": 0,
-                      "expression": "0x20",
-                      "source": "literal"
-                    },
-                    {
-                      "key": "add(0x00,32)",
-                      "base": "0x00",
-                      "offset": 32,
-                      "expression": "add(0x00, 32)",
-                      "source": "literal-zero-base"
-                    }
-                  ]
+                  "definition": {
+                    "node_id": 8,
+                    "version": "mem_5",
+                    "address": null,
+                    "value": "routingMatrix.slot"
+                  },
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "routingMatrix.slot"
+                  }
                 }
               ],
               "byte_slice": null,
@@ -4496,7 +4237,22 @@
                   "reason": "keccak256",
                   "pointer": "0x00",
                   "length": "0x40",
-                  "start": 0,
+                  "address_aliases": [
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal-zero-base"
+                    },
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal"
+                    }
+                  ],
                   "size": 64,
                   "complete": true,
                   "has_overlap": false,
@@ -4516,6 +4272,11 @@
                       "source_kind": "mstore",
                       "origin_src": "62127:25:0",
                       "extraction": "transmitter",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "transmitter"
+                      },
                       "overlap_count": 1
                     },
                     {
@@ -4533,6 +4294,11 @@
                       "source_kind": "mstore",
                       "origin_src": "62165:32:0",
                       "extraction": "routingMatrix.slot",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "routingMatrix.slot"
+                      },
                       "overlap_count": 1
                     }
                   ],
@@ -4556,6 +4322,11 @@
                           "source_kind": "mstore",
                           "origin_src": "62127:25:0",
                           "extraction": "transmitter",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "transmitter"
+                          },
                           "overlap_count": 1
                         },
                         {
@@ -4573,6 +4344,11 @@
                           "source_kind": "mstore",
                           "origin_src": "62165:32:0",
                           "extraction": "routingMatrix.slot",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "routingMatrix.slot"
+                          },
                           "overlap_count": 1
                         }
                       ]
@@ -4640,7 +4416,22 @@
                   "reason": "keccak256",
                   "pointer": "0x00",
                   "length": "0x40",
-                  "start": 0,
+                  "address_aliases": [
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal-zero-base"
+                    },
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal"
+                    }
+                  ],
                   "size": 64,
                   "complete": true,
                   "has_overlap": false,
@@ -4660,6 +4451,11 @@
                       "source_kind": "mstore",
                       "origin_src": "62369:22:0",
                       "extraction": "receptor",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "receptor"
+                      },
                       "overlap_count": 1
                     },
                     {
@@ -4677,6 +4473,11 @@
                       "source_kind": "mstore",
                       "origin_src": "62165:32:0",
                       "extraction": "routingMatrix.slot",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "routingMatrix.slot"
+                      },
                       "overlap_count": 1
                     }
                   ],
@@ -4700,6 +4501,11 @@
                           "source_kind": "mstore",
                           "origin_src": "62369:22:0",
                           "extraction": "receptor",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "receptor"
+                          },
                           "overlap_count": 1
                         },
                         {
@@ -4717,6 +4523,11 @@
                           "source_kind": "mstore",
                           "origin_src": "62165:32:0",
                           "extraction": "routingMatrix.slot",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "routingMatrix.slot"
+                          },
                           "overlap_count": 1
                         }
                       ]

@@ -19,14 +19,15 @@ Function GGGTOKEN.isContract(address)
   SolidityLikeFunction
   ```solidity
   function isContract(address account) internal view returns (bool) {
-          // This method relies on extcodesize, which returns 0 for contracts in
-          // construction, since the code is only stored at the end of the
-          // constructor execution.
+      // This method relies on extcodesize, which returns 0 for contracts in
+      // construction, since the code is only stored at the end of the
+      // constructor execution.
   
-          uint256 size;
-          assembly /* s-seir solidity-like view */ {
-              size = account.code.length; // yul: size := extcodesize(account)
-          }
-          return size > 0; /* s-seir: size == account.code.length */
+      uint256 size;
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = account.code.length; // yul: size := extcodesize(account)
+          size = __sseir_eval_asm_s_1_1;
       }
+      return size > 0;
+  }
   ```

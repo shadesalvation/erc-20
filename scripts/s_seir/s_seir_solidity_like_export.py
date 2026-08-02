@@ -1498,6 +1498,8 @@ class SolidityLikeRenderer:
             "PathConditionedLowLevelCall",
             "PathConditionedStaticCallOverlay",
             "PathConditionedDelegateCallOverlay",
+            "PathConditionedPrecompileOutputRead",
+            "PathConditionedPrecompileCall",
             "EventEmit",
             "PrecompileOutputRead",
             "PrecompileCall",
@@ -1555,6 +1557,12 @@ class SolidityLikeRenderer:
             and overlay.attrs.get("result")
             and overlay.attrs.get("solidity_like")
         }
+        path_output_lines_by_target = {
+            overlay.attrs.get("target"): SolidityLikeRenderer.path_conditioned_lines(overlay)
+            for overlay in overlays
+            if overlay.kind == "PathConditionedPrecompileOutputRead"
+            and overlay.attrs.get("target")
+        }
         state_read_lines_by_target = {
             overlay.attrs.get("target"): overlay.attrs.get("solidity_like")
             for overlay in overlays
@@ -1567,6 +1575,10 @@ class SolidityLikeRenderer:
         for overlay in steps:
             temp = overlay.attrs.get("temp")
             if temp in skip_temps:
+                continue
+            path_output_lines = path_output_lines_by_target.get(temp)
+            if path_output_lines:
+                lines.extend(path_output_lines)
                 continue
             line = (
                 state_read_lines_by_target.get(temp)

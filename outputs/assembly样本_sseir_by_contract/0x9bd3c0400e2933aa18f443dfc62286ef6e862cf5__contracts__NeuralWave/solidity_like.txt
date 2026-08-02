@@ -43,33 +43,35 @@ Function NeuralWave._loadTransferContext(address, address)
   SolidityLikeFunction
   ```solidity
   function _loadTransferContext(
-          address transmitter,
-          address receptor
-      )
-          private
-          view
-          returns (
-              uint256 transmitterState,
-              uint256 receptorState,
-              uint256 pathwayPattern
-          )
-      {
-          assembly /* s-seir solidity-like view */ {
-              memory[0x00] = transmitter; // yul: mstore(0x00, transmitter)
-              memory[0x20] = nodeRegistry.slot; // yul: mstore(0x20, nodeRegistry.slot)
-              transmitterState = nodeRegistry[transmitter]; // yul: transmitterState := sload(keccak256(0x00, 0x40))
-              memory[0x00] = receptor; // yul: mstore(0x00, receptor)
-              receptorState = nodeRegistry[receptor]; // yul: receptorState := sload(keccak256(0x00, 0x40))
-              memory[0x00] = transmitter; // yul: mstore(0x00, transmitter)
-              memory[0x20] = routingMatrix.slot; // yul: mstore(0x20, routingMatrix.slot)
-              senderSlot = slot(routingMatrix[transmitter]); // yul: let senderSlot := keccak256(0x00, 0x40)
-              senderRoute = routingMatrix[transmitter]; // yul: let senderRoute := sload(senderSlot)
-              memory[0x00] = receptor; // yul: mstore(0x00, receptor)
-              recipientSlot = slot(routingMatrix[receptor]); // yul: let recipientSlot := keccak256(0x00, 0x40)
-              recipientRoute = routingMatrix[receptor]; // yul: let recipientRoute := sload(recipientSlot)
-              pathwayPattern = ((senderRoute << 1) | recipientRoute); // yul: pathwayPattern := or(shl(1, senderRoute), recipientRoute)
-          }
+  address transmitter,
+  address receptor
+  )
+  private
+  view
+  returns (
+  uint256 transmitterState,
+  uint256 receptorState,
+  uint256 pathwayPattern
+  )
+  {
+      assembly /* s-seir solidity-like view */ {
+          memory[0x00] = transmitter; // yul: mstore(0x00, transmitter)
+          memory[0x20] = nodeRegistry.slot; // yul: mstore(0x20, nodeRegistry.slot)
+          transmitterState = nodeRegistry[transmitter]; // yul: transmitterState := sload(keccak256(0x00, 0x40))
+          memory[0x00] = receptor; // yul: mstore(0x00, receptor)
+          receptorState = nodeRegistry[receptor]; // yul: receptorState := sload(keccak256(0x00, 0x40))
+          memory[0x00] = transmitter; // yul: mstore(0x00, transmitter)
+          memory[0x20] = routingMatrix.slot; // yul: mstore(0x20, routingMatrix.slot)
+          senderSlot = slot(routingMatrix[transmitter]); // yul: let senderSlot := keccak256(0x00, 0x40)
+          senderRoute = routingMatrix[transmitter]; // yul: let senderRoute := sload(senderSlot)
+          memory[0x00] = receptor; // yul: mstore(0x00, receptor)
+          recipientSlot = slot(routingMatrix[receptor]); // yul: let recipientSlot := keccak256(0x00, 0x40)
+          recipientRoute = routingMatrix[receptor]; // yul: let recipientRoute := sload(recipientSlot)
+          __sseir_eval_asm_s_13_1 = (senderRoute << 1); // yul: pathwayPattern := or(shl(1, senderRoute), recipientRoute)
+          __sseir_eval_asm_s_13_2 = (__sseir_eval_asm_s_13_1 | recipientRoute);
+          pathwayPattern = __sseir_eval_asm_s_13_2;
       }
+  }
   ```
 
 Function NeuralWave._processSignalDistribution(address, uint256)
@@ -143,42 +145,60 @@ Function NeuralWave._processSignalDistribution(address, uint256)
   SolidityLikeFunction
   ```solidity
   function _processSignalDistribution(address from, uint256 total) private {
-          uint256[5] memory synapticWeights;
+      uint256[5] memory synapticWeights;
   
-          uint256 _base = CALIBRATION_BASE;
-          uint256 _alpha = CALIBRATION_ALPHA;
-          uint256 _beta = CALIBRATION_BETA;
-          uint256 _gamma = CALIBRATION_GAMMA;
-          uint256 _delta = CALIBRATION_DELTA;
+      uint256 _base = CALIBRATION_BASE;
+      uint256 _alpha = CALIBRATION_ALPHA;
+      uint256 _beta = CALIBRATION_BETA;
+      uint256 _gamma = CALIBRATION_GAMMA;
+      uint256 _delta = CALIBRATION_DELTA;
   
-          assembly /* s-seir solidity-like view */ {
-              inputActivation = total; // yul: let inputActivation := total
-              normalizationFactor = _base; // yul: let normalizationFactor := _base
-              require(0x7FFFFFFF != 0); // yul: let forwardEntropy := mod(prevrandao(), 0x7FFFFFFF)
-              require(0x7FFFFFFF != 0); // yul: let backwardEntropy := mod(prevrandao(), 0x7FFFFFFF)
-              gradientBias = (forwardEntropy - backwardEntropy); // yul: let gradientBias := sub(forwardEntropy, backwardEntropy)
-              require(normalizationFactor != 0); // yul: let poolingWeight := div(mul(inputActivation, _alpha), normalizationFactor)
-              require(normalizationFactor != 0); // yul: let pruningWeight := div(mul(inputActivation, _beta), normalizationFactor)
-              require(normalizationFactor != 0); // yul: let attentionWeight := div(mul(inputActivation, _gamma), normalizationFactor)
-              require(normalizationFactor != 0); // yul: let rewardWeight := div(mul(inputActivation, _delta), normalizationFactor)
-              memory[synapticWeights] = poolingWeight; // yul: mstore(synapticWeights, poolingWeight)
-              memory[synapticWeights + 32] = pruningWeight; // yul: mstore(add(synapticWeights, 0x20), pruningWeight)
-              memory[synapticWeights + 64] = attentionWeight; // yul: mstore(add(synapticWeights, 0x40), attentionWeight)
-              memory[synapticWeights + 96] = rewardWeight; // yul: mstore(add(synapticWeights, 0x60), rewardWeight)
-              forwardSum = ((poolingWeight + pruningWeight) + (attentionWeight + rewardWeight)); // yul: let forwardSum := add(add(poolingWeight, pruningWeight), add(attentionWeight, rewardWeight))
-              residualConnection = ((inputActivation - forwardSum) + gradientBias); // yul: let residualConnection := add(sub(inputActivation, forwardSum), gradientBias)
-              memory[synapticWeights + 128] = residualConnection; // yul: mstore(add(synapticWeights, 0x80), residualConnection)
-          }
-  
-          if (synapticWeights[0] > 0)
-              super._update(from, liquidityPool, synapticWeights[0]);
-          if (synapticWeights[1] > 0)
-              super._update(from, address(0), synapticWeights[1]);
-          if (synapticWeights[2] > 0)
-              super._update(from, marketingWallet, synapticWeights[2]);
-          if (synapticWeights[3] > 0)
-              super._update(from, ecosystemRewards, synapticWeights[3]);
-          if (synapticWeights[4] > 0)
-              super._update(from, developmentFund, synapticWeights[4]);
+      assembly /* s-seir solidity-like view */ {
+          inputActivation = total; // yul: let inputActivation := total
+          normalizationFactor = _base; // yul: let normalizationFactor := _base
+          __sseir_eval_asm_s_3_1 = block.prevrandao; // yul: let forwardEntropy := mod(prevrandao(), 0x7FFFFFFF)
+          __sseir_eval_asm_s_3_2 = (__sseir_eval_asm_s_3_1 % 0x7FFFFFFF);
+          forwardEntropy = __sseir_eval_asm_s_3_2;
+          __sseir_eval_asm_s_4_1 = block.prevrandao; // yul: let backwardEntropy := mod(prevrandao(), 0x7FFFFFFF)
+          __sseir_eval_asm_s_4_2 = (__sseir_eval_asm_s_4_1 % 0x7FFFFFFF);
+          backwardEntropy = __sseir_eval_asm_s_4_2;
+          __sseir_eval_asm_s_5_1 = (forwardEntropy - backwardEntropy); // yul: let gradientBias := sub(forwardEntropy, backwardEntropy)
+          gradientBias = __sseir_eval_asm_s_5_1;
+          __sseir_eval_asm_s_6_1 = (inputActivation * _alpha); // yul: let poolingWeight := div(mul(inputActivation, _alpha), normalizationFactor)
+          __sseir_eval_asm_s_6_2 = (__sseir_eval_asm_s_6_1 / normalizationFactor);
+          poolingWeight = __sseir_eval_asm_s_6_2;
+          __sseir_eval_asm_s_7_1 = (inputActivation * _beta); // yul: let pruningWeight := div(mul(inputActivation, _beta), normalizationFactor)
+          __sseir_eval_asm_s_7_2 = (__sseir_eval_asm_s_7_1 / normalizationFactor);
+          pruningWeight = __sseir_eval_asm_s_7_2;
+          __sseir_eval_asm_s_8_1 = (inputActivation * _gamma); // yul: let attentionWeight := div(mul(inputActivation, _gamma), normalizationFactor)
+          __sseir_eval_asm_s_8_2 = (__sseir_eval_asm_s_8_1 / normalizationFactor);
+          attentionWeight = __sseir_eval_asm_s_8_2;
+          __sseir_eval_asm_s_9_1 = (inputActivation * _delta); // yul: let rewardWeight := div(mul(inputActivation, _delta), normalizationFactor)
+          __sseir_eval_asm_s_9_2 = (__sseir_eval_asm_s_9_1 / normalizationFactor);
+          rewardWeight = __sseir_eval_asm_s_9_2;
+          memory[synapticWeights] = poolingWeight; // yul: mstore(synapticWeights, poolingWeight)
+          memory[synapticWeights + 32] = pruningWeight; // yul: mstore(add(synapticWeights, 0x20), pruningWeight)
+          memory[synapticWeights + 64] = attentionWeight; // yul: mstore(add(synapticWeights, 0x40), attentionWeight)
+          memory[synapticWeights + 96] = rewardWeight; // yul: mstore(add(synapticWeights, 0x60), rewardWeight)
+          __sseir_eval_asm_s_14_1 = (attentionWeight + rewardWeight); // yul: let forwardSum := add(add(poolingWeight, pruningWeight), add(attentionWeight, rewardWeight))
+          __sseir_eval_asm_s_14_2 = (poolingWeight + pruningWeight);
+          __sseir_eval_asm_s_14_3 = (__sseir_eval_asm_s_14_2 + __sseir_eval_asm_s_14_1);
+          forwardSum = __sseir_eval_asm_s_14_3;
+          __sseir_eval_asm_s_15_1 = (inputActivation - forwardSum); // yul: let residualConnection := add(sub(inputActivation, forwardSum), gradientBias)
+          __sseir_eval_asm_s_15_2 = (__sseir_eval_asm_s_15_1 + gradientBias);
+          residualConnection = __sseir_eval_asm_s_15_2;
+          memory[synapticWeights + 128] = residualConnection; // yul: mstore(add(synapticWeights, 0x80), residualConnection)
       }
+  
+      if (synapticWeights[0] > 0)
+      super._update(from, liquidityPool, synapticWeights[0]);
+      if (synapticWeights[1] > 0)
+      super._update(from, address(0), synapticWeights[1]);
+      if (synapticWeights[2] > 0)
+      super._update(from, marketingWallet, synapticWeights[2]);
+      if (synapticWeights[3] > 0)
+      super._update(from, ecosystemRewards, synapticWeights[3]);
+      if (synapticWeights[4] > 0)
+      super._update(from, developmentFund, synapticWeights[4]);
+  }
   ```

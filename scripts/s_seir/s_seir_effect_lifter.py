@@ -11,6 +11,7 @@ for _sseir_path in (_SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
 from typing import Any
 
 from assembly_ast_cfg import yul_statement_text, yul_expression
+from assembly_external_call_ir import PRECOMPILES
 from s_seir_memory_ssa import resolve_memory_read_with_loops
 from assembly_memory_ssa import direct_call, statement_expression
 from s_seir_id import IdAllocator
@@ -20,6 +21,7 @@ from s_seir_yul_normalize import call_parts, int_text, normalize_expr
 
 
 class EffectLifter:
+    FIXED_PRECOMPILE_RETURNDATA = {1: 32, 2: 32, 3: 32}
     SEMANTIC_CALLS = {
         "mload", "keccak256", "calldatacopy", "codecopy", "returndatacopy", "mcopy", "extcodecopy",
         "sload", "sstore", "call", "staticcall", "delegatecall", "callcode", "revert", "return",
@@ -38,12 +40,15 @@ class EffectLifter:
         lookup = {(s.block_id, s.text, s.src): s.stmt_id for s in unit.source_statements if s.lang == "yul"}
         text_lookup = {(s.block_id, s.text): s.stmt_id for s in unit.source_statements if s.lang == "yul"}
         loop_contexts = (control or {}).get("loop_contexts", {})
+        assembly_entry_conditions = self.assembly_entry_conditions(control or {})
         for block in unit.assembly_blocks:
+            block_effect_start = len(effects)
             res = memory_results.get(block.block_id)
             label = f"asm_block_{block.block_id}"
             block_loop_context = loop_contexts.get(block.block_id) or loop_contexts.get(str(block.block_id)) or []
             if not res:
                 continue
+            setattr(res, "function_path_prefixes", assembly_entry_conditions.get(block.block_id, []))
             facts.append({
                 "kind": "MemorySSAQueryLayer",
                 "assembly_block": block.block_id,
@@ -185,6 +190,8 @@ class EffectLifter:
                         "size": vals[1],
                         "value": names[0] if names else None,
                         "value_versions": self.created_value_versions(res, nid, names),
+                        "ptr_versions": self.reaching_value_versions(res, nid, vals[0]),
+                        "size_versions": self.reaching_value_versions(res, nid, vals[1]),
                         "cfg_node_id": nid,
                         "path_states": self.node_path_states(res, nid),
                         "memory_read": self.memory_query(res, nid, vals[0], vals[1], "keccak256", block_loop_context),
@@ -277,6 +284,17 @@ class EffectLifter:
                 facts.append({"kind": "MemoryRangeSummary", **sm.__dict__})
             for top in getattr(res, "memory_tops", []):
                 facts.append({"kind": "MemoryTop", **top.__dict__})
+            self.attach_cross_statement_call_outputs(
+                effects[block_effect_start:],
+                memory_resolver=lambda node_id, pointer, reason: self.memory_query(
+                    res,
+                    node_id,
+                    pointer,
+                    '0x20',
+                    reason,
+                    block_loop_context,
+                ),
+            )
         for stmt in unit.source_statements:
             if stmt.lang == "solidity":
                 t = stmt.text.strip()
@@ -340,6 +358,8 @@ class EffectLifter:
                     "size": vals[1],
                     "value": step.get("temp"),
                     "value_versions": {},
+                    "ptr_versions": self.reaching_value_versions(res, nid, vals[0]),
+                    "size_versions": self.reaching_value_versions(res, nid, vals[1]),
                     "cfg_node_id": nid,
                     "path_states": self.node_path_states(res, nid),
                     nested_attr: True,
@@ -440,6 +460,267 @@ class EffectLifter:
             "output_size": call_output.get("output_size"),
         }]
 
+    @classmethod
+    def attach_cross_statement_call_outputs(
+        cls,
+        effects: list[EffectNode],
+        memory_resolver: Any | None = None,
+    ) -> None:
+        """Connect a later mload to the closest compatible CALL output range.
+
+        Atomic evaluation already handles CALL followed by mload in one Yul
+        expression. This closes the same def-use relation across statements in
+        the current assembly CFG without replacing the underlying MemorySSA.
+        """
+        call_kinds = {"Call", "StaticCall", "DelegateCall", "CallCode"}
+        calls = [
+            effect for effect in effects
+            if effect.kind in call_kinds and effect.attrs.get("output_ptr") is not None
+        ]
+        writes = [effect for effect in effects if effect.kind == "MemoryWrite"]
+        for read in (effect for effect in effects if effect.kind == "MemoryRead"):
+            query = read.attrs.get("memory_read") or {}
+            if query.get("overridden_by_call_output"):
+                continue
+            read_node = cls.effect_node_id(read)
+            if read_node is None:
+                continue
+            read_ptr = read.attrs.get("read_from")
+            if cls.is_returndatasize_pointer(read_ptr, effects, read):
+                cls.attach_returndatasize_candidates(
+                    read,
+                    calls,
+                    effects,
+                    memory_resolver,
+                )
+                continue
+            compatible = []
+            for call in calls:
+                call_node = cls.effect_node_id(call)
+                if call_node is None or call_node >= read_node:
+                    continue
+                if not cls.same_memory_pointer(read_ptr, call.attrs.get("output_ptr")):
+                    continue
+                if not cls.effect_paths_compatible(call, read):
+                    continue
+                if cls.memory_pointer_rewritten_between(writes, read_ptr, call_node, read_node):
+                    continue
+                compatible.append(call)
+            if not compatible:
+                continue
+            call = max(compatible, key=lambda item: cls.effect_node_id(item) or -1)
+            call_output = {
+                "call_temp": call.attrs.get("result") or call.effect_id,
+                "call": call.attrs.get("op"),
+                "output_ptr": call.attrs.get("output_ptr"),
+                "output_size": call.attrs.get("output_size"),
+                "effect_kind": call.kind,
+                "effect_id": call.effect_id,
+                "cfg_node_id": cls.effect_node_id(call),
+                "path_states": call.attrs.get("path_states") or ["entry"],
+            }
+            read.attrs["reads_after_call_output"] = [call_output]
+            read.attrs["value_from_call_output"] = f"call_output_word({call_output['call_temp']}, 0)"
+            cls.override_memory_read_with_call_output(query, call_output)
+
+    @classmethod
+    def attach_returndatasize_candidates(
+        cls,
+        read: EffectNode,
+        calls: list[EffectNode],
+        effects: list[EffectNode],
+        memory_resolver: Any | None,
+    ) -> None:
+        read_node = cls.effect_node_id(read)
+        if read_node is None:
+            return
+        effect_order = {effect.effect_id: index for index, effect in enumerate(effects)}
+        read_paths = read.attrs.get('path_states') or ['entry']
+        selected: dict[str, EffectNode] = {}
+        for read_path in read_paths:
+            compatible = [
+                call for call in calls
+                if cls.effect_node_id(call) is not None
+                and cls.effect_node_id(call) <= read_node
+                and any(
+                    cls.path_condition_implies(read_path, producer_path)
+                    for producer_path in (call.attrs.get('path_states') or ['entry'])
+                )
+            ]
+            if not compatible:
+                continue
+            nearest = max(
+                compatible,
+                key=lambda item: (cls.effect_node_id(item) or -1, effect_order.get(item.effect_id, -1)),
+            )
+            selected[str(read_path)] = nearest
+        candidates: list[dict[str, Any]] = []
+        seen: set[tuple[str, str, int]] = set()
+        for read_path, call in selected.items():
+            target = int_text(str(call.attrs.get('target') or ''))
+            fixed_size = cls.FIXED_PRECOMPILE_RETURNDATA.get(target) if target is not None else None
+            if fixed_size is None or call.attrs.get('op') != 'staticcall':
+                continue
+            call_node = cls.effect_node_id(call)
+            call_temp = call.attrs.get('result') or call.effect_id
+            for size in (fixed_size, 0):
+                key = (read_path, call.effect_id, size)
+                if key in seen:
+                    continue
+                seen.add(key)
+                pointer = f'0x{size:02x}'
+                condition = f'returndatasize_after({call.effect_id}) == {pointer}'
+                if read_path != 'entry':
+                    condition = f'{read_path} && {condition}'
+                resolved_query = None
+                value = None
+                source = 'memory_ssa'
+                output_ptr = int_text(str(call.attrs.get('output_ptr') or ''))
+                output_size = int_text(str(call.attrs.get('output_size') or ''))
+                if size > 0 and output_ptr == size and output_size is not None and output_size >= 32:
+                    value = f'call_output_word({call_temp}, 0)'
+                    source = 'call_output'
+                    resolved_query = {
+                        'query_kind': 'CallOutputMemoryRead',
+                        'pointer': pointer,
+                        'length': '0x20',
+                        'complete': True,
+                        'has_unknown': False,
+                        'words': [{
+                            'offset': 0,
+                            'offset_expr': '0',
+                            'address_key': pointer,
+                            'value': value,
+                            'source': source,
+                            'call_temp': call_temp,
+                            'call': call.attrs.get('op'),
+                            'output_size': call.attrs.get('output_size'),
+                        }],
+                    }
+                elif memory_resolver is not None and call_node is not None:
+                    resolved_query = memory_resolver(read_node, pointer, 'returndatasize_pointer_candidate')
+                    value = cls.single_resolved_memory_value(resolved_query)
+                status = 'resolved' if value is not None else 'unresolved'
+                candidates.append({
+                    'status': status,
+                    'condition': condition,
+                    'returndata_size': pointer,
+                    'pointer': pointer,
+                    'value': value if value is not None else 'unknown',
+                    'source': source,
+                    'memory_read': resolved_query,
+                    'call_effect': call.effect_id,
+                    'call_temp': call_temp,
+                    'call_kind': call.kind,
+                    'precompile': PRECOMPILES.get(target),
+                    'precompile_address': target,
+                    'cfg_path': read_path,
+                })
+        if not candidates:
+            return
+        read.attrs['returndatasize_source_calls'] = list(dict.fromkeys(
+            candidate['call_effect'] for candidate in candidates
+        ))
+        read.attrs['returndatasize_pointer_candidates'] = candidates
+
+    @staticmethod
+    def single_resolved_memory_value(query: Any) -> str | None:
+        if not isinstance(query, dict) or not query.get('complete') or query.get('has_unknown'):
+            return None
+        words = query.get('words') or []
+        if len(words) != 1:
+            return None
+        value = words[0].get('value')
+        if value is None or str(value).strip().lower() == 'unknown':
+            return None
+        return str(value)
+
+    @classmethod
+    def is_returndatasize_pointer(
+        cls,
+        pointer: Any,
+        effects: list[EffectNode],
+        read: EffectNode,
+        seen: set[str] | None = None,
+    ) -> bool:
+        text = str(pointer or '').strip()
+        name, args = call_parts(text)
+        if name == 'returndatasize' and not args:
+            return True
+        if not cls.simple_identifier(text):
+            return False
+        seen = set(seen or ())
+        if text in seen:
+            return False
+        seen.add(text)
+        read_node = cls.effect_node_id(read)
+        definitions = []
+        for effect in effects:
+            if effect.kind != 'ValueDef' or text not in (effect.attrs.get('targets') or []):
+                continue
+            node = cls.effect_node_id(effect)
+            if read_node is not None and node is not None and node > read_node:
+                continue
+            if not cls.effect_paths_compatible(effect, read):
+                continue
+            definitions.append(effect)
+        if not definitions:
+            return False
+        latest = max(definitions, key=lambda item: cls.effect_node_id(item) or -1)
+        return cls.is_returndatasize_pointer(
+            latest.attrs.get('value'),
+            effects,
+            read,
+            seen,
+        )
+
+    @staticmethod
+    def effect_node_id(effect: EffectNode) -> int | None:
+        try:
+            return int(effect.attrs.get("cfg_node_id"))
+        except (TypeError, ValueError):
+            return None
+
+    @classmethod
+    def effect_paths_compatible(cls, producer: EffectNode, consumer: EffectNode) -> bool:
+        producer_paths = producer.attrs.get("path_states") or ["entry"]
+        consumer_paths = consumer.attrs.get("path_states") or ["entry"]
+        return any(
+            cls.path_condition_implies(consumer_path, producer_path)
+            for producer_path in producer_paths
+            for consumer_path in consumer_paths
+        )
+
+    @staticmethod
+    def path_condition_implies(consumer_path: Any, producer_path: Any) -> bool:
+        def atoms(path: Any) -> set[str]:
+            return {
+                part.strip()
+                for part in str(path or "entry").split(" && ")
+                if part.strip() and part.strip() != "entry"
+            }
+
+        return atoms(producer_path).issubset(atoms(consumer_path))
+
+    @classmethod
+    def memory_pointer_rewritten_between(
+        cls,
+        writes: list[EffectNode],
+        pointer: Any,
+        start_node: int,
+        end_node: int,
+    ) -> bool:
+        for write in writes:
+            node = cls.effect_node_id(write)
+            if node is None or not start_node < node < end_node:
+                continue
+            if cls.same_memory_pointer(pointer, write.attrs.get("address")):
+                return True
+            for alias in write.attrs.get("aliases") or []:
+                if cls.same_memory_pointer(pointer, alias.get("expression")):
+                    return True
+        return False
+
     @staticmethod
     def same_memory_pointer(left: Any, right: Any) -> bool:
         return str(left or "").replace(" ", "").lower() == str(right or "").replace(" ", "").lower()
@@ -496,6 +777,8 @@ class EffectLifter:
             "size": args[1],
             "value": slot_key,
             "value_versions": {slot_key: [inline_slot_key]},
+            "ptr_versions": self.reaching_value_versions(res, nid, args[0]),
+            "size_versions": self.reaching_value_versions(res, nid, args[1]),
             "cfg_node_id": nid,
             "path_states": self.node_path_states(res, nid),
             "memory_read": self.memory_query(res, nid, args[0], args[1], "keccak256", block_loop_context),
@@ -580,9 +863,58 @@ class EffectLifter:
         states = []
         for state in res.states_at(nid):
             text = ' && '.join(state.predicates) if getattr(state, 'predicates', ()) else 'entry'
-            if text not in states:
-                states.append(text)
+            for merged in EffectLifter.merge_function_path_prefixes(getattr(res, "function_path_prefixes", []) or [], text):
+                if merged not in states:
+                    states.append(merged)
         return states
+
+    @staticmethod
+    def merge_function_path_prefixes(prefixes: list[str], local_path: str) -> list[str]:
+        clean_prefixes = [str(item).strip() for item in prefixes if str(item or "").strip() and str(item).strip() != "entry"]
+        local = str(local_path or "").strip() or "entry"
+        if not clean_prefixes:
+            return [local]
+        out = []
+        for prefix in clean_prefixes:
+            if local == "entry":
+                out.append(prefix)
+            elif local.startswith(prefix + " && "):
+                out.append(local)
+            else:
+                out.append(f"{prefix} && {local}")
+        return out
+
+    @staticmethod
+    def assembly_entry_conditions(control: dict[str, Any]) -> dict[int, list[str]]:
+        blocks = {item.get("block_id"): item for item in control.get("blocks", []) if isinstance(item, dict)}
+        out: dict[int, list[str]] = {}
+        for edge in control.get("edges", []) or []:
+            if not isinstance(edge, dict):
+                continue
+            dst = str(edge.get("to") or "")
+            marker = "_n0"
+            if not dst.startswith("bb_asm") or not dst.endswith(marker):
+                continue
+            try:
+                assembly_block = int(dst[len("bb_asm"): -len(marker)])
+            except Exception:
+                continue
+            src_block = blocks.get(edge.get("from")) or {}
+            terminator = src_block.get("terminator") or {}
+            if terminator.get("kind") != "Branch":
+                continue
+            condition = str(terminator.get("condition") or "").strip()
+            if not condition:
+                continue
+            kind = str(edge.get("kind") or "")
+            if kind == "false":
+                condition = f"!({condition})"
+            elif kind not in {"true", "if_true"}:
+                continue
+            bucket = out.setdefault(assembly_block, [])
+            if condition not in bucket:
+                bucket.append(condition)
+        return out
 
     @staticmethod
     def memory_query(res: Any, nid: int, pointer: str, length: str | None, reason: str, function_loop_context: list[dict[str, Any]]):
@@ -631,22 +963,58 @@ class EffectLifter:
     @staticmethod
     def attach_call_memory(attrs: dict[str, Any], res: Any, nid: int, vals: list[str], call: str, block_loop_context: list[dict[str, Any]]) -> None:
         if call in {"call", "callcode"} and len(vals) >= 7:
-            attrs.update({"gas": vals[0], "target": vals[1], "value": vals[2], "input_ptr": vals[3], "input_size": vals[4], "output_ptr": vals[5], "output_size": vals[6]})
-            attrs["input_memory"] = EffectLifter.memory_query(res, nid, vals[3], vals[4], f"{call}_input", block_loop_context)
-            attrs["input_memory_partial"] = EffectLifter.partial_memory_slice(res, nid, vals[3], vals[4], f"{call}_input_partial")
-            attrs["output_memory_query"] = {"pointer": vals[5], "length": vals[6], "role": f"{call}_output_range"}
+            input_size = EffectLifter.resolve_literal_value(res, nid, vals[4])
+            output_size = EffectLifter.resolve_literal_value(res, nid, vals[6])
+            attrs.update({"gas": vals[0], "target": vals[1], "value": vals[2], "input_ptr": vals[3], "input_size": input_size, "input_size_yul": vals[4], "output_ptr": vals[5], "output_size": output_size, "output_size_yul": vals[6]})
+            attrs["input_memory"] = EffectLifter.memory_query(res, nid, vals[3], input_size, f"{call}_input", block_loop_context)
+            attrs["input_memory_partial"] = EffectLifter.partial_memory_slice(res, nid, vals[3], input_size, f"{call}_input_partial")
+            attrs["output_memory_query"] = {"pointer": vals[5], "length": output_size, "role": f"{call}_output_range"}
         elif call in {"staticcall", "delegatecall"} and len(vals) >= 6:
-            attrs.update({"gas": vals[0], "target": vals[1], "input_ptr": vals[2], "input_size": vals[3], "output_ptr": vals[4], "output_size": vals[5]})
-            attrs["input_memory"] = EffectLifter.memory_query(res, nid, vals[2], vals[3], f"{call}_input", block_loop_context)
-            attrs["input_memory_partial"] = EffectLifter.partial_memory_slice(res, nid, vals[2], vals[3], f"{call}_input_partial")
-            attrs["output_memory_query"] = {"pointer": vals[4], "length": vals[5], "role": f"{call}_output_range"}
+            input_size = EffectLifter.resolve_literal_value(res, nid, vals[3])
+            output_size = EffectLifter.resolve_literal_value(res, nid, vals[5])
+            attrs.update({"gas": vals[0], "target": vals[1], "input_ptr": vals[2], "input_size": input_size, "input_size_yul": vals[3], "output_ptr": vals[4], "output_size": output_size, "output_size_yul": vals[5]})
+            attrs["input_memory"] = EffectLifter.memory_query(res, nid, vals[2], input_size, f"{call}_input", block_loop_context)
+            attrs["input_memory_partial"] = EffectLifter.partial_memory_slice(res, nid, vals[2], input_size, f"{call}_input_partial")
+            attrs["output_memory_query"] = {"pointer": vals[4], "length": output_size, "role": f"{call}_output_range"}
+
+    @staticmethod
+    def resolve_literal_value(res: Any, nid: int, value: str) -> str:
+        if int_text(value) is not None:
+            return value
+        text = str(value or "").strip()
+        if not EffectLifter.simple_identifier(text):
+            return value
+        for state in res.states_at(nid):
+            definition = getattr(state, "values", {}).get(text)
+            expr = getattr(definition, "expression", None) if definition else None
+            rendered = yul_expression(expr) if isinstance(expr, dict) else ""
+            if rendered and int_text(rendered) is not None:
+                return rendered
+        return value
 
     @staticmethod
     def partial_memory_slice(res: Any, nid: int, pointer: str, length: str | None, reason: str) -> dict[str, Any] | None:
+        symbolic_slice = None
+        if hasattr(res, "resolve_memory_byte_slice"):
+            symbolic_slice = res.resolve_memory_byte_slice(nid, pointer, length, reason)
         start = int_text(pointer)
         size = int_text(length or "")
         if start is None or size is None or size < 0:
-            return None
+            if not symbolic_slice:
+                return None
+            slices = symbolic_slice.get("slices") or []
+            return {
+                "query_kind": "PartialMemorySliceResult",
+                "reason": reason,
+                "pointer": pointer,
+                "length": length,
+                "size": symbolic_slice.get("size"),
+                "complete": symbolic_slice.get("complete"),
+                "slices": slices,
+                "path_slices": symbolic_slice.get("path_slices"),
+                "abi_hint": EffectLifter.abi_hint_from_slices(slices, int(symbolic_slice.get("size") or 0)),
+                "byte_slice": symbolic_slice,
+            }
         end = start + size
         candidates: list[dict[str, Any]] = []
         for state in res.states_at(nid):

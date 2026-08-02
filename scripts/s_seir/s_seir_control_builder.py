@@ -2,6 +2,7 @@
 from __future__ import annotations
 from pathlib import Path as _SSEIRPath
 import os
+import re
 import signal
 import sys as _sseir_sys
 _SSEIR_ROOT = _SSEIRPath(__file__).resolve().parents[1]
@@ -14,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from assembly_ast_cfg import build_yul_cfg, parse_src
+from assembly_ast_cfg import build_yul_cfg, parse_src, solc_supports_option
 from s_seir_model import FunctionUnit, SourceStatement
 
 
@@ -61,7 +62,10 @@ class ControlBuilder:
         self._source_text = self.source_path.read_text(encoding="utf-8") if self.source_path and self.source_path.exists() else ""
         self._slither_cache: Any | None = None
         self._slither_error: str | None = None
+        self._slither_primary_failure: str | None = None
+        self._slither_compile_mode: str | None = None
         self._slither_attempted = False
+        self._last_function_match_method: str | None = None
 
     def build(self, unit: FunctionUnit) -> dict[str, Any]:
         if self.source_path and self.solc_bin:
@@ -83,6 +87,12 @@ class ControlBuilder:
             "assembly_subgraph_embedded_from_assembly_ast_cfg",
             "slither_assembly_nodes_replaced_by_local_yul_cfg",
         ]
+        if self._slither_compile_mode:
+            notes.append(f"slither_compile_mode={self._slither_compile_mode}")
+        if self._last_function_match_method:
+            notes.append(f"function_match_method={self._last_function_match_method}")
+        if self._slither_primary_failure:
+            notes.append(f"slither_primary_failure={self._slither_primary_failure}")
         if self._slither_error:
             notes.append(f"slither_warning: {self._slither_error}")
 
@@ -172,6 +182,10 @@ class ControlBuilder:
             "yul_cfg_embedded_from_assembly_ast_cfg",
             "precise_solidity_cfg_adapter_unavailable",
         ]
+        if self._slither_compile_mode:
+            notes.append(f"slither_compile_mode={self._slither_compile_mode}")
+        if self._slither_primary_failure:
+            notes.append(f"slither_primary_failure={self._slither_primary_failure}")
         if self._slither_error:
             notes.append(f"slither_error: {self._slither_error}")
         assembly_ranges = {ab.block_id: Range(*ab.source_range) for ab in unit.assembly_blocks}
@@ -278,6 +292,7 @@ class ControlBuilder:
         return out
 
     def _find_slither_function(self, unit: FunctionUnit) -> Any | None:
+        self._last_function_match_method = None
         slither = self._load_slither()
         if slither is None:
             return None
@@ -286,11 +301,28 @@ class ControlBuilder:
             if getattr(contract, "name", None) != unit.contract:
                 continue
             for fn in getattr(contract, "functions_and_modifiers_declared", []):
-                if getattr(fn, "full_name", None) == unit.signature:
-                    return fn
                 if getattr(fn, "name", None) == unit.function:
                     candidates.append(fn)
+        unit_range = Range(*parse_src(str(unit.ast_node.get("src", ""))))
+        source_matches = [
+            fn for fn in candidates
+            if self.function_source_range(fn).valid
+            and unit_range.valid
+            and self.function_source_range(fn).start == unit_range.start
+        ]
+        if len(source_matches) == 1:
+            self._last_function_match_method = "source_range"
+            return source_matches[0]
+        canonical_signature = self.canonical_function_signature(unit.signature)
+        signature_matches = [
+            fn for fn in candidates
+            if self.canonical_function_signature(str(getattr(fn, "full_name", ""))) == canonical_signature
+        ]
+        if len(signature_matches) == 1:
+            self._last_function_match_method = "canonical_signature"
+            return signature_matches[0]
         if len(candidates) == 1:
+            self._last_function_match_method = "unique_name"
             return candidates[0]
         return None
 
@@ -306,26 +338,60 @@ class ControlBuilder:
             kwargs: dict[str, Any] = {}
             if self.solc_bin:
                 kwargs["solc"] = self.solc_bin
-            timeout = self.slither_timeout_seconds()
-            if timeout > 0 and hasattr(signal, "SIGALRM"):
-                previous_handler = signal.getsignal(signal.SIGALRM)
-
-                def timeout_handler(_signum: int, _frame: Any) -> None:
-                    raise SlitherLoadTimeout(f"Slither load exceeded {timeout}s")
-
-                signal.signal(signal.SIGALRM, timeout_handler)
-                signal.alarm(timeout)
-                try:
-                    self._slither_cache = Slither(str(self.source_path), **kwargs)
-                finally:
-                    signal.alarm(0)
-                    signal.signal(signal.SIGALRM, previous_handler)
-            else:
-                self._slither_cache = Slither(str(self.source_path), **kwargs)
+            try:
+                self._slither_cache = self._load_slither_attempt(Slither, kwargs)
+                self._slither_compile_mode = "normal"
+            except Exception as primary_exc:
+                if not self.can_retry_slither_via_ir(primary_exc):
+                    raise
+                self._slither_primary_failure = "stack_too_deep"
+                retry_kwargs = dict(kwargs)
+                retry_kwargs["solc_args"] = "--via-ir --optimize"
+                self._slither_cache = self._load_slither_attempt(Slither, retry_kwargs)
+                self._slither_compile_mode = "via_ir_retry"
             return self._slither_cache
         except Exception as exc:  # pragma: no cover - depends on local toolchain
             self._slither_error = f"{type(exc).__name__}: {exc}"
             return None
+
+    def _load_slither_attempt(self, slither_class: Any, kwargs: dict[str, Any]) -> Any:
+        timeout = self.slither_timeout_seconds()
+        if timeout <= 0 or not hasattr(signal, "SIGALRM"):
+            return slither_class(str(self.source_path), **kwargs)
+        previous_handler = signal.getsignal(signal.SIGALRM)
+
+        def timeout_handler(_signum: int, _frame: Any) -> None:
+            raise SlitherLoadTimeout(f"Slither load exceeded {timeout}s")
+
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(timeout)
+        try:
+            return slither_class(str(self.source_path), **kwargs)
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, previous_handler)
+
+    def can_retry_slither_via_ir(self, exc: Exception) -> bool:
+        if "stack too deep" not in str(exc).lower() or not self.solc_bin:
+            return False
+        try:
+            return solc_supports_option(self.solc_bin, "--via-ir")
+        except Exception:
+            return False
+
+    @staticmethod
+    def function_source_range(function: Any) -> Range:
+        mapping = getattr(function, "source_mapping", None)
+        start = getattr(mapping, "start", None)
+        length = getattr(mapping, "length", None)
+        if isinstance(start, int) and isinstance(length, int):
+            return Range(start, start + length)
+        return Range(0, 0)
+
+    @staticmethod
+    def canonical_function_signature(signature: str) -> str:
+        text = re.sub(r"\b(?:struct|contract|enum)\s+", "", str(signature or ""))
+        return re.sub(r"\s+", "", text)
 
     @staticmethod
     def slither_timeout_seconds() -> int:

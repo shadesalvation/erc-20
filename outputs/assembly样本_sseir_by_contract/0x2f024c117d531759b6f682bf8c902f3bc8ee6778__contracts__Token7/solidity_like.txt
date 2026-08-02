@@ -15,10 +15,11 @@ Function TOKEN.isContract(address)
   SolidityLikeFunction
   ```solidity
   function isContract(address _addr) private view returns (bool) {
-          uint32 size;
-          assembly /* s-seir solidity-like view */ {
-              size = _addr.code.length; // yul: size := extcodesize(_addr)
-          }
-          return (size > 0); /* s-seir: size == _addr.code.length */
+      uint32 size;
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = _addr.code.length; // yul: size := extcodesize(_addr)
+          size = __sseir_eval_asm_s_1_1;
       }
+      return (size > 0);
+  }
   ```

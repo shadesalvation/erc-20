@@ -14,6 +14,7 @@ for item in (ROOT / "legacy_yul", ROOT / "s_seir"):
 from s_seir_effect_lifter import EffectLifter
 from s_seir_model import EffectNode
 from s_seir_overlay_builder import SemanticOverlayBuilder
+from s_seir_sink_resolver import SinkResolver
 
 
 @dataclass
@@ -297,6 +298,9 @@ def test_direct_state_write_value_normalizes_nested_sload() -> None:
     writes = [item for item in overlays if item.kind == "StateVariableWrite"]
     assert len(reads) == 1, [item.kind for item in overlays]
     assert reads[0].attrs["access"] == "c"
+    assert reads[0].attrs["read_expression"] == "c"
+    assert reads[0].attrs["source_expression"] == "sload(c.slot)"
+    assert reads[0].attrs["consumed_by"]["kind"] is None
     assert len(writes) == 1, [item.kind for item in overlays]
     assert writes[0].attrs["value"] == "c"
     assert writes[0].attrs["value_yul"] == "sload(c.slot)"
@@ -650,6 +654,38 @@ def test_path_conditioned_storage_write_candidates_keep_conditions() -> None:
     by_access = {item["access"]: item for item in path.attrs["candidates"]}
     assert by_access["balances[left]"]["condition"] == "!(flag) && ok"
     assert by_access["balances[right]"]["condition"] == "flag && ok"
+
+
+def test_equivalent_storage_candidates_merge_ssa_versions_only() -> None:
+    candidates = [
+        {
+            "slot_key": "toSlot__ssa9",
+            "status": "resolved",
+            "condition": None,
+            "overlay_kind": "MappingWrite",
+            "access": "balances[to]",
+            "value": "nextBalance",
+            "solidity_like": "balances[to] = nextBalance;",
+            "notes": ["mapping_slot"],
+        },
+        {
+            "slot_key": "toSlot__ssa10",
+            "status": "resolved",
+            "condition": None,
+            "overlay_kind": "MappingWrite",
+            "access": "balances[to]",
+            "value": "nextBalance",
+            "solidity_like": "balances[to] = nextBalance;",
+            "notes": ["mapping_slot"],
+        },
+    ]
+    merged = SemanticOverlayBuilder.dedupe_equivalent_storage_candidates(candidates)
+    assert len(merged) == 1, merged
+    assert merged[0]["slot_keys"] == ["toSlot__ssa9", "toSlot__ssa10"], merged
+    assert merged[0]["merged_candidate_count"] == 2, merged
+
+    conditioned = [dict(candidates[0], condition="flag"), dict(candidates[1], condition="!(flag)")]
+    assert len(SemanticOverlayBuilder.dedupe_equivalent_storage_candidates(conditioned)) == 2
 
 
 def test_byte_axis_nested_mapping_read_recovers_all_dimensions() -> None:
@@ -1244,6 +1280,36 @@ def test_empty_revert_payload_is_require_not_custom_error_path_overlay() -> None
     assert overlays[0].attrs["sink_resolution"]["path_resolutions"][0]["arg_resolutions"]["payload"]["normalized"] == "empty"
 
 
+def test_empty_revert_nonzero_pointer_and_hex_size_is_require_overlay() -> None:
+    builder = SemanticOverlayBuilder()
+    raw_condition = "iszero(call(gas(), target, 0, input, size, output, 0x20))"
+    revert = effect("Revert", {
+        "payload_ptr": "o",
+        "payload_size": "0x00",
+        "cfg_node_id": 3,
+        "path_states": [raw_condition],
+    }, "eff_revert")
+    SinkResolver().attach_all([revert])
+    overlays = builder.require_overlays(FakeTypeEnv(), [
+        effect("Branch", {
+            "condition": raw_condition,
+            "condition_final_temp": "__guard",
+            "cfg_node_id": 2,
+            "path_states": ["entry"],
+        }, "eff_branch"),
+        revert,
+    ])
+    assert len(overlays) == 1, [item.kind for item in overlays]
+    assert overlays[0].kind == "RequireOverlay"
+    assert "__guard" in overlays[0].attrs["condition"]
+    assert "call(" not in overlays[0].attrs["condition"]
+    assert overlays[0].attrs["evaluated_require_conditions"] == ["__guard"]
+    sink = overlays[0].attrs["sink_resolution"]
+    payload = sink["path_resolutions"][0]["arg_resolutions"]["payload"]
+    assert payload["normalized"] == "empty"
+    assert "empty_payload" in payload["notes"]
+
+
 if __name__ == "__main__":
     tests = [
         test_condition_sload_lifted_to_storage_read,
@@ -1267,6 +1333,7 @@ if __name__ == "__main__":
         test_byte_axis_standard_mapping_write_recovers_mapping_access,
         test_path_sensitive_byte_axis_mapping_candidates_recover_mapping_accesses,
         test_path_conditioned_storage_write_candidates_keep_conditions,
+        test_equivalent_storage_candidates_merge_ssa_versions_only,
         test_byte_axis_nested_mapping_read_recovers_all_dimensions,
         test_byte_axis_nested_mapping_write_recovers_all_dimensions,
         test_mapping_key_direct_state_read_is_normalized,
@@ -1280,6 +1347,7 @@ if __name__ == "__main__":
         test_byte_axis_does_not_project_intermediate_nested_mapping_slot,
         test_revert_selector_from_byte_slice,
         test_empty_revert_payload_is_require_not_custom_error_path_overlay,
+        test_empty_revert_nonzero_pointer_and_hex_size_is_require_overlay,
     ]
     for test in tests:
         test()

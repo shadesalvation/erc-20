@@ -93,6 +93,8 @@ class SinkResolver:
 
     def resolve_effect(self, effect: Any) -> SinkResolution | None:
         kind = str(getattr(effect, "kind", "") or "")
+        if kind == "MemoryRead" and (getattr(effect, "attrs", {}) or {}).get("returndatasize_pointer_candidates"):
+            return self.resolve_returndatasize_memory_read(effect)
         if kind == "MemoryHash":
             return self.resolve_memory_hash(effect)
         specs = self.MEMORY_RANGE_BY_KIND.get(kind)
@@ -114,6 +116,47 @@ class SinkResolver:
         specs: list[tuple[str, str, str, str, str]],
     ) -> SinkResolution | None:
         return build_memory_range_resolution(effect, sink_kind=str(getattr(effect, "kind", "") or "Sink"), role_specs=specs)
+
+    @staticmethod
+    def resolve_returndatasize_memory_read(effect: Any) -> SinkResolution | None:
+        attrs = getattr(effect, "attrs", {}) or {}
+        candidates = attrs.get("returndatasize_pointer_candidates") or []
+        if not candidates:
+            return None
+        paths: list[SinkPathResolution] = []
+        for index, candidate in enumerate(candidates):
+            value = candidate.get("value")
+            status = str(candidate.get("status") or "unresolved")
+            reason = None if status == "resolved" else "unresolved_returndatasize_pointer_candidate"
+            paths.append(SinkPathResolution(
+                path_id=f"path_{index}",
+                condition=candidate.get("condition"),
+                status=status,
+                reason=reason,
+                arg_resolutions={
+                    "memory_read": SinkArgResolution(
+                        expr=str(attrs.get("read_from") or "returndatasize()"),
+                        normalized=str(value) if status == "resolved" else None,
+                        memory_slice=candidate.get("memory_read"),
+                        notes=[
+                            "returndatasize_pointer",
+                            "call_output" if candidate.get("source") == "call_output" else "memory_ssa",
+                            "path_sensitive_sink",
+                        ],
+                    )
+                },
+            ))
+        stmt_refs = list(getattr(effect, "stmt_refs", []) or [])
+        cfg_node_id = attrs.get("cfg_node_id")
+        return SinkResolution(
+            sink_id=f"sink_{'_'.join(stmt_refs) or getattr(effect, 'effect_id', 'effect')}_MemoryRead_{cfg_node_id}",
+            stmt_refs=stmt_refs,
+            cfg_node_id=cfg_node_id if isinstance(cfg_node_id, int) else None,
+            sink_kind="MemoryRead",
+            args=[str(attrs.get("read_from") or "")],
+            path_resolutions=paths,
+            path_sensitive=len(paths) > 1 or any(path.condition for path in paths),
+        )
 
 
 def packed_hash_sink_resolution(effect: Any, *, sink_kind: str = "MemoryHash") -> SinkResolution | None:
@@ -218,9 +261,22 @@ def memory_range_path_resolutions(
     semantic_role: str,
     hash_mode: bool = False,
 ) -> list[SinkPathResolution]:
-    if semantic_role == "revert_payload" and is_zero_size(size):
+    byte_slice = memory_read.get("byte_slice") or {}
+    resolved_size = byte_slice.get("size")
+    if is_zero_size(size) or (resolved_size is not None and is_zero_size(resolved_size)):
         attrs = getattr(effect, "attrs", {}) or {}
         paths = attrs.get("path_states") or ["entry"]
+        empty_note = {
+            "event_data": "empty_event_data",
+            "return_payload": "empty_payload",
+            "revert_payload": "empty_payload",
+            "call_input": "empty_call_input",
+            "staticcall_input": "empty_call_input",
+            "delegatecall_input": "empty_call_input",
+            "callcode_input": "empty_call_input",
+            "hash_input": "empty_hash_input",
+        }.get(semantic_role, "empty_memory_range")
+        normalized = "keccak256(empty)" if hash_mode else "empty"
         out: list[SinkPathResolution] = []
         for index, path in enumerate(paths):
             out.append(SinkPathResolution(
@@ -229,20 +285,19 @@ def memory_range_path_resolutions(
                 arg_resolutions={
                     role: SinkArgResolution(
                         expr=f"{ptr}:{size}",
-                        normalized="empty",
+                        normalized=normalized,
                         memory_slice={
                             "query_kind": "EmptyMemorySlice",
                             "path": path,
                             "complete": True,
                             "slices": [],
                         },
-                        notes=[semantic_role, "empty_payload", "zero_length_memory_range"],
+                        notes=[semantic_role, empty_note, "zero_length_memory_range"],
                     )
                 },
             ))
         return out
 
-    byte_slice = memory_read.get("byte_slice") or {}
     if not byte_slice or not byte_slice.get("complete"):
         return []
 
@@ -337,7 +392,9 @@ def is_full_word_pair(slices: list[dict[str, Any]]) -> bool:
 
 
 def is_zero_size(value: Any) -> bool:
-    text = str(value or "").strip().lower()
+    if value is None:
+        return False
+    text = str(value).strip().lower()
     if not text:
         return False
     try:

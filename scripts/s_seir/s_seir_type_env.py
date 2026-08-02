@@ -8,6 +8,8 @@ for _sseir_path in (_SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
     if _sseir_text not in _sseir_sys.path:
         _sseir_sys.path.insert(0, _sseir_text)
 from s_seir_model import FunctionUnit, VariableInfo
+from assembly_semantic_ir import parse_int_literal
+from s_seir_yul_normalize import call_parts
 class TypeEnv:
     def __init__(self, unit: FunctionUnit):
         self.unit=unit; self.variables={v.name:v for v in unit.parameters+unit.returns+unit.locals+unit.state_variables if v.name}
@@ -33,6 +35,35 @@ class TypeEnv:
         if not v: return False
         t=v.type_string.replace('contract ','')
         return ('bytes memory' in t or 'string memory' in t or (t in {'bytes','string'} and v.data_location=='memory'))
+    def dynamic_bytes_memory_slice(self,pointer:str|None,size:str|None):
+        """Recognize the data region of one typed dynamic bytes/string object."""
+        ptr_call,ptr_args=call_parts(str(pointer or '').strip())
+        if ptr_call!='add' or len(ptr_args)!=2:
+            return None
+        obj=None
+        for candidate,offset in ((ptr_args[0],ptr_args[1]),(ptr_args[1],ptr_args[0])):
+            if parse_int_literal(str(offset).strip())==32 and self.is_bytes_memory(str(candidate).strip()):
+                obj=str(candidate).strip()
+                break
+        if not obj:
+            return None
+        size_call,size_args=call_parts(str(size or '').strip())
+        if size_call!='mload' or len(size_args)!=1 or str(size_args[0]).strip()!=obj:
+            return None
+        info=self.lookup(obj)
+        type_string=str(getattr(info,'type_string','') or '')
+        is_string='string' in type_string
+        hash_input=f'bytes({obj})' if is_string else obj
+        return {
+            'object':obj,
+            'object_type':type_string,
+            'data_pointer':pointer,
+            'data_pointer_normalized':f'{obj}.data',
+            'length_expression':size,
+            'length_normalized':f'{obj}.length',
+            'hash_input':hash_input,
+            'hash_expression':f'keccak256({hash_input})',
+        }
     def is_named_return(self,name:str)->bool: return any(v.name==name for v in self.unit.returns)
     def is_memory_pointer_return(self,name:str)->bool:
         v=self.lookup(name)

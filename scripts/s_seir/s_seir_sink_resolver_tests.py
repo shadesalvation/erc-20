@@ -111,6 +111,51 @@ def test_zero_length_revert_resolves_empty_payload_before_memory_slice() -> None
     assert "empty_payload" in payload.notes
 
 
+def test_zero_length_event_data_resolves_empty_range() -> None:
+    e = effect("EventLog", {
+        "data_ptr": "arbitraryPtr",
+        "data_size": "0x00",
+        "cfg_node_id": 10,
+        "path_states": ["cond"],
+        "data_memory": {"byte_slice": {
+            "complete": True,
+            "size": 0,
+            "path_slices": [{"path": "cond", "complete": True, "slices": []}],
+        }},
+    })
+    resolution = SinkResolver().resolve_effect(e)
+    assert resolution is not None
+    path = resolution.path_resolutions[0]
+    assert path.status == "resolved"
+    assert path.reason is None
+    data = path.arg_resolutions["data"]
+    assert data.normalized == "empty"
+    assert data.memory_slice["query_kind"] == "EmptyMemorySlice"
+    assert "empty_event_data" in data.notes
+
+
+def test_zero_length_call_input_resolves_empty_range() -> None:
+    e = effect("Call", {
+        "input_ptr": "input",
+        "input_size": "zeroSize",
+        "output_ptr": "0",
+        "output_size": "0",
+        "cfg_node_id": 11,
+        "input_memory": {"byte_slice": {
+            "complete": True,
+            "size": 0,
+            "path_slices": [{"path": "entry", "complete": True, "slices": []}],
+        }},
+    })
+    resolution = SinkResolver().resolve_effect(e)
+    assert resolution is not None
+    path = resolution.path_resolutions[0]
+    assert path.status == "resolved"
+    input_arg = path.arg_resolutions["input"]
+    assert input_arg.normalized == "empty"
+    assert "empty_call_input" in input_arg.notes
+
+
 def test_nonzero_revert_still_uses_memory_slice_resolution() -> None:
     e = effect("Revert", {
         "payload_ptr": "0x1c",
@@ -152,6 +197,8 @@ if __name__ == "__main__":
         test_event_log_data_gets_path_sensitive_sink_resolution,
         test_return_and_call_attach_sink_resolution,
         test_zero_length_revert_resolves_empty_payload_before_memory_slice,
+        test_zero_length_event_data_resolves_empty_range,
+        test_zero_length_call_input_resolves_empty_range,
         test_nonzero_revert_still_uses_memory_slice_resolution,
         test_nonzero_revert_incomplete_memory_remains_unresolved,
     ]

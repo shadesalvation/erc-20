@@ -1,19 +1,35 @@
+INFO:SSEIROpaquePreprocess:algorithm AST-located conservative Yul opaque-if pruning
+INFO:SSEIROpaquePreprocess:rules syntactic algebraic identities only
+OpaqueIf: Token._transfer(address _from, address _to, uint256 _amount) src=2389:125:0 value=true reason=iszero(zero_identity_as_condition) condition=iszero(xor(bfo228g, bfo228g))
+OpaqueIf: Token._spendAllowance(address _owner, address _spender, uint256 _amount) src=4471:148:0 value=true reason=same_expression condition=eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+OpaqueIf: Token._spendAllowance(address _owner, address _spender, uint256 _amount) src=5220:93:0 value=true reason=algebraic_identity condition=eq(gbj1enk, and(gbj1enk, gbj1enk))
+OpaqueIf: Token._spendAllowance(address _owner, address _spender, uint256 _amount) src=5526:110:0 value=true reason=algebraic_identity condition=eq(bf51h1a, and(bf51h1a, bf51h1a))
+
 INFO:SSEIRBranchPreprocess:input Solidity source only
 INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
 INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
 
 AssemblyBlock 1: Token._transfer(address _from, address _to, uint256 _amount)
-ConditionalMaterialization: sink=N16 target=qVPd mode=linearized
-  baseline path: !(iszero(_from)) && !(iszero(_to)) && iszero(xor(bfo228g, bfo228g))
+ConditionalMaterialization: sink=N14 target=qVPd mode=linearized
+  baseline path: !(iszero(_from)) && !(iszero(_to))
   baseline slot: XCUz=keccak256(bbwz=_from,add(bbwz,32)=0)
-  DiscardedUnknownPaths: 1
+  DiscardedUnknownPaths: 0
   BranchExpandedYulIR:
     let bbwz := mload(0x40); // origin: N8
-    mstore(bbwz, _from); // origin: N13
-    mstore(add(bbwz, 32), 0); // origin: N14
-    let XCUz := keccak256(bbwz, 64); // origin: N15
-    let qVPd := sload(XCUz); // origin: N16
-  OriginSummary: shared=[8, 13, 14, 15] cloned=[16]
+    mstore(bbwz, _from); // origin: N11
+    mstore(add(bbwz, 32), 0); // origin: N12
+    let XCUz := keccak256(bbwz, 64); // origin: N13
+    let qVPd := sload(XCUz); // origin: N14
+  OriginSummary: shared=[8, 11, 12, 13] cloned=[14]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N15 target=Fpzy mode=linearized
+  baseline path: !(iszero(_from)) && !(iszero(_to))
+  baseline slot: sSgI.slot
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    let Fpzy := sload(sSgI.slot); // origin: N15
+  OriginSummary: shared=[] cloned=[15]
+  SourceRewrite: skipped linearized non-divergent expansion
 
 AssemblyBlock 2: Token.approve(address _spender, uint256 _amount)
 ConditionalMaterialization: sink=N10 target=log3 mode=linearized
@@ -28,21 +44,19 @@ ConditionalMaterialization: sink=N10 target=log3 mode=linearized
   SourceRewrite: skipped linearized non-divergent expansion
 
 AssemblyBlock 3: Token._spendAllowance(address _owner, address _spender, uint256 _amount)
-ConditionalMaterialization: sink=N13 target=CCkU mode=conditional
-  baseline path: !(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))
-  baseline slot: Jfwv=keccak256(bbwz=sload(qBQC.slot),add(bbwz,32)=1)
+ConditionalMaterialization: sink=N11 target=CCkU mode=linearized
+  baseline path: entry
+  baseline slot: Jfwv=keccak256(bbwz=_owner,add(bbwz,32)=uAnE)
   DiscardedUnknownPaths: 0
   BranchExpandedYulIR:
     let bbwz := mload(0x40); // origin: N2
-    mstore(bbwz, sload(qBQC.slot)); // origin: N3
-    mstore(add(bbwz, 32), 1); // origin: N4
-    let Jfwv := keccak256(bbwz, 64); // origin: N12
-    let CCkU := sload(Jfwv); // origin: N13
-    // path: eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
-    if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
-        mstore(bbwz, _owner); // origin: N10
-        mstore(add(bbwz, 32), uAnE); // origin: N11
-        let Jfwv := keccak256(bbwz, 64); // origin: N12
-        let CCkU := sload(Jfwv); // origin: N13
-    }
-  OriginSummary: shared=[2] cloned=[3, 4, 10, 11, 12, 13]
+    mstore(bbwz, _owner); // origin: N8
+    mstore(add(bbwz, 32), uAnE); // origin: N9
+    let Jfwv := keccak256(bbwz, 64); // origin: N10
+    let CCkU := sload(Jfwv); // origin: N11
+  OriginSummary: shared=[2, 8, 9, 10] cloned=[11]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+INFO:SSEIRBranchPreprocess:opaque_rewrites 4
+INFO:SSEIRBranchPreprocess:branch_rewrites 0
+INFO:SSEIRBranchPreprocess:total_rewrites 4

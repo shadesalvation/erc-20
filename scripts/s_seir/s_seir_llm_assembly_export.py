@@ -380,6 +380,8 @@ def compact_overlay_attrs(kind: str, attrs: dict[str, Any]) -> dict[str, Any]:
         "AddressZeroCheck": ("variable", "variable_type", "check", "condition", "source_expression", "source_pattern", "projection", "projection_expression", "via_value_defs", "used_by", "solidity_like"),
         "PrecompileCall": ("op", "target", "gas", "input_size", "output_size", "native_name", "solidity_like"),
         "PrecompileOutputRead": ("source_precompile_overlay", "target", "value", "solidity_like"),
+        "PathConditionedPrecompileCall": ("op", "target", "input_ptr", "input_size", "output_ptr", "output_size", "precompile", "path_states", "candidates"),
+        "PathConditionedPrecompileOutputRead": ("source_precompile_overlay", "target", "path_states", "candidates"),
         "RawReturnData": ("payload_ptr", "payload_size", "encoding_hint", "values", "solidity_like", "reason"),
         "CalldataWordRead": ("target", "target_type", "source", "offset", "offset_normalized", "width_bytes", "solidity_like", "reason"),
         "ExpressionNormalization": ("target", "expression", "solidity_like", "context", "condition_evaluation", "division_guards"),

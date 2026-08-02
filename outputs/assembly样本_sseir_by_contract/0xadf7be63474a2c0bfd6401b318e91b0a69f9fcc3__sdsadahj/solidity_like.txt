@@ -26,17 +26,15 @@ Function sdsadahj.airdrop(address[])
   SolidityLikeFunction
   ```solidity
   function airdrop(address[] memory to) external {
-          assembly /* s-seir solidity-like view */ {
-              len = to.length; // yul: let len := mload(to)
-              i = 0; // yul: let i := 0
-              v = giftAmount; // yul: let v := sload(giftAmount.slot)
-              for (; (i < len); i = (i + 1)) { // yul: for
-                  account = to[((((i + 1) * 0x20) - 32) / 32)]; // yul: let account := mload(add(to, mul(add(i, 1), 0x20)))
-                  memory[0x0] = v; // yul: mstore(0x0, v)
-                  if ((i < len)) {
-                      emit Transfer(address(this), account, v); // yul: log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, address(), account)
-                  }
-              }
+      assembly /* s-seir solidity-like view */ {
+          len = to.length; // yul: let len := mload(to)
+          i = 0; // yul: let i := 0
+          v = giftAmount; // yul: let v := sload(giftAmount.slot)
+          for (; (i < len); i = __sseir_eval_asm_s_8_1) { // yul: for
+              account = to[i]; // yul: let account := mload(add(to, mul(add(i, 1), 0x20)))
+              memory[0x0] = v; // yul: mstore(0x0, v)
+              emit Transfer(address(this), account, v); // yul: log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, address(), account)
           }
       }
+  }
   ```

@@ -1298,6 +1298,8 @@
             "function_level_cfg_from_slither",
             "assembly_subgraph_embedded_from_assembly_ast_cfg",
             "slither_assembly_nodes_replaced_by_local_yul_cfg",
+            "slither_compile_mode=normal",
+            "function_match_method=source_range",
             "slither_nodes=17",
             "assembly_blocks=1",
             "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors"
@@ -1533,7 +1535,7 @@
               "asm_s_4"
             ],
             "attrs": {
-              "address": "0x0",
+              "address": "0x00",
               "value": "unknown(loop-carried-memory)",
               "memory_version": "mem_2",
               "origin_node": "N5",
@@ -1552,7 +1554,7 @@
               "asm_s_4"
             ],
             "attrs": {
-              "address": "0x00",
+              "address": "0x0",
               "value": "unknown(loop-carried-memory)",
               "memory_version": "mem_3",
               "origin_node": "N5",
@@ -1969,7 +1971,22 @@
                   "reason": "event_log_data",
                   "pointer": "0x0",
                   "length": "0x20",
-                  "start": 0,
+                  "address_aliases": [
+                    {
+                      "key": "0x00",
+                      "base": "0x00",
+                      "offset": 0,
+                      "expression": "0x00",
+                      "source": "literal-zero-base"
+                    },
+                    {
+                      "key": "0x0",
+                      "base": "0x0",
+                      "offset": 0,
+                      "expression": "0x0",
+                      "source": "literal"
+                    }
+                  ],
                   "size": 32,
                   "complete": true,
                   "has_overlap": false,
@@ -1994,6 +2011,11 @@
                           "source_kind": "mstore",
                           "origin_src": "13513:14:0",
                           "extraction": "v",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "v"
+                          },
                           "overlap_count": 1
                         }
                       ]
@@ -2017,6 +2039,11 @@
                           "source_kind": "mstore",
                           "origin_src": "13513:14:0",
                           "extraction": "v",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "v"
+                          },
                           "overlap_count": 1
                         }
                       ]
@@ -2072,6 +2099,11 @@
                               "source_kind": "mstore",
                               "origin_src": "13513:14:0",
                               "extraction": "v",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "v"
+                              },
                               "overlap_count": 1
                             }
                           ]
@@ -2086,6 +2118,35 @@
                   }
                 ]
               }
+            }
+          },
+          {
+            "effect_id": "eff_14",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_8"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_8_1",
+              "expression": "add(i, 1)",
+              "expression_normalized": "(i + 1)",
+              "call": "add",
+              "raw_args": [
+                "i",
+                "1"
+              ],
+              "evaluated_args": [
+                "i",
+                "1"
+              ],
+              "cfg_node_id": 11,
+              "language": "yul",
+              "path_states": [
+                "lt(i, len)"
+              ],
+              "parent_effect": "eff_13",
+              "evaluation_context": "value"
             }
           },
           {
@@ -2110,6 +2171,29 @@
                   "i__ssa5",
                   "i__ssa9"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_8_1",
+                "final_normalized": "__sseir_eval_asm_s_8_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_8_1",
+                    "expression": "add(i, 1)",
+                    "expression_normalized": "(i + 1)",
+                    "call": "add",
+                    "raw_args": [
+                      "i",
+                      "1"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "1"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
@@ -2159,6 +2243,7 @@
               "target": "v",
               "state_variable": "giftAmount",
               "slot": "giftAmount.slot",
+              "slot_versions": [],
               "solidity_like": "v = giftAmount;"
             }
           },
@@ -2207,6 +2292,11 @@
                         "source_kind": "mstore",
                         "origin_src": "13513:14:0",
                         "extraction": "v",
+                        "known_value": {
+                          "known": true,
+                          "kind": "symbolic_known",
+                          "expr": "v"
+                        },
                         "overlap_count": 1
                       }
                     ]
@@ -2269,6 +2359,11 @@
                               "source_kind": "mstore",
                               "origin_src": "13513:14:0",
                               "extraction": "v",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "v"
+                              },
                               "overlap_count": 1
                             }
                           ]
@@ -2441,7 +2536,8 @@
               "solidity_like": "len = to.length;",
               "context": "value",
               "division_guards": [],
-              "memory_hash": null
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -2460,7 +2556,8 @@
               "solidity_like": "i = 0;",
               "context": "value",
               "division_guards": [],
-              "memory_hash": null
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -2479,7 +2576,8 @@
               "solidity_like": "v = sload(giftAmount.slot);",
               "context": "value",
               "division_guards": [],
-              "memory_hash": null
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
@@ -2498,11 +2596,41 @@
               "solidity_like": "account = to[i];",
               "context": "value",
               "division_guards": [],
-              "memory_hash": null
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
             "overlay_id": "ov_9",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_14"
+            ],
+            "stmt_refs": [
+              "asm_s_8"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_8_1",
+              "expression": "add(i, 1)",
+              "expression_normalized": "(i + 1)",
+              "solidity_like": "__sseir_eval_asm_s_8_1 = (i + 1);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "i",
+                "1"
+              ],
+              "evaluated_args": [
+                "i",
+                "1"
+              ],
+              "parent_effect": "eff_13",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_10",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_13"
@@ -2513,11 +2641,34 @@
             "attrs": {
               "target": "i",
               "expression": "add(i, 1)",
-              "expression_normalized": "(i + 1)",
-              "solidity_like": "i = (i + 1);",
+              "expression_normalized": "__sseir_eval_asm_s_8_1",
+              "solidity_like": "i = __sseir_eval_asm_s_8_1;",
               "context": "value",
               "division_guards": [],
-              "memory_hash": null
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_8_1",
+                "final_normalized": "__sseir_eval_asm_s_8_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_8_1",
+                    "expression": "add(i, 1)",
+                    "expression_normalized": "(i + 1)",
+                    "call": "add",
+                    "raw_args": [
+                      "i",
+                      "1"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "1"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           }
         ],
@@ -2692,7 +2843,17 @@
             "effect_kind": "MemoryRead",
             "query_field": "memory_read",
             "has_phi": false,
-            "has_unknown": true,
+            "has_unknown": false,
+            "memory_query_has_unknown": true,
+            "memory_query_complete": false,
+            "empty_range": false,
+            "final_status": "resolved",
+            "resolved_by": "semantic_overlay_pattern",
+            "resolution_overlays": [
+              "ov_3"
+            ],
+            "resolution_roles": [],
+            "semantic_value": null,
             "loop_facts": [],
             "top_facts": [],
             "path_states": [
@@ -2705,7 +2866,17 @@
             "effect_kind": "MemoryRead",
             "query_field": "memory_read",
             "has_phi": false,
-            "has_unknown": true,
+            "has_unknown": false,
+            "memory_query_has_unknown": true,
+            "memory_query_complete": false,
+            "empty_range": false,
+            "final_status": "resolved",
+            "resolved_by": "semantic_overlay_pattern",
+            "resolution_overlays": [
+              "ov_4"
+            ],
+            "resolution_roles": [],
+            "semantic_value": null,
             "loop_facts": [],
             "top_facts": [],
             "path_states": [
@@ -2720,6 +2891,14 @@
             "query_field": "data_memory",
             "has_phi": true,
             "has_unknown": false,
+            "memory_query_has_unknown": false,
+            "memory_query_complete": true,
+            "empty_range": false,
+            "final_status": "resolved",
+            "resolved_by": "memory_ssa",
+            "resolution_overlays": [],
+            "resolution_roles": [],
+            "semantic_value": null,
             "loop_facts": [],
             "top_facts": [],
             "path_states": [

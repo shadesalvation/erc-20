@@ -1922,6 +1922,8 @@
             "function_level_cfg_from_slither",
             "assembly_subgraph_embedded_from_assembly_ast_cfg",
             "slither_assembly_nodes_replaced_by_local_yul_cfg",
+            "slither_compile_mode=normal",
+            "function_match_method=source_range",
             "slither_nodes=34",
             "assembly_blocks=1",
             "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors"
@@ -1933,12 +1935,16 @@
         "expr_roles": [
           {
             "expr_id": "expr_1",
-            "text": "0x40",
-            "normalized": "0x40",
+            "text": "mload(0x40)",
+            "normalized": "free_memory_pointer",
             "role": "free_memory_pointer",
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_1",
-            "attrs": {}
+            "attrs": {
+              "memory_slot": "0x40",
+              "effect": "eff_9",
+              "value": "ptr"
+            }
           },
           {
             "expr_id": "expr_2",
@@ -1947,7 +1953,9 @@
             "role": "memory_slice_start",
             "type_hint": "memory_ptr",
             "stmt_ref": "asm_s_11",
-            "attrs": {}
+            "attrs": {
+              "effect": "eff_24"
+            }
           },
           {
             "expr_id": "expr_3",
@@ -1956,7 +1964,9 @@
             "role": "memory_slice_size",
             "type_hint": "uint256",
             "stmt_ref": "asm_s_11",
-            "attrs": {}
+            "attrs": {
+              "effect": "eff_24"
+            }
           },
           {
             "expr_id": "expr_4",
@@ -1994,11 +2004,12 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_12",
             "attrs": {
-              "effect": "eff_18",
+              "effect": "eff_26",
               "slot_versions": [
                 "recipientSlot__ssa8",
                 "recipientSlot__ssa18"
-              ]
+              ],
+              "overlay": "ov_6"
             }
           },
           {
@@ -2009,7 +2020,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_12",
             "attrs": {
-              "effect": "eff_18"
+              "effect": "eff_26"
             }
           },
           {
@@ -2020,7 +2031,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "overlay": "ov_1",
+              "overlay": "ov_3",
               "state_variable": "_balances",
               "storage_reference": null,
               "storage_reference_kind": null,
@@ -2035,7 +2046,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "overlay": "ov_1",
+              "overlay": "ov_3",
               "storage_reference": null
             }
           },
@@ -2047,7 +2058,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_12",
             "attrs": {
-              "overlay": "ov_3",
+              "overlay": "ov_6",
               "candidate_index": 0,
               "status": "resolved"
             }
@@ -2060,8 +2071,8 @@
             "type_hint": null,
             "stmt_ref": "asm_s_12",
             "attrs": {
-              "overlay": "ov_3",
-              "candidate_index": 0,
+              "overlay": "ov_6",
+              "candidate_index": 1,
               "overlay_kind": "MappingWrite",
               "status": "resolved"
             }
@@ -2074,7 +2085,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_12",
             "attrs": {
-              "overlay": "ov_3",
+              "overlay": "ov_6",
               "candidate_index": 1,
               "status": "resolved"
             }
@@ -2087,7 +2098,7 @@
             "type_hint": "storage_slot",
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "overlay": "ov_4",
+              "overlay": "ov_7",
               "state_variable": "_balances",
               "storage_reference": null,
               "storage_reference_kind": null,
@@ -2102,7 +2113,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_11",
             "attrs": {
-              "overlay": "ov_4",
+              "overlay": "ov_7",
               "state_variable": "_balances",
               "storage_reference": null,
               "storage_reference_kind": null,
@@ -2117,7 +2128,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_3",
             "attrs": {
-              "overlay": "ov_5",
+              "overlay": "ov_8",
               "source": "msg.data"
             }
           },
@@ -2129,7 +2140,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_3",
             "attrs": {
-              "overlay": "ov_5",
+              "overlay": "ov_8",
               "target": "recipientsDataOffset",
               "width_bytes": 32
             }
@@ -2142,7 +2153,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_4",
             "attrs": {
-              "overlay": "ov_6",
+              "overlay": "ov_9",
               "source": "msg.data"
             }
           },
@@ -2154,7 +2165,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_4",
             "attrs": {
-              "overlay": "ov_6",
+              "overlay": "ov_9",
               "target": "amountsDataOffset",
               "width_bytes": 32
             }
@@ -2167,7 +2178,7 @@
             "type_hint": "uint256",
             "stmt_ref": "asm_s_8",
             "attrs": {
-              "overlay": "ov_7",
+              "overlay": "ov_10",
               "source": "msg.data"
             }
           },
@@ -2179,7 +2190,7 @@
             "type_hint": null,
             "stmt_ref": "asm_s_8",
             "attrs": {
-              "overlay": "ov_7",
+              "overlay": "ov_10",
               "target": "amount",
               "width_bytes": 32
             }
@@ -2254,7 +2265,7 @@
               "asm_s_5"
             ],
             "attrs": {
-              "address": "ptr2",
+              "address": "add(ptr,32)",
               "value": "unknown(loop-carried-memory)",
               "memory_version": "mem_3",
               "origin_node": "N7",
@@ -2273,7 +2284,7 @@
               "asm_s_5"
             ],
             "attrs": {
-              "address": "ptr",
+              "address": "ptr2",
               "value": "unknown(loop-carried-memory)",
               "memory_version": "mem_4",
               "origin_node": "N7",
@@ -2292,7 +2303,7 @@
               "asm_s_5"
             ],
             "attrs": {
-              "address": "add(ptr,32)",
+              "address": "ptr",
               "value": "unknown(loop-carried-memory)",
               "memory_version": "mem_5",
               "origin_node": "N7",
@@ -2448,6 +2459,35 @@
             }
           },
           {
+            "effect_id": "eff_11",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_2"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_2_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "cfg_node_id": 3,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_10",
+              "evaluation_context": "value"
+            }
+          },
+          {
             "effect_id": "eff_10",
             "kind": "ValueDef",
             "stmt_refs": [
@@ -2468,11 +2508,61 @@
                 "ptr2": [
                   "ptr2__ssa2"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_2_1",
+                "final_normalized": "__sseir_eval_asm_s_2_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_2_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_11",
+            "effect_id": "eff_13",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "calldataload(0x4)",
+              "expression_normalized": "calldataload(0x4)",
+              "call": "calldataload",
+              "raw_args": [
+                "0x4"
+              ],
+              "evaluated_args": [
+                "0x4"
+              ],
+              "cfg_node_id": 4,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_12",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_12",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_3"
@@ -2492,11 +2582,59 @@
                 "recipientsDataOffset": [
                   "recipientsDataOffset__ssa3"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "calldataload(0x4)",
+                    "expression_normalized": "calldataload(0x4)",
+                    "call": "calldataload",
+                    "raw_args": [
+                      "0x4"
+                    ],
+                    "evaluated_args": [
+                      "0x4"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_12",
+            "effect_id": "eff_15",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_4"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_4_1",
+              "expression": "calldataload(0x24)",
+              "expression_normalized": "calldataload(0x24)",
+              "call": "calldataload",
+              "raw_args": [
+                "0x24"
+              ],
+              "evaluated_args": [
+                "0x24"
+              ],
+              "cfg_node_id": 5,
+              "language": "yul",
+              "path_states": [
+                "entry"
+              ],
+              "parent_effect": "eff_14",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_14",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_4"
@@ -2516,11 +2654,32 @@
                 "amountsDataOffset": [
                   "amountsDataOffset__ssa4"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_4_1",
+                "final_normalized": "__sseir_eval_asm_s_4_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_4_1",
+                    "expression": "calldataload(0x24)",
+                    "expression_normalized": "calldataload(0x24)",
+                    "call": "calldataload",
+                    "raw_args": [
+                      "0x24"
+                    ],
+                    "evaluated_args": [
+                      "0x24"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_13",
+            "effect_id": "eff_16",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_6"
@@ -2544,7 +2703,65 @@
             }
           },
           {
-            "effect_id": "eff_14",
+            "effect_id": "eff_18",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_7"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_7_1",
+              "expression": "mul(i, 0x20)",
+              "expression_normalized": "(i * 0x20)",
+              "call": "mul",
+              "raw_args": [
+                "i",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "i",
+                "0x20"
+              ],
+              "cfg_node_id": 10,
+              "language": "yul",
+              "path_states": [
+                "lt(i, length)"
+              ],
+              "parent_effect": "eff_17",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_19",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_7"
+            ],
+            "attrs": {
+              "order": 2,
+              "temp": "__sseir_eval_asm_s_7_2",
+              "expression": "add(__sseir_eval_asm_s_7_1, 0x24)",
+              "expression_normalized": "(__sseir_eval_asm_s_7_1 + 0x24)",
+              "call": "add",
+              "raw_args": [
+                "mul(i, 0x20)",
+                "0x24"
+              ],
+              "evaluated_args": [
+                "__sseir_eval_asm_s_7_1",
+                "0x24"
+              ],
+              "cfg_node_id": 10,
+              "language": "yul",
+              "path_states": [
+                "lt(i, length)"
+              ],
+              "parent_effect": "eff_17",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_17",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_7"
@@ -2565,11 +2782,105 @@
                   "offset__ssa6",
                   "offset__ssa16"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_7_2",
+                "final_normalized": "__sseir_eval_asm_s_7_2",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_7_1",
+                    "expression": "mul(i, 0x20)",
+                    "expression_normalized": "(i * 0x20)",
+                    "call": "mul",
+                    "raw_args": [
+                      "i",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "0x20"
+                    ]
+                  },
+                  {
+                    "order": 2,
+                    "temp": "__sseir_eval_asm_s_7_2",
+                    "expression": "add(__sseir_eval_asm_s_7_1, 0x24)",
+                    "expression_normalized": "(__sseir_eval_asm_s_7_1 + 0x24)",
+                    "call": "add",
+                    "raw_args": [
+                      "mul(i, 0x20)",
+                      "0x24"
+                    ],
+                    "evaluated_args": [
+                      "__sseir_eval_asm_s_7_1",
+                      "0x24"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_15",
+            "effect_id": "eff_21",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_8"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_8_1",
+              "expression": "add(amountsDataOffset, offset)",
+              "expression_normalized": "(amountsDataOffset + offset)",
+              "call": "add",
+              "raw_args": [
+                "amountsDataOffset",
+                "offset"
+              ],
+              "evaluated_args": [
+                "amountsDataOffset",
+                "offset"
+              ],
+              "cfg_node_id": 11,
+              "language": "yul",
+              "path_states": [
+                "lt(i, length)"
+              ],
+              "parent_effect": "eff_20",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_22",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_8"
+            ],
+            "attrs": {
+              "order": 2,
+              "temp": "__sseir_eval_asm_s_8_2",
+              "expression": "calldataload(__sseir_eval_asm_s_8_1)",
+              "expression_normalized": "calldataload(__sseir_eval_asm_s_8_1)",
+              "call": "calldataload",
+              "raw_args": [
+                "add(amountsDataOffset, offset)"
+              ],
+              "evaluated_args": [
+                "__sseir_eval_asm_s_8_1"
+              ],
+              "cfg_node_id": 11,
+              "language": "yul",
+              "path_states": [
+                "lt(i, length)"
+              ],
+              "parent_effect": "eff_20",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_20",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_8"
@@ -2590,11 +2901,47 @@
                   "amount__ssa7",
                   "amount__ssa17"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_8_2",
+                "final_normalized": "__sseir_eval_asm_s_8_2",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_8_1",
+                    "expression": "add(amountsDataOffset, offset)",
+                    "expression_normalized": "(amountsDataOffset + offset)",
+                    "call": "add",
+                    "raw_args": [
+                      "amountsDataOffset",
+                      "offset"
+                    ],
+                    "evaluated_args": [
+                      "amountsDataOffset",
+                      "offset"
+                    ]
+                  },
+                  {
+                    "order": 2,
+                    "temp": "__sseir_eval_asm_s_8_2",
+                    "expression": "calldataload(__sseir_eval_asm_s_8_1)",
+                    "expression_normalized": "calldataload(__sseir_eval_asm_s_8_1)",
+                    "call": "calldataload",
+                    "raw_args": [
+                      "add(amountsDataOffset, offset)"
+                    ],
+                    "evaluated_args": [
+                      "__sseir_eval_asm_s_8_1"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_16",
+            "effect_id": "eff_23",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_11"
@@ -2619,7 +2966,7 @@
             }
           },
           {
-            "effect_id": "eff_17",
+            "effect_id": "eff_24",
             "kind": "MemoryHash",
             "stmt_refs": [
               "asm_s_11"
@@ -2635,6 +2982,10 @@
                   "recipientSlot__ssa18"
                 ]
               },
+              "ptr_versions": [
+                "ptr__ssa1"
+              ],
+              "size_versions": [],
               "cfg_node_id": 14,
               "path_states": [
                 "lt(i, length)"
@@ -2799,15 +3150,248 @@
                 "has_phi": true,
                 "loop_facts": [],
                 "top_facts": [],
+                "byte_slice": {
+                  "query_kind": "MemoryByteSliceResult",
+                  "tracker_scope": "s_seir_memory_byte_axis",
+                  "node_id": 14,
+                  "reason": "keccak256",
+                  "pointer": "ptr",
+                  "length": "0x40",
+                  "address_aliases": [
+                    {
+                      "key": "ptr",
+                      "base": "ptr",
+                      "offset": 0,
+                      "expression": "ptr",
+                      "source": "identifier"
+                    }
+                  ],
+                  "size": 64,
+                  "complete": true,
+                  "has_overlap": false,
+                  "slices": [],
+                  "path_slices": [
+                    {
+                      "path": "lt(i, length)",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 32,
+                          "source_value": "calldataload(add(recipientsDataOffset, offset))",
+                          "source_range": [
+                            0,
+                            32
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_1",
+                          "source_node_id": 12,
+                          "source_kind": "mstore",
+                          "origin_src": "43428:60:0",
+                          "extraction": "calldataload((recipientsDataOffset + offset))",
+                          "known_value": {
+                            "known": true,
+                            "kind": "derived_known",
+                            "expr": "calldataload((recipientsDataOffset + offset))"
+                          },
+                          "overlap_count": 1
+                        },
+                        {
+                          "query_offset": 32,
+                          "size": 32,
+                          "source_value": "_balances.slot",
+                          "source_range": [
+                            0,
+                            32
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_2",
+                          "source_node_id": 13,
+                          "source_kind": "mstore",
+                          "origin_src": "43505:28:0",
+                          "extraction": "_balances.slot",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "_balances.slot"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    },
+                    {
+                      "path": "lt(i, length)",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 32,
+                          "source_value": "calldataload(add(recipientsDataOffset, offset))",
+                          "source_range": [
+                            0,
+                            32
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_6",
+                          "source_node_id": 12,
+                          "source_kind": "mstore",
+                          "origin_src": "43428:60:0",
+                          "extraction": "calldataload((recipientsDataOffset + offset))",
+                          "known_value": {
+                            "known": true,
+                            "kind": "derived_known",
+                            "expr": "calldataload((recipientsDataOffset + offset))"
+                          },
+                          "overlap_count": 1
+                        },
+                        {
+                          "query_offset": 32,
+                          "size": 32,
+                          "source_value": "_balances.slot",
+                          "source_range": [
+                            0,
+                            32
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_7",
+                          "source_node_id": 13,
+                          "source_kind": "mstore",
+                          "origin_src": "43505:28:0",
+                          "extraction": "_balances.slot",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "_balances.slot"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "packed_semantics": []
+                },
                 "owner": "S-SEIR",
                 "assembly_block": 2,
                 "function_loop_context": [],
                 "loop_alignment": "function_level_solidity_loop_context_plus_yul_loop_memoryssa"
+              },
+              "sink_resolution": {
+                "sink_id": "sink_asm_s_11_MemoryHash_14",
+                "stmt_refs": [
+                  "asm_s_11"
+                ],
+                "cfg_node_id": 14,
+                "sink_kind": "MemoryHash",
+                "args": [
+                  "ptr",
+                  "0x40"
+                ],
+                "path_sensitive": true,
+                "path_resolutions": [
+                  {
+                    "path_id": "path_0",
+                    "condition": "lt(i, length)",
+                    "status": "resolved",
+                    "reason": null,
+                    "arg_resolutions": {
+                      "slot": {
+                        "expr": "recipientSlot",
+                        "normalized": "keccak256(abi.encode(calldataload((recipientsDataOffset + offset)), _balances.slot))",
+                        "ssa_key": "recipientSlot__ssa8",
+                        "memory_slice": {
+                          "query_kind": "PathMemoryByteSlice",
+                          "path": "lt(i, length)",
+                          "complete": true,
+                          "slices": [
+                            {
+                              "query_offset": 0,
+                              "size": 32,
+                              "source_value": "calldataload(add(recipientsDataOffset, offset))",
+                              "source_range": [
+                                0,
+                                32
+                              ],
+                              "source_offset": 0,
+                              "source_width": 32,
+                              "source_version": "mem_1",
+                              "source_node_id": 12,
+                              "source_kind": "mstore",
+                              "origin_src": "43428:60:0",
+                              "extraction": "calldataload((recipientsDataOffset + offset))",
+                              "known_value": {
+                                "known": true,
+                                "kind": "derived_known",
+                                "expr": "calldataload((recipientsDataOffset + offset))"
+                              },
+                              "overlap_count": 1
+                            },
+                            {
+                              "query_offset": 32,
+                              "size": 32,
+                              "source_value": "_balances.slot",
+                              "source_range": [
+                                0,
+                                32
+                              ],
+                              "source_offset": 0,
+                              "source_width": 32,
+                              "source_version": "mem_2",
+                              "source_node_id": 13,
+                              "source_kind": "mstore",
+                              "origin_src": "43505:28:0",
+                              "extraction": "_balances.slot",
+                              "known_value": {
+                                "known": true,
+                                "kind": "symbolic_known",
+                                "expr": "_balances.slot"
+                              },
+                              "overlap_count": 1
+                            }
+                          ]
+                        },
+                        "notes": [
+                          "hash_input",
+                          "byte_axis_memory_slice",
+                          "path_sensitive_sink"
+                        ]
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
           {
-            "effect_id": "eff_18",
+            "effect_id": "eff_25",
+            "kind": "StorageRead",
+            "stmt_refs": [
+              "asm_s_12"
+            ],
+            "attrs": {
+              "slot": "recipientSlot",
+              "slot_versions": [
+                "recipientSlot__ssa8",
+                "recipientSlot__ssa18"
+              ],
+              "value": null,
+              "value_versions": {},
+              "cfg_node_id": 15,
+              "path_states": [
+                "lt(i, length)"
+              ],
+              "expression": "sload(recipientSlot)",
+              "nested_in_storage_value": true,
+              "parent_call": "sstore",
+              "parent_slot": "recipientSlot",
+              "parent_value": "add(sload(recipientSlot), amount)"
+            }
+          },
+          {
+            "effect_id": "eff_26",
             "kind": "StorageWrite",
             "stmt_refs": [
               "asm_s_12"
@@ -2827,7 +3411,36 @@
             }
           },
           {
-            "effect_id": "eff_19",
+            "effect_id": "eff_28",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_13"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_13_1",
+              "expression": "add(totalSupplyDelta, amount)",
+              "expression_normalized": "(totalSupplyDelta + amount)",
+              "call": "add",
+              "raw_args": [
+                "totalSupplyDelta",
+                "amount"
+              ],
+              "evaluated_args": [
+                "totalSupplyDelta",
+                "amount"
+              ],
+              "cfg_node_id": 16,
+              "language": "yul",
+              "path_states": [
+                "lt(i, length)"
+              ],
+              "parent_effect": "eff_27",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_27",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_13"
@@ -2848,11 +3461,63 @@
                   "totalSupplyDelta__ssa9",
                   "totalSupplyDelta__ssa19"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_13_1",
+                "final_normalized": "__sseir_eval_asm_s_13_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_13_1",
+                    "expression": "add(totalSupplyDelta, amount)",
+                    "expression_normalized": "(totalSupplyDelta + amount)",
+                    "call": "add",
+                    "raw_args": [
+                      "totalSupplyDelta",
+                      "amount"
+                    ],
+                    "evaluated_args": [
+                      "totalSupplyDelta",
+                      "amount"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           },
           {
-            "effect_id": "eff_20",
+            "effect_id": "eff_30",
+            "kind": "EvaluationStep",
+            "stmt_refs": [
+              "asm_s_14"
+            ],
+            "attrs": {
+              "order": 1,
+              "temp": "__sseir_eval_asm_s_14_1",
+              "expression": "add(i, 1)",
+              "expression_normalized": "(i + 1)",
+              "call": "add",
+              "raw_args": [
+                "i",
+                "1"
+              ],
+              "evaluated_args": [
+                "i",
+                "1"
+              ],
+              "cfg_node_id": 17,
+              "language": "yul",
+              "path_states": [
+                "lt(i, length)"
+              ],
+              "parent_effect": "eff_29",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "effect_id": "eff_29",
             "kind": "ValueDef",
             "stmt_refs": [
               "asm_s_14"
@@ -2873,6 +3538,29 @@
                   "i__ssa10",
                   "i__ssa20"
                 ]
+              },
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_14_1",
+                "final_normalized": "__sseir_eval_asm_s_14_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_14_1",
+                    "expression": "add(i, 1)",
+                    "expression_normalized": "(i + 1)",
+                    "call": "add",
+                    "raw_args": [
+                      "i",
+                      "1"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "1"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
               }
             }
           }
@@ -2882,7 +3570,7 @@
             "overlay_id": "ov_1",
             "kind": "MappingSlot",
             "effects": [
-              "eff_17"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -2904,6 +3592,8 @@
               "base": "_balances.slot",
               "base_key": "_balances.slot",
               "slot_kind": "mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
               "activation": "storage_consumer",
               "resolved_inputs": [
                 {
@@ -3051,7 +3741,7 @@
             "overlay_id": "ov_2",
             "kind": "MappingSlot",
             "effects": [
-              "eff_17"
+              "eff_24"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -3073,6 +3763,8 @@
               "base": "_balances.slot",
               "base_key": "_balances.slot",
               "slot_kind": "mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
               "activation": "storage_consumer",
               "resolved_inputs": [
                 {
@@ -3218,9 +3910,259 @@
           },
           {
             "overlay_id": "ov_3",
+            "kind": "MappingSlot",
+            "effects": [
+              "eff_24"
+            ],
+            "stmt_refs": [
+              "asm_s_11"
+            ],
+            "attrs": {
+              "target": "recipientSlot",
+              "target_key": "recipientSlot",
+              "target_keys": [
+                "recipientSlot__ssa8",
+                "recipientSlot__ssa18"
+              ],
+              "expression": "_balances[calldataload((recipientsDataOffset + offset))]",
+              "state_variable": "_balances",
+              "storage_reference": null,
+              "storage_reference_type": null,
+              "storage_reference_kind": null,
+              "storage_field": null,
+              "key": "calldataload((recipientsDataOffset + offset))",
+              "base": "_balances.slot",
+              "base_key": "_balances.slot",
+              "slot_kind": "mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "activation": "storage_consumer",
+              "resolved_inputs": [
+                {
+                  "offset": 0,
+                  "offset_expr": "0",
+                  "address_key": "ptr",
+                  "cfg_path_states": [
+                    "lt(i, length)",
+                    "lt(i, length)"
+                  ],
+                  "value": "calldataload(add(recipientsDataOffset, offset))",
+                  "memory_ssa": "phi(mem_1, mem_6)",
+                  "memory_phi": "phi(mem_1, mem_6)",
+                  "definitions": [
+                    {
+                      "version": "mem_1",
+                      "node_id": 12,
+                      "address": "ptr",
+                      "value": "calldataload(add(recipientsDataOffset, offset))",
+                      "kind": "mstore",
+                      "origin_src": "43428:60:0",
+                      "aliases": [
+                        {
+                          "key": "ptr",
+                          "base": "ptr",
+                          "offset": 0,
+                          "expression": "ptr",
+                          "source": "identifier"
+                        }
+                      ]
+                    },
+                    {
+                      "version": "mem_6",
+                      "node_id": 12,
+                      "address": "ptr",
+                      "value": "calldataload(add(recipientsDataOffset, offset))",
+                      "kind": "mstore",
+                      "origin_src": "43428:60:0",
+                      "aliases": [
+                        {
+                          "key": "ptr",
+                          "base": "ptr",
+                          "offset": 0,
+                          "expression": "ptr",
+                          "source": "identifier"
+                        }
+                      ]
+                    }
+                  ],
+                  "aliases": [
+                    {
+                      "key": "ptr",
+                      "base": "ptr",
+                      "offset": 0,
+                      "expression": "ptr",
+                      "source": "identifier"
+                    }
+                  ]
+                },
+                {
+                  "offset": 32,
+                  "offset_expr": "32",
+                  "address_key": "add(ptr,32)",
+                  "cfg_path_states": [
+                    "lt(i, length)",
+                    "lt(i, length)"
+                  ],
+                  "value": "_balances.slot",
+                  "memory_ssa": "phi(mem_2, mem_7)",
+                  "memory_phi": "phi(mem_2, mem_7)",
+                  "definitions": [
+                    {
+                      "version": "mem_2",
+                      "node_id": 13,
+                      "address": "ptr2",
+                      "value": "_balances.slot",
+                      "kind": "mstore",
+                      "origin_src": "43505:28:0",
+                      "aliases": [
+                        {
+                          "key": "ptr2",
+                          "base": "ptr2",
+                          "offset": 0,
+                          "expression": "ptr2",
+                          "source": "identifier"
+                        },
+                        {
+                          "key": "add(ptr,32)",
+                          "base": "ptr",
+                          "offset": 32,
+                          "expression": "add(ptr, 32)",
+                          "source": "value:ptr2__ssa2"
+                        }
+                      ]
+                    },
+                    {
+                      "version": "mem_7",
+                      "node_id": 13,
+                      "address": "ptr2",
+                      "value": "_balances.slot",
+                      "kind": "mstore",
+                      "origin_src": "43505:28:0",
+                      "aliases": [
+                        {
+                          "key": "ptr2",
+                          "base": "ptr2",
+                          "offset": 0,
+                          "expression": "ptr2",
+                          "source": "identifier"
+                        },
+                        {
+                          "key": "add(ptr,32)",
+                          "base": "ptr",
+                          "offset": 32,
+                          "expression": "add(ptr, 32)",
+                          "source": "value:ptr2__ssa2"
+                        }
+                      ]
+                    }
+                  ],
+                  "aliases": [
+                    {
+                      "key": "ptr2",
+                      "base": "ptr2",
+                      "offset": 0,
+                      "expression": "ptr2",
+                      "source": "identifier"
+                    },
+                    {
+                      "key": "add(ptr,32)",
+                      "base": "ptr",
+                      "offset": 32,
+                      "expression": "add(ptr, 32)",
+                      "source": "value:ptr2__ssa2"
+                    }
+                  ]
+                }
+              ],
+              "byte_slice": null,
+              "packed_semantics": null,
+              "notes": []
+            }
+          },
+          {
+            "overlay_id": "ov_4",
+            "kind": "PathConditionedStorageRead",
+            "effects": [
+              "eff_25"
+            ],
+            "stmt_refs": [
+              "asm_s_12"
+            ],
+            "attrs": {
+              "slot": "recipientSlot",
+              "slot_versions": [
+                "recipientSlot__ssa8",
+                "recipientSlot__ssa18"
+              ],
+              "path_states": [
+                "lt(i, length)"
+              ],
+              "candidates": [
+                {
+                  "slot_key": "recipientSlot__ssa8",
+                  "status": "resolved",
+                  "condition": "lt(i, length)",
+                  "overlay_kind": "MappingRead",
+                  "access": "_balances[calldataload((recipientsDataOffset + offset))]",
+                  "state_variable": "_balances",
+                  "key": "calldataload((recipientsDataOffset + offset))",
+                  "slot_effect": "eff_24",
+                  "result_type": "uint256",
+                  "terminal_storage_value": true,
+                  "solidity_like": "read _balances[calldataload((recipientsDataOffset + offset))];",
+                  "notes": []
+                },
+                {
+                  "slot_key": "recipientSlot__ssa18",
+                  "status": "resolved",
+                  "condition": "lt(i, length)",
+                  "overlay_kind": "MappingRead",
+                  "access": "_balances[calldataload((recipientsDataOffset + offset))]",
+                  "state_variable": "_balances",
+                  "key": "calldataload((recipientsDataOffset + offset))",
+                  "slot_effect": "eff_24",
+                  "result_type": "uint256",
+                  "terminal_storage_value": true,
+                  "solidity_like": "read _balances[calldataload((recipientsDataOffset + offset))];",
+                  "notes": []
+                }
+              ],
+              "note": "storage_effect_has_multiple_ssa_slot_versions"
+            }
+          },
+          {
+            "overlay_id": "ov_5",
+            "kind": "MappingRead",
+            "effects": [
+              "eff_24",
+              "eff_25"
+            ],
+            "stmt_refs": [
+              "asm_s_11",
+              "asm_s_12"
+            ],
+            "attrs": {
+              "access": "_balances[calldataload((recipientsDataOffset + offset))]",
+              "state_variable": "_balances",
+              "key": "calldataload((recipientsDataOffset + offset))",
+              "slot": "recipientSlot",
+              "slot_key": "recipientSlot__ssa8",
+              "slot_versions": [
+                "recipientSlot__ssa8",
+                "recipientSlot__ssa18"
+              ],
+              "slot_effect": "eff_24",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "solidity_like": "read _balances[calldataload((recipientsDataOffset + offset))];",
+              "notes": []
+            }
+          },
+          {
+            "overlay_id": "ov_6",
             "kind": "PathConditionedStorageWrite",
             "effects": [
-              "eff_18"
+              "eff_26"
             ],
             "stmt_refs": [
               "asm_s_12"
@@ -3240,23 +4182,33 @@
                 {
                   "slot_key": "recipientSlot__ssa8",
                   "status": "resolved",
+                  "condition": "lt(i, length)",
                   "overlay_kind": "MappingWrite",
                   "access": "_balances[calldataload((recipientsDataOffset + offset))]",
                   "state_variable": "_balances",
                   "key": "calldataload((recipientsDataOffset + offset))",
-                  "slot_effect": "eff_17",
+                  "slot_effect": "eff_24",
+                  "result_type": "uint256",
+                  "terminal_storage_value": true,
                   "solidity_like": "_balances[calldataload((recipientsDataOffset + offset))] = (sload(recipientSlot) + amount);",
+                  "value": "(sload(recipientSlot) + amount)",
+                  "value_yul": "add(sload(recipientSlot), amount)",
                   "notes": []
                 },
                 {
                   "slot_key": "recipientSlot__ssa18",
                   "status": "resolved",
+                  "condition": "lt(i, length)",
                   "overlay_kind": "MappingWrite",
                   "access": "_balances[calldataload((recipientsDataOffset + offset))]",
                   "state_variable": "_balances",
                   "key": "calldataload((recipientsDataOffset + offset))",
-                  "slot_effect": "eff_17",
+                  "slot_effect": "eff_24",
+                  "result_type": "uint256",
+                  "terminal_storage_value": true,
                   "solidity_like": "_balances[calldataload((recipientsDataOffset + offset))] = (sload(recipientSlot) + amount);",
+                  "value": "(sload(recipientSlot) + amount)",
+                  "value_yul": "add(sload(recipientSlot), amount)",
                   "notes": []
                 }
               ],
@@ -3264,11 +4216,11 @@
             }
           },
           {
-            "overlay_id": "ov_4",
+            "overlay_id": "ov_7",
             "kind": "MappingWrite",
             "effects": [
-              "eff_17",
-              "eff_18"
+              "eff_24",
+              "eff_26"
             ],
             "stmt_refs": [
               "asm_s_11",
@@ -3286,16 +4238,18 @@
                 "recipientSlot__ssa8",
                 "recipientSlot__ssa18"
               ],
-              "slot_effect": "eff_17",
+              "slot_effect": "eff_24",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
               "solidity_like": "_balances[calldataload((recipientsDataOffset + offset))] = (sload(recipientSlot) + amount);",
               "notes": []
             }
           },
           {
-            "overlay_id": "ov_5",
+            "overlay_id": "ov_8",
             "kind": "CalldataWordRead",
             "effects": [
-              "eff_11"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_3"
@@ -3322,10 +4276,10 @@
             }
           },
           {
-            "overlay_id": "ov_6",
+            "overlay_id": "ov_9",
             "kind": "CalldataWordRead",
             "effects": [
-              "eff_12"
+              "eff_14"
             ],
             "stmt_refs": [
               "asm_s_4"
@@ -3352,10 +4306,10 @@
             }
           },
           {
-            "overlay_id": "ov_7",
+            "overlay_id": "ov_10",
             "kind": "CalldataWordRead",
             "effects": [
-              "eff_15"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -3383,7 +4337,7 @@
             }
           },
           {
-            "overlay_id": "ov_8",
+            "overlay_id": "ov_11",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_8"
@@ -3397,11 +4351,42 @@
               "expression_normalized": "mload(0x40)",
               "solidity_like": "ptr = mload(0x40);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_9",
+            "overlay_id": "ov_12",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_11"
+            ],
+            "stmt_refs": [
+              "asm_s_2"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_2_1",
+              "expression": "add(ptr, 0x20)",
+              "expression_normalized": "(ptr + 0x20)",
+              "solidity_like": "__sseir_eval_asm_s_2_1 = (ptr + 0x20);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "ptr",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "ptr",
+                "0x20"
+              ],
+              "parent_effect": "eff_10",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_13",
             "kind": "ExpressionNormalization",
             "effects": [
               "eff_10"
@@ -3412,17 +4397,68 @@
             "attrs": {
               "target": "ptr2",
               "expression": "add(ptr, 0x20)",
-              "expression_normalized": "(ptr + 0x20)",
-              "solidity_like": "ptr2 = (ptr + 0x20);",
+              "expression_normalized": "__sseir_eval_asm_s_2_1",
+              "solidity_like": "ptr2 = __sseir_eval_asm_s_2_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_2_1",
+                "final_normalized": "__sseir_eval_asm_s_2_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_2_1",
+                    "expression": "add(ptr, 0x20)",
+                    "expression_normalized": "(ptr + 0x20)",
+                    "call": "add",
+                    "raw_args": [
+                      "ptr",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "ptr",
+                      "0x20"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_10",
+            "overlay_id": "ov_14",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_13"
+            ],
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_3_1",
+              "expression": "calldataload(0x4)",
+              "expression_normalized": "calldataload(0x4)",
+              "solidity_like": "__sseir_eval_asm_s_3_1 = calldataload(0x4);",
+              "order": 1,
+              "call": "calldataload",
+              "raw_args": [
+                "0x4"
+              ],
+              "evaluated_args": [
+                "0x4"
+              ],
+              "parent_effect": "eff_12",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_15",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_11"
+              "eff_12"
             ],
             "stmt_refs": [
               "asm_s_3"
@@ -3430,17 +4466,66 @@
             "attrs": {
               "target": "recipientsDataOffset",
               "expression": "calldataload(0x4)",
-              "expression_normalized": "calldataload(0x4)",
-              "solidity_like": "recipientsDataOffset = calldataload(0x4);",
+              "expression_normalized": "__sseir_eval_asm_s_3_1",
+              "solidity_like": "recipientsDataOffset = __sseir_eval_asm_s_3_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_3_1",
+                "final_normalized": "__sseir_eval_asm_s_3_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_3_1",
+                    "expression": "calldataload(0x4)",
+                    "expression_normalized": "calldataload(0x4)",
+                    "call": "calldataload",
+                    "raw_args": [
+                      "0x4"
+                    ],
+                    "evaluated_args": [
+                      "0x4"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_11",
+            "overlay_id": "ov_16",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_15"
+            ],
+            "stmt_refs": [
+              "asm_s_4"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_4_1",
+              "expression": "calldataload(0x24)",
+              "expression_normalized": "calldataload(0x24)",
+              "solidity_like": "__sseir_eval_asm_s_4_1 = calldataload(0x24);",
+              "order": 1,
+              "call": "calldataload",
+              "raw_args": [
+                "0x24"
+              ],
+              "evaluated_args": [
+                "0x24"
+              ],
+              "parent_effect": "eff_14",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_17",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_12"
+              "eff_14"
             ],
             "stmt_refs": [
               "asm_s_4"
@@ -3448,17 +4533,39 @@
             "attrs": {
               "target": "amountsDataOffset",
               "expression": "calldataload(0x24)",
-              "expression_normalized": "calldataload(0x24)",
-              "solidity_like": "amountsDataOffset = calldataload(0x24);",
+              "expression_normalized": "__sseir_eval_asm_s_4_1",
+              "solidity_like": "amountsDataOffset = __sseir_eval_asm_s_4_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_4_1",
+                "final_normalized": "__sseir_eval_asm_s_4_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_4_1",
+                    "expression": "calldataload(0x24)",
+                    "expression_normalized": "calldataload(0x24)",
+                    "call": "calldataload",
+                    "raw_args": [
+                      "0x24"
+                    ],
+                    "evaluated_args": [
+                      "0x24"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_12",
+            "overlay_id": "ov_18",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_13"
+              "eff_16"
             ],
             "stmt_refs": [
               "asm_s_6"
@@ -3469,14 +4576,74 @@
               "expression_normalized": "0",
               "solidity_like": "i = 0;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_13",
+            "overlay_id": "ov_19",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_18"
+            ],
+            "stmt_refs": [
+              "asm_s_7"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_7_1",
+              "expression": "mul(i, 0x20)",
+              "expression_normalized": "(i * 0x20)",
+              "solidity_like": "__sseir_eval_asm_s_7_1 = (i * 0x20);",
+              "order": 1,
+              "call": "mul",
+              "raw_args": [
+                "i",
+                "0x20"
+              ],
+              "evaluated_args": [
+                "i",
+                "0x20"
+              ],
+              "parent_effect": "eff_17",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_20",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_19"
+            ],
+            "stmt_refs": [
+              "asm_s_7"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_7_2",
+              "expression": "add(__sseir_eval_asm_s_7_1, 0x24)",
+              "expression_normalized": "(__sseir_eval_asm_s_7_1 + 0x24)",
+              "solidity_like": "__sseir_eval_asm_s_7_2 = (__sseir_eval_asm_s_7_1 + 0x24);",
+              "order": 2,
+              "call": "add",
+              "raw_args": [
+                "mul(i, 0x20)",
+                "0x24"
+              ],
+              "evaluated_args": [
+                "__sseir_eval_asm_s_7_1",
+                "0x24"
+              ],
+              "parent_effect": "eff_17",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_21",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_14"
+              "eff_17"
             ],
             "stmt_refs": [
               "asm_s_7"
@@ -3484,17 +4651,112 @@
             "attrs": {
               "target": "offset",
               "expression": "add(mul(i, 0x20), 0x24)",
-              "expression_normalized": "((i * 0x20) + 0x24)",
-              "solidity_like": "offset = ((i * 0x20) + 0x24);",
+              "expression_normalized": "__sseir_eval_asm_s_7_2",
+              "solidity_like": "offset = __sseir_eval_asm_s_7_2;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_7_2",
+                "final_normalized": "__sseir_eval_asm_s_7_2",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_7_1",
+                    "expression": "mul(i, 0x20)",
+                    "expression_normalized": "(i * 0x20)",
+                    "call": "mul",
+                    "raw_args": [
+                      "i",
+                      "0x20"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "0x20"
+                    ]
+                  },
+                  {
+                    "order": 2,
+                    "temp": "__sseir_eval_asm_s_7_2",
+                    "expression": "add(__sseir_eval_asm_s_7_1, 0x24)",
+                    "expression_normalized": "(__sseir_eval_asm_s_7_1 + 0x24)",
+                    "call": "add",
+                    "raw_args": [
+                      "mul(i, 0x20)",
+                      "0x24"
+                    ],
+                    "evaluated_args": [
+                      "__sseir_eval_asm_s_7_1",
+                      "0x24"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_14",
+            "overlay_id": "ov_22",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_21"
+            ],
+            "stmt_refs": [
+              "asm_s_8"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_8_1",
+              "expression": "add(amountsDataOffset, offset)",
+              "expression_normalized": "(amountsDataOffset + offset)",
+              "solidity_like": "__sseir_eval_asm_s_8_1 = (amountsDataOffset + offset);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "amountsDataOffset",
+                "offset"
+              ],
+              "evaluated_args": [
+                "amountsDataOffset",
+                "offset"
+              ],
+              "parent_effect": "eff_20",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_23",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_22"
+            ],
+            "stmt_refs": [
+              "asm_s_8"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_8_2",
+              "expression": "calldataload(__sseir_eval_asm_s_8_1)",
+              "expression_normalized": "calldataload(__sseir_eval_asm_s_8_1)",
+              "solidity_like": "__sseir_eval_asm_s_8_2 = calldataload(__sseir_eval_asm_s_8_1);",
+              "order": 2,
+              "call": "calldataload",
+              "raw_args": [
+                "add(amountsDataOffset, offset)"
+              ],
+              "evaluated_args": [
+                "__sseir_eval_asm_s_8_1"
+              ],
+              "parent_effect": "eff_20",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_24",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_15"
+              "eff_20"
             ],
             "stmt_refs": [
               "asm_s_8"
@@ -3502,17 +4764,54 @@
             "attrs": {
               "target": "amount",
               "expression": "calldataload(add(amountsDataOffset, offset))",
-              "expression_normalized": "calldataload((amountsDataOffset + offset))",
-              "solidity_like": "amount = calldataload((amountsDataOffset + offset));",
+              "expression_normalized": "__sseir_eval_asm_s_8_2",
+              "solidity_like": "amount = __sseir_eval_asm_s_8_2;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_8_2",
+                "final_normalized": "__sseir_eval_asm_s_8_2",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_8_1",
+                    "expression": "add(amountsDataOffset, offset)",
+                    "expression_normalized": "(amountsDataOffset + offset)",
+                    "call": "add",
+                    "raw_args": [
+                      "amountsDataOffset",
+                      "offset"
+                    ],
+                    "evaluated_args": [
+                      "amountsDataOffset",
+                      "offset"
+                    ]
+                  },
+                  {
+                    "order": 2,
+                    "temp": "__sseir_eval_asm_s_8_2",
+                    "expression": "calldataload(__sseir_eval_asm_s_8_1)",
+                    "expression_normalized": "calldataload(__sseir_eval_asm_s_8_1)",
+                    "call": "calldataload",
+                    "raw_args": [
+                      "add(amountsDataOffset, offset)"
+                    ],
+                    "evaluated_args": [
+                      "__sseir_eval_asm_s_8_1"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_15",
+            "overlay_id": "ov_25",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_16"
+              "eff_23"
             ],
             "stmt_refs": [
               "asm_s_11"
@@ -3523,14 +4822,45 @@
               "expression_normalized": "keccak256(ptr, 0x40)",
               "solidity_like": "recipientSlot = keccak256(ptr, 0x40);",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": null
             }
           },
           {
-            "overlay_id": "ov_16",
+            "overlay_id": "ov_26",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_28"
+            ],
+            "stmt_refs": [
+              "asm_s_13"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_13_1",
+              "expression": "add(totalSupplyDelta, amount)",
+              "expression_normalized": "(totalSupplyDelta + amount)",
+              "solidity_like": "__sseir_eval_asm_s_13_1 = (totalSupplyDelta + amount);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "totalSupplyDelta",
+                "amount"
+              ],
+              "evaluated_args": [
+                "totalSupplyDelta",
+                "amount"
+              ],
+              "parent_effect": "eff_27",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_27",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_19"
+              "eff_27"
             ],
             "stmt_refs": [
               "asm_s_13"
@@ -3538,17 +4868,70 @@
             "attrs": {
               "target": "totalSupplyDelta",
               "expression": "add(totalSupplyDelta, amount)",
-              "expression_normalized": "(totalSupplyDelta + amount)",
-              "solidity_like": "totalSupplyDelta = (totalSupplyDelta + amount);",
+              "expression_normalized": "__sseir_eval_asm_s_13_1",
+              "solidity_like": "totalSupplyDelta = __sseir_eval_asm_s_13_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_13_1",
+                "final_normalized": "__sseir_eval_asm_s_13_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_13_1",
+                    "expression": "add(totalSupplyDelta, amount)",
+                    "expression_normalized": "(totalSupplyDelta + amount)",
+                    "call": "add",
+                    "raw_args": [
+                      "totalSupplyDelta",
+                      "amount"
+                    ],
+                    "evaluated_args": [
+                      "totalSupplyDelta",
+                      "amount"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           },
           {
-            "overlay_id": "ov_17",
+            "overlay_id": "ov_28",
+            "kind": "EvaluationStep",
+            "effects": [
+              "eff_30"
+            ],
+            "stmt_refs": [
+              "asm_s_14"
+            ],
+            "attrs": {
+              "temp": "__sseir_eval_asm_s_14_1",
+              "expression": "add(i, 1)",
+              "expression_normalized": "(i + 1)",
+              "solidity_like": "__sseir_eval_asm_s_14_1 = (i + 1);",
+              "order": 1,
+              "call": "add",
+              "raw_args": [
+                "i",
+                "1"
+              ],
+              "evaluated_args": [
+                "i",
+                "1"
+              ],
+              "parent_effect": "eff_29",
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "evaluation_context": "value"
+            }
+          },
+          {
+            "overlay_id": "ov_29",
             "kind": "ExpressionNormalization",
             "effects": [
-              "eff_20"
+              "eff_29"
             ],
             "stmt_refs": [
               "asm_s_14"
@@ -3556,16 +4939,59 @@
             "attrs": {
               "target": "i",
               "expression": "add(i, 1)",
-              "expression_normalized": "(i + 1)",
-              "solidity_like": "i = (i + 1);",
+              "expression_normalized": "__sseir_eval_asm_s_14_1",
+              "solidity_like": "i = __sseir_eval_asm_s_14_1;",
               "context": "value",
-              "division_guards": []
+              "division_guards": [],
+              "memory_hash": null,
+              "atomized_value": {
+                "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+                "final": "__sseir_eval_asm_s_14_1",
+                "final_normalized": "__sseir_eval_asm_s_14_1",
+                "steps": [
+                  {
+                    "order": 1,
+                    "temp": "__sseir_eval_asm_s_14_1",
+                    "expression": "add(i, 1)",
+                    "expression_normalized": "(i + 1)",
+                    "call": "add",
+                    "raw_args": [
+                      "i",
+                      "1"
+                    ],
+                    "evaluated_args": [
+                      "i",
+                      "1"
+                    ]
+                  }
+                ],
+                "atomization_model": "rhs_atomic_single_operation_steps"
+              }
             }
           }
         ],
         "security_facts": [
           {
             "fact_id": "sf_1",
+            "kind": "BalanceRead",
+            "attrs": {
+              "state_var": "_balances",
+              "account": "calldataload((recipientsDataOffset + offset))"
+            },
+            "source_overlays": [
+              "ov_5"
+            ],
+            "source_effects": [
+              "eff_24",
+              "eff_25"
+            ],
+            "stmt_refs": [
+              "asm_s_11",
+              "asm_s_12"
+            ]
+          },
+          {
+            "fact_id": "sf_2",
             "kind": "BalanceUpdate",
             "attrs": {
               "state_var": "_balances",
@@ -3574,11 +5000,11 @@
               "value": "(sload(recipientSlot) + amount)"
             },
             "source_overlays": [
-              "ov_4"
+              "ov_7"
             ],
             "source_effects": [
-              "eff_17",
-              "eff_18"
+              "eff_24",
+              "eff_26"
             ],
             "stmt_refs": [
               "asm_s_11",
@@ -3737,7 +5163,17 @@
             "effect_kind": "MemoryRead",
             "query_field": "memory_read",
             "has_phi": false,
-            "has_unknown": true,
+            "has_unknown": false,
+            "memory_query_has_unknown": true,
+            "memory_query_complete": false,
+            "empty_range": false,
+            "final_status": "resolved",
+            "resolved_by": "expression_role",
+            "resolution_overlays": [],
+            "resolution_roles": [
+              "expr_1"
+            ],
+            "semantic_value": "free_memory_pointer",
             "loop_facts": [],
             "top_facts": [],
             "path_states": [
@@ -3746,11 +5182,25 @@
           },
           {
             "kind": "SemanticSinkMemoryQuery",
-            "effect": "eff_17",
+            "effect": "eff_24",
             "effect_kind": "MemoryHash",
             "query_field": "memory_read",
             "has_phi": true,
             "has_unknown": false,
+            "memory_query_has_unknown": false,
+            "memory_query_complete": true,
+            "empty_range": false,
+            "final_status": "resolved",
+            "resolved_by": "memory_ssa",
+            "resolution_overlays": [
+              "ov_1",
+              "ov_2",
+              "ov_3",
+              "ov_5",
+              "ov_7"
+            ],
+            "resolution_roles": [],
+            "semantic_value": null,
             "loop_facts": [],
             "top_facts": [],
             "path_states": [

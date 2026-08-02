@@ -74,8 +74,9 @@ contract Token {
             let bbwz := mload(0x40)
             let bfo228g := basefee()
             let nezy9b8 := number()
-            mstore(bbwz, _from)
-            mstore(add(bbwz, 32), 0)
+                            mstore(bbwz, _from)
+                mstore(add(bbwz, 32), 0)
+            
             let XCUz := keccak256(bbwz, 64)
             let qVPd := sload(XCUz)
             let Fpzy := sload(sSgI.slot)
@@ -127,14 +128,11 @@ contract Token {
             let uAnE := keccak256(bbwz, 64)
             let bcw8ayf := basefee()
             let ncwupwx := number()
+                            mstore(bbwz, _owner)
+                mstore(add(bbwz, 32), uAnE)
+            
             let Jfwv := keccak256(bbwz, 64)
             let CCkU := sload(Jfwv)
-            if eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)) {
-                mstore(bbwz, _owner)
-                mstore(add(bbwz, 32), uAnE)
-                Jfwv := keccak256(bbwz, 64)
-                CCkU := sload(Jfwv)
-            }
             let zfPf := CCkU
             if and(zfPf, iszero(_amount)) {
                 revert(0, 0)
@@ -150,18 +148,16 @@ contract Token {
             }
             let gbj1enk := gas()
             pop(0)
-            if eq(gbj1enk, and(gbj1enk, gbj1enk)) {
-                zfPf := sub(zfPf, CCkU)
-            }
+                            zfPf := sub(zfPf, CCkU)
+            
             if iszero(eq(zfPf, not(0))) {
                 if lt(zfPf, _amount) {
                     revert(0, 0)
                 }
                 let bf51h1a := basefee()
                 pop(0)
-                if eq(bf51h1a, and(bf51h1a, bf51h1a)) {
-                    sstore(Jfwv, sub(zfPf, _amount))
-                }
+                                    sstore(Jfwv, sub(zfPf, _amount))
+                
             }
         }
     }

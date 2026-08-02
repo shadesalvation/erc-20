@@ -59,7 +59,7 @@ Function Token._transfer(address, address, uint256)
               g4u8ssg = __sseir_eval_asm_s_2_1;
           }
           pop(0) // yul: pop(0)
-          require(_from != address(0)); // yul: revert(0, 0)
+          require(!((__sseir_eval_asm_s_1_1 != 0))); // yul: revert(0, 0)
           if (!(__sseir_eval_asm_s_1_1)) {
               __sseir_eval_asm_s_5_1 = (_to == 0); // yul: if iszero(_to)
           }
@@ -70,7 +70,7 @@ Function Token._transfer(address, address, uint256)
               g7ncimt = __sseir_eval_asm_s_7_1;
           }
           if (!(__sseir_eval_asm_s_1_1)) {
-              require(_to != address(0)); // yul: revert(0, 0)
+              require(!((__sseir_eval_asm_s_5_1 != 0))); // yul: revert(0, 0)
           }
           if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_5_1)) {
               SARKO$ = mload(0x40); // yul: let SARKO$ := mload(0x40)
@@ -89,7 +89,9 @@ Function Token._transfer(address, address, uint256)
               __sseir_eval_asm_s_19_1 = gasleft(); // yul: if iszero(staticcall(gas(), 2, SARKO$, 20, SARKO$, 32))
               __sseir_eval_asm_s_19_2 = staticcall(__sseir_eval_asm_s_19_1, 2, SARKO$, 20, SARKO$, 32);
               __sseir_eval_asm_s_19_3 = (__sseir_eval_asm_s_19_2 == 0);
-              SUpo = uint256(sha256_result_22); // yul: let SUpo := mload(SARKO$)
+              if (!(iszero(_from)) && !(iszero(_to))) {
+                  SUpo = uint256((sha256(abi.encodePacked(bytes20(msg.sender))))); // yul: let SUpo := mload(SARKO$)
+              }
           }
           if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_5_1) && !(__sseir_eval_asm_s_19_3)) {
               __sseir_eval_asm_s_22_1 = (RuhS == SUpo); // yul: if iszero(eq(RuhS, SUpo))
@@ -106,7 +108,7 @@ Function Token._transfer(address, address, uint256)
           }
           pop(0) // yul: pop(0)
           if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_5_1) && !(__sseir_eval_asm_s_19_3) && __sseir_eval_asm_s_22_2) {
-              require((JcxQ >= _amount)); // yul: revert(0, 0)
+              require(!((__sseir_eval_asm_s_23_1 != 0))); // yul: revert(0, 0)
           }
           if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_5_1)) {
               wAcL[_from] = (JcxQ - _amount); // yul: sstore(iVrp, sub(JcxQ, _amount))
@@ -121,7 +123,28 @@ Function Token._transfer(address, address, uint256)
                           mVat = wAcL[_to]; // yul: let mVat := sload(OBse)
                           wAcL[_to] = (mVat + _amount); // yul: sstore(OBse, add(mVat, _amount))
                           memory[SARKO$] = _amount; // yul: mstore(SARKO$, _amount)
-                          emit Transfer(_from, _to, _amount); // yul: log3(SARKO$, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+                      }
+                      if (!(__sseir_eval_asm_s_22_2)) {
+                          if (!(iszero(staticcall(gas(), 2, SARKO$, 20, SARKO$, 32)))) {
+                              if (!(iszero(_to))) {
+                                  if (!(iszero(_from))) {
+                                      if ((!(iszero(eq(RuhS, SUpo)))) || (!(lt(JcxQ, _amount)))) {
+                                          emit Transfer(_from, _to, _amount); // yul: log3(SARKO$, 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to)
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                      if (!(__sseir_eval_asm_s_23_1)) {
+                          if (!(iszero(staticcall(gas(), 2, SARKO$, 20, SARKO$, 32)))) {
+                              if (!(iszero(_to))) {
+                                  if (!(iszero(_from))) {
+                                      if ((!(iszero(eq(RuhS, SUpo)))) || (!(lt(JcxQ, _amount)))) {
+                                          emit Transfer(_from, _to, _amount);
+                                      }
+                                  }
+                              }
+                          }
                       }
                   }
               }
@@ -254,7 +277,7 @@ Function Token._spendAllowance(address, address, uint256)
               __sseir_eval_asm_s_12_1 = block.timestamp; // yul: let tgfo9ee := timestamp()
               tgfo9ee = __sseir_eval_asm_s_12_1;
           }
-          require(!(((dhzw & (_amount == 0)) != 0))); // yul: revert(0, 0)
+          require(!((__sseir_eval_asm_s_10_2 != 0))); // yul: revert(0, 0)
           if (!(__sseir_eval_asm_s_10_2)) {
               __sseir_eval_asm_s_14_1 = (dhzw == 0); // yul: if iszero(dhzw)
           }
@@ -289,7 +312,7 @@ Function Token._spendAllowance(address, address, uint256)
               ccpw1f2 = __sseir_eval_asm_s_27_1;
           }
           if (!(__sseir_eval_asm_s_10_2) && __sseir_eval_asm_s_25_3) {
-              require((dhzw >= _amount)); // yul: revert(0, 0)
+              require(!((__sseir_eval_asm_s_26_1 != 0))); // yul: revert(0, 0)
           }
           if (!(__sseir_eval_asm_s_10_2) && !(__sseir_eval_asm_s_26_1) && __sseir_eval_asm_s_25_3) {
               __sseir_eval_asm_s_29_1 = tx.gasprice; // yul: let ge57smz := gasprice()

@@ -62,7 +62,7 @@ class SecurityFactBuilder:
                 flat = self.flat_args(args)
                 return [self.fact('TransferEvent', self.clean_attrs({'from': self.item(flat, 0), 'to': self.item(flat, 1), 'amount': self.item(flat, 2)}), overlay, effects)]
             return [self.fact('EventEmission', self.clean_attrs({'event': event, 'signature': attrs.get('signature')}), overlay, effects)]
-        if overlay.kind in {'LowLevelCall', 'StaticCallOverlay', 'DelegateCallOverlay', 'PrecompileCall', 'ExternalCall'}:
+        if overlay.kind in {'LowLevelCall', 'StaticCallOverlay', 'DelegateCallOverlay', 'PrecompileCall', 'PathConditionedPrecompileCall', 'ExternalCall'}:
             call_type = attrs.get('call_kind') or attrs.get('op') or overlay.kind
             return [self.fact('ExternalCall', self.clean_attrs({'target': attrs.get('target_solidity') or attrs.get('target'), 'value': attrs.get('value', '0'), 'call_type': call_type, 'selector': attrs.get('selector')}), overlay, effects)]
         if overlay.kind == 'RequireOverlay':
