@@ -43,8 +43,10 @@ scripts/s_seir/s_seir_pipeline.py
 
 ```Plain
 Solidity source
+  -> branch / opaque preprocess
   -> solc AST
   -> event definitions
+  -> selector registry
   -> storage layout
   -> SourceStatementCollector
   -> TypeEnv
@@ -53,17 +55,21 @@ Solidity source
   -> ExpressionRoleAnalyzer
   -> EffectLifter
   -> BranchMaterialization
+  -> SinkResolver
   -> SemanticOverlayBuilder
   -> SemanticNormalizer
   -> SecurityFactBuilder
   -> FunctionSSEIR
+  -> JSON / CFG DOT / solidity-like / LLM assembly views
 ```
 
 对应代码顺序：
 
 ```Python
+branch_result = build_branch_preprocessed_analysis_source(...)
 ast = compile_source_ast(...)
 events = parse_events_from_source(...)
+selector_registry = build_selector_registry(ast, source_text)
 storage_layouts = extract_storage_layout(...)
 
 for unit in SourceStatementCollector(...).collect():
@@ -78,6 +84,11 @@ for unit in SourceStatementCollector(...).collect():
     roles, effects, overlays, normalizer_facts = SemanticNormalizer().normalize(...)
     security_facts = SecurityFactBuilder().build(effects, overlays)
 ```
+
+其中 `SinkResolver` 不是主入口中的独立一行调用，而是在
+`SemanticOverlayBuilder.build()` 开始时通过
+`SinkResolver().attach_all(effects)` 执行。它只整理已有 MemorySSA
+查询证据，不取代 MemorySSA。
 
 ## 3. SourceStatement 层
 
@@ -1999,3 +2010,451 @@ B:
 2. unknownEvent 仍作为保守事件恢复结果保留。
 3. `read d;` 这类无目标状态读取是正确语义，但展示形式后续可继续优化。
 4. Path-conditioned 展示可能存在重复候选或长 condition，当前优先保证语义不丢失。
+
+## 20. 当前关键算法实现
+
+本节是对当前 `scripts/s_seir/` 实际代码的复核记录。前文中的设计目标或
+早期方案与本节不一致时，以本节和当前代码为准。
+
+### 20.1 Function-level CFG 融合
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_control_builder.py
+scripts/legacy_yul/assembly_ast_cfg.py
+```
+
+核心算法：
+
+1. 以 `FunctionUnit` 为分析单位，而不是以单个 assembly block 为最终单位。
+2. Solidity 控制流优先使用 Slither function CFG。
+3. Yul 节点使用 `assembly_ast_cfg` 从 solc AST 构建的 CFG。
+4. 通过 source range 将 Slither 的 assembly 占位节点替换为对应 Yul 子图。
+5. 保留 Solidity block 到 assembly entry、assembly exit 到后续 Solidity block 的边。
+6. Solidity `if/for/while` 中的 assembly 块会获得 function-level condition/loop context，
+   `EffectLifter.assembly_entry_conditions()` 再把这些条件加到 Yul effect 的 `path_states`。
+7. Slither 不可用或匹配失败时，使用 solc AST skeleton fallback，并在 `control.notes`
+   中保留 fallback 原因。
+
+示例：
+
+```Solidity
+if (enabled) {
+    assembly { sstore(slot, value) }
+}
+```
+
+`StorageWrite.path_states` 不仅包含 Yul 内部条件，还包含 `enabled`。后续
+`PathConditionedStorageWrite` 可以记录 `condition=enabled`。
+
+### 20.2 Loop-aware Lazy MemorySSA
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_memory_ssa.py
+scripts/legacy_yul/assembly_memory_ssa.py
+scripts/legacy_yul/assembly_cfg_memory_adapter.py
+```
+
+S-SEIR 持有 `SSeirMemorySSAView`，底层复用原模块的 CFG MemorySSA 和 loop lazy resolve。
+实际流程为：
+
+```Plain
+Yul CFG
+  -> analyze_block
+  -> PathState / value version / memory version
+  -> LoopMemoryRecord
+  -> sink 查询时 resolve_memory_read_with_loops
+  -> MemoryPhi / MemoryRangeSummary / MemoryTop
+```
+
+关键规则：
+
+1. 无 memory write 的 loop 不建立 loop memory summary。
+2. 存在 memory write 的 loop 在前向阶段记录 `LoopMemoryRecord`，不无限展开回边。
+3. `mload/keccak256/log/return/revert/call` 等 memory sink 查询相关区间时才触发懒加载。
+4. 固定次数的 affine-range 写入可按需展开。
+5. 同一地址的 loop-carried 写入使用 `MemoryPhi`。
+6. 符号次数的线性区间写入记录 `MemoryRangeSummary`。
+7. 无法确定 alias 时只将局部区间降级为 `MemoryTop`。
+
+```Yul
+for { let i := 0 } lt(i, 3) { i := add(i, 1) } {
+    mstore(add(ptr, mul(i, 0x20)), i)
+}
+let h := keccak256(ptr, 0x60)
+```
+
+`MemoryHash.memory_read` 可在 sink 查询时获得 `ptr+0 -> 0`、`ptr+32 -> 1`、
+`ptr+64 -> 2`。
+
+### 20.3 线性地址 alias、known-value 与字节轴
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_memory_ssa.py
+```
+
+`linear_aliases_for_text()` 只追踪标识符、整数地址以及 `add/sub(base, constant)`
+等线性地址关系。它通过 `PathState.values` 递归跟踪 ValueDef，为同一地址
+保留多个 `base + offset` 表示；非线性表达式不强行建立等价 alias。
+
+```Yul
+let input := add(ptr, 0x0c)
+mstore(input, value)
+```
+
+可同时记录 `input+0` 和 `ptr+12`。
+
+`known_value_info()` 将可追踪来源分为 `constant`、`evm_builtin`、
+`symbolic_known`、`derived_known` 和 `unknown`。`known=true` 只表示该数据有
+可保留的符号来源，不表示数值已被静态求出。
+
+MemoryByteAxis 的规则：
+
+1. 查询长度可静态解析且不超过 4096 字节时启用。
+2. `mstore` 按 32 字节写入，`mstore8` 按 1 字节写入。
+3. 按 CFG node/version 顺序重放写入，后写字节覆盖早先字节。
+4. 连续且来源相同的 byte cell 合并为 slice。
+5. slice 保留 `source_version/source_node_id/source_range/extraction/known_value`。
+6. 不同 path 分别保留在 `path_slices`。
+
+```Yul
+mstore(0x0c, _HANDOVER_SLOT_SEED)
+mstore(0x00, caller())
+let slot := keccak256(0x0c, 0x20)
+```
+
+查询 `0x0c..0x2c` 得到：
+
+```Plain
+[0, 20)  = bytes20(msg.sender)
+[20, 32) = low_bytes(_HANDOVER_SLOT_SEED, 12)
+```
+
+因此 slot 可确定记录为
+`keccak256(abi.encodePacked(bytes20(msg.sender), low_bytes(_HANDOVER_SLOT_SEED, 12)))`。
+
+### 20.4 Function-level 多 assembly MemorySSA 桥接
+
+当前并未将多个 assembly CFG 强行并成一个底层 MemorySSA backend，而是在
+S-SEIR 查询视图中建立受限桥接：
+
+1. 保存前一 assembly 块的 exit PathState，最多 8 份。
+2. 扫描两块之间的 Solidity 源码区间。
+3. 中间只有值计算时，将 exit memory clone 到下一块的 inherited state。
+4. 遇到 memory allocation、`abi.*`、函数调用、低层调用、`return/revert`
+   等可能改变 memory/control 的操作时中断桥接。
+5. 只继承函数参数、返回值、Solidity 局部变量和状态变量的 ValueDef 名称。
+6. 后块写入覆盖继承 memory，继承 version 改名为 `bridge_bN_*`，并保留
+   `inherited_from_version`。
+
+```Solidity
+assembly { mstore(0x00, x) }
+uint256 y = x + 1;
+assembly { let h := keccak256(0x00, 0x20) }
+```
+
+第二块可查询到 `x`。如果中间改为 `bytes memory b = abi.encode(x)`，则桥接中断，
+不猜测 Solidity 代码后的 memory 状态。
+
+### 20.5 Yul 复合表达式原子化
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_yul_eval_order.py
+scripts/s_seir/s_seir_effect_lifter.py
+```
+
+该算法使用 Yul AST，不用字符串括号硬拆。Yul function-call 参数按实际的
+从右到左顺序递归求值，每个 call 生成一个 `EvaluationStep` 与唯一临时变量。
+
+当前覆盖：
+
+1. 所有 Yul `if` condition。
+2. 赋值语句中不是单独顶层语义终点的复合右值。
+3. 复合表达式中的 `sload/mload/keccak256/call` 额外生成独立 effect。
+
+直接 `x := sload(slot)` 仍保持为单个 StorageRead 语义终点，避免破坏现有
+storage overlay 模式。
+
+```Yul
+let dhzw := add(sload(LjAi), IUGo)
+```
+
+原子化后的语义顺序：
+
+```Plain
+tmp1 = sload(LjAi)
+tmp2 = add(tmp1, IUGo)
+dhzw = tmp2
+```
+
+`ValueDef.attrs.atomized_value` 保留：
+
+```Json
+{
+  "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+  "atomization_model": "rhs_atomic_single_operation_steps",
+  "steps": [
+    {"temp": "tmp1", "call": "sload", "expression": "sload(LjAi)"},
+    {"temp": "tmp2", "call": "add", "expression": "add(tmp1, IUGo)"}
+  ],
+  "final": "tmp2"
+}
+```
+
+### 20.6 语义终点查询与 SinkResolver
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_effect_lifter.py
+scripts/s_seir/s_seir_sink_resolver.py
+scripts/s_seir/s_seir_semantic_normalizer.py
+```
+
+语义终点包括：
+
+```Plain
+MemoryHash
+StorageRead / StorageWrite
+EventLog
+Call / StaticCall / DelegateCall / CallCode
+Return / Revert
+```
+
+处理顺序：
+
+1. `EffectLifter` 在 sink 当前 CFG node 查询 MemorySSA，挂载 `memory_read`、`input_memory`、
+   `data_memory` 或 `payload_memory`。
+2. 查询保留 `path_states`、SSA version、word、byte slice、loop fact 和 unknown。
+3. `SinkResolver.attach_all()` 不重建内存，只把已有查询按 sink role 统一为
+   `sink_resolution.path_resolutions`。
+4. 每条 path 单独记录 `condition/status/arg_resolutions`。
+5. slice signature 包含 `source_version` 和 `source_node_id`，同名变量的不同 SSA
+   来源不会被提前合并。
+6. `SemanticNormalizer` 将最终查询状态记为 `SemanticSinkMemoryQuery`，区分
+   `memory_ssa`、`sink_resolver`、`semantic_overlay_pattern` 等解析来源。
+
+查询优先级：
+
+```Plain
+MemorySSA / loop lazy result
+  -> MemoryByteAxis
+  -> SinkResolver 逐路径整理
+  -> 严格高级语义模式
+  -> unresolved
+```
+
+SinkResolver 恢复成功不会删除或覆盖原 MemorySSA 证据。
+
+### 20.7 分支化 SSA 候选与语义物化
+
+对于同一源码 sink，如果不同 CFG path 到达时的参数 SSA 不同，当前算法不选择
+其中一个，而是生成逐 path candidate：
+
+```Json
+{
+  "kind": "PathConditionedStorageWrite",
+  "attrs": {
+    "candidates": [
+      {"condition": "!(cond)", "status": "resolved", "access": "balances[a]"},
+      {"condition": "cond", "status": "resolved", "access": "balances[b]"}
+    ]
+  }
+}
+```
+
+等价候选只在高级语义已恢复后去重。去重 key 包含 `status`、`condition`、
+`overlay_kind`、`access/target/value`、`state_variable/key`、`storage_model` 和
+`unresolved_reason`。不同 condition、resolved/unresolved 或不同访问对象绝不合并。
+
+预处理阶段还会使用 `s_seir_opaque_preprocess.py` 对少量可静态证明的 Yul
+代数恒等式剪枝。无法静态证明的 condition 不剪枝。
+
+### 20.8 Storage sink 驱动的 slot 恢复
+
+当前不对所有 `keccak256` 猜测 mapping。slot 恢复以 `sload/sstore` 为消费终点：
+
+1. `StorageRead/StorageWrite` 记录 slot 表达式及 reaching `slot_versions`。
+2. slot 内联 `keccak256` 时，`EffectLifter.inline_keccak_hash_effect()` 先生成独立
+   `MemoryHash`。
+3. Overlay 按 slot version 回溯 ValueDef/MemoryHash，查找真正到达 sink 的 hash 候选。
+4. MemoryHash 通过 MemorySSA word 或 byte-axis 恢复 key/base。
+5. base slot 通过 solc storage layout、状态变量信息或 storage-reference `.slot` 校验。
+6. 只有 hash 被 storage sink 消费且 key/base 模式完整时，才激活
+   `MappingSlot/MappingRead/MappingWrite`。
+7. 多维 mapping 递归使用前一层 MappingSlot 作为下一层 base，直到状态
+   读写终点。
+8. 无法恢复的版本保留 `unknown_storage_slot_version`，不借用另一 path 的 slot。
+
+```Yul
+mstore(0, owner)
+mstore(32, allowances.slot)
+let h1 := keccak256(0, 64)
+mstore(0, spender)
+mstore(32, h1)
+let value := sload(keccak256(0, 64))
+```
+
+恢复链：
+
+```Plain
+h1    = slot(allowances[owner])
+slot2 = slot(allowances[owner][spender])
+value = allowances[owner][spender]
+```
+
+非常规 packed slot 仍归档为状态读写，但附带
+`storage_model=manual_packed_hash_slot`、`slot_derivation.kind` 和 `packed_inputs`。
+
+### 20.9 Call input/output 与 selector 恢复
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_effect_lifter.py
+scripts/s_seir/s_seir_sink_resolver.py
+scripts/s_seir/s_seir_overlay_builder.py
+scripts/s_seir/s_seir_selector_registry.py
+```
+
+输入恢复：
+
+1. Call effect 先保留 `target/gas/value/input_ptr/input_size/output_ptr/output_size/result`。
+2. `input_ptr/input_size` 作为 memory sink 查询 MemorySSA 和 byte-axis。
+3. `SinkResolver` 按 path 保留 calldata slice。
+4. 只有 selector 字节可定位，且参数 offset/size 与 ABI 布局匹配时，才生成
+   `AbiCallDataConstruction/AbiEncodedLowLevelCall`。
+5. selector registry 由 Solidity AST 的 function/error 规范签名计算。不匹配时保留
+   selector 和 low-level call，不猜测接口。
+6. 固定 precompile 地址可按已知 EVM 语义提升，例如 address `2` 的 `staticcall`
+   可记录为 SHA-256 precompile。
+
+输出 def-use：
+
+1. 在后续 `mload(output_ptr)` 之前查找最近的 path-compatible call。
+2. 指针必须线性等价，两者之间不得存在重写。
+3. 匹配后记录 `value_from_call_output=call_output_word(call_temp, 0)` 和
+   `reads_after_call_output`。
+4. `returndatasize()` 作为指针时保留多路径 candidate，不将不兼容路径合并。
+
+```Yul
+let ok := staticcall(gas(), 2, input, 20, output, 32)
+let digest := mload(output)
+```
+
+可记录：
+
+```Plain
+PrecompileCall(precompile=sha256, input=<resolved 20 bytes>)
+PrecompileOutputRead(target=digest, source_call=ok, output_index=0)
+```
+
+### 20.10 Revert、Return 与 Event 的证据模式
+
+这三类 overlay 都先保留底层 effect，再对 sink 输入做模式匹配。
+
+Revert 模式：
+
+```Plain
+revert(0, 0)
+  -> 空 payload；可结合最近条件生成 RequireOverlay
+
+mstore(0, selector); revert(0x1c, 4)
+  -> byte-axis 取低 4 字节
+  -> selector registry 精确匹配
+  -> CustomErrorRevert
+
+revert(add(buf, 32), mload(buf)), buf: bytes memory
+  -> RawRevertBytes
+```
+
+`RequireOverlay` 不会无条件合并所有上层 condition。只有中间条件块没有其他
+有效操作时才能向上合并；否则保留最近 guard。
+
+Yul `return(ptr,size)` 始终首先记录 `Return` 语义终点。当 memory payload 可解析时，
+记录 `RawReturnData` 或 `PathConditionedRawReturnData`，保留 raw ABI payload。
+不会因为 `mstore(0,x); return(0,32)` 就一律强制改写为 Solidity `return x`。
+
+Event 模式：
+
+1. 从 Solidity event 定义计算完整 32-byte topic0。
+2. 非 anonymous event 要求 topic0 完全相等，且 topic 数等于 indexed 参数数量加 1。
+3. data 区间通过 MemorySSA/SinkResolver 恢复。
+4. 不同 path 下参数不同时生成 `PathConditionedEventEmit`。
+5. 仅 topic 前缀相似时保留 `unknownEvent` 和 `topic0_near_misses`。
+
+### 20.11 Memory object、struct 与 array 模式
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_overlay_builder.py
+scripts/s_seir/s_seir_type_env.py
+```
+
+这些高级语义不依赖“整个函数只做一件事”，而是从局部 effect 子图做模式匹配。
+
+| 模式 | 必要证据 | 高级 overlay |
+|---|---|---|
+| 手工 memory allocation | 读 `mload(0x40)`，计算新 free pointer，写回 `mstore(0x40, ...)` | `MemoryRegionAllocate` |
+| 分配区域写入 | write address 与 allocation base 线性相关 | `MemoryRegionWrite` |
+| struct 字段读写 | TypeEnv 确认 `struct memory`，offset 与 AST struct layout 匹配 | `StructFieldRead/Write` |
+| struct 局部初始化 | 局部多个字段绑定到同一 struct object | `StructInitializationFragment` |
+| struct 局部修改 | 已知 struct object 的字段被写入 | `StructMutationFragment` |
+| array length read | 参数/返回值类型是 memory array，`mload(array)` | `MemoryArrayLengthRead` |
+| array element read | 地址匹配 `array + 32 + index*32` | `MemoryArrayElementRead` |
+| array construction | 返回值类型是 memory array，且 effect 子图匹配 base、element write、length write、free-pointer update | `MemoryArrayConstruction` |
+
+数组构造以函数返回值类型作为起点，但使用 CFG/effect 关系校验底层模式；
+不是看到 `mload(0x40)` 就猜测为数组。
+
+```Yul
+ordinals := mload(0x40)
+let ptr := add(ordinals, 0x20)
+// loop writes elements through ptr
+mstore(ordinals, length)
+mstore(0x40, ptr)
+```
+
+当 `ordinals` 在 TypeEnv 中是 `uint8[] memory` 返回值，且上述底层 effect 子图完整匹配时，
+生成 `MemoryArrayConstruction`。缺少 length write 或 free-pointer update 时只保留底层 memory effect。
+
+### 20.12 专用语义模式补充
+
+| 语义 | 触发证据 | 记录 |
+|---|---|---|
+| 零地址检查 | Branch 外壳 + address projection + TypeEnv address | `AddressZeroCheck` |
+| 动态 bytes/string 内容 hash | `obj+32` + `mload(obj)` + bytes/string memory 类型 + MemoryHash sink | `BytesContentHash` |
+| 地址代码长度 | ValueDef 右值为 `extcodesize(address)` | `AddressCodeSize` |
+| 地址是否有代码 | 同上，左值是 bool | `AddressHasCode` |
+| calldata word 读取 | ValueDef 右值为 `calldataload(offset)` | `CalldataWordRead` |
+| 除数安全条件 | `div/mod` 的 divisor 与 guard 模式匹配 | `DivisionGuard` |
+
+零地址示例：
+
+```Yul
+if iszero(shl(96, newOwner)) { revert(0, 0) }
+```
+
+只有 `TypeEnv` 确认 `newOwner` 是 address，且 projection 匹配受支持形式时，才记录
+`newOwner == address(0)`。
+
+### 20.13 保守性与无猜测原则
+
+1. 底层 effect 不因 overlay 恢复成功而删除。
+2. 高级语义必须由语义终点和完整前置模式共同证明。
+3. 不同 SSA version 和 condition 的候选分开保留。
+4. 只有高级语义及 condition 都等价时才去重。
+5. 信息不足时记录 `unknown/unresolved/MemoryTop/unresolved_reason`，不使用惯用合约写法补齐缺失语义。
+6. topic0 和 selector 按完整证据匹配，不按名称、前缀或 ERC-20 惯例猜测。
+7. Solidity-like 是展示层，其 condition tree 化简不反向修改 CFG、SSA、effect 或 overlay。
+
+这些约束使 S-SEIR 保留审计需要的不确定性，同时避免将看起来像 Solidity
+误当成已经证明等价。
