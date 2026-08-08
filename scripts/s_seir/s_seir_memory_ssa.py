@@ -32,6 +32,7 @@ class SSeirMemorySSAView:
     assembly_block_id: int
     backend: Any
     function_loop_context: list[dict[str, Any]]
+    boundary_context: dict[str, Any] = field(default_factory=dict)
     scope: str = "s_seir_function_memoryssa_view"
     inherited_states: list[Any] = field(default_factory=list)
     bridge_facts: list[dict[str, Any]] = field(default_factory=list)
@@ -74,6 +75,10 @@ class SSeirMemorySSAView:
         result["tracker_scope"] = "s_seir_memoryssa_query"
         result["assembly_block"] = self.assembly_block_id
         result["function_loop_context"] = self.function_loop_context
+        if self.boundary_context:
+            result["solidity_yul_boundary"] = self.boundary_context
+            result["known_external_inputs"] = self.boundary_context.get("external_reads") or []
+            result["external_outputs"] = self.boundary_context.get("external_writes") or []
         result["loop_alignment"] = "s_seir_controls_all_loop_contexts_legacy_yul_memoryssa_backend"
         if self.bridge_facts:
             result["function_memory_bridge"] = self.bridge_facts
@@ -192,6 +197,11 @@ def loop_context_for_block(control: dict[str, Any] | None, block_id: int) -> lis
     return contexts.get(block_id) or contexts.get(str(block_id)) or []
 
 
+def boundary_context_for_block(control: dict[str, Any] | None, block_id: int) -> dict[str, Any]:
+    contexts = (control or {}).get("assembly_boundaries", {})
+    return contexts.get(block_id) or contexts.get(str(block_id)) or {}
+
+
 def build_memory_ssa_views(unit: FunctionUnit, control: dict[str, Any] | None = None) -> dict[int, SSeirMemorySSAView]:
     views: dict[int, SSeirMemorySSAView] = {}
     prior_snapshots: list[Any] = []
@@ -216,6 +226,7 @@ def build_memory_ssa_views(unit: FunctionUnit, control: dict[str, Any] | None = 
             assembly_block_id=block.block_id,
             backend=backend,
             function_loop_context=loop_context_for_block(control, block.block_id),
+            boundary_context=boundary_context_for_block(control, block.block_id),
             inherited_states=inherited,
             bridge_facts=bridge_facts,
             persistent_value_names=function_level_value_names(unit),

@@ -2458,3 +2458,268 @@ if iszero(shl(96, newOwner)) { revert(0, 0) }
 
 这些约束使 S-SEIR 保留审计需要的不确定性，同时避免将看起来像 Solidity
 误当成已经证明等价。
+
+## 21. Slither 语义信息与 Function-level S-SEIR 增强
+
+### 21.1 实现目的
+
+原有 S-SEIR 已经能够使用 Yul CFG、MemorySSA、SinkResolver 和语义终点模式恢复
+inline assembly 内部的语义，但 Solidity 函数与 assembly 之间仍缺少以下上下文：
+
+1. assembly 是在哪些 Solidity `if/while` 条件下可达；
+2. assembly 读取的同名变量对应哪个 Solidity SSA 版本；
+3. assembly 读写的是函数参数、返回值、局部变量还是状态变量；
+4. 多个 assembly 子图嵌入函数后，支配、后支配和 reaching definitions 是否仍然成立。
+
+本次优化引入 Slither 的 Solidity CFG、SlithIR-SSA、类型和调用信息，但不使用
+Slither 替代 Yul 分析。两者的分工是：
+
+```Plain
+Solidity 语句：Slither CFG + SlithIR-SSA
+Yul 语句：原有 assembly AST/CFG + MemorySSA + SinkResolver
+函数整体：在融合后的最终 CFG 上重新计算图属性和边界语义
+```
+
+### 21.2 Slither Solidity Block 归档
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_control_builder.py
+```
+
+每个 Solidity CFG block 在 `attrs` 中保存 Slither 原始分析结果：
+
+| 字段 | 含义 |
+|---|---|
+| `slithir` | 非 SSA 形式的 SlithIR 操作 |
+| `slithir_ssa` | SSA 形式的 SlithIR 操作 |
+| `variables_read/written` | block 读写的局部变量和参数 |
+| `state_variables_read/written` | block 读写的状态变量 |
+| `slither_dominators` | Slither 原 CFG 中的支配节点 |
+| `slither_immediate_dominator` | Slither 原 CFG 中的直接支配节点 |
+| `slither_dominance_frontier` | Slither 原 CFG 中的支配边界 |
+| `slither_calls` | internal/high-level/low-level 调用集合 |
+
+每条 SlithIR 操作保存 `kind`、`text`、`lvalue`、`rvalue`、`read`、`arguments`、
+`operator` 和被调函数信息。变量同时保存：
+
+```JSON
+{
+  "kind": "LocalIRVariable",
+  "text": "localValue_1",
+  "base_name": "localValue",
+  "type": "uint256",
+  "is_state": false,
+  "is_reference": false
+}
+```
+
+`text` 用于区分 SSA 版本，`base_name` 用于将版本归属到源码变量。
+
+### 21.3 最终统一 CFG 的图分析
+
+Slither 中表示 assembly 的占位节点被原有 Yul CFG 子图替换后，原 Slither CFG 的
+支配关系已经不再完全对应最终图。因此 S-SEIR 在拼接完成后对最终图重新计算：
+
+```Plain
+dominators
+immediate dominator
+dominance frontier
+postdominators
+immediate postdominator
+direct control dependencies
+transitive control dependency closure
+typed def-use / reaching definitions
+```
+
+支配集使用不动点迭代：
+
+```Plain
+Dom(entry) = {entry}
+Dom(n) = {n} union intersection(Dom(p)), p in predecessors(n)
+```
+
+后支配在反向图上使用同一过程。控制依赖以 branch 和 immediate postdominator 为边界，
+将 true/false 边转换为具体 predicate；再递归归并上层 controller，得到传递控制依赖。
+
+`typed_def_use` 以 `slithir_ssa` 的 lvalue 作为定义、`read` 作为使用，在统一
+CFG 上迭代计算：
+
+```Plain
+IN[block]  = union(OUT[pred])
+OUT[block] = IN[block] overwritten by GEN[block]
+```
+
+输出中每个 block 都保存 `definitions`、`uses`、`reaching_definitions_in` 和
+`reaching_definitions_out`。
+
+### 21.4 Solidity/Yul Boundary Context
+
+`assembly_boundaries` 用于表示每个 assembly 子图与所属 Solidity 函数之间的数据和
+控制边界。记录内容包括：
+
+```JSON
+{
+  "assembly_block": 1,
+  "entry_block": "bb_asm1_n0",
+  "exit_block": "bb_asm1_n2",
+  "solidity_predecessors": ["bb_sol_4"],
+  "solidity_successors": ["bb_sol_7"],
+  "external_reads": [
+    {
+      "name": "localValue",
+      "category": "local",
+      "type": "uint256",
+      "expressions": ["localValue"],
+      "reaching_ssa_versions": ["localValue_1"]
+    }
+  ],
+  "external_writes": [
+    {
+      "name": "result",
+      "category": "return",
+      "type": "uint256"
+    }
+  ],
+  "control_dependencies": []
+}
+```
+
+Yul AST 遍历器先收集 Yul 局部定义，再将非 Yul 局部标识符与 TypeEnv 中的
+函数参数、返回值、局部变量、状态变量和常量匹配。对外部读取再查询 assembly
+entry 的 `reaching_definitions_in`，得到真实 SSA 版本。
+
+### 21.5 与 MemorySSA 和 Effect Lifter 的对接
+
+MemorySSA 的 Yul 定义、字节轴、线性 alias、loop lazy materialization 和跨 assembly
+快照算法均未被替换。本次只向 `SSeirMemorySSAView` 注入 boundary context。
+
+`query_memory(...)` 新增返回：
+
+```Plain
+solidity_yul_boundary
+known_external_inputs
+external_outputs
+```
+
+因此 MemorySSA 查询仍然回答“这段 memory 由什么 Yul write 定义”，同时能说明
+该 write 使用的 Solidity 外部量对应哪个 SSA 版本。SinkResolver 仍是 MemorySSA 的语义
+终点补充查询层，本次没有用新逻辑取代它。
+
+Effect Lifter 优先使用 `control_dependency_closure` 生成 Solidity block 和 assembly entry
+的 path condition。只有新数据不存在时，才回退到原有的边遍历算法。这使 assembly
+effect 能够继承块外 Solidity 条件，而不需要将条件猜测成 Yul 内部 guard。
+
+### 21.6 处理示例
+
+输入：
+
+```Solidity
+function guarded(bool flag, uint256 amount) external returns (uint256 result) {
+    uint256 localValue = amount + 1;
+    if (flag) {
+        assembly {
+            result := add(localValue, sload(stored.slot))
+        }
+    }
+}
+```
+
+处理步骤：
+
+1. Slither CFG 记录 `localValue = amount + 1` 和 `if (flag)`。
+2. SlithIR-SSA 将局部定义记录为 `localValue_1`，状态读的 reaching version 记录为
+   `stored_1` 或该函数实际产生的 SSA 版本。
+3. Control Builder 用 Yul CFG 替换 Slither assembly anchor。
+4. 统一图的后支配分析确定 assembly entry 受 `flag` 控制。
+5. Boundary Analyzer 记录外部读 `localValue/stored`、外部写 `result` 及对应 SSA
+   版本。
+6. Yul Effect Lifter 依旧原子化 `sload` 和 `add`，并将 effect 记录在 `flag` 路径下。
+
+关键边界结果可表示为：
+
+```JSON
+{
+  "external_reads": [
+    {"name": "localValue", "reaching_ssa_versions": ["localValue_1"]},
+    {"name": "stored", "is_state": true, "reaching_ssa_versions": ["stored_1"]}
+  ],
+  "external_writes": [
+    {"name": "result", "category": "return"}
+  ],
+  "control_dependencies": [
+    {"condition": "flag", "predicate": "flag"}
+  ]
+}
+```
+
+嵌套条件：
+
+```Solidity
+if (outer) {
+    if (inner) {
+        assembly { result := amount }
+    }
+}
+```
+
+传递控制依赖使 assembly effect 的路径记录为：
+
+```Plain
+outer && inner
+```
+
+Solidity loop 中的 assembly：
+
+```Solidity
+while (count != 0) {
+    assembly {
+        mstore(0, value)
+        result := mload(0)
+    }
+    count--;
+}
+```
+
+MemoryWrite 和 MemoryRead effect 继承 `count != 0`；MemorySSA 仍使用原有 Yul memory
+记录和查询算法，但查询结果同时携带 Solidity loop boundary context。
+
+### 21.7 对原有 S-SEIR 的直接帮助
+
+1. **补全函数级上下文**：assembly 不再丢失块外 `if/while` 条件。
+2. **区分同名变量版本**：使用 reaching SSA version 避免将不同定义错误合并。
+3. **打通 Solidity/Yul 边界**：显式记录 assembly 的参数、状态、局部量和返回值读写。
+4. **改善多 assembly 分析**：多个 Yul 子图处于同一 function-level CFG，可通过 Solidity
+   def-use 和原有 memory bridge 分别建立联系。
+5. **辅助 MemorySSA/SinkResolver**：查询时可获得已知外部输入、SSA 版本和控制边界，
+   降低因缺失函数上下文导致的 `unknown`。
+6. **统一 Solidity/Yul 底层语义**：SlithIR 中的状态读写、调用、事件、分支、
+   `require/revert/return` 可以进入与 Yul 一致的 Effect/Overlay 结构。
+7. **保留原有创新点**：Loop-aware Lazy MemorySSA、字节轴、线性 alias、语义终点
+   反向追踪、分支物化和模式匹配均未被轻量化替代。
+
+### 21.8 验证结果
+
+新增回归测试：
+
+```Plain
+scripts/s_seir/s_seir_solidity_slithir_tests.py
+```
+
+覆盖内容：
+
+```Plain
+typed nested mapping read/write + EventEmit
+path-conditioned state writes + RequireOverlay
+structured external/internal calls + ReturnValue
+existing Yul MemorySSA mapping recovery
+Solidity local/state SSA reaching Yul
+nested Solidity condition reaching Yul
+Solidity while condition controlling Yul memory effects
+```
+
+在 `0x0068e979c72bbb31373ea8cb47eaefb44978566e` 样例上，`_transfer`、`approve`
+和 `_spendAllowance` 的 assembly overlay 类型及数量与优化前一致。新数据同时能记录
+`_amount_1`、`_from_1`、`_to_1` 等进入 Yul 的 reaching SSA version，说明函数上下文
+得到增强，且原有 Yul 语义恢复未发生回退。

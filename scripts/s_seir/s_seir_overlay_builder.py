@@ -227,6 +227,16 @@ class SemanticOverlayBuilder:
         for e in effects:
             if e.kind != 'Return':
                 continue
+            if e.attrs.get('language') == 'solidity' and 'values' in e.attrs:
+                values = list(e.attrs.get('values') or [])
+                out.append(self.ov('ReturnValue', e.effect_id, e.stmt_refs, {
+                    'values': values,
+                    'return_like': f"return {', '.join(map(str, values))};" if values else 'return;',
+                    'path_states': self.path_states(e),
+                    'exact_solidity_semantics': True,
+                    'source': e.attrs.get('source'),
+                }))
+                continue
             path_overlay = self.path_conditioned_return_overlay(e)
             if path_overlay:
                 out.append(path_overlay)
@@ -320,6 +330,21 @@ class SemanticOverlayBuilder:
         out: list[SemanticOverlay] = []
         branches = [e for e in effects if e.kind == 'Branch']
         for e in effects:
+            if e.kind == 'Require' and e.attrs.get('language') == 'solidity':
+                condition = str(e.attrs.get('condition') or 'unknown')
+                arguments = list(e.attrs.get('arguments') or [])
+                rendered_arguments = arguments or [condition]
+                out.append(self.ov('RequireOverlay', e.effect_id, e.stmt_refs, {
+                    'condition': condition,
+                    'arguments': arguments,
+                    'failure_payload': arguments[1:] if len(arguments) > 1 else [],
+                    'require_like': f"{e.attrs.get('builtin') or 'require'}({', '.join(map(str, rendered_arguments))});",
+                    'control_path': self.path_states(e),
+                    'path_states': self.path_states(e),
+                    'exact_solidity_semantics': True,
+                    'source': e.attrs.get('source'),
+                }))
+                continue
             if e.kind != 'Revert' or e.attrs.get('payload'):
                 continue
             if not self.is_empty_revert_payload(e):
@@ -637,6 +662,38 @@ class SemanticOverlayBuilder:
         `Jfwv := ...` from collapsing into the same slot symbol.
         """
         out: list[SemanticOverlay] = []
+        typed_effect_ids: set[str] = set()
+        for effect in effects:
+            if effect.kind not in {'StorageRead', 'StorageWrite'} or not effect.attrs.get('typed_access'):
+                continue
+            typed_effect_ids.add(effect.effect_id)
+            access = str(effect.attrs.get('access') or effect.attrs.get('state_variable') or 'storage[unknown]')
+            keys = list(effect.attrs.get('keys') or [])
+            is_mapping = bool(keys) or '[' in access
+            if is_mapping:
+                kind = 'MappingRead' if effect.kind == 'StorageRead' else 'MappingWrite'
+            else:
+                kind = 'StateVariableRead' if effect.kind == 'StorageRead' else 'StateVariableWrite'
+            value = effect.attrs.get('value')
+            attrs = {
+                'access': access,
+                'target': effect.attrs.get('target') if effect.kind == 'StorageRead' else None,
+                'value': value if effect.kind == 'StorageWrite' else None,
+                'state_variable': effect.attrs.get('state_variable'),
+                'keys': keys,
+                'key': keys[-1] if keys else None,
+                'reference_kind': effect.attrs.get('reference_kind'),
+                'type': effect.attrs.get('type'),
+                'typed_access': True,
+                'access_version': effect.attrs.get('access_version'),
+                'value_ssa': effect.attrs.get('value_ssa'),
+                'path_states': self.path_states(effect),
+                'solidity_like': self.storage_solidity_like(kind, access, value, effect),
+                'exact_solidity_semantics': True,
+                'source': effect.attrs.get('source'),
+            }
+            out.append(self.ov(kind, effect.effect_id, effect.stmt_refs, self.clean(attrs)))
+        effects = [effect for effect in effects if effect.effect_id not in typed_effect_ids]
         hash_candidates: dict[str, tuple[EffectNode, dict[str, Any]]] = {}
         activated: set[str] = set()
         slot_expr_by_var: dict[str, dict[str, Any]] = {}
@@ -2765,6 +2822,19 @@ class SemanticOverlayBuilder:
         for e in effects:
             if e.kind != 'EventLog':
                 continue
+            if e.attrs.get('source_event'):
+                name = str(e.attrs.get('event_name') or 'unknownEvent')
+                arguments = list(e.attrs.get('arguments') or [])
+                out.append(self.ov('EventEmit', e.effect_id, e.stmt_refs, {
+                    'event': name,
+                    'args': arguments,
+                    'argument_versions': e.attrs.get('argument_versions') or [],
+                    'emit_like': f"emit {name}({', '.join(map(str, arguments))});",
+                    'path_states': self.path_states(e),
+                    'exact_solidity_semantics': True,
+                    'source': e.attrs.get('source'),
+                }))
+                continue
             raw_topics = e.attrs.get('topics', []) or []
             topics = [self.resolve_constant_expr(type_env, topic) for topic in raw_topics]
             topic_constants = [
@@ -2996,6 +3066,21 @@ class SemanticOverlayBuilder:
         out: list[SemanticOverlay] = []
         mapping = {'Call': 'LowLevelCall', 'StaticCall': 'StaticCallOverlay', 'DelegateCall': 'DelegateCallOverlay', 'CallCode': 'LowLevelCall'}
         for e in effects:
+            if e.kind in {'ExternalCall', 'LibraryCall', 'InternalCall'} and e.attrs.get('typed_call'):
+                overlay_kind = 'ExternalCall' if e.kind == 'ExternalCall' else e.kind
+                target = e.attrs.get('target')
+                function = e.attrs.get('function')
+                arguments = list(e.attrs.get('arguments') or [])
+                result = e.attrs.get('result')
+                invocation = f"{target + '.' if target else ''}{function}({', '.join(map(str, arguments))})"
+                out.append(self.ov(overlay_kind, e.effect_id, e.stmt_refs, self.clean({
+                    **dict(e.attrs),
+                    'target_solidity': target,
+                    'call_expression': invocation,
+                    'solidity_like': f"{result + ' = ' if result else ''}{invocation};",
+                    'exact_solidity_semantics': True,
+                })))
+                continue
             if e.kind not in mapping:
                 continue
             attrs = dict(e.attrs)

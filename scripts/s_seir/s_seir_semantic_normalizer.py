@@ -81,10 +81,15 @@ class SemanticNormalizer:
                         {'effect': e.effect_id, 'memory_slot': '0x40', 'value': e.attrs.get('value')},
                     )
             elif e.kind in {'StorageRead', 'StorageWrite'}:
-                add_role(e.attrs.get('slot'), 'storage_slot_expr', ref, e.attrs.get('slot'), 'storage_slot', {'effect': e.effect_id, 'slot_versions': e.attrs.get('slot_versions')})
+                if e.attrs.get('typed_access'):
+                    add_role(e.attrs.get('access'), 'state_access_expr', ref, e.attrs.get('access'), e.attrs.get('type'), {'effect': e.effect_id, 'state_variable': e.attrs.get('state_variable'), 'keys': e.attrs.get('keys'), 'source': e.attrs.get('source')})
+                    for index, key in enumerate(e.attrs.get('keys') or []):
+                        add_role(key, 'mapping_key_material', ref, key, None, {'effect': e.effect_id, 'state_variable': e.attrs.get('state_variable'), 'index': index})
+                else:
+                    add_role(e.attrs.get('slot'), 'storage_slot_expr', ref, e.attrs.get('slot'), 'storage_slot', {'effect': e.effect_id, 'slot_versions': e.attrs.get('slot_versions')})
                 if e.kind == 'StorageWrite':
                     add_role(e.attrs.get('value'), 'storage_write_value', ref, normalize_expr(e.attrs.get('value')), None, {'effect': e.effect_id})
-            elif e.kind in {'Call', 'StaticCall', 'DelegateCall', 'CallCode'}:
+            elif e.kind in {'Call', 'StaticCall', 'DelegateCall', 'CallCode', 'ExternalCall', 'LibraryCall', 'InternalCall'}:
                 add_role(e.attrs.get('target'), 'call_target', ref, e.attrs.get('target_solidity') or e.attrs.get('target'), 'address', {'effect': e.effect_id, 'call_kind': e.attrs.get('op')})
                 add_role(e.attrs.get('gas'), 'call_gas', ref, normalize_expr(e.attrs.get('gas')), 'uint256', {'effect': e.effect_id})
                 add_role(e.attrs.get('input_ptr'), 'call_input_ptr', ref, e.attrs.get('input_ptr'), 'memory_ptr', {'effect': e.effect_id})
@@ -135,6 +140,10 @@ class SemanticNormalizer:
                     add_role(o.attrs.get('selector'), 'abi_selector', ref, o.attrs.get('selector'), 'bytes4', {'overlay': o.overlay_id})
                 for i, arg in enumerate(o.attrs.get('input_words') or []):
                     add_role(arg, 'abi_argument', ref, arg, None, {'overlay': o.overlay_id, 'call_input_word': i})
+            elif o.kind in {'ExternalCall', 'LibraryCall', 'InternalCall'}:
+                add_role(o.attrs.get('target'), 'call_target', ref, o.attrs.get('target_solidity') or o.attrs.get('target'), 'address', {'overlay': o.overlay_id, 'call_kind': o.attrs.get('call_kind')})
+                for i, arg in enumerate(o.attrs.get('arguments') or []):
+                    add_role(arg, 'abi_argument', ref, arg, None, {'overlay': o.overlay_id, 'index': i, 'function': o.attrs.get('function')})
             elif o.kind == 'AbiCallDataConstruction':
                 add_role(o.attrs.get('input_ptr'), 'abi_calldata_ptr', ref, o.attrs.get('input_ptr'), 'memory_ptr', {'overlay': o.overlay_id})
                 add_role(o.attrs.get('input_size'), 'abi_calldata_size', ref, o.attrs.get('input_size_expression') or o.attrs.get('input_size'), 'uint256', {'overlay': o.overlay_id})
@@ -157,6 +166,9 @@ class SemanticNormalizer:
                 add_role(o.attrs.get('payload_size'), 'return_payload_size', ref, o.attrs.get('payload_size_normalized') or o.attrs.get('payload_size'), 'uint256', {'overlay': o.overlay_id, 'encoding_hint': o.attrs.get('encoding_hint')})
                 for i, value in enumerate(o.attrs.get('values') or []):
                     add_role(value, 'return_payload_value', ref, value, None, {'overlay': o.overlay_id, 'index': i, 'encoding_hint': o.attrs.get('encoding_hint')})
+            elif o.kind == 'ReturnValue':
+                for i, value in enumerate(o.attrs.get('values') or []):
+                    add_role(value, 'return_value', ref, value, None, {'overlay': o.overlay_id, 'index': i, 'source': o.attrs.get('source')})
             elif o.kind in {'AddressHasCode', 'AddressCodeSize'}:
                 add_role(o.attrs.get('address'), 'address_code_target', ref, o.attrs.get('address_normalized') or o.attrs.get('address'), 'address', {'overlay': o.overlay_id})
                 add_role(o.attrs.get('code_size'), 'address_code_size', ref, o.attrs.get('code_size'), 'uint256', {'overlay': o.overlay_id})

@@ -54,6 +54,7 @@ class EffectLifter:
                 "assembly_block": block.block_id,
                 "scope": getattr(res, "scope", "s_seir_function_memoryssa_view"),
                 "function_loop_context": block_loop_context,
+                "solidity_yul_boundary": getattr(res, "boundary_context", {}) or {},
                 "loop_alignment": "s_seir_controls_all_loop_contexts_legacy_yul_memoryssa_backend",
                 "features": [
                     "path_states",
@@ -295,16 +296,491 @@ class EffectLifter:
                     block_loop_context,
                 ),
             )
+        solidity_effects, represented_solidity_refs = self.lift_solidity_control(control or {})
+        effects.extend(solidity_effects)
         for stmt in unit.source_statements:
-            if stmt.lang == "solidity":
+            if stmt.lang == "solidity" and stmt.stmt_id not in represented_solidity_refs:
                 t = stmt.text.strip()
                 if t.startswith("return"):
-                    effects.append(self.effect("Return", [stmt.stmt_id], {"text": t, "language": "solidity"}))
+                    effects.append(self.effect("Return", [stmt.stmt_id], {"text": t, "language": "solidity", "source": "ast_text_fallback"}))
                 elif t.startswith("revert"):
-                    effects.append(self.effect("Revert", [stmt.stmt_id], {"payload": t.removeprefix("revert").strip(), "language": "solidity"}))
+                    effects.append(self.effect("Revert", [stmt.stmt_id], {"payload": t.removeprefix("revert").strip(), "language": "solidity", "source": "ast_text_fallback"}))
                 elif t.startswith("if"):
-                    effects.append(self.effect("Branch", [stmt.stmt_id], {"condition": t, "language": "solidity"}))
+                    effects.append(self.effect("Branch", [stmt.stmt_id], {"condition": t, "language": "solidity", "source": "ast_text_fallback"}))
         return self.dedupe_effects(effects), facts
+
+    def lift_solidity_control(self, control: dict[str, Any]) -> tuple[list[EffectNode], set[str]]:
+        """Lift SlithIR-SSA archived on Solidity CFG blocks into shared S-SEIR effects."""
+        blocks = [block for block in control.get("blocks", []) if block.get("kind") == "solidity"]
+        if not blocks:
+            return [], set()
+        paths = self.solidity_block_path_states(control)
+        reference_defs: dict[str, dict[str, Any]] = {}
+        value_defs: dict[str, str] = {}
+        effects: list[EffectNode] = []
+        represented: set[str] = set()
+
+        for block in blocks:
+            attrs = block.get("attrs") or {}
+            operations = attrs.get("slithir_ssa") or attrs.get("slithir") or []
+            refs = list(block.get("stmts") or [])
+            if operations:
+                represented.update(refs)
+            block_id = str(block.get("block_id") or "")
+            path_states = paths.get(block_id) or ["entry"]
+            node_id = attrs.get("slither_node_id")
+            for operation in operations:
+                kind = str(operation.get("kind") or "")
+                lvalue = operation.get("lvalue")
+                lvalue_key = self.slithir_value_key(lvalue)
+                common = {
+                    "cfg_block_id": block_id,
+                    "cfg_node_id": node_id,
+                    "language": "solidity",
+                    "source": "slithir_ssa" if operation.get("ssa") else "slithir",
+                    "path_states": path_states,
+                    "slithir": operation,
+                }
+
+                if kind == "Index":
+                    left = self.resolve_slithir_value(operation.get("variable_left"), value_defs, reference_defs)
+                    right = self.resolve_slithir_value(operation.get("variable_right"), value_defs, reference_defs)
+                    parent = self.reference_info(operation.get("variable_left"), reference_defs)
+                    state_variable = parent.get("state_variable") if parent else self.state_variable_name(operation.get("variable_left"))
+                    keys = list(parent.get("keys") or []) if parent else []
+                    keys.append(right)
+                    access = f"{left}[{right}]"
+                    info = {
+                        "access": access,
+                        "state_variable": state_variable,
+                        "keys": keys,
+                        "reference_kind": "index",
+                        "type": (lvalue or {}).get("type"),
+                    }
+                    if lvalue_key:
+                        reference_defs[lvalue_key] = info
+                        value_defs[lvalue_key] = access
+                    effects.append(self.effect("ValueDef", refs, {
+                        **common,
+                        "targets": [self.slithir_source_name(lvalue)] if lvalue else [],
+                        "target_versions": self.slithir_target_versions(lvalue),
+                        "value": access,
+                        "atomic_operation": "Index",
+                        "reference_definition": info,
+                    }))
+                    continue
+
+                if kind == "Member":
+                    left = self.resolve_slithir_value(operation.get("variable_left"), value_defs, reference_defs)
+                    member = self.slithir_source_name(operation.get("variable_right"))
+                    parent = self.reference_info(operation.get("variable_left"), reference_defs)
+                    state_variable = parent.get("state_variable") if parent else self.state_variable_name(operation.get("variable_left"))
+                    access = f"{left}.{member}"
+                    info = {
+                        "access": access,
+                        "state_variable": state_variable,
+                        "keys": list(parent.get("keys") or []) if parent else [],
+                        "member": member,
+                        "reference_kind": "member",
+                        "type": (lvalue or {}).get("type"),
+                    }
+                    if lvalue_key:
+                        reference_defs[lvalue_key] = info
+                        value_defs[lvalue_key] = access
+                    effects.append(self.effect("ValueDef", refs, {
+                        **common,
+                        "targets": [self.slithir_source_name(lvalue)] if lvalue else [],
+                        "target_versions": self.slithir_target_versions(lvalue),
+                        "value": access,
+                        "atomic_operation": "Member",
+                        "reference_definition": info,
+                    }))
+                    continue
+
+                if kind == "Assignment":
+                    rvalue = operation.get("rvalue") or self.first_slithir_value(operation.get("read"))
+                    value = self.resolve_slithir_value(rvalue, value_defs, reference_defs)
+                    target_ref = self.reference_info(lvalue, reference_defs)
+                    if target_ref or self.is_slithir_state(lvalue):
+                        info = target_ref or {
+                            "access": self.slithir_source_name(lvalue),
+                            "state_variable": self.state_variable_name(lvalue),
+                            "keys": [],
+                            "reference_kind": "state_variable",
+                            "type": (lvalue or {}).get("type"),
+                        }
+                        effects.extend(self.solidity_storage_reads(operation, refs, common, value_defs, reference_defs, exclude={lvalue_key}))
+                        effects.append(self.effect("StorageWrite", refs, {
+                            **common,
+                            "typed_access": True,
+                            **info,
+                            "value": value,
+                            "value_ssa": self.slithir_value_key(rvalue),
+                        }))
+                    else:
+                        effects.extend(self.solidity_storage_reads(operation, refs, common, value_defs, reference_defs))
+                        effects.append(self.effect("ValueDef", refs, {
+                            **common,
+                            "targets": [self.slithir_source_name(lvalue)] if lvalue else [],
+                            "target_versions": self.slithir_target_versions(lvalue),
+                            "value": value,
+                            "value_ssa": self.slithir_value_key(rvalue),
+                            "atomic_operation": "Assignment",
+                        }))
+                    if lvalue_key:
+                        value_defs[lvalue_key] = value
+                    continue
+
+                if kind in {"Binary", "Unary", "TypeConversion", "Length", "Unpack", "InitArray", "NewArray", "NewStructure", "NewElementaryType", "NewContract"}:
+                    effects.extend(self.solidity_storage_reads(operation, refs, common, value_defs, reference_defs))
+                    value = self.slithir_operation_expression(operation, value_defs, reference_defs)
+                    if lvalue_key:
+                        value_defs[lvalue_key] = value
+                    effects.append(self.effect("ValueDef", refs, {
+                        **common,
+                        "targets": [self.slithir_source_name(lvalue)] if lvalue else [],
+                        "target_versions": self.slithir_target_versions(lvalue),
+                        "value": value,
+                        "atomic_operation": kind,
+                    }))
+                    continue
+
+                if kind in {"Phi", "PhiCallback"}:
+                    inputs = [self.resolve_slithir_value(v, value_defs, reference_defs) for v in operation.get("read") or []]
+                    source_inputs = [self.slithir_source_name(v) for v in operation.get("read") or []]
+                    unique_sources = list(dict.fromkeys(item for item in source_inputs if item))
+                    value = unique_sources[0] if len(unique_sources) == 1 else f"phi({', '.join(inputs)})"
+                    if lvalue_key:
+                        value_defs[lvalue_key] = value
+                    effects.append(self.effect("ValueDef", refs, {
+                        **common,
+                        "targets": [self.slithir_source_name(lvalue)] if lvalue else [],
+                        "target_versions": self.slithir_target_versions(lvalue),
+                        "value": value,
+                        "atomic_operation": "Phi",
+                        "phi_inputs": inputs,
+                    }))
+                    continue
+
+                if kind == "Condition":
+                    effects.extend(self.solidity_storage_reads(operation, refs, common, value_defs, reference_defs))
+                    condition_value = self.first_slithir_value(operation.get("read"))
+                    effects.append(self.effect("Branch", refs, {
+                        **common,
+                        "condition": self.resolve_slithir_value(condition_value, value_defs, reference_defs),
+                        "condition_ssa": self.slithir_value_key(condition_value),
+                    }))
+                    continue
+
+                if kind == "Return":
+                    effects.extend(self.solidity_storage_reads(operation, refs, common, value_defs, reference_defs))
+                    values = [self.resolve_slithir_value(v, value_defs, reference_defs) for v in operation.get("values") or []]
+                    effects.append(self.effect("Return", refs, {
+                        **common,
+                        "values": values,
+                        "value": values[0] if len(values) == 1 else values,
+                        "value_versions": [self.slithir_value_key(v) for v in operation.get("values") or []],
+                    }))
+                    continue
+
+                if kind == "EventCall":
+                    effects.extend(self.solidity_storage_reads(operation, refs, common, value_defs, reference_defs))
+                    arguments = [self.resolve_slithir_value(v, value_defs, reference_defs) for v in operation.get("arguments") or []]
+                    effects.append(self.effect("EventLog", refs, {
+                        **common,
+                        "source_event": True,
+                        "event_name": operation.get("name"),
+                        "arguments": arguments,
+                        "argument_versions": [self.slithir_value_key(v) for v in operation.get("arguments") or []],
+                    }))
+                    continue
+
+                if kind in {"InternalCall", "InternalDynamicCall", "HighLevelCall", "LibraryCall", "LowLevelCall", "Send", "Transfer"}:
+                    effects.extend(self.solidity_storage_reads(operation, refs, common, value_defs, reference_defs))
+                    call_kind = self.solidity_call_effect_kind(kind)
+                    arguments = [self.resolve_slithir_value(v, value_defs, reference_defs) for v in operation.get("arguments") or []]
+                    destination = self.resolve_slithir_value(operation.get("destination"), value_defs, reference_defs)
+                    function = operation.get("function") or {}
+                    function_name = function.get("name") or operation.get("function_name") or function.get("full_name")
+                    invocation = f"{destination + '.' if destination else ''}{function_name}({', '.join(arguments)})"
+                    call_attrs = {
+                        **common,
+                        "typed_call": True,
+                        "call_kind": kind,
+                        "target": destination or function.get("contract"),
+                        "function": function_name,
+                        "function_signature": function.get("full_name"),
+                        "canonical_function": function.get("canonical_name"),
+                        "arguments": arguments,
+                        "result": self.slithir_source_name(lvalue) if lvalue else None,
+                        "result_version": lvalue_key,
+                        "value": self.resolve_slithir_value(operation.get("call_value"), value_defs, reference_defs),
+                        "gas": self.resolve_slithir_value(operation.get("call_gas"), value_defs, reference_defs),
+                    }
+                    effects.append(self.effect(call_kind, refs, self.clean_dict(call_attrs)))
+                    if lvalue_key:
+                        value_defs[lvalue_key] = invocation
+                    continue
+
+                if kind == "SolidityCall":
+                    effects.extend(self.solidity_storage_reads(operation, refs, common, value_defs, reference_defs))
+                    function = operation.get("function") or {}
+                    function_name = str(function.get("full_name") or function.get("name") or "")
+                    arguments = [self.resolve_slithir_value(v, value_defs, reference_defs) for v in operation.get("arguments") or []]
+                    if function_name.startswith("require(") or function_name.startswith("assert("):
+                        effects.append(self.effect("Require", refs, {
+                            **common,
+                            "condition": arguments[0] if arguments else None,
+                            "arguments": arguments,
+                            "builtin": function_name.split("(", 1)[0],
+                        }))
+                    elif function_name.startswith("revert("):
+                        effects.append(self.effect("Revert", refs, {
+                            **common,
+                            "payload": arguments,
+                            "arguments": arguments,
+                            "source_revert": True,
+                        }))
+                    else:
+                        value = f"{function_name}({', '.join(arguments)})"
+                        if lvalue_key:
+                            value_defs[lvalue_key] = value
+                        effects.append(self.effect("ValueDef", refs, {
+                            **common,
+                            "targets": [self.slithir_source_name(lvalue)] if lvalue else [],
+                            "target_versions": self.slithir_target_versions(lvalue),
+                            "value": value,
+                            "atomic_operation": "SolidityCall",
+                        }))
+                    continue
+
+                if kind == "Delete":
+                    target = operation.get("variable") or lvalue
+                    info = self.reference_info(target, reference_defs)
+                    if info or self.is_slithir_state(target):
+                        info = info or {
+                            "access": self.slithir_source_name(target),
+                            "state_variable": self.state_variable_name(target),
+                            "keys": [],
+                            "reference_kind": "state_variable",
+                            "type": (target or {}).get("type"),
+                        }
+                        effects.append(self.effect("StorageWrite", refs, {**common, "typed_access": True, **info, "value": "0", "delete": True}))
+        return effects, represented
+
+    def solidity_storage_reads(
+        self,
+        operation: dict[str, Any],
+        refs: list[str],
+        common: dict[str, Any],
+        value_defs: dict[str, str],
+        reference_defs: dict[str, dict[str, Any]],
+        exclude: set[str | None] | None = None,
+    ) -> list[EffectNode]:
+        out: list[EffectNode] = []
+        seen: set[str] = set()
+        exclude = exclude or set()
+        values: list[dict[str, Any]] = []
+        for key in ("rvalue", "variable", "variable_left", "variable_right", "destination", "call_value", "call_gas"):
+            value = operation.get(key)
+            if isinstance(value, dict):
+                values.append(value)
+        values.extend(v for v in operation.get("arguments") or [] if isinstance(v, dict))
+        values.extend(v for v in operation.get("values") or [] if isinstance(v, dict))
+        values.extend(v for v in operation.get("read") or [] if isinstance(v, dict))
+        for value in values:
+            key = self.slithir_value_key(value)
+            if key in exclude or key in seen:
+                continue
+            info = self.reference_info(value, reference_defs)
+            if not info and self.is_slithir_state(value):
+                info = {
+                    "access": self.slithir_source_name(value),
+                    "state_variable": self.state_variable_name(value),
+                    "keys": [],
+                    "reference_kind": "state_variable",
+                    "type": value.get("type"),
+                }
+            if not info:
+                continue
+            seen.add(key)
+            out.append(self.effect("StorageRead", refs, {
+                **common,
+                "typed_access": True,
+                **info,
+                "value": None,
+                "access_version": key,
+            }))
+        return out
+
+    @staticmethod
+    def solidity_call_effect_kind(kind: str) -> str:
+        if kind in {"InternalCall", "InternalDynamicCall"}:
+            return "InternalCall"
+        if kind == "LibraryCall":
+            return "LibraryCall"
+        if kind == "LowLevelCall":
+            return "ExternalCall"
+        if kind in {"Send", "Transfer"}:
+            return "ExternalCall"
+        return "ExternalCall"
+
+    @staticmethod
+    def slithir_target_versions(value: dict[str, Any] | None) -> dict[str, list[str]]:
+        if not value:
+            return {}
+        name = EffectLifter.slithir_source_name(value)
+        key = EffectLifter.slithir_value_key(value)
+        return {name: [key]} if name and key else {}
+
+    @staticmethod
+    def first_slithir_value(values: Any) -> dict[str, Any] | None:
+        return values[0] if isinstance(values, list) and values and isinstance(values[0], dict) else None
+
+    @staticmethod
+    def slithir_value_key(value: dict[str, Any] | None) -> str:
+        return str((value or {}).get("text") or "")
+
+    @staticmethod
+    def slithir_source_name(value: dict[str, Any] | None) -> str:
+        if not value:
+            return ""
+        if value.get("is_constant") or value.get("is_solidity_builtin"):
+            text = str(value.get("text") or "")
+            return {"True": "true", "False": "false"}.get(text, text)
+        return str(value.get("base_name") or value.get("name") or value.get("text") or "")
+
+    @staticmethod
+    def is_slithir_state(value: dict[str, Any] | None) -> bool:
+        return bool(value and value.get("is_state"))
+
+    @staticmethod
+    def state_variable_name(value: dict[str, Any] | None) -> str | None:
+        return EffectLifter.slithir_source_name(value) if EffectLifter.is_slithir_state(value) else None
+
+    @staticmethod
+    def reference_info(value: dict[str, Any] | None, reference_defs: dict[str, dict[str, Any]]) -> dict[str, Any] | None:
+        key = EffectLifter.slithir_value_key(value)
+        return reference_defs.get(key)
+
+    @classmethod
+    def resolve_slithir_value(
+        cls,
+        value: dict[str, Any] | None,
+        value_defs: dict[str, str],
+        reference_defs: dict[str, dict[str, Any]],
+    ) -> str:
+        if not value:
+            return ""
+        key = cls.slithir_value_key(value)
+        if key in reference_defs:
+            return str(reference_defs[key].get("access") or key)
+        if key in value_defs and str(value.get("kind") or "").startswith("Temporary"):
+            return value_defs[key]
+        return cls.slithir_source_name(value)
+
+    @classmethod
+    def slithir_operation_expression(
+        cls,
+        operation: dict[str, Any],
+        value_defs: dict[str, str],
+        reference_defs: dict[str, dict[str, Any]],
+    ) -> str:
+        kind = str(operation.get("kind") or "")
+        if kind == "Binary":
+            left = cls.resolve_slithir_value(operation.get("variable_left"), value_defs, reference_defs)
+            right = cls.resolve_slithir_value(operation.get("variable_right"), value_defs, reference_defs)
+            op = cls.slithir_operator(operation.get("operator"))
+            return f"({left} {op} {right})"
+        if kind == "Unary":
+            value = cls.resolve_slithir_value(operation.get("variable"), value_defs, reference_defs)
+            op = cls.slithir_unary_operator(operation.get("operator"))
+            return f"({op}{value})"
+        if kind == "TypeConversion":
+            value = cls.resolve_slithir_value(operation.get("variable"), value_defs, reference_defs)
+            target_type = (operation.get("lvalue") or {}).get("type") or "unknown"
+            return f"{target_type}({value})"
+        if kind == "Length":
+            value = cls.resolve_slithir_value(operation.get("variable"), value_defs, reference_defs)
+            return f"{value}.length"
+        reads = [cls.resolve_slithir_value(v, value_defs, reference_defs) for v in operation.get("read") or []]
+        if len(reads) == 1:
+            return reads[0]
+        source = operation.get("source_expression")
+        return str(source or operation.get("text") or kind)
+
+    @staticmethod
+    def slithir_operator(operator: Any) -> str:
+        text = str(operator or "")
+        mapping = {
+            "ADDITION": "+", "SUBTRACTION": "-", "MULTIPLICATION": "*", "DIVISION": "/", "MODULO": "%",
+            "LESS": "<", "GREATER": ">", "LESS_EQUAL": "<=", "GREATER_EQUAL": ">=", "EQUAL": "==", "NOT_EQUAL": "!=",
+            "AND": "&&", "OR": "||", "CARET": "^", "LEFT_SHIFT": "<<", "RIGHT_SHIFT": ">>",
+            "POWER": "**", "ANDAND": "&&", "OROR": "||",
+        }
+        return mapping.get(text.split(".")[-1], text if text in {"+", "-", "*", "/", "%", "<", ">", "<=", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>", "**"} else text.split(".")[-1].lower())
+
+    @staticmethod
+    def slithir_unary_operator(operator: Any) -> str:
+        text = str(operator or "").split(".")[-1]
+        return {"BANG": "!", "TILD": "~", "MINUS_PRE": "-", "PLUS_PRE": "+"}.get(text, text.lower())
+
+    @staticmethod
+    def clean_dict(value: dict[str, Any]) -> dict[str, Any]:
+        return {key: item for key, item in value.items() if item is not None and item != ""}
+
+    @staticmethod
+    def solidity_block_path_states(control: dict[str, Any], max_states: int = 24) -> dict[str, list[str]]:
+        blocks = {str(block.get("block_id")): block for block in control.get("blocks", []) if isinstance(block, dict)}
+        dependency_closure = control.get("control_dependency_closure") or {}
+        if dependency_closure:
+            by_block: dict[str, list[str]] = {block_id: [] for block_id in blocks}
+            for dependent, dependencies in dependency_closure.items():
+                for dependency in dependencies:
+                    predicate = str(dependency.get("predicate") or "").strip()
+                    if dependent in by_block and predicate and predicate not in by_block[dependent]:
+                        by_block[dependent].append(predicate)
+            return {
+                block_id: [" && ".join(predicates) if predicates else "entry"]
+                for block_id, predicates in by_block.items()
+            }
+        incoming: dict[str, int] = {block_id: 0 for block_id in blocks}
+        outgoing: dict[str, list[dict[str, Any]]] = {block_id: [] for block_id in blocks}
+        for edge in control.get("edges", []) or []:
+            src, dst = str(edge.get("from") or ""), str(edge.get("to") or "")
+            if src not in blocks or dst not in blocks:
+                continue
+            outgoing[src].append(edge)
+            incoming[dst] += 1
+        roots = [block_id for block_id, count in incoming.items() if count == 0]
+        if not roots and blocks:
+            roots = [next(iter(blocks))]
+        states: dict[str, list[tuple[str, ...]]] = {block_id: [] for block_id in blocks}
+        queue: list[tuple[str, tuple[str, ...]]] = [(root, ()) for root in roots]
+        seen: set[tuple[str, tuple[str, ...]]] = set()
+        while queue:
+            block_id, predicates = queue.pop(0)
+            marker = (block_id, predicates)
+            if marker in seen or len(states[block_id]) >= max_states:
+                continue
+            seen.add(marker)
+            states[block_id].append(predicates)
+            terminator = blocks[block_id].get("terminator") or {}
+            condition = str(terminator.get("condition") or "").strip()
+            for edge in outgoing.get(block_id, []):
+                edge_kind = str(edge.get("kind") or "")
+                next_predicates = predicates
+                predicate = condition if edge_kind == "true" else (f"!({condition})" if edge_kind == "false" and condition else "")
+                if predicate and predicate not in next_predicates:
+                    opposite = f"!({predicate})"
+                    if opposite in next_predicates or (predicate.startswith("!(") and predicate.endswith(")") and predicate[2:-1] in next_predicates):
+                        continue
+                    next_predicates = (*next_predicates, predicate)
+                queue.append((str(edge.get("to")), next_predicates))
+        return {
+            block_id: [" && ".join(predicates) if predicates else "entry" for predicates in candidates]
+            for block_id, candidates in states.items()
+        }
 
     def evaluation_effects(
         self,
@@ -888,6 +1364,18 @@ class EffectLifter:
     def assembly_entry_conditions(control: dict[str, Any]) -> dict[int, list[str]]:
         blocks = {item.get("block_id"): item for item in control.get("blocks", []) if isinstance(item, dict)}
         out: dict[int, list[str]] = {}
+        for raw_block_id, boundary in (control.get("assembly_boundaries") or {}).items():
+            try:
+                assembly_block = int(raw_block_id)
+            except (TypeError, ValueError):
+                continue
+            predicates = [
+                str(item.get("predicate") or "").strip()
+                for item in boundary.get("control_dependencies") or []
+                if str(item.get("predicate") or "").strip()
+            ]
+            if predicates:
+                out[assembly_block] = [" && ".join(dict.fromkeys(predicates))]
         for edge in control.get("edges", []) or []:
             if not isinstance(edge, dict):
                 continue
@@ -898,6 +1386,8 @@ class EffectLifter:
             try:
                 assembly_block = int(dst[len("bb_asm"): -len(marker)])
             except Exception:
+                continue
+            if assembly_block in out:
                 continue
             src_block = blocks.get(edge.get("from")) or {}
             terminator = src_block.get("terminator") or {}

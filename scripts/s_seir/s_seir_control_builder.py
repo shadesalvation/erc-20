@@ -60,6 +60,7 @@ class ControlBuilder:
         self.slither_bin = slither_bin
         self.workdir = workdir
         self._source_text = self.source_path.read_text(encoding="utf-8") if self.source_path and self.source_path.exists() else ""
+        self._source_bytes = self.source_path.read_bytes() if self.source_path and self.source_path.exists() else b""
         self._slither_cache: Any | None = None
         self._slither_error: str | None = None
         self._slither_primary_failure: str | None = None
@@ -172,7 +173,31 @@ class ControlBuilder:
         notes.append("assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors")
         if any(loop_contexts.values()):
             notes.append("function_level_loop_context_attached_to_assembly_blocks")
-        return {"blocks": blocks, "edges": edges, "notes": notes, "loop_contexts": loop_contexts}
+        graph_analysis = self._unified_graph_analysis(blocks, edges)
+        boundary_contexts = self._assembly_boundary_contexts(
+            unit,
+            blocks,
+            edges,
+            asm_entry_ids,
+            asm_exit_ids,
+            graph_analysis,
+        )
+        notes.extend([
+            "slither_typed_use_def_archived_on_solidity_blocks",
+            "unified_dominance_and_control_dependencies_computed_after_yul_subgraph_embedding",
+            "solidity_yul_boundary_contexts_attached",
+        ])
+        return {
+            "blocks": blocks,
+            "edges": edges,
+            "notes": notes,
+            "loop_contexts": loop_contexts,
+            "dominance": graph_analysis["dominance"],
+            "control_dependencies": graph_analysis["control_dependencies"],
+            "control_dependency_closure": graph_analysis["control_dependency_closure"],
+            "typed_def_use": graph_analysis["typed_def_use"],
+            "assembly_boundaries": boundary_contexts,
+        }
 
     def _build_skeleton(self, unit: FunctionUnit) -> dict[str, Any]:
         blocks: list[dict[str, Any]] = []
@@ -401,14 +426,24 @@ class ControlBuilder:
         except ValueError:
             return 45
 
-    @staticmethod
-    def _range_from_slither_node(node: Any) -> Range:
+    def _range_from_slither_node(self, node: Any) -> Range:
         sm = getattr(node, "source_mapping", None)
         start = getattr(sm, "start", None)
         length = getattr(sm, "length", None)
         if isinstance(start, int) and isinstance(length, int):
-            return Range(start, start + length)
+            return Range(self._normalized_source_offset(start), self._normalized_source_offset(start + length))
         return Range(0, 0)
+
+    def _normalized_source_offset(self, raw_offset: int) -> int:
+        """Translate Slither's raw-file byte offsets to solc standard-json offsets.
+
+        The standard-json compiler input is produced from ``read_text`` and therefore
+        has normalized newlines, while Slither may map the original CRLF file.
+        """
+        if not self._source_bytes:
+            return raw_offset
+        prefix = self._source_bytes[:max(0, raw_offset)]
+        return len(prefix.replace(b"\r\n", b"\n").replace(b"\r", b"\n"))
 
     @staticmethod
     def _range_from_stmt(stmt: SourceStatement) -> Range:
@@ -455,8 +490,486 @@ class ControlBuilder:
                 "slither_node_type": str(getattr(node, "type", "")),
                 "src": self._src_string(self._range_from_slither_node(node)),
                 "text": text,
+                "slithir": self._serialize_slithir(getattr(node, "irs", []) or []),
+                "slithir_ssa": self._serialize_slithir(getattr(node, "irs_ssa", []) or [], ssa=True),
+                "state_variables_read": [
+                    self._serialize_slithir_value(value)
+                    for value in (getattr(node, "state_variables_read", []) or [])
+                ],
+                "state_variables_written": [
+                    self._serialize_slithir_value(value)
+                    for value in (getattr(node, "state_variables_written", []) or [])
+                ],
+                "variables_read": [
+                    self._serialize_slithir_value(value)
+                    for value in (getattr(node, "variables_read", []) or [])
+                ],
+                "variables_written": [
+                    self._serialize_slithir_value(value)
+                    for value in (getattr(node, "variables_written", []) or [])
+                ],
+                "slither_dominators": sorted(int(value.node_id) for value in (getattr(node, "dominators", set()) or set())),
+                "slither_immediate_dominator": int(node.immediate_dominator.node_id) if getattr(node, "immediate_dominator", None) is not None else None,
+                "slither_dominance_frontier": sorted(int(value.node_id) for value in (getattr(node, "dominance_frontier", set()) or set())),
+                "slither_is_reachable": bool(getattr(node, "is_reachable", True)),
+                "slither_calls": {
+                    "internal": [str(value) for value in (getattr(node, "internal_calls", []) or [])],
+                    "high_level": [str(value) for value in (getattr(node, "high_level_calls", []) or [])],
+                    "low_level": [str(value) for value in (getattr(node, "low_level_calls", []) or [])],
+                },
             },
         }
+
+    def _serialize_slithir(self, operations: list[Any], ssa: bool = False) -> list[dict[str, Any]]:
+        return [self._serialize_slithir_operation(op, index, ssa) for index, op in enumerate(operations)]
+
+    def _serialize_slithir_operation(self, op: Any, order: int, ssa: bool) -> dict[str, Any]:
+        item: dict[str, Any] = {
+            "order": order,
+            "kind": type(op).__name__,
+            "text": str(op),
+            "ssa": ssa,
+        }
+        expression = getattr(op, "expression", None)
+        if expression is not None:
+            item["source_expression"] = str(expression)
+        for name in (
+            "lvalue",
+            "rvalue",
+            "variable",
+            "variable_left",
+            "variable_right",
+            "destination",
+            "call_value",
+            "call_gas",
+        ):
+            value = getattr(op, name, None)
+            if value is not None:
+                item[name] = self._serialize_slithir_value(value)
+        for name in ("read", "arguments", "values"):
+            values = getattr(op, name, None)
+            if values is not None:
+                item[name] = [self._serialize_slithir_value(value) for value in values]
+        operation_type = getattr(op, "type", None)
+        if operation_type is not None:
+            item["operator"] = self._enum_text(operation_type)
+        operation_name = getattr(op, "name", None)
+        if operation_name is not None:
+            item["name"] = str(operation_name)
+        function = getattr(op, "function", None)
+        if function is not None:
+            item["function"] = self._serialize_slithir_callable(function)
+        function_name = getattr(op, "function_name", None)
+        if function_name is not None:
+            item["function_name"] = str(function_name)
+        return item
+
+    @staticmethod
+    def _enum_text(value: Any) -> str:
+        enum_value = getattr(value, "value", None)
+        if isinstance(enum_value, str):
+            return enum_value
+        name = getattr(value, "name", None)
+        return str(name if name is not None else value)
+
+    @staticmethod
+    def _serialize_slithir_callable(value: Any) -> dict[str, Any]:
+        contract = getattr(value, "contract", None) or getattr(value, "contract_declarer", None)
+        return {
+            "kind": type(value).__name__,
+            "name": str(getattr(value, "name", value)),
+            "full_name": str(getattr(value, "full_name", getattr(value, "name", value))),
+            "canonical_name": str(getattr(value, "canonical_name", "") or ""),
+            "contract": str(getattr(contract, "name", "") or ""),
+        }
+
+    @staticmethod
+    def _serialize_slithir_value(value: Any) -> dict[str, Any]:
+        kind = type(value).__name__
+        non_ssa = getattr(value, "non_ssa_version", None)
+        base_name = str(non_ssa) if non_ssa is not None else str(getattr(value, "name", value))
+        text = str(value)
+        value_type = getattr(value, "type", None)
+        return {
+            "kind": kind,
+            "text": text,
+            "name": str(getattr(value, "name", text)),
+            "base_name": base_name,
+            "type": str(value_type) if value_type is not None else None,
+            "is_state": kind in {"StateIRVariable", "StateVariable"},
+            "is_reference": "ReferenceVariable" in kind,
+            "is_constant": kind == "Constant",
+            "is_solidity_builtin": kind in {"SolidityVariable", "SolidityVariableComposed"},
+        }
+
+    @classmethod
+    def _unified_graph_analysis(cls, blocks: list[dict[str, Any]], edges: list[dict[str, Any]]) -> dict[str, Any]:
+        block_by_id = {str(block["block_id"]): block for block in blocks}
+        node_ids = list(block_by_id)
+        predecessors: dict[str, set[str]] = {node_id: set() for node_id in node_ids}
+        successors: dict[str, set[str]] = {node_id: set() for node_id in node_ids}
+        edge_kinds: dict[tuple[str, str], list[str]] = {}
+        for edge in edges:
+            source, target = str(edge.get("from") or ""), str(edge.get("to") or "")
+            if source not in block_by_id or target not in block_by_id:
+                continue
+            successors[source].add(target)
+            predecessors[target].add(source)
+            edge_kinds.setdefault((source, target), []).append(str(edge.get("kind") or "fallthrough"))
+
+        roots = [node_id for node_id in node_ids if not predecessors[node_id]]
+        exits = [node_id for node_id in node_ids if not successors[node_id]]
+        dominators = cls._fixed_point_dominators(node_ids, predecessors, roots)
+        postdominators = cls._fixed_point_dominators(node_ids, successors, exits)
+        immediate_dominator = cls._immediate_relation(dominators, roots)
+        immediate_postdominator = cls._immediate_relation(postdominators, exits)
+        dominance_frontier = cls._dominance_frontier(node_ids, predecessors, immediate_dominator)
+        control_dependencies = cls._control_dependencies(
+            block_by_id,
+            successors,
+            edge_kinds,
+            immediate_postdominator,
+        )
+        typed_def_use = cls._typed_def_use(blocks, predecessors)
+
+        dependencies_by_block: dict[str, list[dict[str, Any]]] = {node_id: [] for node_id in node_ids}
+        for dependency in control_dependencies:
+            dependencies_by_block[dependency["dependent"]].append(dependency)
+        dependency_closure = {
+            node_id: cls._dependency_closure(node_id, dependencies_by_block)
+            for node_id in node_ids
+        }
+        for node_id, block in block_by_id.items():
+            attrs = block.setdefault("attrs", {})
+            attrs["unified_dominators"] = sorted(dominators.get(node_id, set()))
+            attrs["unified_immediate_dominator"] = immediate_dominator.get(node_id)
+            attrs["unified_postdominators"] = sorted(postdominators.get(node_id, set()))
+            attrs["unified_immediate_postdominator"] = immediate_postdominator.get(node_id)
+            attrs["unified_dominance_frontier"] = sorted(dominance_frontier.get(node_id, set()))
+            attrs["control_dependencies"] = dependencies_by_block.get(node_id, [])
+            attrs["control_dependency_closure"] = dependency_closure.get(node_id, [])
+            attrs["typed_def_use"] = typed_def_use["blocks"].get(node_id, {})
+
+        return {
+            "dominance": {
+                "roots": roots,
+                "exits": exits,
+                "dominators": {node_id: sorted(values) for node_id, values in dominators.items()},
+                "immediate_dominator": immediate_dominator,
+                "dominance_frontier": {node_id: sorted(values) for node_id, values in dominance_frontier.items()},
+                "postdominators": {node_id: sorted(values) for node_id, values in postdominators.items()},
+                "immediate_postdominator": immediate_postdominator,
+            },
+            "control_dependencies": control_dependencies,
+            "control_dependency_closure": dependency_closure,
+            "typed_def_use": typed_def_use,
+        }
+
+    @staticmethod
+    def _dependency_closure(
+        node_id: str,
+        dependencies_by_block: dict[str, list[dict[str, Any]]],
+    ) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        seen_controllers: set[str] = set()
+
+        def visit(dependent: str) -> None:
+            for dependency in dependencies_by_block.get(dependent, []):
+                controller = str(dependency.get("controller") or "")
+                if not controller or controller in seen_controllers:
+                    continue
+                seen_controllers.add(controller)
+                visit(controller)
+                out.append(dependency)
+
+        visit(node_id)
+        return out
+
+    @staticmethod
+    def _fixed_point_dominators(
+        node_ids: list[str],
+        incoming: dict[str, set[str]],
+        roots: list[str],
+    ) -> dict[str, set[str]]:
+        universe = set(node_ids)
+        root_set = set(roots)
+        result = {node_id: ({node_id} if node_id in root_set else set(universe)) for node_id in node_ids}
+        changed = True
+        while changed:
+            changed = False
+            for node_id in node_ids:
+                if node_id in root_set:
+                    continue
+                parents = incoming.get(node_id, set())
+                merged = set.intersection(*(result[parent] for parent in parents)) if parents else set()
+                updated = {node_id, *merged}
+                if updated != result[node_id]:
+                    result[node_id] = updated
+                    changed = True
+        return result
+
+    @staticmethod
+    def _immediate_relation(relations: dict[str, set[str]], roots: list[str]) -> dict[str, str | None]:
+        root_set = set(roots)
+        result: dict[str, str | None] = {}
+        for node_id, values in relations.items():
+            if node_id in root_set:
+                result[node_id] = None
+                continue
+            strict = [value for value in values if value != node_id]
+            result[node_id] = max(strict, key=lambda value: len(relations.get(value, set())), default=None)
+        return result
+
+    @staticmethod
+    def _dominance_frontier(
+        node_ids: list[str],
+        predecessors: dict[str, set[str]],
+        immediate_dominator: dict[str, str | None],
+    ) -> dict[str, set[str]]:
+        frontier: dict[str, set[str]] = {node_id: set() for node_id in node_ids}
+        for node_id in node_ids:
+            parents = predecessors.get(node_id, set())
+            if len(parents) < 2:
+                continue
+            for parent in parents:
+                runner: str | None = parent
+                seen: set[str] = set()
+                while runner is not None and runner != immediate_dominator.get(node_id) and runner not in seen:
+                    seen.add(runner)
+                    frontier[runner].add(node_id)
+                    runner = immediate_dominator.get(runner)
+        return frontier
+
+    @classmethod
+    def _control_dependencies(
+        cls,
+        block_by_id: dict[str, dict[str, Any]],
+        successors: dict[str, set[str]],
+        edge_kinds: dict[tuple[str, str], list[str]],
+        immediate_postdominator: dict[str, str | None],
+    ) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        seen_records: set[tuple[str, str, str]] = set()
+        for controller, targets in successors.items():
+            terminator = block_by_id[controller].get("terminator") or {}
+            condition = str(terminator.get("condition") or "").strip()
+            if len(targets) < 2 or not condition:
+                continue
+            stop = immediate_postdominator.get(controller)
+            for target in targets:
+                for edge_kind in edge_kinds.get((controller, target), ["fallthrough"]):
+                    predicate = cls._edge_predicate(condition, edge_kind)
+                    runner: str | None = target
+                    visited: set[str] = set()
+                    while runner is not None and runner != stop and runner not in visited:
+                        visited.add(runner)
+                        key = (controller, runner, predicate)
+                        if key not in seen_records:
+                            seen_records.add(key)
+                            out.append({
+                                "controller": controller,
+                                "dependent": runner,
+                                "edge_kind": edge_kind,
+                                "condition": condition,
+                                "predicate": predicate,
+                            })
+                        runner = immediate_postdominator.get(runner)
+        return out
+
+    @staticmethod
+    def _edge_predicate(condition: str, edge_kind: str) -> str:
+        if edge_kind in {"false", "exit", "zero"} or edge_kind.startswith("false:"):
+            return f"!({condition})"
+        if edge_kind.startswith("case:"):
+            return f"({condition}) == {edge_kind.split(':', 1)[1]}"
+        return condition
+
+    @classmethod
+    def _typed_def_use(cls, blocks: list[dict[str, Any]], predecessors: dict[str, set[str]]) -> dict[str, Any]:
+        block_records: dict[str, dict[str, Any]] = {}
+        generated: dict[str, dict[str, set[str]]] = {}
+        for block in blocks:
+            block_id = str(block["block_id"])
+            definitions: list[dict[str, Any]] = []
+            uses: list[dict[str, Any]] = []
+            attrs = block.get("attrs") or {}
+            for operation in attrs.get("slithir_ssa") or []:
+                lvalue = operation.get("lvalue")
+                if isinstance(lvalue, dict) and lvalue.get("text"):
+                    definitions.append(cls._def_use_value(lvalue, operation.get("order"), operation.get("kind")))
+                for value in operation.get("read") or []:
+                    if isinstance(value, dict) and value.get("text"):
+                        uses.append(cls._def_use_value(value, operation.get("order"), operation.get("kind")))
+            definitions = cls._dedupe_records(definitions, ("name", "version", "operation_order"))
+            uses = cls._dedupe_records(uses, ("name", "version", "operation_order"))
+            block_records[block_id] = {"definitions": definitions, "uses": uses}
+            generated[block_id] = {}
+            for definition in definitions:
+                generated[block_id].setdefault(definition["name"], set()).add(definition["version"])
+
+        reaching_in: dict[str, dict[str, set[str]]] = {block_id: {} for block_id in block_records}
+        reaching_out: dict[str, dict[str, set[str]]] = {block_id: {} for block_id in block_records}
+        changed = True
+        while changed:
+            changed = False
+            for block_id in block_records:
+                incoming: dict[str, set[str]] = {}
+                for parent in predecessors.get(block_id, set()):
+                    for name, versions in reaching_out.get(parent, {}).items():
+                        incoming.setdefault(name, set()).update(versions)
+                outgoing = {name: set(versions) for name, versions in incoming.items()}
+                for name, versions in generated.get(block_id, {}).items():
+                    outgoing[name] = set(versions)
+                if incoming != reaching_in[block_id] or outgoing != reaching_out[block_id]:
+                    reaching_in[block_id] = incoming
+                    reaching_out[block_id] = outgoing
+                    changed = True
+
+        for block_id, record in block_records.items():
+            record["reaching_definitions_in"] = {
+                name: sorted(versions) for name, versions in reaching_in[block_id].items()
+            }
+            record["reaching_definitions_out"] = {
+                name: sorted(versions) for name, versions in reaching_out[block_id].items()
+            }
+        return {"blocks": block_records}
+
+    @staticmethod
+    def _def_use_value(value: dict[str, Any], operation_order: Any, operation_kind: Any) -> dict[str, Any]:
+        return {
+            "name": str(value.get("base_name") or value.get("name") or value.get("text")),
+            "version": str(value.get("text")),
+            "kind": value.get("kind"),
+            "type": value.get("type"),
+            "is_state": bool(value.get("is_state")),
+            "is_reference": bool(value.get("is_reference")),
+            "operation_order": operation_order,
+            "operation_kind": operation_kind,
+        }
+
+    @staticmethod
+    def _dedupe_records(records: list[dict[str, Any]], keys: tuple[str, ...]) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        seen: set[tuple[Any, ...]] = set()
+        for record in records:
+            key = tuple(record.get(name) for name in keys)
+            if key not in seen:
+                seen.add(key)
+                out.append(record)
+        return out
+
+    @classmethod
+    def _assembly_boundary_contexts(
+        cls,
+        unit: FunctionUnit,
+        blocks: list[dict[str, Any]],
+        edges: list[dict[str, Any]],
+        entry_ids: dict[int, str],
+        exit_ids: dict[int, str],
+        graph_analysis: dict[str, Any],
+    ) -> dict[int, dict[str, Any]]:
+        known = {
+            variable.name: variable.to_dict()
+            for variable in [*unit.parameters, *unit.returns, *unit.locals, *unit.state_variables]
+            if variable.name
+        }
+        for name, value in (getattr(unit, "constant_values", {}) or {}).items():
+            known[name] = {"name": name, "kind": "constant", "type_string": value.get("type_string")}
+        incoming: dict[str, list[str]] = {}
+        outgoing: dict[str, list[str]] = {}
+        for edge in edges:
+            incoming.setdefault(str(edge.get("to")), []).append(str(edge.get("from")))
+            outgoing.setdefault(str(edge.get("from")), []).append(str(edge.get("to")))
+        dependency_closure = graph_analysis.get("control_dependency_closure") or {}
+        typed_blocks = (graph_analysis.get("typed_def_use") or {}).get("blocks") or {}
+        out: dict[int, dict[str, Any]] = {}
+        for assembly in unit.assembly_blocks:
+            reads, writes = cls._yul_external_symbols(assembly.yul_ast, known)
+            entry = entry_ids[assembly.block_id]
+            exit_id = exit_ids[assembly.block_id]
+            reaching = (typed_blocks.get(entry) or {}).get("reaching_definitions_in") or {}
+            out[assembly.block_id] = {
+                "assembly_block": assembly.block_id,
+                "entry_block": entry,
+                "exit_block": exit_id,
+                "solidity_predecessors": [node for node in incoming.get(entry, []) if node.startswith("bb_sol_")],
+                "solidity_successors": [node for node in outgoing.get(exit_id, []) if node.startswith("bb_sol_")],
+                "external_reads": [
+                    {**known[name], "expressions": sorted(expressions), "reaching_ssa_versions": reaching.get(name, [])}
+                    for name, expressions in sorted(reads.items())
+                ],
+                "external_writes": [
+                    {**known[name], "expressions": sorted(expressions)}
+                    for name, expressions in sorted(writes.items())
+                ],
+                "control_dependencies": [
+                    dependency for dependency in dependency_closure.get(entry, [])
+                ],
+            }
+        return out
+
+    @classmethod
+    def _yul_external_symbols(
+        cls,
+        root: dict[str, Any],
+        known: dict[str, dict[str, Any]],
+    ) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
+        locals_: set[str] = set()
+        reads: dict[str, set[str]] = {}
+        writes: dict[str, set[str]] = {}
+
+        def root_name(name: str) -> str:
+            return name.split(".", 1)[0]
+
+        def add_read(name: str) -> None:
+            root_value = root_name(name)
+            if root_value in known and root_value not in locals_:
+                reads.setdefault(root_value, set()).add(name)
+
+        def visit(value: Any, role: str = "read") -> None:
+            if isinstance(value, list):
+                for item in value:
+                    visit(item, role)
+                return
+            if not isinstance(value, dict):
+                return
+            node_type = value.get("nodeType")
+            if node_type == "YulIdentifier":
+                name = str(value.get("name") or "")
+                if not name:
+                    return
+                if role == "target":
+                    root_value = root_name(name)
+                    if root_value in known and root_value not in locals_:
+                        writes.setdefault(root_value, set()).add(name)
+                elif role != "function":
+                    add_read(name)
+                return
+            if node_type == "YulVariableDeclaration":
+                for variable in value.get("variables") or []:
+                    if isinstance(variable, dict) and variable.get("name"):
+                        locals_.add(str(variable["name"]))
+                visit(value.get("value"), "read")
+                return
+            if node_type == "YulAssignment":
+                visit(value.get("variableNames") or [], "target")
+                visit(value.get("value"), "read")
+                return
+            if node_type == "YulFunctionCall":
+                visit(value.get("functionName"), "function")
+                visit(value.get("arguments") or [], "read")
+                return
+            if node_type == "YulFunctionDefinition":
+                for field in ("parameters", "returnVariables"):
+                    for variable in value.get(field) or []:
+                        if isinstance(variable, dict) and variable.get("name"):
+                            locals_.add(str(variable["name"]))
+            for key, child in value.items():
+                if key not in {"src", "nativeSrc", "name", "nodeType"}:
+                    visit(child, role)
+
+        visit(root)
+        return reads, writes
 
     @staticmethod
     def _slither_node_text(node: Any) -> str:
@@ -467,6 +980,8 @@ class ControlBuilder:
         return node_type.split(".")[-1].lower() or "slither_node"
 
     def _solidity_refs(self, unit: FunctionUnit, node: Any) -> list[str]:
+        if str(getattr(node, "type", "")).endswith("ENTRYPOINT"):
+            return []
         rng = self._range_from_slither_node(node)
         if not rng.valid:
             return []
@@ -512,7 +1027,7 @@ class ControlBuilder:
 
     def _slither_terminator(self, node: Any, text: str) -> dict[str, Any]:
         node_type = str(getattr(node, "type", ""))
-        if node_type.endswith("IF"):
+        if node_type.endswith("IF") or node_type.endswith("IFLOOP"):
             return {"kind": "Branch", "condition": text}
         if "RETURN" in node_type:
             return {"kind": "Return", "text": text}
@@ -525,7 +1040,9 @@ class ControlBuilder:
     @staticmethod
     def _yul_terminator(node: Any) -> dict[str, Any]:
         if node.kind in {"condition", "switch", "loop-condition"}:
-            return {"kind": "Branch", "text": node.text, "node_kind": node.kind}
+            text = str(node.text or "").strip()
+            condition = text[3:].strip() if text.startswith("if ") else text
+            return {"kind": "Branch", "text": node.text, "condition": condition, "node_kind": node.kind}
         if node.kind in {"terminal", "leave"} or node.text.startswith(("revert", "return", "stop", "invalid", "selfdestruct")):
             if node.text.startswith("revert"):
                 return {"kind": "Revert", "text": node.text, "node_kind": node.kind}
