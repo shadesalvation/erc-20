@@ -184,6 +184,33 @@ def test_path_conditioned_staticcall_is_lifted_to_precompile() -> None:
     assert "uint256((sha256(abi.encodePacked(bytes20(msg.sender)))))" == output.attrs["candidates"][0]["value"], output.attrs
 
 
+def test_dynamic_ecrecover_v_is_classified_but_not_unsafely_lifted() -> None:
+    attrs = {
+        "op": "staticcall", "gas": "gas()", "target": "1",
+        "input_ptr": "0", "input_size": "128", "output_ptr": "32", "output_size": "32",
+        "cfg_node_id": 7, "path_states": ["ready"],
+        "sink_resolution": {
+            "path_sensitive": True,
+            "path_resolutions": [{
+                "status": "resolved", "condition": "ready",
+                "arg_resolutions": {"input": {"memory_slice": {
+                    "complete": True,
+                    "slices": [
+                        {"query_offset": 0, "size": 32, "extraction": "digest", "source_value": "digest", "source_version": "m1"},
+                        {"query_offset": 32, "size": 32, "extraction": "(v & 0xff)", "source_value": "and(v, 0xff)", "source_version": "m2"},
+                        {"query_offset": 64, "size": 32, "extraction": "r", "source_value": "r", "source_version": "m3"},
+                        {"query_offset": 96, "size": 32, "extraction": "s", "source_value": "s", "source_version": "m4"},
+                    ],
+                }}},
+            }],
+        },
+    }
+    overlay = next(item for item in SemanticOverlayBuilder().call_overlays([effect("StaticCall", attrs, "eff_ec")]) if item.kind == "PathConditionedPrecompileCall")
+    assert overlay.attrs["precompile"] == "ecrecover", overlay.attrs
+    assert overlay.attrs["native_solidity_projection"] is False, overlay.attrs
+    assert "yulCall" in overlay.attrs["candidates"][0]["solidity_like"], overlay.attrs
+
+
 def fixed_precompile_call(effect_id: str = "eff_call", node: int = 7, target: str = "1") -> EffectNode:
     return effect("StaticCall", {
         "op": "staticcall",
@@ -344,6 +371,158 @@ def test_solidity_guard_prefix_reaches_assembly_revert() -> None:
         effect("Revert", {"payload_ptr": "0", "payload_size": "0", "cfg_node_id": 2, "path_states": merged}, "eff_revert")
     ])
     assert overlays[0].attrs["condition"] == "!(_xbkkpxhzey[from])", overlays[0].attrs
+
+
+def test_assembly_entry_uses_real_cfg_paths_after_early_return() -> None:
+    control = {
+        "blocks": [
+            {"block_id": "entry", "terminator": {"kind": "Branch", "condition": "A"}},
+            {"block_id": "nested", "terminator": {"kind": "Branch", "condition": "B"}},
+            {"block_id": "returned", "terminator": {"kind": "Return"}},
+            {"block_id": "join", "terminator": {"kind": "Fallthrough"}},
+            {"block_id": "bb_asm1_n0", "terminator": {"kind": "YulNode"}},
+        ],
+        "edges": [
+            {"from": "entry", "to": "nested", "kind": "true"},
+            {"from": "entry", "to": "join", "kind": "false"},
+            {"from": "nested", "to": "returned", "kind": "true"},
+            {"from": "nested", "to": "join", "kind": "false"},
+            {"from": "join", "to": "bb_asm1_n0", "kind": "fallthrough"},
+        ],
+        # This closure is intentionally unsuitable as a path expression.
+        "control_dependency_closure": {
+            "bb_asm1_n0": [{"predicate": "!(A)"}, {"predicate": "!(B)"}],
+        },
+        "assembly_boundaries": {1: {"entry_block": "bb_asm1_n0"}},
+    }
+    paths = EffectLifter.assembly_entry_conditions(control)
+    assert set(paths[1]) == {"!(A)", "A && !(B)"}, paths
+
+
+def test_function_paths_merge_with_local_yul_paths() -> None:
+    merged = []
+    for local in ("C", "!(C)"):
+        merged.extend(EffectLifter.merge_function_path_prefixes(["!(A)", "A && !(B)"], local))
+    assert set(merged) == {
+        "!(A) && C",
+        "A && !(B) && C",
+        "!(A) && !(C)",
+        "A && !(B) && !(C)",
+    }
+
+
+def test_yul_revert_structural_exit_edge_does_not_reach_later_assembly() -> None:
+    control = {
+        "blocks": [
+            {"block_id": "entry", "terminator": {"kind": "Branch", "condition": "A"}},
+            {"block_id": "revert", "terminator": {"kind": "Revert"}},
+            {"block_id": "merge", "terminator": {"kind": "Fallthrough"}},
+            {"block_id": "asm_exit", "terminator": {"kind": "Fallthrough"}},
+            {"block_id": "bb_asm2_n0", "terminator": {"kind": "YulNode"}},
+        ],
+        "edges": [
+            {"from": "entry", "to": "revert", "kind": "true: A"},
+            {"from": "entry", "to": "merge", "kind": "false: !(A)"},
+            {"from": "revert", "to": "asm_exit", "kind": "terminate: revert"},
+            {"from": "merge", "to": "asm_exit", "kind": "next"},
+            {"from": "asm_exit", "to": "bb_asm2_n0", "kind": "fallthrough"},
+        ],
+        "assembly_boundaries": {2: {"entry_block": "bb_asm2_n0"}},
+    }
+    assert EffectLifter.assembly_entry_conditions(control) == {2: ["!(A)"]}
+
+
+def test_call_output_expands_returned_and_preserved_memory_paths() -> None:
+    call = fixed_precompile_call(node=10)
+    call.attrs["path_states"] = ["entry"]
+    stale_slice = {
+        "query_kind": "MemoryByteSliceResult",
+        "pointer": "0x2c",
+        "size": 52,
+        "complete": True,
+        "slices": [
+            {
+                "query_offset": 0, "size": 20, "source_value": "and(v, 0xff)",
+                "source_offset": 12, "source_width": 32, "source_version": "mem_old",
+                "source_node_id": 4, "source_kind": "mstore", "extraction": "low_bytes((v & 0xff), 20)",
+            },
+            {
+                "query_offset": 20, "size": 32, "source_value": "allowance_seed_and_spender",
+                "source_offset": 0, "source_width": 32, "source_version": "mem_new",
+                "source_node_id": 14, "source_kind": "mstore", "extraction": "allowance_seed_and_spender",
+            },
+        ],
+    }
+    stale_slice["path_slices"] = [{
+        "path": "!(iszero(eq(mload(returndatasize()), owner)))",
+        "complete": True,
+        "slices": [dict(item) for item in stale_slice["slices"]],
+    }]
+    sink = effect("MemoryHash", {
+        "value": "allowanceSlot",
+        "value_versions": {"allowanceSlot": ["allowanceSlot__ssa1"]},
+        "ptr": "0x2c", "size": "0x34", "cfg_node_id": 20,
+        "path_states": ["!(iszero(eq(mload(returndatasize()), owner)))"],
+        "memory_read": {"complete": True, "has_unknown": False, "byte_slice": stale_slice},
+    }, "eff_hash")
+    EffectLifter.attach_cross_statement_call_outputs([call, sink])
+    paths = sink.attrs["memory_read"]["byte_slice"]["path_slices"]
+    assert len(paths) == 2, paths
+    returned = next(item for item in paths if item["call_memory_outcome"] == "returndata_copied")
+    preserved = next(item for item in paths if item["call_memory_outcome"] == "no_returndata_preserve_pre_call_memory")
+    assert "returndatasize_after(eff_call) == 0x20" in returned["path"], returned
+    assert returned["slices"][0]["source_kind"] == "call_output", returned
+    assert returned["slices"][0]["source_value"] == "owner", returned
+    assert returned["slices"][0]["extraction"] == "low_bytes(owner, 20)", returned
+    assert "returndatasize_after(eff_call) == 0x00" in preserved["path"], preserved
+    assert preserved["slices"][0]["source_kind"] == "mstore", preserved
+    assert preserved["slices"][0]["source_value"] == "and(v, 0xff)", preserved
+    SinkResolver().attach_all([sink])
+    candidates = sink.attrs["sink_resolution"]["path_resolutions"]
+    assert len(candidates) == 2, candidates
+    normalized = {item["arg_resolutions"]["slot"]["normalized"] for item in candidates}
+    assert any("owner" in item for item in normalized), normalized
+    assert any("v & 0xff" in item for item in normalized), normalized
+    write = effect("StorageWrite", {
+        "slot": "allowanceSlot",
+        "slot_versions": ["allowanceSlot__ssa1"],
+        "value": "amount",
+        "path_states": ["!(iszero(eq(mload(returndatasize()), owner)))"],
+    }, "eff_write")
+    overlays = SemanticOverlayBuilder().storage_overlays(TypeEnv(), [sink, write])
+    storage = next(item for item in overlays if item.kind == "PathConditionedStorageWrite")
+    storage_candidates = storage.attrs["candidates"]
+    assert len(storage_candidates) == 2, storage_candidates
+    assert any(
+        "returndatasize_after(eff_call) == 0x20" in item["condition"]
+        and "owner" in item["access"]
+        for item in storage_candidates
+    ), storage_candidates
+    assert any(
+        "returndatasize_after(eff_call) == 0x00" in item["condition"]
+        and "v & 0xff" in item["access"]
+        for item in storage_candidates
+    ), storage_candidates
+
+
+def test_unproven_call_output_does_not_replace_memoryssa() -> None:
+    call = fixed_precompile_call(node=10)
+    original = [{
+        "query_offset": 0, "size": 32, "source_value": "old",
+        "source_offset": 0, "source_width": 32, "source_version": "mem_old",
+        "source_node_id": 4, "source_kind": "mstore", "extraction": "old",
+    }]
+    sink = effect("MemoryHash", {
+        "ptr": "0x20", "size": "0x20", "cfg_node_id": 20, "path_states": ["entry"],
+        "memory_read": {"complete": True, "has_unknown": False, "byte_slice": {
+            "pointer": "0x20", "size": 32, "complete": True, "slices": list(original),
+            "path_slices": [{"path": "entry", "complete": True, "slices": list(original)}],
+        }},
+    }, "eff_hash")
+    EffectLifter.attach_cross_statement_call_outputs([call, sink])
+    resolved = sink.attrs["memory_read"]["byte_slice"]["path_slices"][0]["slices"]
+    assert resolved[0]["source_value"] == "old", resolved
+    assert not sink.attrs["memory_read"]["byte_slice"].get("call_output_path_expansion")
 
 
 def memory_read_single_word(value: str) -> dict:
@@ -579,6 +758,7 @@ if __name__ == "__main__":
         test_symbolic_call_input_slice_is_known_bytes20_sender,
         test_staticcall_size_literal_is_resolved_before_precompile_lift,
         test_path_conditioned_staticcall_is_lifted_to_precompile,
+        test_dynamic_ecrecover_v_is_classified_but_not_unsafely_lifted,
         test_returndatasize_pointer_has_call_output_and_memoryssa_candidates,
         test_returndatasize_alias_is_traced_through_value_def,
         test_returndatasize_unknown_call_shape_stays_unresolved,
@@ -586,6 +766,11 @@ if __name__ == "__main__":
         test_high_bytes_literal_is_normalized_as_call_selector,
         test_struct_dynamic_array_field_becomes_memory_array_alias,
         test_solidity_guard_prefix_reaches_assembly_revert,
+        test_assembly_entry_uses_real_cfg_paths_after_early_return,
+        test_function_paths_merge_with_local_yul_paths,
+        test_yul_revert_structural_exit_edge_does_not_reach_later_assembly,
+        test_call_output_expands_returned_and_preserved_memory_paths,
+        test_unproven_call_output_does_not_replace_memoryssa,
         test_constant_expr_manual_slot_is_resolved,
         test_constant_expr_slot_alias_is_resolved,
         test_single_word_packed_slot_direct_shift_seed_is_resolved,

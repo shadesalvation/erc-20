@@ -12,7 +12,7 @@ for item in (ROOT / "legacy_yul", ROOT / "s_seir"):
         sys.path.insert(0, text)
 
 from s_seir_memory_ssa import SSeirMemorySSAView
-from s_seir_model import EffectNode, ExpressionRole, SemanticOverlay
+from s_seir_model import EffectNode, ExpressionRole, FunctionSSEIR, SemanticOverlay
 from s_seir_semantic_normalizer import SemanticNormalizer
 
 
@@ -129,6 +129,165 @@ def test_free_memory_pointer_role_resolves_symbolic_mload() -> None:
     assert fact["semantic_value"] == "free_memory_pointer"
 
 
+def test_free_memory_pointer_semantic_export_omits_unresolved_memory_source() -> None:
+    e = effect({
+        "read_from": "0x40",
+        "semantic_value": "free_memory_pointer",
+        "memory_read": {"has_unknown": True, "complete": False},
+    }, kind="MemoryRead")
+    attrs = semantic_function(e).to_semantic_dict()["effects"][0]["attrs"]
+    assert attrs["semantic_value"] == "free_memory_pointer"
+    assert "memory_semantics" not in attrs
+
+
+def semantic_function(e: EffectNode, *, analysis_facts: list[dict] | None = None) -> FunctionSSEIR:
+    return FunctionSSEIR(
+        "Case.f()",
+        "Case",
+        "f",
+        "f()",
+        [],
+        {
+            "blocks": [{
+                "block_id": "bb_1",
+                "kind": "yul",
+                "stmts": ["asm_s_1"],
+                "terminator": {"kind": "Fallthrough"},
+                "attrs": {
+                    "src": "1:2:0",
+                    "text": "keccak256(0, 64)",
+                    "slithir_ssa": [{"kind": "Temporary"}],
+                    "typed_def_use": {"definitions": []},
+                },
+            }],
+            "edges": [],
+            "dominance": {"roots": ["bb_1"]},
+            "typed_def_use": {"blocks": {}},
+            "control_dependencies": [],
+            "assembly_boundaries": {},
+            "loop_contexts": {},
+        },
+        [],
+        [e],
+        [],
+        [],
+        analysis_facts or [],
+    )
+
+
+def test_semantic_export_hides_resolved_query_trace() -> None:
+    e = effect({
+        "data_ptr": "0",
+        "data_size": "32",
+        "data_memory": {
+            "complete": False,
+            "has_unknown": True,
+            "tracker_scope": "s_seir_memoryssa_query",
+        },
+        "sink_resolution": {
+            "sink_kind": "EventLog",
+            "path_resolutions": [{
+                "condition": "flag",
+                "status": "resolved",
+                "arg_resolutions": {
+                    "data": {
+                        "normalized": "MemorySlice(amount)",
+                        "memory_slice": {"slices": [{"extraction": "amount"}]},
+                    },
+                },
+            }],
+        },
+    })
+    exported = semantic_function(e, analysis_facts=[
+        {"kind": "MemorySSAQueryLayer", "complete": False},
+        {"kind": "SSEIRConstantTable", "constants": {}},
+    ]).to_semantic_dict()
+    attrs = exported["effects"][0]["attrs"]
+    assert "data_memory" not in attrs
+    assert "sink_resolution" not in attrs
+    assert attrs["semantic_inputs"] == {
+        "sink_kind": "EventLog",
+        "paths": [{"arguments": {"data": "MemorySlice(amount)"}, "condition": "flag"}],
+    }
+    assert e.attrs["data_memory"]["has_unknown"] is True
+    assert [fact["kind"] for fact in exported["analysis_facts"]] == ["SSEIRConstantTable"]
+    assert "dominance" not in exported["control"]
+    assert "slithir_ssa" not in exported["control"]["blocks"][0]["attrs"]
+
+
+def test_semantic_export_keeps_only_real_unresolved_reason() -> None:
+    e = effect({
+        "input_ptr": "ptr",
+        "input_size": "size",
+        "input_memory": {"complete": False, "has_unknown": True},
+        "sink_resolution": {
+            "sink_kind": "Call",
+            "path_resolutions": [{
+                "condition": None,
+                "status": "unresolved",
+                "reason": "memory_source_unresolved",
+                "arg_resolutions": {"input": {"expr": "ptr:size", "normalized": None}},
+            }],
+        },
+    }, kind="Call")
+    attrs = semantic_function(e).to_semantic_dict()["effects"][0]["attrs"]
+    assert "input_memory" not in attrs
+    assert attrs["semantic_inputs"] == {
+        "sink_kind": "Call",
+        "paths": [{
+            "arguments": {"input": "ptr:size"},
+            "unresolved_reason": "memory_source_unresolved",
+        }],
+    }
+
+
+def test_semantic_export_compacts_memoryssa_fallback() -> None:
+    e = effect({
+        "ptr": "0",
+        "size": "64",
+        "memory_read": {
+            "complete": True,
+            "has_unknown": False,
+            "byte_slice": {
+                "path_slices": [{
+                    "path": "guard",
+                    "complete": True,
+                    "slices": [{"extraction": "user"}, {"extraction": "balances.slot"}],
+                }],
+            },
+        },
+    }, kind="MemoryHash")
+    attrs = semantic_function(e).to_semantic_dict()["effects"][0]["attrs"]
+    assert "memory_read" not in attrs
+    assert attrs["memory_semantics"] == [{
+        "role": "memory_read",
+        "paths": [{"values": ["user", "balances.slot"], "condition": "guard"}],
+    }]
+
+
+def test_semantic_export_removes_partial_query_implementation_fields() -> None:
+    e = effect({
+        "input_ptr": "ptr",
+        "input_size": "size",
+        "input_memory_partial": {"query_kind": "PartialMemorySliceResult", "complete": True},
+        "output_memory_query": {"pointer": "out", "length": "32"},
+        "payload_memory_partial": {"query_offset": 0, "slices": []},
+        "payload_memory_complete": True,
+        "words": [{
+            "value": "x",
+            "memory_ssa": "mem_1",
+            "memory_version": "mem_1",
+            "memory_versions": ["mem_1"],
+        }],
+    }, kind="Call")
+    attrs = semantic_function(e).to_semantic_dict()["effects"][0]["attrs"]
+    assert "input_memory_partial" not in attrs
+    assert "output_memory_query" not in attrs
+    assert "payload_memory_partial" not in attrs
+    assert "payload_memory_complete" not in attrs
+    assert attrs["words"] == [{"value": "x"}]
+
+
 if __name__ == "__main__":
     tests = [
         test_zero_length_memory_query_clears_legacy_unknown,
@@ -138,6 +297,11 @@ if __name__ == "__main__":
         test_true_unknown_remains_unknown_without_resolution,
         test_complete_memoryssa_query_is_resolved,
         test_free_memory_pointer_role_resolves_symbolic_mload,
+        test_free_memory_pointer_semantic_export_omits_unresolved_memory_source,
+        test_semantic_export_hides_resolved_query_trace,
+        test_semantic_export_keeps_only_real_unresolved_reason,
+        test_semantic_export_compacts_memoryssa_fallback,
+        test_semantic_export_removes_partial_query_implementation_fields,
     ]
     for test in tests:
         test()

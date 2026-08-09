@@ -52,6 +52,7 @@ Analysis Facts / Security Facts
 4. attrs 是按 kind 扩展的字段集合；不适用的字段通常不输出。
 5. solidity-like 是投影视图，不是核心模型本身。
 6. 正式模型不记录 confidence，也没有独立 projection_policies 层。
+7. MemorySSA/SinkResolver 是内部推导工具；标准输出只保留它们证明的语义结果。
 ```
 
 能否无损投影的静态结果保存在 overlay `attrs.solidity_equivalent`、`reason`、`unresolved_reason` 和 `solidity_like` 中。
@@ -85,6 +86,18 @@ reason/unresolved_reason           记录不可投影或未解析原因。
   }
 ]
 ```
+
+默认 `--output` 和 `--text-output` 生成规范语义视图，不包含 MemorySSA/SinkResolver
+查询轨迹。如需排查分析器，显式使用：
+
+```bash
+python scripts/s_seir/s_seir_pipeline.py Token.sol \
+  --output outputs/sseir.json \
+  --debug-output outputs/sseir.debug.json
+```
+
+`sseir.debug.json` 保留完整 MemorySSA、byte-axis、SinkResolver 和 SlithIR 调试数据；
+批处理的默认 `sseir.json` 同样使用规范语义视图。
 
 ### 2.2 批处理输出
 
@@ -444,7 +457,9 @@ Effect 只记录已经发生的低层行为，不负责判断它等价于哪个 
 | `nested_in_condition` | 操作是否嵌套在 branch 条件中 |
 | `nested_in_value` | 操作是否嵌套在复合右值中 |
 | `evaluation_step` | 对应的原子求值步骤编号 |
-| `sink_resolution` | SinkResolver 生成的逐路径参数解析结果 |
+| `semantic_inputs` | MemorySSA/SinkResolver 已证明的逐路径 sink 输入语义 |
+| `memory_semantics` | 非 sink memory read 的规范化来源值 |
+| `unresolved_reason` | 确实缺少必要来源时的保守原因 |
 
 ### 7.3 ValueDef 与 EvaluationStep
 
@@ -541,14 +556,10 @@ MemorySSA 还会在查询中按字节记录 source value、source offset、sourc
     "read_from": "ptr",
     "value": "x",
     "value_versions": ["x__ssa1"],
-    "memory_read": {
-      "complete": true,
-      "has_unknown": false,
-      "words": [
-        {"offset": 0, "value": "amount", "memory_ssa": "mem_1"}
-      ],
-      "byte_slice": {}
-    }
+    "memory_semantics": [{
+      "role": "memory_read",
+      "paths": [{"values": ["amount"]}]
+    }]
   }
 }
 ```
@@ -558,7 +569,7 @@ MemorySSA 还会在查询中按字节记录 source value、source offset、sourc
 | `read_from` | mload 指针 |
 | `value` | 接收读取结果的变量或临时量 |
 | `value_versions` | 读取结果 SSA version |
-| `memory_read` | MemorySSA/byte-axis 查询结果 |
+| `memory_semantics` | 由 MemorySSA/byte-axis 证明的来源值及其执行条件 |
 | `reads_after_call_output` | 可到达该读取的前置 call output |
 | `value_from_call_output` | 读取值被证明来自调用返回区时的表达式 |
 | `returndatasize_pointer_candidates` | 指针来自 `returndatasize()` 时的逐路径候选 |
@@ -577,12 +588,13 @@ MemorySSA 还会在查询中按字节记录 source value、source offset、sourc
     "ptr_versions": [],
     "size_versions": [],
     "value_versions": ["slotHash__ssa1"],
-    "memory_read": {
-      "complete": true,
-      "words": [
-        {"offset": 0, "value": "account"},
-        {"offset": 32, "value": "balances.slot"}
-      ]
+    "semantic_inputs": {
+      "sink_kind": "MemoryHash",
+      "paths": [{
+        "arguments": {
+          "slot": "keccak256(abi.encode(account, balances.slot))"
+        }
+      }]
     }
   }
 }
@@ -809,7 +821,64 @@ Return/Revert：
 
 它记录不同 condition 下哪些 SSA/memory 定义必须随 sink 一起物化，不表示新的 EVM opcode。
 
-## 8. Memory 查询子结构 (MemorySSA和SinkResolver的查询接口)
+## 8. 规范 Memory/Sink 语义输入
+
+标准 S-SEIR 不导出 MemorySSA 和 SinkResolver 的查询状态，而是将查询结果投影为
+`semantic_inputs` 或 `memory_semantics`。
+
+### 8.1 semantic_inputs
+
+`semantic_inputs` 用于 `MemoryHash/EventLog/Return/Revert/Call` 等语义终点：
+
+```json
+{
+  "sink_kind": "MemoryHash",
+  "paths": [
+    {
+      "condition": "condition3",
+      "arguments": {
+        "slot": "keccak256(abi.encode(from, k.slot))"
+      }
+    }
+  ]
+}
+```
+
+| 字段 | 含义 |
+| --- | --- |
+| `sink_kind` | 消费该 memory 输入的语义终点 |
+| `paths[].condition` | 该输入成立的 CFG 条件；`entry` 不显式输出 |
+| `paths[].arguments` | 按 `slot/data/payload/input` 角色归一化后的语义值 |
+| `paths[].unresolved_reason` | 某条路径确实无法确定必要输入时的保守原因 |
+
+已解析的路径不记录 `status=resolved`。只有真正不能确定语义时，才保留
+`unresolved_reason`。
+
+### 8.2 memory_semantics
+
+对不属于统一 sink 的 memory read，记录其规范化来源：
+
+```json
+{
+  "memory_semantics": [
+    {
+      "role": "memory_read",
+      "paths": [
+        {
+          "condition": "guard",
+          "values": ["user", "balances.slot"]
+        }
+      ]
+    }
+  ]
+}
+```
+
+这里不保存 memory version、alias 查找过程、字节单元和查询完整性变化。
+
+### 8.3 Debug-only Memory 查询结构
+
+以下结构只在 `--debug-output` 中保留，不属于默认语义模型。
 
 memory sink 常见查询字段：
 
@@ -850,7 +919,7 @@ memory sink 常见查询字段：
 | `loop_alignment/function_loop_context` | 查询与函数级 loop 的对应关系 |
 | `overridden_by_call_output` | 普通 memory reaching definition 是否被更晚的 call output 覆盖 |
 
-### 8.1 word 字段
+#### 8.3.1 word 字段
 
 ```json
 {
@@ -862,7 +931,7 @@ memory sink 常见查询字段：
 }
 ```
 
-### 8.2 byte_slice 字段
+#### 8.3.2 byte_slice 字段
 
 ```json
 {
@@ -908,9 +977,10 @@ byte-axis 按实际写入顺序逐字节覆盖，因此适合处理 `mstore(0x0c
 | `overlap_count` | 该片段经历的可达覆盖候选数量 |
 | `known_value` | 来源可追踪性及 normalized expression |
 
-## 9. SinkResolver 子结构
+## 9. Debug-only SinkResolver 子结构
 
-SinkResolver 是 MemorySSA 的补充查询层。它为 sink 的每个参数建立逐路径解析：
+SinkResolver 是 MemorySSA 的补充查询层。它为 sink 的每个参数建立逐路径解析。
+以下完整结构只出现在 `--debug-output`，标准输出使用第 8.1 节的 `semantic_inputs`：
 
 ```json
 {

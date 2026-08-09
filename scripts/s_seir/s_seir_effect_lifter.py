@@ -12,7 +12,13 @@ from typing import Any
 
 from assembly_ast_cfg import yul_statement_text, yul_expression
 from assembly_external_call_ir import PRECOMPILES
-from s_seir_memory_ssa import resolve_memory_read_with_loops
+from s_seir_memory_ssa import (
+    byte_slice_complete,
+    coalesce_byte_cells,
+    resolve_memory_read_with_loops,
+    slice_signature,
+    words_from_byte_slice,
+)
 from assembly_memory_ssa import direct_call, statement_expression
 from s_seir_id import IdAllocator
 from s_seir_model import EffectNode, FunctionUnit
@@ -30,6 +36,7 @@ class EffectLifter:
 
     def __init__(self):
         self.ids = IdAllocator()
+        self.non_storage_state_names: set[str] = set()
 
     def effect(self, k, refs, attrs):
         return EffectNode(self.ids.new("eff"), k, [r for r in refs if r], attrs)
@@ -37,6 +44,7 @@ class EffectLifter:
     def lift(self, unit: FunctionUnit, memory_results: dict[int, Any], control: dict[str, Any] | None = None):
         effects = []
         facts = []
+        self.non_storage_state_names = set((getattr(unit, "constant_values", {}) or {}).keys())
         lookup = {(s.block_id, s.text, s.src): s.stmt_id for s in unit.source_statements if s.lang == "yul"}
         text_lookup = {(s.block_id, s.text): s.stmt_id for s in unit.source_statements if s.lang == "yul"}
         loop_contexts = (control or {}).get("loop_contexts", {})
@@ -401,7 +409,7 @@ class EffectLifter:
                     rvalue = operation.get("rvalue") or self.first_slithir_value(operation.get("read"))
                     value = self.resolve_slithir_value(rvalue, value_defs, reference_defs)
                     target_ref = self.reference_info(lvalue, reference_defs)
-                    if target_ref or self.is_slithir_state(lvalue):
+                    if target_ref or self.is_storage_state(lvalue):
                         info = target_ref or {
                             "access": self.slithir_source_name(lvalue),
                             "state_variable": self.state_variable_name(lvalue),
@@ -557,7 +565,7 @@ class EffectLifter:
                 if kind == "Delete":
                     target = operation.get("variable") or lvalue
                     info = self.reference_info(target, reference_defs)
-                    if info or self.is_slithir_state(target):
+                    if info or self.is_storage_state(target):
                         info = info or {
                             "access": self.slithir_source_name(target),
                             "state_variable": self.state_variable_name(target),
@@ -593,7 +601,7 @@ class EffectLifter:
             if key in exclude or key in seen:
                 continue
             info = self.reference_info(value, reference_defs)
-            if not info and self.is_slithir_state(value):
+            if not info and self.is_storage_state(value):
                 info = {
                     "access": self.slithir_source_name(value),
                     "state_variable": self.state_variable_name(value),
@@ -653,6 +661,14 @@ class EffectLifter:
     @staticmethod
     def is_slithir_state(value: dict[str, Any] | None) -> bool:
         return bool(value and value.get("is_state"))
+
+    def is_storage_state(self, value: dict[str, Any] | None) -> bool:
+        """Slither marks contract constants as state variables as well.
+
+        S-SEIR keeps constants in the source/type environment, but they are not
+        runtime storage reads or writes.
+        """
+        return self.is_slithir_state(value) and self.slithir_source_name(value) not in self.non_storage_state_names
 
     @staticmethod
     def state_variable_name(value: dict[str, Any] | None) -> str | None:
@@ -731,19 +747,15 @@ class EffectLifter:
 
     @staticmethod
     def solidity_block_path_states(control: dict[str, Any], max_states: int = 24) -> dict[str, list[str]]:
+        """Enumerate actual entry-to-block predicates on the unified CFG.
+
+        A control-dependency closure describes nesting, not path alternatives.
+        Treating it as a conjunction loses paths such as ``!A`` versus
+        ``A && !B`` after an early return.  The unified Slither+Yul CFG already
+        has the required branch and terminal edges, so propagate predicates on
+        those edges directly.
+        """
         blocks = {str(block.get("block_id")): block for block in control.get("blocks", []) if isinstance(block, dict)}
-        dependency_closure = control.get("control_dependency_closure") or {}
-        if dependency_closure:
-            by_block: dict[str, list[str]] = {block_id: [] for block_id in blocks}
-            for dependent, dependencies in dependency_closure.items():
-                for dependency in dependencies:
-                    predicate = str(dependency.get("predicate") or "").strip()
-                    if dependent in by_block and predicate and predicate not in by_block[dependent]:
-                        by_block[dependent].append(predicate)
-            return {
-                block_id: [" && ".join(predicates) if predicates else "entry"]
-                for block_id, predicates in by_block.items()
-            }
         incoming: dict[str, int] = {block_id: 0 for block_id in blocks}
         outgoing: dict[str, list[dict[str, Any]]] = {block_id: [] for block_id in blocks}
         for edge in control.get("edges", []) or []:
@@ -766,14 +778,17 @@ class EffectLifter:
             seen.add(marker)
             states[block_id].append(predicates)
             terminator = blocks[block_id].get("terminator") or {}
+            if terminator.get("kind") in {"Return", "Revert", "Stop"}:
+                continue
             condition = str(terminator.get("condition") or "").strip()
             for edge in outgoing.get(block_id, []):
                 edge_kind = str(edge.get("kind") or "")
                 next_predicates = predicates
-                predicate = condition if edge_kind == "true" else (f"!({condition})" if edge_kind == "false" and condition else "")
+                true_edge = edge_kind in {"true", "if_true"} or edge_kind.startswith("true:")
+                false_edge = edge_kind in {"false", "if_false"} or edge_kind.startswith("false:")
+                predicate = condition if true_edge else (f"!({condition})" if false_edge and condition else "")
                 if predicate and predicate not in next_predicates:
-                    opposite = f"!({predicate})"
-                    if opposite in next_predicates or (predicate.startswith("!(") and predicate.endswith(")") and predicate[2:-1] in next_predicates):
+                    if EffectLifter.path_has_opposite(next_predicates, predicate):
                         continue
                     next_predicates = (*next_predicates, predicate)
                 queue.append((str(edge.get("to")), next_predicates))
@@ -781,6 +796,15 @@ class EffectLifter:
             block_id: [" && ".join(predicates) if predicates else "entry" for predicates in candidates]
             for block_id, candidates in states.items()
         }
+
+    @staticmethod
+    def path_has_opposite(predicates: tuple[str, ...], predicate: str) -> bool:
+        predicate = str(predicate).strip()
+        if predicate.startswith("!(") and predicate.endswith(")"):
+            opposite = predicate[2:-1].strip()
+        else:
+            opposite = f"!({predicate})"
+        return opposite in predicates
 
     def evaluation_effects(
         self,
@@ -998,6 +1022,252 @@ class EffectLifter:
             read.attrs["reads_after_call_output"] = [call_output]
             read.attrs["value_from_call_output"] = f"call_output_word({call_output['call_temp']}, 0)"
             cls.override_memory_read_with_call_output(query, call_output)
+        cls.attach_call_output_ranges(effects, calls, writes)
+
+    @classmethod
+    def attach_call_output_ranges(
+        cls,
+        effects: list[EffectNode],
+        calls: list[EffectNode],
+        writes: list[EffectNode],
+    ) -> None:
+        """Expand later MemorySSA sink queries with exact CALL-output paths.
+
+        CALL-family instructions conditionally overwrite memory.  A guard that
+        reads ``mload(returndatasize())`` does not prove that the output range
+        was written: the zero-returndata path reads another address and keeps
+        the pre-call output memory intact.  Preserve both states and let the
+        sink resolver consume them independently.
+        """
+        query_attrs = {
+            "MemoryHash": ("memory_read", "ptr", "size"),
+            "EventLog": ("data_memory", "data_ptr", "data_size"),
+            "Return": ("payload_memory", "payload_ptr", "payload_size"),
+            "Revert": ("payload_memory", "payload_ptr", "payload_size"),
+            "Call": ("input_memory", "input_ptr", "input_size"),
+            "StaticCall": ("input_memory", "input_ptr", "input_size"),
+            "DelegateCall": ("input_memory", "input_ptr", "input_size"),
+            "CallCode": ("input_memory", "input_ptr", "input_size"),
+        }
+        order = {effect.effect_id: index for index, effect in enumerate(effects)}
+        for consumer in effects:
+            spec = query_attrs.get(consumer.kind)
+            if not spec:
+                continue
+            memory_attr, ptr_attr, size_attr = spec
+            query = consumer.attrs.get(memory_attr)
+            byte_slice = (query or {}).get("byte_slice") if isinstance(query, dict) else None
+            if not isinstance(byte_slice, dict):
+                continue
+            query_ptr = int_text(str(consumer.attrs.get(ptr_attr) or ""))
+            query_size = int_text(str(consumer.attrs.get(size_attr) or ""))
+            consumer_node = cls.effect_node_id(consumer)
+            if query_ptr is None or query_size is None or consumer_node is None:
+                continue
+            path_items = byte_slice.get("path_slices") or []
+            expanded_path_items: list[dict[str, Any]] = []
+            changed = False
+            for item in path_items:
+                path = str(item.get("path") or "entry")
+                candidates = []
+                for call in calls:
+                    call_node = cls.effect_node_id(call)
+                    output_ptr = int_text(str(call.attrs.get("output_ptr") or ""))
+                    output_size = int_text(str(call.attrs.get("output_size") or ""))
+                    if call_node is None or call_node >= consumer_node or output_ptr is None or not output_size:
+                        continue
+                    if not cls.ranges_overlap(query_ptr, query_size, output_ptr, output_size):
+                        continue
+                    if not any(cls.path_condition_implies(path, producer_path) for producer_path in call.attrs.get("path_states") or ["entry"]):
+                        continue
+                    if cls.memory_range_rewritten_between(writes, output_ptr, output_size, call_node, consumer_node):
+                        continue
+                    guarded_value = cls.guarded_call_output_value(path, call)
+                    if guarded_value is None:
+                        continue
+                    candidates.append((call, guarded_value))
+                if not candidates:
+                    expanded_path_items.append(item)
+                    continue
+                call, value = max(candidates, key=lambda pair: (cls.effect_node_id(pair[0]) or -1, order.get(pair[0].effect_id, -1)))
+                fixed_size = cls.fixed_call_returndata_size(call)
+                if fixed_size is None:
+                    expanded_path_items.append(item)
+                    continue
+                returned = {
+                    **item,
+                    "path": cls.append_path_condition(path, f"returndatasize_after({call.effect_id}) == 0x{fixed_size:02x}"),
+                    "slices": cls.overlay_call_output_slices(
+                        item.get("slices") or [],
+                        query_ptr,
+                        query_size,
+                        int_text(str(call.attrs.get("output_ptr"))) or 0,
+                        int_text(str(call.attrs.get("output_size"))) or 0,
+                        value,
+                        call,
+                    ),
+                    "call_output_effect": call.effect_id,
+                    "call_memory_outcome": "returndata_copied",
+                }
+                returned["complete"] = byte_slice_complete(returned["slices"], query_size)
+                preserved = {
+                    **item,
+                    "path": cls.append_path_condition(path, f"returndatasize_after({call.effect_id}) == 0x00"),
+                    "slices": [dict(part) for part in item.get("slices") or []],
+                    "call_output_effect": call.effect_id,
+                    "call_memory_outcome": "no_returndata_preserve_pre_call_memory",
+                }
+                expanded_path_items.extend([returned, preserved])
+                changed = True
+            if not changed:
+                continue
+            byte_slice["path_slices"] = expanded_path_items
+            byte_slice["complete"] = bool(expanded_path_items) and all(item.get("complete") for item in expanded_path_items)
+            byte_slice["call_output_path_expansion"] = True
+            signatures = {slice_signature(item.get("slices") or []) for item in expanded_path_items}
+            byte_slice["slices"] = expanded_path_items[0].get("slices") or [] if len(signatures) == 1 else []
+            byte_slice["packed_semantics"] = [str(item.get("extraction")) for item in byte_slice.get("slices") or []]
+            words = words_from_byte_slice(byte_slice)
+            if words:
+                query["words"] = words
+            query["complete"] = byte_slice["complete"]
+            query["has_unknown"] = not byte_slice["complete"]
+
+    @staticmethod
+    def ranges_overlap(left: int, left_size: int, right: int, right_size: int) -> bool:
+        return max(left, right) < min(left + left_size, right + right_size)
+
+    @classmethod
+    def memory_range_rewritten_between(
+        cls,
+        writes: list[EffectNode],
+        pointer: int,
+        size: int,
+        start_node: int,
+        end_node: int,
+    ) -> bool:
+        for write in writes:
+            node = cls.effect_node_id(write)
+            address = int_text(str(write.attrs.get("address") or ""))
+            if node is None or address is None or not start_node < node < end_node:
+                continue
+            width = 1 if write.attrs.get("write_kind") == "mstore8" else 32
+            if cls.ranges_overlap(pointer, size, address, width):
+                return True
+        return False
+
+    @classmethod
+    def guarded_call_output_value(cls, path: str, call: EffectNode) -> str | None:
+        for atom in cls.path_atoms(path):
+            value = cls.equality_value_for_call_output(atom, call, expected=True)
+            if value is not None:
+                return value
+        return None
+
+    @staticmethod
+    def path_atoms(path: Any) -> list[str]:
+        return [part.strip() for part in str(path or "entry").split(" && ") if part.strip() and part.strip() != "entry"]
+
+    @classmethod
+    def equality_value_for_call_output(cls, expression: str, call: EffectNode, expected: bool) -> str | None:
+        text = str(expression or "").strip()
+        if text.startswith("!(") and text.endswith(")"):
+            return cls.equality_value_for_call_output(text[2:-1], call, not expected)
+        name, args = call_parts(text)
+        if name == "iszero" and len(args) == 1:
+            return cls.equality_value_for_call_output(args[0], call, not expected)
+        if name != "eq" or len(args) != 2 or not expected:
+            return None
+        left, right = map(str, args)
+        if cls.is_call_output_load(left, call):
+            return right
+        if cls.is_call_output_load(right, call):
+            return left
+        return None
+
+    @classmethod
+    def is_call_output_load(cls, expression: str, call: EffectNode) -> bool:
+        name, args = call_parts(str(expression or "").strip())
+        if name != "mload" or len(args) != 1:
+            return False
+        pointer = str(args[0]).strip()
+        if not cls.is_returndata_size_expression(pointer):
+            return False
+        fixed_size = cls.fixed_call_returndata_size(call)
+        return (
+            fixed_size is not None
+            and int_text(str(call.attrs.get("output_ptr") or "")) == fixed_size
+            and (int_text(str(call.attrs.get("output_size") or "")) or 0) >= 32
+        )
+
+    @classmethod
+    def fixed_call_returndata_size(cls, call: EffectNode) -> int | None:
+        if call.attrs.get("op") != "staticcall":
+            return None
+        target = int_text(str(call.attrs.get("target") or ""))
+        return cls.FIXED_PRECOMPILE_RETURNDATA.get(target) if target is not None else None
+
+    @staticmethod
+    def append_path_condition(path: str, condition: str) -> str:
+        path = str(path or "entry").strip()
+        if not path or path == "entry":
+            return condition
+        atoms = EffectLifter.path_atoms(path)
+        if condition in atoms:
+            return path
+        return f"{path} && {condition}"
+
+    @staticmethod
+    def is_returndata_size_expression(expression: str) -> bool:
+        name, args = call_parts(str(expression or "").strip())
+        return name == "returndatasize" and not args
+
+    @classmethod
+    def overlay_call_output_slices(
+        cls,
+        slices: list[dict[str, Any]],
+        query_ptr: int,
+        query_size: int,
+        output_ptr: int,
+        output_size: int,
+        value: str,
+        call: EffectNode,
+    ) -> list[dict[str, Any]]:
+        cells: dict[int, dict[str, Any]] = {}
+        for item in slices:
+            start = int(item.get("query_offset") or 0)
+            width = int(item.get("size") or 0)
+            source_offset = int(item.get("source_offset") or 0)
+            for delta in range(width):
+                cells[start + delta] = {
+                    "query_offset": start + delta,
+                    "source_value": item.get("source_value"),
+                    "source_offset": source_offset + delta,
+                    "source_width": int(item.get("source_width") or 32),
+                    "source_version": item.get("source_version"),
+                    "source_node_id": item.get("source_node_id"),
+                    "source_kind": item.get("source_kind"),
+                    "origin_src": item.get("origin_src"),
+                    "overlap_count": item.get("overlap_count", 1),
+                }
+        overlap_start = max(query_ptr, output_ptr)
+        # The guard proves only the first returned word.
+        output_size = min(output_size, 32)
+        overlap_end = min(query_ptr + query_size, output_ptr + output_size)
+        for address in range(overlap_start, overlap_end):
+            query_offset = address - query_ptr
+            cells[query_offset] = {
+                "query_offset": query_offset,
+                "source_value": value,
+                "source_offset": address - output_ptr,
+                "source_width": output_size,
+                "source_version": f"{call.effect_id}:output",
+                "source_node_id": cls.effect_node_id(call),
+                "source_kind": "call_output",
+                "origin_src": (call.stmt_refs or [None])[0],
+                "overlap_count": int((cells.get(query_offset) or {}).get("overlap_count", 0)) + 1,
+            }
+        return coalesce_byte_cells(cells, query_size)
 
     @classmethod
     def attach_returndatasize_candidates(
@@ -1362,20 +1632,17 @@ class EffectLifter:
 
     @staticmethod
     def assembly_entry_conditions(control: dict[str, Any]) -> dict[int, list[str]]:
-        blocks = {item.get("block_id"): item for item in control.get("blocks", []) if isinstance(item, dict)}
+        paths = EffectLifter.solidity_block_path_states(control)
         out: dict[int, list[str]] = {}
         for raw_block_id, boundary in (control.get("assembly_boundaries") or {}).items():
             try:
                 assembly_block = int(raw_block_id)
             except (TypeError, ValueError):
                 continue
-            predicates = [
-                str(item.get("predicate") or "").strip()
-                for item in boundary.get("control_dependencies") or []
-                if str(item.get("predicate") or "").strip()
-            ]
-            if predicates:
-                out[assembly_block] = [" && ".join(dict.fromkeys(predicates))]
+            entry_block = str(boundary.get("entry_block") or "")
+            entry_paths = paths.get(entry_block) or []
+            if entry_paths:
+                out[assembly_block] = list(dict.fromkeys(entry_paths))
         for edge in control.get("edges", []) or []:
             if not isinstance(edge, dict):
                 continue
@@ -1389,26 +1656,26 @@ class EffectLifter:
                 continue
             if assembly_block in out:
                 continue
-            src_block = blocks.get(edge.get("from")) or {}
-            terminator = src_block.get("terminator") or {}
-            if terminator.get("kind") != "Branch":
-                continue
-            condition = str(terminator.get("condition") or "").strip()
-            if not condition:
-                continue
-            kind = str(edge.get("kind") or "")
-            if kind == "false":
-                condition = f"!({condition})"
-            elif kind not in {"true", "if_true"}:
-                continue
-            bucket = out.setdefault(assembly_block, [])
-            if condition not in bucket:
-                bucket.append(condition)
+            entry_paths = paths.get(dst) or []
+            if entry_paths:
+                out[assembly_block] = list(dict.fromkeys(entry_paths))
         return out
 
     @staticmethod
     def memory_query(res: Any, nid: int, pointer: str, length: str | None, reason: str, function_loop_context: list[dict[str, Any]]):
         query = resolve_memory_read_with_loops(res, nid, pointer, length, reason)
+        byte_slice = query.get("byte_slice") if isinstance(query, dict) else None
+        if isinstance(byte_slice, dict) and byte_slice.get("path_slices"):
+            expanded = []
+            for item in byte_slice.get("path_slices") or []:
+                for path in EffectLifter.merge_function_path_prefixes(
+                    getattr(res, "function_path_prefixes", []) or [],
+                    str(item.get("path") or "entry"),
+                ):
+                    expanded.append({**item, "path": path})
+            byte_slice["path_slices"] = expanded
+            signatures = {slice_signature(item.get("slices") or []) for item in expanded}
+            byte_slice["slices"] = expanded[0].get("slices") or [] if len(signatures) == 1 and expanded else []
         EffectLifter.attach_word_value_versions(res, nid, query)
         query["function_loop_context"] = function_loop_context
         query["loop_alignment"] = "function_level_solidity_loop_context_plus_yul_loop_memoryssa"

@@ -72,6 +72,7 @@ class SemanticNormalizer:
                 add_role(e.attrs.get('read_from'), 'memory_slice_start', ref, e.attrs.get('read_from'), 'memory_ptr', {'effect': e.effect_id, 'semantic': 'memory_read'})
                 add_role(e.attrs.get('value'), 'memory_read_value', ref, e.attrs.get('value'), None, {'effect': e.effect_id, 'value_versions': e.attrs.get('value_versions')})
                 if self.is_free_memory_pointer_read(e.attrs.get('read_from')):
+                    e.attrs['semantic_value'] = 'free_memory_pointer'
                     add_role(
                         f"mload({e.attrs.get('read_from')})",
                         'free_memory_pointer',

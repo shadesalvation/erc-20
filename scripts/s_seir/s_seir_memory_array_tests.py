@@ -180,6 +180,57 @@ def test_memory_region_allocate_semantic_dedupe() -> None:
     assert deduped[0].attrs["merged_effects"]
 
 
+def test_manual_memory_allocation_requires_free_pointer_advance() -> None:
+    builder = SemanticOverlayBuilder()
+    allocations = builder.manual_memory_allocations([
+        effect("MemoryRead", {"read_from": "0x40", "value": "m", "cfg_node_id": 1}, "eff_read"),
+        effect("ValueDef", {"targets": ["ptr"], "value": "add(m, 0x40)", "cfg_node_id": 2}, "eff_ptr"),
+        effect("MemoryWrite", {"address": "0x40", "value": "ptr", "cfg_node_id": 3}, "eff_write"),
+    ])
+    assert len(allocations) == 1
+    assert allocations[0]["new_free_pointer"] == "ptr"
+
+
+def test_manual_memory_allocation_accepts_indirect_cursor_advance() -> None:
+    builder = SemanticOverlayBuilder()
+    allocations = builder.manual_memory_allocations([
+        effect("MemoryRead", {"read_from": "0x40", "value": "m", "cfg_node_id": 1}, "eff_read"),
+        effect("ValueDef", {"targets": ["logs"], "value": "add(m, 0x40)", "cfg_node_id": 2}, "eff_logs"),
+        effect("ValueDef", {"targets": ["offset"], "value": "add(0x20, logs)", "cfg_node_id": 3}, "eff_offset"),
+        effect("MemoryWrite", {"address": "0x40", "value": "add(offset, shl(5, n))", "cfg_node_id": 4}, "eff_write"),
+    ])
+    assert len(allocations) == 1
+    assert allocations[0]["new_free_pointer"] == "(offset + (n << 5))"
+
+
+def test_manual_memory_allocation_rejects_free_pointer_restore() -> None:
+    builder = SemanticOverlayBuilder()
+    allocations = builder.manual_memory_allocations([
+        effect("MemoryRead", {"read_from": "0x40", "value": "m", "cfg_node_id": 1}, "eff_read"),
+        effect("MemoryWrite", {"address": "0x40", "value": "m", "cfg_node_id": 3}, "eff_restore"),
+    ])
+    assert allocations == []
+
+
+def test_manual_memory_allocation_rejects_zero_advance() -> None:
+    builder = SemanticOverlayBuilder()
+    allocations = builder.manual_memory_allocations([
+        effect("MemoryRead", {"read_from": "0x40", "value": "m", "cfg_node_id": 1}, "eff_read"),
+        effect("MemoryWrite", {"address": "0x40", "value": "add(m, 0)", "cfg_node_id": 3}, "eff_restore"),
+    ])
+    assert allocations == []
+
+
+def test_manual_memory_allocation_rejects_unrelated_scratch_write() -> None:
+    builder = SemanticOverlayBuilder()
+    allocations = builder.manual_memory_allocations([
+        effect("MemoryRead", {"read_from": "0x40", "value": "m", "cfg_node_id": 1}, "eff_read"),
+        effect("ValueDef", {"targets": ["r"], "value": "ecrecover(hash, v, r, s)", "cfg_node_id": 2}, "eff_r"),
+        effect("MemoryWrite", {"address": "0x40", "value": "r", "cfg_node_id": 3}, "eff_scratch"),
+    ])
+    assert allocations == []
+
+
 if __name__ == "__main__":
     tests = [
         test_parameter_array_length_read,
@@ -191,6 +242,11 @@ if __name__ == "__main__":
         test_local_array_is_not_parameter_array,
         test_return_array_construction_cursor_pattern,
         test_memory_region_allocate_semantic_dedupe,
+        test_manual_memory_allocation_requires_free_pointer_advance,
+        test_manual_memory_allocation_accepts_indirect_cursor_advance,
+        test_manual_memory_allocation_rejects_free_pointer_restore,
+        test_manual_memory_allocation_rejects_zero_advance,
+        test_manual_memory_allocation_rejects_unrelated_scratch_write,
     ]
     for test in tests:
         test()

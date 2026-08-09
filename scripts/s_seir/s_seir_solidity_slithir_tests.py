@@ -67,6 +67,16 @@ contract MixedYulCase {
     }
 }
 
+contract ConstantContextCase {
+    address internal constant FIXED = address(0x1234);
+
+    function guarded(address target) external pure returns (bool result) {
+        if (target == FIXED) {
+            assembly { result := 1 }
+        }
+    }
+}
+
 contract BoundaryCase {
     uint256 private stored;
 
@@ -145,6 +155,10 @@ def run() -> None:
     assert effects(mixed, "MemoryWrite")
     assert any(item.attrs.get("access") == "balances[who]" for item in overlays(mixed, "MappingRead"))
 
+    constant_context = next(fn for fn in functions if fn.contract == "ConstantContextCase" and fn.function == "guarded")
+    assert not any(item.attrs.get("state_variable") == "FIXED" for item in effects(constant_context, "StorageRead"))
+    assert any("FIXED" in path for item in constant_context.effects for path in item.attrs.get("path_states") or [])
+
     guarded = next(fn for fn in functions if fn.contract == "BoundaryCase" and fn.function == "guarded")
     boundary = next(iter(guarded.control["assembly_boundaries"].values()))
     reads = {item["name"]: item for item in boundary["external_reads"]}
@@ -169,6 +183,7 @@ def run() -> None:
     print("PASS branch_state: path-conditioned state writes and RequireOverlay")
     print("PASS calls: structured external/internal calls and ReturnValue")
     print("PASS mixed_yul: existing MemorySSA mapping recovery remains active")
+    print("PASS constant_context: Solidity constant guards are context, not storage reads")
     print("PASS guarded_boundary: reaching SSA and state inputs cross into Yul under flag")
     print("PASS nested_boundary: outer and inner control dependencies are preserved")
     print("PASS loop_boundary: Solidity loop control and Yul memory effects remain aligned")

@@ -920,7 +920,7 @@ def mask_comments_for_selection(source_text: str) -> str:
 
 
 def function_dict(fn: Any) -> Json:
-    data = fn.to_dict()
+    data = fn.to_semantic_dict()
     function_source = getattr(fn, "_sseir_function_source", None)
     assembly_sources = getattr(fn, "_sseir_assembly_sources", None)
     if isinstance(function_source, dict):

@@ -15,6 +15,8 @@ for item in (ROOT / "legacy_yul", ROOT / "s_seir"):
 
 from s_seir_control_builder import ControlBuilder
 from s_seir_model import FunctionUnit
+from s_seir_source_collector import src_text
+from assembly_ast_cfg import AssemblyAstBlock, FunctionContext
 
 
 def fake_function(name: str, full_name: str, start: int) -> SimpleNamespace:
@@ -69,11 +71,37 @@ def test_source_range_precedes_signature_fallback() -> None:
     assert builder._last_function_match_method == "source_range"
 
 
+def test_solc_utf8_byte_offsets_extract_source_text() -> None:
+    source = "// 中文注释\naddress target;"
+    statement = "address target;"
+    start = len("// 中文注释\n".encode("utf-8"))
+    src = f"{start}:{len(statement.encode('utf-8'))}:0"
+    assert src_text(source, src) == statement
+
+
+def test_assembly_snippet_uses_solc_utf8_byte_offsets() -> None:
+    prefix = "// 中文注释\n"
+    snippet = "assembly { mstore(0, 1) }"
+    source = prefix + snippet
+    src = f"{len(prefix.encode('utf-8'))}:{len(snippet.encode('utf-8'))}:0"
+    block = AssemblyAstBlock(
+        1,
+        Path("Token.sol"),
+        source,
+        {"src": src},
+        {"nodeType": "YulBlock", "src": src},
+        FunctionContext("Token", "f"),
+    )
+    assert block.snippet == snippet
+
+
 if __name__ == "__main__":
     tests = [
         test_stack_too_deep_retries_with_via_ir,
         test_overloaded_function_uses_canonical_signature,
         test_source_range_precedes_signature_fallback,
+        test_solc_utf8_byte_offsets_extract_source_text,
+        test_assembly_snippet_uses_solc_utf8_byte_offsets,
     ]
     for test in tests:
         test()

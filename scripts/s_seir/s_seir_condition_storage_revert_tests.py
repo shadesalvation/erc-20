@@ -656,6 +656,47 @@ def test_path_conditioned_storage_write_candidates_keep_conditions() -> None:
     assert by_access["balances[right]"]["condition"] == "flag && ok"
 
 
+def test_equivalent_path_conditioned_storage_write_collapses_to_single_overlay() -> None:
+    builder = SemanticOverlayBuilder()
+    type_env = FakeMappingTypeEnv({"balances.slot": FakeStateVariable("balances", "mapping(address => uint256)")})
+    effects = [
+        effect("MemoryHash", {
+            "value": "slot",
+            "value_versions": {"slot": ["slot__ssa1"]},
+            "path_states": ["left_path"],
+            "memory_read": {"words": [
+                {"offset": 0, "value": "user"},
+                {"offset": 32, "value": "balances.slot"},
+            ]},
+        }, "eff_hash_left"),
+        effect("MemoryHash", {
+            "value": "slot",
+            "value_versions": {"slot": ["slot__ssa2"]},
+            "path_states": ["right_path"],
+            "memory_read": {"words": [
+                {"offset": 0, "value": "user"},
+                {"offset": 32, "value": "balances.slot"},
+            ]},
+        }, "eff_hash_right"),
+        effect("StorageWrite", {
+            "slot": "slot",
+            "slot_versions": ["slot__ssa1", "slot__ssa2"],
+            "value": "amount",
+            "path_states": ["left_path", "right_path"],
+        }, "eff_write"),
+    ]
+    overlays = builder.storage_overlays(type_env, effects)
+    path = [item for item in overlays if item.kind == "PathConditionedStorageWrite"]
+    writes = [item for item in overlays if item.kind == "MappingWrite"]
+    assert path == [], [item.kind for item in overlays]
+    assert len(writes) == 1, [item.kind for item in overlays]
+    assert writes[0].attrs["access"] == "balances[user]"
+    assert writes[0].attrs["path_conditioned_overlay_collapsed"] is True
+    assert writes[0].attrs["slot_versions"] == ["slot__ssa1", "slot__ssa2"]
+    assert "equivalent_path_conditioned_storage_candidates_collapsed" in writes[0].attrs["notes"]
+    assert len(writes[0].attrs["path_candidates"]) == 2
+
+
 def test_equivalent_storage_candidates_merge_ssa_versions_only() -> None:
     candidates = [
         {
@@ -1333,6 +1374,7 @@ if __name__ == "__main__":
         test_byte_axis_standard_mapping_write_recovers_mapping_access,
         test_path_sensitive_byte_axis_mapping_candidates_recover_mapping_accesses,
         test_path_conditioned_storage_write_candidates_keep_conditions,
+        test_equivalent_path_conditioned_storage_write_collapses_to_single_overlay,
         test_equivalent_storage_candidates_merge_ssa_versions_only,
         test_byte_axis_nested_mapping_read_recovers_all_dimensions,
         test_byte_axis_nested_mapping_write_recovers_all_dimensions,

@@ -521,6 +521,113 @@ def test_path_conditioned_overlay_drops_duplicate_outer_guard() -> None:
     ])
 
 
+def test_atomized_complex_condition_drops_duplicate_revert_guard() -> None:
+    condition = "iszero(and(eq(mload(0x00), 1), call(gas(), mirror, 0, 0x1c, 0x24, 0x00, 0x20)))"
+    stmt = yul_stmt("asm_s_1", "revert(0x1c, 0x04)", 100)
+    effects = [
+        eff("eff_branch", "Branch", ["asm_s_0"], {
+            "condition": condition,
+            "condition_final_temp": "__guard",
+        }),
+        eff("eff_revert", "Revert", ["asm_s_1"], {
+            "path_states": [condition],
+        }),
+    ]
+    overlays = [
+        SemanticOverlay("ov_revert", "PathConditionedCustomErrorRevert", ["eff_revert"], ["asm_s_1"], {
+            "candidates": [{
+                "status": "resolved",
+                "condition": condition,
+                "solidity_like": "revert LinkMirrorContractFailed();",
+            }]
+        })
+    ]
+    fn = FunctionSSEIR("C.f()", "C", "f", "f()", [stmt], {}, [], effects, overlays)
+    out = render_body(fn)
+    assert out.count("if (") == 1, out
+    assert "if (__guard)" in out, out
+    assert "revert LinkMirrorContractFailed();" in out, out
+
+
+def test_function_view_does_not_repeat_solidity_boundary_guard() -> None:
+    source = (
+        "function f(bool guard) public {\n"
+        "    if (guard) {\n"
+        "        assembly { mstore(0, 1) }\n"
+        "    }\n"
+        "}"
+    )
+    stmt = SourceStatement(
+        "asm_s_1",
+        "yul",
+        "mstore(0, 1)",
+        "55:12:0",
+        "C.f(bool)",
+        "asm_block_1",
+        {"nodeType": "YulExpressionStatement"},
+    )
+    effects = [memory_effect("eff_write", "asm_s_1", "0", "1", ["guard"])]
+    control = {
+        "assembly_boundaries": {
+            "1": {
+                "control_dependencies": [{"predicate": "guard"}],
+            }
+        }
+    }
+    fn = FunctionSSEIR("C.f(bool)", "C", "f", "f(bool)", [stmt], control, [], effects, [])
+    out = SolidityLikeRenderer(fn).function_solidity_like_text(source)
+    assert out is not None
+    assert out.count("if (") == 1, out
+    assert "memory[0] = 1;" in out, out
+
+
+def test_function_view_removes_boundary_term_from_path_overlay() -> None:
+    source = (
+        "function f(bool guard, bool inner) public {\n"
+        "    if (guard) {\n"
+        "        assembly { log1(0, 0, topic) }\n"
+        "    }\n"
+        "}"
+    )
+    stmt = SourceStatement(
+        "asm_s_1",
+        "yul",
+        "log1(0, 0, topic)",
+        "67:18:0",
+        "C.f(bool,bool)",
+        "asm_block_1",
+        {"nodeType": "YulExpressionStatement"},
+    )
+    effects = [eff("eff_event", "EventLog", ["asm_s_1"], {
+        "path_states": ["guard && inner"],
+    })]
+    overlays = [SemanticOverlay(
+        "ov_event",
+        "PathConditionedEventEmit",
+        ["eff_event"],
+        ["asm_s_1"],
+        {"candidates": [{
+            "status": "resolved",
+            "condition": "guard && inner",
+            "solidity_like": "emit E();",
+        }]},
+    )]
+    control = {
+        "assembly_boundaries": {
+            "1": {"control_dependencies": [{"predicate": "guard"}]}
+        }
+    }
+    fn = FunctionSSEIR(
+        "C.f(bool,bool)", "C", "f", "f(bool,bool)",
+        [stmt], control, [], effects, overlays,
+    )
+    out = SolidityLikeRenderer(fn).function_solidity_like_text(source)
+    assert out is not None
+    assert out.count("if (") == 2, out
+    assert "if ((inner != 0))" in out, out
+    assert "if ((guard != 0) && (inner != 0))" not in out, out
+
+
 def test_division_guard_and_assignment_both_render() -> None:
     stmt = yul_stmt("asm_s_1", "let feeAmount := div(mul(amount, 5), 100)", 100)
     effects = [
@@ -676,6 +783,9 @@ if __name__ == "__main__":
         test_adjacent_identical_single_line_if_blocks_are_compacted,
         test_require_overlay_keeps_outer_path_condition,
         test_path_conditioned_overlay_drops_duplicate_outer_guard,
+        test_atomized_complex_condition_drops_duplicate_revert_guard,
+        test_function_view_does_not_repeat_solidity_boundary_guard,
+        test_function_view_removes_boundary_term_from_path_overlay,
         test_division_guard_and_assignment_both_render,
         test_raw_yul_if_scaffold_without_effect_is_not_rendered,
         test_dnf_condition_renders_as_nested_condition_tree,

@@ -21,7 +21,12 @@ def iter_ast(v:Any)->Iterable[Json]:
     elif isinstance(v,list):
         for c in v: yield from iter_ast(c)
 def src_text(source:str,src:str)->str:
-    a,b=parse_src(str(src or '')); return ' '.join(source[a:b].strip().split()) if b>a else ''
+    a,b=parse_src(str(src or ''))
+    if b<=a:
+        return ''
+    # solc source mappings are UTF-8 byte offsets, not Python character offsets.
+    raw=source.encode('utf-8')[a:b].decode('utf-8',errors='replace')
+    return ' '.join(raw.strip().split())
 def variable_info(node:Json,kind:str,storage_slot:int|None=None)->VariableInfo:
     t=node.get('typeDescriptions',{}).get('typeString')
     if not t:

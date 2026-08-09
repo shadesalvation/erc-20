@@ -60,7 +60,7 @@ class AssemblyAstBlock:
     @property
     def snippet(self) -> str:
         start, end = self.source_range
-        return self.source[start:end]
+        return self.source.encode("utf-8")[start:end].decode("utf-8", errors="replace")
 
 
 @dataclass

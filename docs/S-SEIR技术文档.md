@@ -2723,3 +2723,120 @@ Solidity while condition controlling Yul memory effects
 和 `_spendAllowance` 的 assembly overlay 类型及数量与优化前一致。新数据同时能记录
 `_amount_1`、`_from_1`、`_to_1` 等进入 Yul 的 reaching SSA version，说明函数上下文
 得到增强，且原有 Yul 语义恢复未发生回退。
+
+## 22. 规范语义输出与查询轨迹分离
+
+### 22.1 目的
+
+MemorySSA、byte-axis 和 SinkResolver 的完整查询结构是分析器内部证据，不是“代码做了什么”
+的最终语义。直接输出这些字段会产生两个问题：
+
+1. 聚合 MemorySSA 可能显示 `has_unknown=true`，但 SinkResolver 已经在每条路径上完整解析；
+2. LLM 或审计工具需要的是 normalized input、effect、condition 和 overlay，而不是
+   memory version、alias 检索和字节单元覆盖日志。
+
+因此将输出分为：
+
+```Plain
+内部 FunctionSSEIR.to_dict()
+  -> 完整分析对象，供算法和调试使用
+
+标准 FunctionSSEIR.to_semantic_dict()
+  -> 规范语义视图，供标准 JSON/TXT、批处理、审计和 LLM 使用
+```
+
+### 22.2 实现位置
+
+```Plain
+scripts/s_seir/s_seir_model.py
+scripts/s_seir/s_seir_pipeline.py
+scripts/s_seir/s_seir_batch_contracts.py
+```
+
+Pipeline 默认 `--output` 和 `--text-output` 调用 `to_semantic_dict()`。批处理的每合约
+`sseir.json` 使用同一导出规则。如需完整查询轨迹，使用：
+
+```bash
+python scripts/s_seir/s_seir_pipeline.py Token.sol \
+  --output outputs/sseir.json \
+  --debug-output outputs/sseir.debug.json
+```
+
+### 22.3 导出算法
+
+1. 保留 SourceStatement、CFG block/edge/terminator、ExpressionRole、Effect 和 Overlay 的固定结构。
+2. Control Layer 保留实际 CFG、loop context、control dependency 和 Solidity/Yul boundary；
+   去除 dominator 迭代结果、typed def-use 工作集和 block 内完整 SlithIR 调试对象。
+3. Effect 中去除 `memory_read/payload_memory/input_memory/data_memory/byte_slice/sink_resolution`。
+4. 将已解析 sink 投影为 `semantic_inputs`，保留 sink kind、condition 和 normalized arguments。
+5. 将非 sink memory read 投影为 `memory_semantics`，只保留路径条件和来源语义值。
+6. 已解析路径不输出 `status=resolved`；只有真正无法证明时保留 `unresolved_reason`。
+7. MappingSlot `resolved_inputs` 压缩为 offset/size/value，不输出 MemorySSA version、definition 和 alias。
+8. 标准 `analysis_facts` 过滤 `MemorySSAQueryLayer` 和 `SemanticSinkMemoryQuery`，内部对象不变。
+
+### 22.4 示例
+
+输入：
+
+```Yul
+mstore(0, from)
+mstore(32, k.slot)
+let slot := keccak256(0, 64)
+let allowed := sload(slot)
+```
+
+过去的标准 Effect 同时包含 `memory_read.complete/has_unknown/words/byte_slice` 和
+`sink_resolution.path_resolutions`。现在 MemoryHash 记录为：
+
+```JSON
+{
+  "kind": "MemoryHash",
+  "attrs": {
+    "ptr": "0",
+    "size": "64",
+    "value": "slot",
+    "semantic_inputs": {
+      "sink_kind": "MemoryHash",
+      "paths": [
+        {
+          "arguments": {
+            "slot": "keccak256(abi.encode(from, k.slot))"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+高级 Overlay 继续记录：
+
+```JSON
+{
+  "kind": "MappingRead",
+  "attrs": {
+    "access": "k[from]",
+    "target": "allowed"
+  }
+}
+```
+
+### 22.5 验证
+
+在 `0x3bb48be44d06b6a1f5272a64de4839a13a62590b` TKM 样例上：
+
+```Plain
+完整 debug JSON: 3.3 MB
+规范 semantic JSON: 1.1 MB
+Effects:             331 -> 331
+SemanticOverlays:    251 -> 251
+ExpressionRoles:     358 -> 358
+```
+
+标准输出中 `sink_resolution/path_resolutions/byte_slice/tracker_scope/MemorySSAQueryLayer/
+SemanticSinkMemoryQuery` 均不再出现。Mapping、revert、event、call 和路径条件语义数量不变。
+
+同时修正 SourceStatement 和 AssemblyAstBlock snippet 的 UTF-8 source mapping：solc `src`
+使用字节偏移，导出时先对规范化源码做 UTF-8 字节切片，再解码为文本。带中文注释
+和 CRLF 的 TKM 样例中，原来被截断为 `addres/assemb` 的语句已恢复为 `address t`、
+`address u` 和完整外部调用语句。

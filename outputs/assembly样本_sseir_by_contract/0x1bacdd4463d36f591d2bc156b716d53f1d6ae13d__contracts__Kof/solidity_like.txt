@@ -52,9 +52,7 @@ Function DN404._linkMirrorContract(address)
           __sseir_eval_asm_s_3_6 = (__sseir_eval_asm_s_3_5 == 0);
           if (__sseir_eval_asm_s_3_6) {
               memory[0x00] = 0xd125259c; // yul: mstore(0x00, 0xd125259c)
-              if ((((mload(0x00) == 1) & call(gasleft(), mirror, 0, 0x1c, 0x24, 0x00, 0x20)) == 0)) {
-                  revert LinkMirrorContractFailed(); // yul: revert(0x1c, 0x04)
-              }
+              revert LinkMirrorContractFailed(); // yul: revert(0x1c, 0x04)
           }
       }
   }
@@ -375,38 +373,28 @@ Function Ownable._initializeOwner(address)
       if (_guardInitializeOwner()) {
           /// @solidity memory-safe-assembly
           assembly /* s-seir solidity-like view */ {
-              if ((_guardInitializeOwner() != 0)) {
-                  ownerSlot = _OWNER_SLOT; // yul: let ownerSlot := _OWNER_SLOT
-                  __sseir_eval_asm_s_5_1 = storage[_OWNER_SLOT]; /* state read, manual slot */ // yul: if sload(ownerSlot)
-              }
-              if ((_guardInitializeOwner() != 0) && __sseir_eval_asm_s_5_1) {
+              ownerSlot = _OWNER_SLOT; // yul: let ownerSlot := _OWNER_SLOT
+              __sseir_eval_asm_s_5_1 = storage[_OWNER_SLOT]; /* state read, manual slot */ // yul: if sload(ownerSlot)
+              if (__sseir_eval_asm_s_5_1) {
                   memory[0x00] = 0x0dc149f0; // yul: mstore(0x00, 0x0dc149f0)
-                  if ((sload(ownerSlot) != 0)) {
-                      revert AlreadyInitialized(); // yul: revert(0x1c, 0x04)
-                  }
+                  revert AlreadyInitialized(); // yul: revert(0x1c, 0x04)
               }
-              if ((_guardInitializeOwner() != 0) && !(__sseir_eval_asm_s_5_1)) {
+              if (!(__sseir_eval_asm_s_5_1)) {
                   __sseir_eval_asm_s_8_1 = (newOwner << 96); // yul: newOwner := shr(96, shl(96, newOwner))
                   __sseir_eval_asm_s_8_2 = (__sseir_eval_asm_s_8_1 >> 96);
                   newOwner = __sseir_eval_asm_s_8_2;
                   storage[_OWNER_SLOT] = (newOwner | ((newOwner == 0) << 255)); /* state write, manual slot */ // yul: sstore(ownerSlot, or(newOwner, shl(255, iszero(newOwner))))
-                  if (!(sload(ownerSlot)) && _guardInitializeOwner()) {
-                      emit OwnershipTransferred(0, newOwner); // yul: log3(0, 0, _OWNERSHIP_TRANSFERRED_EVENT_SIGNATURE, 0, newOwner)
-                  }
+                  emit OwnershipTransferred(0, newOwner); // yul: log3(0, 0, _OWNERSHIP_TRANSFERRED_EVENT_SIGNATURE, 0, newOwner)
               }
           }
       } else {
           /// @solidity memory-safe-assembly
           assembly /* s-seir solidity-like view */ {
-              if (!((_guardInitializeOwner() != 0))) {
-                  __sseir_eval_asm_s_1_1 = (newOwner << 96); // yul: newOwner := shr(96, shl(96, newOwner))
-                  __sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 >> 96);
-                  newOwner = __sseir_eval_asm_s_1_2;
-                  storage[_OWNER_SLOT] = newOwner; /* state write, manual slot */ // yul: sstore(_OWNER_SLOT, newOwner)
-                  if (!(_guardInitializeOwner())) {
-                      emit OwnershipTransferred(0, newOwner); // yul: log3(0, 0, _OWNERSHIP_TRANSFERRED_EVENT_SIGNATURE, 0, newOwner)
-                  }
-              }
+              __sseir_eval_asm_s_1_1 = (newOwner << 96); // yul: newOwner := shr(96, shl(96, newOwner))
+              __sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 >> 96);
+              newOwner = __sseir_eval_asm_s_1_2;
+              storage[_OWNER_SLOT] = newOwner; /* state write, manual slot */ // yul: sstore(_OWNER_SLOT, newOwner)
+              emit OwnershipTransferred(0, newOwner); // yul: log3(0, 0, _OWNERSHIP_TRANSFERRED_EVENT_SIGNATURE, 0, newOwner)
           }
       }
   }
@@ -447,28 +435,22 @@ Function Ownable._setOwner(address)
       if (_guardInitializeOwner()) {
           /// @solidity memory-safe-assembly
           assembly /* s-seir solidity-like view */ {
-              if ((_guardInitializeOwner() != 0)) {
-                  ownerSlot = _OWNER_SLOT; // yul: let ownerSlot := _OWNER_SLOT
-                  __sseir_eval_asm_s_6_1 = (newOwner << 96); // yul: newOwner := shr(96, shl(96, newOwner))
-                  __sseir_eval_asm_s_6_2 = (__sseir_eval_asm_s_6_1 >> 96);
-                  newOwner = __sseir_eval_asm_s_6_2;
-                  emit OwnershipTransferred(sload(ownerSlot), newOwner); // yul: log3(0, 0, _OWNERSHIP_TRANSFERRED_EVENT_SIGNATURE, sload(ownerSlot), newOwner)
-                  storage[_OWNER_SLOT] = (newOwner | ((newOwner == 0) << 255)); /* state write, manual slot */ // yul: sstore(ownerSlot, or(newOwner, shl(255, iszero(newOwner))))
-              }
+              ownerSlot = _OWNER_SLOT; // yul: let ownerSlot := _OWNER_SLOT
+              __sseir_eval_asm_s_6_1 = (newOwner << 96); // yul: newOwner := shr(96, shl(96, newOwner))
+              __sseir_eval_asm_s_6_2 = (__sseir_eval_asm_s_6_1 >> 96);
+              newOwner = __sseir_eval_asm_s_6_2;
+              emit OwnershipTransferred(storage[_OWNER_SLOT] /* state read, manual slot */, newOwner); // yul: log3(0, 0, _OWNERSHIP_TRANSFERRED_EVENT_SIGNATURE, sload(ownerSlot), newOwner)
+              storage[_OWNER_SLOT] = (newOwner | ((newOwner == 0) << 255)); /* state write, manual slot */ // yul: sstore(ownerSlot, or(newOwner, shl(255, iszero(newOwner))))
           }
       } else {
           /// @solidity memory-safe-assembly
           assembly /* s-seir solidity-like view */ {
-              if (!((_guardInitializeOwner() != 0))) {
-                  ownerSlot = _OWNER_SLOT; // yul: let ownerSlot := _OWNER_SLOT
-                  __sseir_eval_asm_s_2_1 = (newOwner << 96); // yul: newOwner := shr(96, shl(96, newOwner))
-                  __sseir_eval_asm_s_2_2 = (__sseir_eval_asm_s_2_1 >> 96);
-                  newOwner = __sseir_eval_asm_s_2_2;
-                  if (!(_guardInitializeOwner())) {
-                      emit OwnershipTransferred(sload(ownerSlot), newOwner); // yul: log3(0, 0, _OWNERSHIP_TRANSFERRED_EVENT_SIGNATURE, sload(ownerSlot), newOwner)
-                  }
-                  storage[_OWNER_SLOT] = newOwner; /* state write, manual slot */ // yul: sstore(ownerSlot, newOwner)
-              }
+              ownerSlot = _OWNER_SLOT; // yul: let ownerSlot := _OWNER_SLOT
+              __sseir_eval_asm_s_2_1 = (newOwner << 96); // yul: newOwner := shr(96, shl(96, newOwner))
+              __sseir_eval_asm_s_2_2 = (__sseir_eval_asm_s_2_1 >> 96);
+              newOwner = __sseir_eval_asm_s_2_2;
+              emit OwnershipTransferred(storage[_OWNER_SLOT] /* state read, manual slot */, newOwner); // yul: log3(0, 0, _OWNERSHIP_TRANSFERRED_EVENT_SIGNATURE, sload(ownerSlot), newOwner)
+              storage[_OWNER_SLOT] = newOwner; /* state write, manual slot */ // yul: sstore(ownerSlot, newOwner)
           }
       }
   }
@@ -499,9 +481,7 @@ Function Ownable._checkOwner()
           __sseir_eval_asm_s_1_4 = (__sseir_eval_asm_s_1_3 == 0);
           if (__sseir_eval_asm_s_1_4) {
               memory[0x00] = 0x82b42900; // yul: mstore(0x00, 0x82b42900)
-              if ((!(msg.sender == sload(_OWNER_SLOT)))) {
-                  revert Unauthorized(); // yul: revert(0x1c, 0x04)
-              }
+              revert Unauthorized(); // yul: revert(0x1c, 0x04)
           }
       }
   }
@@ -530,9 +510,7 @@ Function Ownable.transferOwnership(address)
           __sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 == 0);
           if (__sseir_eval_asm_s_1_2) {
               memory[0x00] = 0x7448fbae; // yul: mstore(0x00, 0x7448fbae)
-              if (((newOwner << 96) == 0)) {
-                  revert NewOwnerIsZeroAddress(); // yul: revert(0x1c, 0x04)
-              }
+              revert NewOwnerIsZeroAddress(); // yul: revert(0x1c, 0x04)
           }
       }
       _setOwner(newOwner);
@@ -635,9 +613,7 @@ Function Ownable.completeOwnershipHandover(address)
           __sseir_eval_asm_s_4_3 = (__sseir_eval_asm_s_4_2 > __sseir_eval_asm_s_4_1);
           if (__sseir_eval_asm_s_4_3) {
               memory[0x00] = 0x6f5e8818; // yul: mstore(0x00, 0x6f5e8818)
-              if ((block.timestamp > sload(handoverSlot))) {
-                  revert NoHandoverRequest(); // yul: revert(0x1c, 0x04)
-              }
+              revert NoHandoverRequest(); // yul: revert(0x1c, 0x04)
           }
           if (!(__sseir_eval_asm_s_4_3)) {
               storage[keccak256(abi.encodePacked(low_bytes(pendingOwner, 20), low_bytes(_HANDOVER_SLOT_SEED, 12)))] = 0; // yul: sstore(handoverSlot, 0)
@@ -773,7 +749,7 @@ Function OwnableRoles._updateRoles(address, uint256, bool)
               updated = __sseir_eval_asm_s_7_2;
           }
           storage[keccak256(abi.encodePacked(low_bytes(user, 20), low_bytes(_ROLE_SLOT_SEED, 12)))] = updated; // yul: sstore(roleSlot, updated)
-          emit RolesUpdated((mload(0x0c) >> 96), updated); // yul: log3(0, 0, _ROLES_UPDATED_EVENT_SIGNATURE, shr(96, mload(0x0c)), updated)
+          emit RolesUpdated(user, updated); // yul: log3(0, 0, _ROLES_UPDATED_EVENT_SIGNATURE, shr(96, mload(0x0c)), updated)
       }
   }
   ```
@@ -808,9 +784,7 @@ Function OwnableRoles._checkRoles(uint256)
           __sseir_eval_asm_s_3_4 = (__sseir_eval_asm_s_3_3 == 0);
           if (__sseir_eval_asm_s_3_4) {
               memory[0x00] = 0x82b42900; // yul: mstore(0x00, 0x82b42900)
-              if (((sload(keccak256(0x0c, 0x20)) & roles) == 0)) {
-                  revert Unauthorized(); // yul: revert(0x1c, 0x04)
-              }
+              revert Unauthorized(); // yul: revert(0x1c, 0x04)
           }
       }
   }

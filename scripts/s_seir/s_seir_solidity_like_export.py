@@ -90,7 +90,11 @@ class SolidityLikeRenderer:
             lines.append("  ```")
         return lines
 
-    def render_assembly_block_body(self, block_id: str) -> list[str]:
+    def render_assembly_block_body(
+        self,
+        block_id: str,
+        suppress_predicates: list[str] | None = None,
+    ) -> list[str]:
         yul_stmts = [s for s in self.fn.source_statements if s.lang == "yul" and s.block_id == block_id]
         if not yul_stmts:
             return []
@@ -101,11 +105,15 @@ class SolidityLikeRenderer:
                 continue
             loop_group = self.loop_groups.get(stmt.stmt_id)
             if loop_group:
-                rendered = self.render_loop_group(loop_group, yul_stmts)
+                rendered = self.render_loop_group(
+                    loop_group,
+                    yul_stmts,
+                    suppress_predicates=suppress_predicates,
+                )
                 consumed.update(loop_group["consumed_stmt_ids"])
                 body_lines.extend(rendered)
                 continue
-            rendered = self.render_stmt(stmt)
+            rendered = self.render_stmt(stmt, suppress_predicates=suppress_predicates)
             if rendered is None:
                 continue
             comment_index = self.comment_line_index(rendered)
@@ -129,13 +137,38 @@ class SolidityLikeRenderer:
         for block_id, (start, end) in zip(block_ids, ranges):
             indent = self.line_indent(source_text, start)
             replacement_lines = ["assembly /* s-seir solidity-like view */ {"]
-            replacement_lines.extend(f"{indent}    {line}" for line in self.render_assembly_block_body(block_id))
+            boundary_predicates = self.assembly_boundary_predicates(block_id)
+            replacement_lines.extend(
+                f"{indent}    {line}"
+                for line in self.render_assembly_block_body(
+                    block_id,
+                    suppress_predicates=boundary_predicates,
+                )
+            )
             replacement_lines.append(f"{indent}}}")
             replacements.append((start, end, "\n".join(replacement_lines)))
         for start, end, replacement in reversed(replacements):
             result = result[:start] + replacement + result[end:]
         result = self.annotate_return_expressions(result)
         return self.format_solidity_like_source(result)
+
+    def assembly_boundary_predicates(self, block_id: str) -> list[str]:
+        """Find Solidity predicates already visible around this assembly block."""
+
+        boundaries = (self.fn.control or {}).get("assembly_boundaries") or {}
+        suffix = re.search(r"(\d+)$", str(block_id or ""))
+        keys: list[Any] = [block_id]
+        if suffix:
+            keys.extend([suffix.group(1), int(suffix.group(1))])
+        boundary = next((boundaries.get(key) for key in keys if boundaries.get(key)), None)
+        if not isinstance(boundary, dict):
+            return []
+        predicates: list[str] = []
+        for dependency in boundary.get("control_dependencies") or []:
+            predicate = str(dependency.get("predicate") or "").strip()
+            if predicate and predicate not in predicates:
+                predicates.append(predicate)
+        return predicates
 
     @staticmethod
     def format_solidity_like_source(source_text: str) -> str:
@@ -335,16 +368,22 @@ class SolidityLikeRenderer:
         text = str(source.get("text") or "").strip("\n")
         return text or None
 
-    def render_loop_group(self, loop_group: dict[str, Any], yul_stmts: list[SourceStatement]) -> list[str]:
+    def render_loop_group(
+        self,
+        loop_group: dict[str, Any],
+        yul_stmts: list[SourceStatement],
+        suppress_predicates: list[str] | None = None,
+    ) -> list[str]:
         lines: list[str] = []
         stmt_by_id = {stmt.stmt_id: stmt for stmt in yul_stmts}
-        suppress = [loop_group["condition"]]
+        outer_suppress = list(suppress_predicates or [])
+        suppress = [*outer_suppress, loop_group["condition"]]
 
         for stmt_id in loop_group["pre_stmt_ids"]:
             stmt = stmt_by_id.get(stmt_id)
             if not stmt:
                 continue
-            rendered = self.render_stmt(stmt)
+            rendered = self.render_stmt(stmt, suppress_predicates=outer_suppress)
             if not rendered:
                 continue
             lines.extend(self.attach_yul_comments(rendered, stmt))
@@ -663,9 +702,27 @@ class SolidityLikeRenderer:
         if end_index != len(lines) - 1 or closer.strip() != "}":
             return lines
         condition = self.if_opener_condition(opener)
-        if not condition or not self.conditions_equivalent(condition, outer_condition):
+        if not condition:
             return lines
-        return [line[4:] if line.startswith("    ") else line for line in inner]
+        if self.conditions_equivalent(condition, outer_condition):
+            return [line[4:] if line.startswith("    ") else line for line in inner]
+
+        parts = self.split_top_level(self.strip_outer_parens(condition), "&&")
+        if len(parts) <= 1:
+            return lines
+        remaining = [
+            part
+            for part in parts
+            if not self.is_suppressed_predicate(part, [outer_condition])
+            and not self.conditions_equivalent(part, outer_condition)
+        ]
+        if len(remaining) == len(parts):
+            return lines
+        if not remaining:
+            return [line[4:] if line.startswith("    ") else line for line in inner]
+        indent = opener[: len(opener) - len(opener.lstrip())]
+        reduced = " && ".join(remaining)
+        return [f"{indent}if ({reduced}) {{", *inner, closer]
 
     @staticmethod
     def if_opener_condition(opener: str) -> str | None:
@@ -695,6 +752,10 @@ class SolidityLikeRenderer:
         }
         for a, b in list(pairs):
             if a == b:
+                return True
+            normalized_a = self.strip_outer_parens(normalize_expr(a, context="condition"))
+            normalized_b = self.strip_outer_parens(normalize_expr(b, context="condition"))
+            if normalized_a == normalized_b:
                 return True
             if self.condition_aliases.get(a) == b or self.condition_aliases.get(b) == a:
                 return True
@@ -1425,6 +1486,10 @@ class SolidityLikeRenderer:
             final = str(effect.attrs.get("condition_final_temp") or "").strip()
             if condition and final:
                 aliases[condition] = final
+                normalized = normalize_expr(condition, context="condition")
+                if normalized:
+                    aliases[str(normalized)] = final
+                    aliases[SolidityLikeRenderer.strip_outer_parens(str(normalized))] = final
         return aliases
 
     @staticmethod
