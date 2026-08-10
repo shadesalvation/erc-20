@@ -25,6 +25,7 @@ from assembly_ast_cfg import compile_source_ast, discover_solc
 from s_seir_selector_registry import abi_signature
 from s_seir_llm_assembly_export import function_has_assembly
 from s_seir_pipeline import build_sseir
+from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload
 from s_seir_solidity_like_export import render_solidity_like_text, write_solidity_like_text
 
 
@@ -1116,6 +1117,7 @@ def write_result_dir(
     sseir_path = result_dir / "sseir.json"
     assembly_path = result_dir / "assembly_functions.json"
     solidity_like_path = result_dir / "solidity_like.txt"
+    semantic_facts_path = result_dir / "semantic_facts.json"
     failure_path = result_dir / "failure.json"
     if failure_path.exists():
         failure_path.unlink()
@@ -1131,6 +1133,11 @@ def write_result_dir(
         "result_dir": str(result_dir),
         "source_entry": assembly_entry,
     })
+    write_json(semantic_facts_path, build_function_level_semantic_fact_payload(
+        selected_functions,
+        source=str(source),
+        result_dir=str(result_dir),
+    ))
     write_solidity_like_text(selected_functions, solidity_like_path)
     if not solidity_like_path.exists():
         solidity_like_path.write_text(render_solidity_like_text(selected_functions), encoding="utf-8")
@@ -1142,6 +1149,7 @@ def write_result_dir(
         "result_dir": str(result_dir),
         "sseir_output": str(sseir_path),
         "assembly_output": str(assembly_path),
+        "semantic_facts_output": str(semantic_facts_path),
         "solidity_like_output": str(solidity_like_path),
         "function_count": full_entry.get("function_count"),
         "assembly_function_count": full_entry.get("assembly_function_count"),

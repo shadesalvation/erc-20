@@ -1,0 +1,35 @@
+Traceback (most recent call last):
+  File "/home/ubuntu/erc-20/scripts/s_seir/s_seir_pipeline.py", line 213, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/home/ubuntu/erc-20/scripts/s_seir/s_seir_pipeline.py", line 183, in main
+    a=ap.parse_args(); fns=build_sseir(a.source,a.solc_bin,a.slither_bin,a.workdir.resolve(),branch_preprocess=not a.no_branch_preprocess,branch_preprocess_output=a.branch_preprocessed_output,branch_report_output=a.branch_report_output)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/erc-20/scripts/s_seir/s_seir_pipeline.py", line 130, in build_sseir
+    ast=compile_source_ast(source_path,solc)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/erc-20/scripts/legacy_yul/assembly_ast_cfg.py", line 226, in compile_source_ast
+    raise RuntimeError(f"solc AST generation failed:\n{messages}")
+RuntimeError: solc AST generation failed:
+TypeError: Contract "MintableCore" should be marked as abstract.
+  --> PayableInheritedERC20.sol:29:1:
+   |
+29 | contract MintableCore is ERC20Core {
+   | ^ (Relevant source part starts here and spans across multiple lines).
+Note: Missing implementation: 
+  --> PayableInheritedERC20.sol:23:5:
+   |
+23 |     function approve(address spender, uint256 value) external virtual returns (bool);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Note: Missing implementation: 
+  --> PayableInheritedERC20.sol:22:5:
+   |
+22 |     function transfer(address to, uint256 value) public virtual returns (bool);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Note: Missing implementation: 
+  --> PayableInheritedERC20.sol:24:5:
+   |
+24 |     function transferFrom(address from, address to, uint256 value) external virtual returns (bool);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+

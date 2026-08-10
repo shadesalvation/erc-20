@@ -1,0 +1,229 @@
+S-SEIR Assembly LLM Compact Input
+Schema: s-seir-assembly-llm-compact/v1
+
+Function AssemblyERC20.selectorFromCalldata()
+  Task: Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.
+  FunctionSource:
+    function selectorFromCalldata() external pure returns (bytes4 selector) {
+            assembly {
+                selector := shr(224, calldataload(0))
+            }
+        }
+  AssemblyBlocks:
+    asm_block_1 src=1504:70:0
+      assembly {
+                  selector := shr(224, calldataload(0))
+              }
+  ControlSummary: blocks=5 edges=4 asm_blocks=3 branch=False loop=True
+  EffectCounts: {"EvaluationStep": 2, "ValueDef": 1}
+  SemanticOverlays:
+    ov_2 EvaluationStep refs=['asm_s_1'] attrs={"temp": "__sseir_eval_asm_s_1_1", "expression": "calldataload(0)", "expression_normalized": "calldataload(0)", "solidity_like": "__sseir_eval_asm_s_1_1 = calldataload(0);", "order": 1, "call": "calldataload", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_3 EvaluationStep refs=['asm_s_1'] attrs={"temp": "__sseir_eval_asm_s_1_2", "expression": "shr(224, __sseir_eval_asm_s_1_1)", "expression_normalized": "(__sseir_eval_asm_s_1_1 >> 224)", "solidity_like": "__sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 >> 224);", "order": 2, "call": "shr", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_4 ExpressionNormalization refs=['asm_s_1'] attrs={"target": "selector", "expression": "shr(224, calldataload(0))", "solidity_like": "selector = __sseir_eval_asm_s_1_2;", "context": "value", "division_guards": []}
+
+Function AssemblyERC20.hashMemorySafe(bytes)
+  Task: Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.
+  FunctionSource:
+    function hashMemorySafe(bytes memory data) external pure returns (bytes32 h) {
+            assembly ("memory-safe") {
+                h := keccak256(add(data, 0x20), mload(data))
+            }
+        }
+  AssemblyBlocks:
+    asm_block_2 src=1673:93:0
+      assembly ("memory-safe") {
+                  h := keccak256(add(data, 0x20), mload(data))
+              }
+  ControlSummary: blocks=5 edges=4 asm_blocks=3 branch=False loop=True
+  EffectCounts: {"ValueDef": 1, "MemoryHash": 1}
+  SemanticOverlays:
+    ov_1 BytesContentHash refs=['asm_s_1'] attrs={"solidity_like": "h = keccak256(data);", "target": "h"}
+    ov_3 ExpressionNormalization refs=['asm_s_1'] attrs={"target": "h", "expression": "keccak256(add(data, 0x20), mload(data))", "solidity_like": "h = keccak256(data);", "context": "value", "division_guards": []}
+
+Function AssemblyERC20.sumSkipping(uint256[])
+  Task: Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.
+  FunctionSource:
+    function sumSkipping(uint256[] memory values) external pure returns (uint256 total) {
+            assembly {
+                function addOrLeave(a, b) -> r {
+                    if gt(a, not(b)) {
+                        r := 0
+                        leave
+                    }
+                    r := add(a, b)
+                }
+    
+                let len := mload(values)
+                let ptr := add(values, 0x20)
+                for { let i := 0 } lt(i, len) { i := add(i, 1) } {
+                    let v := mload(add(ptr, mul(i, 0x20)))
+                    if eq(v, 0) { continue }
+                    if gt(v, 1000000) { break }
+    
+                    switch and(v, 1)
+                    case 0 {
+                        total := addOrLeave(total, v)
+                    }
+                    default {
+                        total := addOrLeave(total, mul(v, 2))
+                    }
+                }
+            }
+        }
+  AssemblyBlocks:
+    asm_block_3 src=1872:741:0
+      assembly {
+                  function addOrLeave(a, b) -> r {
+                      if gt(a, not(b)) {
+                          r := 0
+                          leave
+                      }
+                      r := add(a, b)
+                  }
+      
+                  let len := mload(values)
+                  let ptr := add(values, 0x20)
+                  for { let i := 0 } lt(i, len) { i := add(i, 1) } {
+                      let v := mload(add(ptr, mul(i, 0x20)))
+                      if eq(v, 0) { continue }
+                      if gt(v, 1000000) { break }
+      
+                      switch and(v, 1)
+                      case 0 {
+                          total := addOrLeave(total, v)
+                      }
+                      default {
+                          total := addOrLeave(total, mul(v, 2))
+                      }
+                  }
+              }
+  ControlSummary: blocks=22 edges=25 asm_blocks=20 branch=True loop=True
+  EffectCounts: {"ValueDef": 7, "MemoryRead": 2, "EvaluationStep": 7, "Branch": 2, "ControlTransfer": 2}
+  SemanticOverlays:
+    ov_2 MemoryArrayLengthRead refs=['asm_s_5'] attrs={"access": "values.length", "target": "len"}
+    ov_3 ExpressionNormalization refs=['asm_s_5'] attrs={"target": "len", "expression": "mload(values)", "solidity_like": "len = values.length;", "context": "value", "division_guards": []}
+    ov_4 EvaluationStep refs=['asm_s_6'] attrs={"temp": "__sseir_eval_asm_s_6_1", "expression": "add(values, 0x20)", "expression_normalized": "(values + 0x20)", "solidity_like": "__sseir_eval_asm_s_6_1 = (values + 0x20);", "order": 1, "call": "add", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_5 ExpressionNormalization refs=['asm_s_6'] attrs={"target": "ptr", "expression": "add(values, 0x20)", "solidity_like": "ptr = __sseir_eval_asm_s_6_1;", "context": "value", "division_guards": []}
+    ov_6 ExpressionNormalization refs=['asm_s_8'] attrs={"target": "i", "expression": "0", "solidity_like": "i = 0;", "context": "value", "division_guards": []}
+    ov_7 ExpressionNormalization refs=['asm_s_9'] attrs={"target": "v", "expression": "mload(add(ptr, mul(i, 0x20)))", "solidity_like": "v = mload((ptr + (i * 0x20)));", "context": "value", "division_guards": []}
+    ov_8 EvaluationStep refs=['asm_s_10'] attrs={"temp": "__sseir_eval_asm_s_10_1", "expression": "eq(v, 0)", "expression_normalized": "(v == 0)", "solidity_like": "__sseir_eval_asm_s_10_1 = (v == 0);", "order": 1, "call": "eq", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_9 ExpressionNormalization refs=['asm_s_10'] attrs={"expression": "eq(v, 0)", "solidity_like": "if (__sseir_eval_asm_s_10_1)", "context": "condition", "condition_evaluation": {"evaluation_model": "yul_ast_right_to_left_function_call_arguments", "final": "__sseir_eval_asm_s_10_1", "final_normalized": "(__sseir_eval_asm_s_10_1 != 0)", "steps": [{"order": 1, "temp": "__sseir_eval_asm_s_10_1", "expression": "eq(v, 0)", "expression_normalized": "(v == 0)", "call": "eq", "raw_args": ["v", "0"], "evaluated_args": ["v", "0"]}]}, "division_guards": []}
+    ov_10 EvaluationStep refs=['asm_s_12'] attrs={"temp": "__sseir_eval_asm_s_12_1", "expression": "gt(v, 1000000)", "expression_normalized": "(v > 1000000)", "solidity_like": "__sseir_eval_asm_s_12_1 = (v > 1000000);", "order": 1, "call": "gt", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_11 ExpressionNormalization refs=['asm_s_12'] attrs={"expression": "gt(v, 1000000)", "solidity_like": "if (__sseir_eval_asm_s_12_1)", "context": "condition", "condition_evaluation": {"evaluation_model": "yul_ast_right_to_left_function_call_arguments", "final": "__sseir_eval_asm_s_12_1", "final_normalized": "(__sseir_eval_asm_s_12_1 != 0)", "steps": [{"order": 1, "temp": "__sseir_eval_asm_s_12_1", "expression": "gt(v, 1000000)", "expression_normalized": "(v > 1000000)", "call": "gt", "raw_args": ["v", "1000000"], "evaluated_args": ["v", "1000000"]}]}, "division_guards": []}
+    ov_12 EvaluationStep refs=['asm_s_16'] attrs={"temp": "__sseir_eval_asm_s_16_1", "expression": "addOrLeave(total, v)", "expression_normalized": "addOrLeave(total, v)", "solidity_like": "__sseir_eval_asm_s_16_1 = addOrLeave(total, v);", "order": 1, "call": "addOrLeave", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_13 ExpressionNormalization refs=['asm_s_16'] attrs={"target": "total", "expression": "addOrLeave(total, v)", "solidity_like": "total = __sseir_eval_asm_s_16_1;", "context": "value", "division_guards": []}
+    ov_14 EvaluationStep refs=['asm_s_18'] attrs={"temp": "__sseir_eval_asm_s_18_1", "expression": "mul(v, 2)", "expression_normalized": "(v * 2)", "solidity_like": "__sseir_eval_asm_s_18_1 = (v * 2);", "order": 1, "call": "mul", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_15 EvaluationStep refs=['asm_s_18'] attrs={"temp": "__sseir_eval_asm_s_18_2", "expression": "addOrLeave(total, __sseir_eval_asm_s_18_1)", "expression_normalized": "addOrLeave(total, __sseir_eval_asm_s_18_1)", "solidity_like": "__sseir_eval_asm_s_18_2 = addOrLeave(total, __sseir_eval_asm_s_18_1);", "order": 2, "call": "addOrLeave", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_16 ExpressionNormalization refs=['asm_s_18'] attrs={"target": "total", "expression": "addOrLeave(total, mul(v, 2))", "solidity_like": "total = __sseir_eval_asm_s_18_2;", "context": "value", "division_guards": []}
+    ov_17 EvaluationStep refs=['asm_s_19'] attrs={"temp": "__sseir_eval_asm_s_19_1", "expression": "add(i, 1)", "expression_normalized": "(i + 1)", "solidity_like": "__sseir_eval_asm_s_19_1 = (i + 1);", "order": 1, "call": "add", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_18 ExpressionNormalization refs=['asm_s_19'] attrs={"target": "i", "expression": "add(i, 1)", "solidity_like": "i = __sseir_eval_asm_s_19_1;", "context": "value", "division_guards": []}
+
+Function AssemblyERC20.rawContext()
+  Task: Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.
+  FunctionSource:
+    function rawContext() external payable returns (address who, uint256 value, uint256 size, uint256 gasLeft) {
+            assembly {
+                who := caller()
+                value := callvalue()
+                size := calldatasize()
+                gasLeft := gas()
+            }
+        }
+  AssemblyBlocks:
+    asm_block_4 src=2742:145:0
+      assembly {
+                  who := caller()
+                  value := callvalue()
+                  size := calldatasize()
+                  gasLeft := gas()
+              }
+  ControlSummary: blocks=8 edges=7 asm_blocks=6 branch=False loop=True
+  EffectCounts: {"EvaluationStep": 4, "ValueDef": 4}
+  SemanticOverlays:
+    ov_2 EvaluationStep refs=['asm_s_1'] attrs={"temp": "__sseir_eval_asm_s_1_1", "expression": "caller()", "expression_normalized": "msg.sender", "solidity_like": "__sseir_eval_asm_s_1_1 = msg.sender;", "order": 1, "call": "caller", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_3 ExpressionNormalization refs=['asm_s_1'] attrs={"target": "who", "expression": "caller()", "solidity_like": "who = __sseir_eval_asm_s_1_1;", "context": "value", "division_guards": []}
+    ov_4 EvaluationStep refs=['asm_s_2'] attrs={"temp": "__sseir_eval_asm_s_2_1", "expression": "callvalue()", "expression_normalized": "msg.value", "solidity_like": "__sseir_eval_asm_s_2_1 = msg.value;", "order": 1, "call": "callvalue", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_5 ExpressionNormalization refs=['asm_s_2'] attrs={"target": "value", "expression": "callvalue()", "solidity_like": "value = __sseir_eval_asm_s_2_1;", "context": "value", "division_guards": []}
+    ov_6 EvaluationStep refs=['asm_s_3'] attrs={"temp": "__sseir_eval_asm_s_3_1", "expression": "calldatasize()", "expression_normalized": "msg.data.length", "solidity_like": "__sseir_eval_asm_s_3_1 = msg.data.length;", "order": 1, "call": "calldatasize", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_7 ExpressionNormalization refs=['asm_s_3'] attrs={"target": "size", "expression": "calldatasize()", "solidity_like": "size = __sseir_eval_asm_s_3_1;", "context": "value", "division_guards": []}
+    ov_8 EvaluationStep refs=['asm_s_4'] attrs={"temp": "__sseir_eval_asm_s_4_1", "expression": "gas()", "expression_normalized": "gasleft()", "solidity_like": "__sseir_eval_asm_s_4_1 = gasleft();", "order": 1, "call": "gas", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_9 ExpressionNormalization refs=['asm_s_4'] attrs={"target": "gasLeft", "expression": "gas()", "solidity_like": "gasLeft = __sseir_eval_asm_s_4_1;", "context": "value", "division_guards": []}
+
+Function AssemblyERC20._assemblyMove(address, address, uint256)
+  Task: Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.
+  FunctionSource:
+    function _assemblyMove(address from, address to, uint256 value) internal {
+            require(to != address(0), "zero");
+            assembly {
+                mstore(0x00, from)
+                mstore(0x20, balanceOf.slot)
+                let fromSlot := keccak256(0x00, 0x40)
+                let fromBalance := sload(fromSlot)
+                if lt(fromBalance, value) {
+                    mstore(0x00, 0x08c379a0)
+                    revert(0x1c, 0x04)
+                }
+    
+                mstore(0x00, to)
+                mstore(0x20, balanceOf.slot)
+                let toSlot := keccak256(0x00, 0x40)
+    
+                sstore(fromSlot, sub(fromBalance, value))
+                sstore(toSlot, add(sload(toSlot), value))
+    
+                mstore(0x00, value)
+                log3(
+                    0x00,
+                    0x20,
+                    0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,
+                    from,
+                    to
+                )
+            }
+        }
+  AssemblyBlocks:
+    asm_block_5 src=3025:781:0
+      assembly {
+                  mstore(0x00, from)
+                  mstore(0x20, balanceOf.slot)
+                  let fromSlot := keccak256(0x00, 0x40)
+                  let fromBalance := sload(fromSlot)
+                  if lt(fromBalance, value) {
+                      mstore(0x00, 0x08c379a0)
+                      revert(0x1c, 0x04)
+                  }
+      
+                  mstore(0x00, to)
+                  mstore(0x20, balanceOf.slot)
+                  let toSlot := keccak256(0x00, 0x40)
+      
+                  sstore(fromSlot, sub(fromBalance, value))
+                  sstore(toSlot, add(sload(toSlot), value))
+      
+                  mstore(0x00, value)
+                  log3(
+                      0x00,
+                      0x20,
+                      0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,
+                      from,
+                      to
+                  )
+              }
+  ControlSummary: blocks=19 edges=19 asm_blocks=17 branch=True loop=True
+  EffectCounts: {"MemoryWrite": 6, "ValueDef": 3, "MemoryHash": 2, "StorageRead": 2, "EvaluationStep": 1, "Branch": 1, "Revert": 1, "StorageWrite": 2, "EventLog": 1, "BranchMaterialization": 1}
+  SemanticOverlays:
+    ov_2 PathConditionedCustomErrorRevert refs=['asm_s_7'] attrs={}
+    ov_3 MappingSlot refs=['asm_s_3'] attrs={"target": "fromSlot", "target_key": "fromSlot__ssa1", "expression": "balanceOf[from]", "state_variable": "balanceOf", "storage_reference": null, "storage_reference_type": null, "storage_reference_kind": null, "storage_field": null, "key": "from", "base": "balanceOf.slot", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_4 MappingSlot refs=['asm_s_3'] attrs={"target": "fromSlot", "target_key": "fromSlot", "expression": "balanceOf[from]", "state_variable": "balanceOf", "storage_reference": null, "storage_reference_type": null, "storage_reference_kind": null, "storage_field": null, "key": "from", "base": "balanceOf.slot", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_5 MappingSlot refs=['asm_s_10'] attrs={"target": "toSlot", "target_key": "toSlot__ssa3", "expression": "balanceOf[to]", "state_variable": "balanceOf", "storage_reference": null, "storage_reference_type": null, "storage_reference_kind": null, "storage_field": null, "key": "to", "base": "balanceOf.slot", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_6 MappingSlot refs=['asm_s_10'] attrs={"target": "toSlot", "target_key": "toSlot", "expression": "balanceOf[to]", "state_variable": "balanceOf", "storage_reference": null, "storage_reference_type": null, "storage_reference_kind": null, "storage_field": null, "key": "to", "base": "balanceOf.slot", "slot_kind": "mapping_slot", "activation": "storage_consumer", "notes": []}
+    ov_7 MappingRead refs=['asm_s_3', 'asm_s_4'] attrs={"access": "balanceOf[from]", "target": "fromBalance", "state_variable": "balanceOf", "key": "from", "slot": "fromSlot", "slot_key": "fromSlot__ssa1", "solidity_like": "fromBalance = balanceOf[from];", "notes": []}
+    ov_8 MappingWrite refs=['asm_s_3', 'asm_s_11'] attrs={"access": "balanceOf[from]", "value": "(fromBalance - value)", "value_yul": "sub(fromBalance, value)", "state_variable": "balanceOf", "key": "from", "slot": "fromSlot", "slot_key": "fromSlot__ssa1", "solidity_like": "balanceOf[from] = (fromBalance - value);", "notes": []}
+    ov_9 MappingRead refs=['asm_s_10', 'asm_s_12'] attrs={"access": "balanceOf[to]", "state_variable": "balanceOf", "key": "to", "slot": "toSlot", "slot_key": "toSlot__ssa3", "solidity_like": "read balanceOf[to];", "notes": []}
+    ov_10 MappingWrite refs=['asm_s_10', 'asm_s_12'] attrs={"access": "balanceOf[to]", "value": "(balanceOf[to] + value)", "value_yul": "add(sload(toSlot), value)", "state_variable": "balanceOf", "key": "to", "slot": "toSlot", "slot_key": "toSlot__ssa3", "solidity_like": "balanceOf[to] = (balanceOf[to] + value);", "notes": []}
+    ov_11 PathConditionedEventEmit refs=['asm_s_14'] attrs={"event": "Transfer", "signature": "Transfer(address,address,uint256)"}
+    ov_12 ExpressionNormalization refs=['asm_s_3'] attrs={"target": "fromSlot", "expression": "keccak256(0x00, 0x40)", "solidity_like": "fromSlot = keccak256(abi.encode(from, balanceOf.slot));", "context": "value", "division_guards": []}
+    ov_13 ExpressionNormalization refs=['asm_s_4'] attrs={"target": "fromBalance", "expression": "sload(fromSlot)", "solidity_like": "fromBalance = sload(fromSlot);", "context": "value", "division_guards": []}
+    ov_14 EvaluationStep refs=['asm_s_5'] attrs={"temp": "__sseir_eval_asm_s_5_1", "expression": "lt(fromBalance, value)", "expression_normalized": "(fromBalance < value)", "solidity_like": "__sseir_eval_asm_s_5_1 = (fromBalance < value);", "order": 1, "call": "lt", "evaluation_model": "yul_ast_right_to_left_function_call_arguments"}
+    ov_15 ExpressionNormalization refs=['asm_s_5'] attrs={"expression": "lt(fromBalance, value)", "solidity_like": "if (__sseir_eval_asm_s_5_1)", "context": "condition", "condition_evaluation": {"evaluation_model": "yul_ast_right_to_left_function_call_arguments", "final": "__sseir_eval_asm_s_5_1", "final_normalized": "(__sseir_eval_asm_s_5_1 != 0)", "steps": [{"order": 1, "temp": "__sseir_eval_asm_s_5_1", "expression": "lt(fromBalance, value)", "expression_normalized": "(fromBalance < value)", "call": "lt", "raw_args": ["fromBalance", "value"], "evaluated_args": ["fromBalance", "value"]}]}, "division_guards": []}
+    ov_16 ExpressionNormalization refs=['asm_s_10'] attrs={"target": "toSlot", "expression": "keccak256(0x00, 0x40)", "solidity_like": "toSlot = keccak256(abi.encode(to, balanceOf.slot));", "context": "value", "division_guards": []}

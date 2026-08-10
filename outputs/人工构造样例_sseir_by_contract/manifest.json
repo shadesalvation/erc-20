@@ -1,0 +1,440 @@
+{
+  "schema": "s-seir-batch-manifest/v1",
+  "input_root": "/home/ubuntu/erc-20/人工构造样例",
+  "output_dir": "/home/ubuntu/erc-20/outputs/人工构造样例_sseir_by_contract",
+  "layout": {
+    "per_source_directory": "<output_dir>/<source_id>/",
+    "source_snapshot": "source/",
+    "full_sseir": "sseir.json",
+    "assembly_functions": "assembly_functions.json",
+    "solidity_like": "solidity_like.txt",
+    "failure": "failure.json"
+  },
+  "selection_rule": {
+    "included_contracts": "concrete root contract whose full inherited implementation is ERC-20",
+    "excluded_contracts": [
+      "library",
+      "interface",
+      "abstract/incomplete contract unless --include-abstract",
+      "contract whose full implementation is not ERC-20"
+    ],
+    "assembly_function_rule": "function.source_statements contains at least one yul statement"
+  },
+  "sources": [
+    {
+      "source": "/home/ubuntu/erc-20/人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+      "source_id": "contracts__LayoutToken",
+      "result_dir": null,
+      "status": "skipped",
+      "skip_reason": "no_erc20_implementation_contract",
+      "skipped_contracts": [
+        {
+          "name": "LayoutToken",
+          "contractKind": "contract",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [
+            "IERC20Meta"
+          ],
+          "function_signatures": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_like": false,
+          "src": "386:2112:1",
+          "full_implementation_contracts": [
+            "IERC20Meta",
+            "LayoutToken"
+          ],
+          "full_implementation_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+          "skip_reason": "not_erc20_implementation"
+        },
+        {
+          "name": "TokenAmountLib",
+          "contractKind": "library",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [],
+          "function_signatures": [],
+          "erc20_entrypoints": [],
+          "erc20_like": false,
+          "src": "663:307:0",
+          "full_implementation_contracts": [
+            "TokenAmountLib"
+          ],
+          "full_implementation_entrypoints": [],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol",
+          "skip_reason": "contractKind=library"
+        }
+      ]
+    },
+    {
+      "source": "/home/ubuntu/erc-20/人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol",
+      "source_id": "contracts__TokenUnits",
+      "result_dir": null,
+      "status": "skipped",
+      "skip_reason": "no_erc20_implementation_contract",
+      "skipped_contracts": [
+        {
+          "name": "TokenAmountLib",
+          "contractKind": "library",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [],
+          "function_signatures": [],
+          "erc20_entrypoints": [],
+          "erc20_like": false,
+          "src": "663:307:0",
+          "full_implementation_contracts": [
+            "TokenAmountLib"
+          ],
+          "full_implementation_entrypoints": [],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol",
+          "skip_reason": "contractKind=library"
+        },
+        {
+          "name": "LayoutToken",
+          "contractKind": "contract",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [
+            "IERC20Meta"
+          ],
+          "function_signatures": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_like": false,
+          "src": "386:2112:1",
+          "full_implementation_contracts": [
+            "IERC20Meta",
+            "LayoutToken"
+          ],
+          "full_implementation_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+          "skip_reason": "not_erc20_implementation"
+        }
+      ]
+    },
+    {
+      "source": "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+      "source_id": "contracts__GuardedERC20",
+      "result_dir": null,
+      "status": "skipped",
+      "skip_reason": "no_erc20_implementation_contract",
+      "skipped_contracts": [
+        {
+          "name": "GuardedERC20",
+          "contractKind": "contract",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [],
+          "function_signatures": [
+            "approve(address,uint256)",
+            "deploymentInfo()",
+            "ownerMint(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_like": false,
+          "src": "309:3382:0",
+          "full_implementation_contracts": [
+            "GuardedERC20"
+          ],
+          "full_implementation_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+          "skip_reason": "not_erc20_implementation"
+        }
+      ]
+    },
+    {
+      "source": "/home/ubuntu/erc-20/人工构造样例/03_继承_抽象合约_可见性_receive_fallback/contracts/PayableInheritedERC20.sol",
+      "source_id": "contracts__PayableInheritedERC20",
+      "result_dir": null,
+      "status": "skipped",
+      "skip_reason": "no_erc20_implementation_contract",
+      "skipped_contracts": []
+    },
+    {
+      "source": "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+      "source_id": "contracts__TypedSnapshotERC20",
+      "result_dir": null,
+      "status": "skipped",
+      "skip_reason": "no_erc20_implementation_contract",
+      "skipped_contracts": [
+        {
+          "name": "TypedSnapshotERC20",
+          "contractKind": "contract",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [],
+          "function_signatures": [
+            "approve(address,uint256)",
+            "batchTransfer(address[],uint256[])",
+            "castExamples(address,uint256)",
+            "copySnapshot(uint256)",
+            "snapshotCount()",
+            "takeSnapshot(address,string)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_like": false,
+          "src": "247:4249:0",
+          "full_implementation_contracts": [
+            "TypedSnapshotERC20"
+          ],
+          "full_implementation_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+          "skip_reason": "not_erc20_implementation"
+        }
+      ]
+    },
+    {
+      "source": "/home/ubuntu/erc-20/人工构造样例/05_表达式_运算符_控制流_checked_unchecked/contracts/ControlFlowERC20.sol",
+      "source_id": "contracts__ControlFlowERC20",
+      "result_dir": null,
+      "status": "skipped",
+      "skip_reason": "no_erc20_implementation_contract",
+      "skipped_contracts": [
+        {
+          "name": "ControlFlowERC20",
+          "contractKind": "contract",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [],
+          "function_signatures": [
+            "approve(address,uint256)",
+            "bitOps(uint256,uint256)",
+            "burnUntilBelow(uint256,uint256)",
+            "distribute(address[],uint256)",
+            "fillPreview(uint256)",
+            "resetAllowance(address)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_like": false,
+          "src": "58:3759:0",
+          "full_implementation_contracts": [
+            "ControlFlowERC20"
+          ],
+          "full_implementation_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/05_表达式_运算符_控制流_checked_unchecked/contracts/ControlFlowERC20.sol",
+          "skip_reason": "not_erc20_implementation"
+        }
+      ]
+    },
+    {
+      "source": "/home/ubuntu/erc-20/人工构造样例/06_ABI_低级调用_trycatch_new_合约类型/contracts/AbiFactoryAndProbe.sol",
+      "source_id": "contracts__AbiFactoryAndProbe",
+      "result_dir": null,
+      "status": "skipped",
+      "skip_reason": "no_erc20_implementation_contract",
+      "skipped_contracts": [
+        {
+          "name": "IERC20View",
+          "contractKind": "interface",
+          "abstract": false,
+          "fullyImplemented": false,
+          "base_contracts": [],
+          "function_signatures": [
+            "approve(address,uint256)",
+            "balanceOf(address)",
+            "totalSupply()",
+            "transfer(address,uint256)"
+          ],
+          "erc20_entrypoints": [
+            "approve(address,uint256)",
+            "balanceOf(address)",
+            "totalSupply()",
+            "transfer(address,uint256)"
+          ],
+          "erc20_like": false,
+          "src": "58:309:0",
+          "full_implementation_contracts": [
+            "IERC20View"
+          ],
+          "full_implementation_entrypoints": [
+            "approve(address,uint256)",
+            "balanceOf(address)",
+            "totalSupply()",
+            "transfer(address,uint256)"
+          ],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/06_ABI_低级调用_trycatch_new_合约类型/contracts/AbiFactoryAndProbe.sol",
+          "skip_reason": "contractKind=interface"
+        },
+        {
+          "name": "FactoryMintedERC20",
+          "contractKind": "contract",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [],
+          "function_signatures": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_like": false,
+          "src": "369:1812:0",
+          "full_implementation_contracts": [
+            "FactoryMintedERC20"
+          ],
+          "full_implementation_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/06_ABI_低级调用_trycatch_new_合约类型/contracts/AbiFactoryAndProbe.sol",
+          "skip_reason": "not_erc20_implementation"
+        },
+        {
+          "name": "AbiFactoryAndProbe",
+          "contractKind": "contract",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [],
+          "function_signatures": [
+            "createToken(string,string,uint256)",
+            "createToken2(bytes32,string,string,uint256)",
+            "decodePair(bytes)",
+            "destructure(address,address)",
+            "encodeSamples(address,address,uint256)",
+            "lowLevelTransfer(address,address,uint256)",
+            "staticSupply(address)",
+            "tryBalance(address,address)"
+          ],
+          "erc20_entrypoints": [],
+          "erc20_like": false,
+          "src": "2183:2971:0",
+          "full_implementation_contracts": [
+            "AbiFactoryAndProbe"
+          ],
+          "full_implementation_entrypoints": [],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/06_ABI_低级调用_trycatch_new_合约类型/contracts/AbiFactoryAndProbe.sol",
+          "skip_reason": "not_erc20_implementation"
+        }
+      ]
+    },
+    {
+      "source": "/home/ubuntu/erc-20/人工构造样例/07_内联Assembly_memorysafe_Yul操作/contracts/AssemblyERC20.sol",
+      "source_id": "contracts__AssemblyERC20",
+      "result_dir": null,
+      "status": "skipped",
+      "skip_reason": "no_erc20_implementation_contract",
+      "skipped_contracts": [
+        {
+          "name": "AssemblyERC20",
+          "contractKind": "contract",
+          "abstract": false,
+          "fullyImplemented": true,
+          "base_contracts": [],
+          "function_signatures": [
+            "approve(address,uint256)",
+            "hashMemorySafe(bytes)",
+            "rawContext()",
+            "selectorFromCalldata()",
+            "sumSkipping(uint256[])",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_like": false,
+          "src": "58:3756:0",
+          "full_implementation_contracts": [
+            "AssemblyERC20"
+          ],
+          "full_implementation_entrypoints": [
+            "approve(address,uint256)",
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)"
+          ],
+          "erc20_inheritance_hints": [],
+          "erc20_full_implementation": false,
+          "source": "/home/ubuntu/erc-20/人工构造样例/07_内联Assembly_memorysafe_Yul操作/contracts/AssemblyERC20.sol",
+          "skip_reason": "not_erc20_implementation"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "processed_sources": 0,
+    "failed_sources": 0,
+    "assembly_sources": 0
+  }
+}

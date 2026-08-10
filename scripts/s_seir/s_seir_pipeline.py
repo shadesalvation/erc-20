@@ -29,6 +29,7 @@ from s_seir_source_collector import SourceStatementCollector
 from s_seir_solidity_like_export import write_solidity_like_text
 from s_seir_storage_layout import apply_storage_layout, extract_storage_layout
 from s_seir_security_facts import SecurityFactBuilder
+from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload, write_json as write_semantic_fact_json
 from s_seir_type_env import TypeEnv
 
 def json_ready(v:Any)->Any:
@@ -178,11 +179,15 @@ def render_text(functions):
     return '\n'.join(lines)
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('source',type=Path); ap.add_argument('-o','--output',type=Path,default=Path('outputs/sseir.json')); ap.add_argument('--text-output',type=Path,default=Path('outputs/sseir.txt')); ap.add_argument('--debug-output',type=Path,help='Optional full analysis output including MemorySSA/SinkResolver query traces.'); ap.add_argument('--cfg-dot-dir',type=Path); ap.add_argument('--llm-assembly-output',type=Path); ap.add_argument('--llm-assembly-text-output',type=Path); ap.add_argument('--llm-assembly-compact-output',type=Path); ap.add_argument('--llm-assembly-compact-text-output',type=Path); ap.add_argument('--solidity-like-output',type=Path); ap.add_argument('--branch-preprocessed-output',type=Path); ap.add_argument('--branch-report-output',type=Path); ap.add_argument('--no-branch-preprocess',action='store_true'); ap.add_argument('--solc-bin'); ap.add_argument('--slither-bin'); ap.add_argument('--workdir',type=Path,default=Path('.'))
+    ap=argparse.ArgumentParser(); ap.add_argument('source',type=Path); ap.add_argument('-o','--output',type=Path,default=Path('outputs/sseir.json')); ap.add_argument('--text-output',type=Path,default=Path('outputs/sseir.txt')); ap.add_argument('--semantic-facts-output',type=Path,default=Path('outputs/semantic_facts.json')); ap.add_argument('--debug-output',type=Path,help='Optional full analysis output including MemorySSA/SinkResolver query traces.'); ap.add_argument('--cfg-dot-dir',type=Path); ap.add_argument('--llm-assembly-output',type=Path); ap.add_argument('--llm-assembly-text-output',type=Path); ap.add_argument('--llm-assembly-compact-output',type=Path); ap.add_argument('--llm-assembly-compact-text-output',type=Path); ap.add_argument('--solidity-like-output',type=Path); ap.add_argument('--branch-preprocessed-output',type=Path); ap.add_argument('--branch-report-output',type=Path); ap.add_argument('--no-branch-preprocess',action='store_true'); ap.add_argument('--solc-bin'); ap.add_argument('--slither-bin'); ap.add_argument('--workdir',type=Path,default=Path('.'))
     a=ap.parse_args(); fns=build_sseir(a.source,a.solc_bin,a.slither_bin,a.workdir.resolve(),branch_preprocess=not a.no_branch_preprocess,branch_preprocess_output=a.branch_preprocessed_output,branch_report_output=a.branch_report_output)
     a.output.parent.mkdir(parents=True,exist_ok=True); a.text_output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps([x.to_semantic_dict() for x in fns],indent=2,ensure_ascii=False),encoding='utf-8'); a.text_output.write_text(render_text(fns),encoding='utf-8')
     print(f'Wrote {a.output}'); print(f'Wrote {a.text_output}')
+    if a.semantic_facts_output:
+        facts=build_function_level_semantic_fact_payload(fns,source=str(a.source),result_dir=str(a.semantic_facts_output.parent))
+        write_semantic_fact_json(a.semantic_facts_output,facts)
+        print(f'Wrote {a.semantic_facts_output}')
     if a.debug_output:
         a.debug_output.parent.mkdir(parents=True,exist_ok=True)
         a.debug_output.write_text(json.dumps([x.to_dict() for x in fns],indent=2,ensure_ascii=False),encoding='utf-8')

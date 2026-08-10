@@ -1,0 +1,1705 @@
+{
+  "schema": "s-seir-semantic-facts/v1",
+  "source": "/home/ubuntu/erc-20/TOKENS/assembly样本/0x28cbe531bedb28fb5937e983289bb2159c2c9c58/opens.sol",
+  "function_count": 43,
+  "facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "constructor",
+      "contract": "Ownable",
+      "signature": "constructor(address)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "error": "OwnableInvalidOwner(address(0))"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "constructor",
+      "contract": "Ownable",
+      "signature": "constructor(address)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "if (initialOwner == address(0)) { revert OwnableInvalidOwner(address(0)); }",
+      "reads": [
+        "initialOwner",
+        "revert",
+        "OwnableInvalidOwner"
+      ],
+      "semantic": {
+        "expression": "if (initialOwner == address(0)) { revert OwnableInvalidOwner(address(0)); }",
+        "solidity_like": "if (if (initialOwner == address(0)) { revert OwnableInvalidOwner(address(0)); })"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_checkOwner",
+      "contract": "Ownable",
+      "signature": "_checkOwner()",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "error": "OwnableUnauthorizedAccount(_msgSender())"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_checkOwner",
+      "contract": "Ownable",
+      "signature": "_checkOwner()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "if (owner() != _msgSender()) { revert OwnableUnauthorizedAccount(_msgSender()); }",
+      "reads": [
+        "owner",
+        "_msgSender",
+        "revert",
+        "OwnableUnauthorizedAccount"
+      ],
+      "semantic": {
+        "expression": "if (owner() != _msgSender()) { revert OwnableUnauthorizedAccount(_msgSender()); }",
+        "solidity_like": "if (if (owner() != _msgSender()) { revert OwnableUnauthorizedAccount(_msgSender()); })"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "transferOwnership",
+      "contract": "Ownable",
+      "signature": "transferOwnership(address)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "error": "OwnableInvalidOwner(address(0))"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "transferOwnership",
+      "contract": "Ownable",
+      "signature": "transferOwnership(address)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "if (newOwner == address(0)) { revert OwnableInvalidOwner(address(0)); }",
+      "reads": [
+        "newOwner",
+        "revert",
+        "OwnableInvalidOwner"
+      ],
+      "semantic": {
+        "expression": "if (newOwner == address(0)) { revert OwnableInvalidOwner(address(0)); }",
+        "solidity_like": "if (if (newOwner == address(0)) { revert OwnableInvalidOwner(address(0)); })"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "balanceOf",
+      "contract": "opens",
+      "signature": "balanceOf(address)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n3",
+        "bb_sol_slither_n5"
+      ],
+      "rvalue": "if (b == 0) { b = giftAmount; }",
+      "reads": [
+        "b",
+        "giftAmount"
+      ],
+      "semantic": {
+        "expression": "if (b == 0) { b = giftAmount; }",
+        "solidity_like": "if (if (b == 0) { b = giftAmount; })"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_transfer",
+      "contract": "opens",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "error": "ERC20InvalidSender(address(0))"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_transfer",
+      "contract": "opens",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "semantic": {
+        "error": "ERC20InvalidReceiver(address(0))"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_transfer",
+      "contract": "opens",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "if (from == address(0)) { revert ERC20InvalidSender(address(0)); }",
+      "reads": [
+        "from",
+        "revert",
+        "ERC20InvalidSender"
+      ],
+      "semantic": {
+        "expression": "if (from == address(0)) { revert ERC20InvalidSender(address(0)); }",
+        "solidity_like": "if (if (from == address(0)) { revert ERC20InvalidSender(address(0)); })"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_transfer",
+      "contract": "opens",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n4",
+        "bb_sol_slither_n6"
+      ],
+      "rvalue": "if (to == address(0)) { revert ERC20InvalidReceiver(address(0)); }",
+      "reads": [
+        "to",
+        "revert",
+        "ERC20InvalidReceiver"
+      ],
+      "semantic": {
+        "expression": "if (to == address(0)) { revert ERC20InvalidReceiver(address(0)); }",
+        "solidity_like": "if (if (to == address(0)) { revert ERC20InvalidReceiver(address(0)); })"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_transfer",
+      "contract": "opens",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n7",
+        "bb_sol_slither_n10"
+      ],
+      "rvalue": "if (_blackList[from]) { _burn(from, _balances[from]); return; }",
+      "reads": [
+        "_blackList[from]",
+        "_burn",
+        "from",
+        "_balances[from]"
+      ],
+      "semantic": {
+        "expression": "if (_blackList[from]) { _burn(from, _balances[from]); return; }",
+        "solidity_like": "if (if (_blackList[from]) { _burn(from, _balances[from]); return; })"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_5"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_update",
+      "contract": "opens",
+      "signature": "_update(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "semantic": {
+        "error": "ERC20InsufficientBalance(from, fromBalance, value)"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_update",
+      "contract": "opens",
+      "signature": "_update(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n2",
+        "bb_sol_slither_n4",
+        "bb_sol_slither_n8",
+        "bb_sol_slither_n11"
+      ],
+      "rvalue": "if (from != address(0)) { uint256 fromBalance = _balances[from]; if (fromBalance < value) { revert ERC20InsufficientBalance(from, fromBalance, value); } unchecked { _balances[from] = fromBalance - value; if (_balances[from] == 0) { _balances[from] = 1; } } }",
+      "reads": [
+        "from",
+        "fromBalance",
+        "_balances[from]",
+        "value",
+        "revert",
+        "ERC20InsufficientBalance",
+        "unchecked"
+      ],
+      "semantic": {
+        "expression": "if (from != address(0)) { uint256 fromBalance = _balances[from]; if (fromBalance < value) { revert ERC20InsufficientBalance(from, fromBalance, value); } unchecked { _balances[from] = fromBalance - value; if (_balances[from] == 0) { _balances[from] = 1; } } }",
+        "solidity_like": "if (if (from != address(0)) { uint256 fromBalance = _balances[from]; if (fromBalance < value) { revert ERC20InsufficientBalance(from, fromBalance, value); } unchecked { _balances[from] = fromBalance - value; if (_balances[from] == 0) { _balances[from] = 1; } } })"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_update",
+      "contract": "opens",
+      "signature": "_update(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4",
+        "bb_sol_slither_n6"
+      ],
+      "rvalue": "if (fromBalance < value) { revert ERC20InsufficientBalance(from, fromBalance, value); }",
+      "reads": [
+        "fromBalance",
+        "value",
+        "revert",
+        "ERC20InsufficientBalance",
+        "from"
+      ],
+      "semantic": {
+        "expression": "if (fromBalance < value) { revert ERC20InsufficientBalance(from, fromBalance, value); }",
+        "solidity_like": "if (if (fromBalance < value) { revert ERC20InsufficientBalance(from, fromBalance, value); })"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_update",
+      "contract": "opens",
+      "signature": "_update(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_8"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n8",
+        "bb_sol_slither_n10"
+      ],
+      "rvalue": "if (_balances[from] == 0) { _balances[from] = 1; }",
+      "reads": [
+        "_balances[from]"
+      ],
+      "semantic": {
+        "expression": "if (_balances[from] == 0) { _balances[from] = 1; }",
+        "solidity_like": "if (if (_balances[from] == 0) { _balances[from] = 1; })"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_update",
+      "contract": "opens",
+      "signature": "_update(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n12",
+        "bb_sol_slither_n13",
+        "bb_sol_slither_n17"
+      ],
+      "rvalue": "if (to != address(0)) { if (_balances[to] == 0 && from != address(0)) { _balances[to] = giftAmount; } unchecked { _balances[to] += value; } }",
+      "reads": [
+        "to",
+        "_balances[to]",
+        "from",
+        "giftAmount",
+        "unchecked",
+        "value"
+      ],
+      "semantic": {
+        "expression": "if (to != address(0)) { if (_balances[to] == 0 && from != address(0)) { _balances[to] = giftAmount; } unchecked { _balances[to] += value; } }",
+        "solidity_like": "if (if (to != address(0)) { if (_balances[to] == 0 && from != address(0)) { _balances[to] = giftAmount; } unchecked { _balances[to] += value; } })"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_5"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_update",
+      "contract": "opens",
+      "signature": "_update(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n13",
+        "bb_sol_slither_n15"
+      ],
+      "rvalue": "if (_balances[to] == 0 && from != address(0)) { _balances[to] = giftAmount; }",
+      "reads": [
+        "_balances[to]",
+        "from",
+        "giftAmount"
+      ],
+      "semantic": {
+        "expression": "if (_balances[to] == 0 && from != address(0)) { _balances[to] = giftAmount; }",
+        "solidity_like": "if (if (_balances[to] == 0 && from != address(0)) { _balances[to] = giftAmount; })"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_6"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_mint",
+      "contract": "opens",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "error": "ERC20InvalidReceiver(address(0))"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_mint",
+      "contract": "opens",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "if (account == address(0)) { revert ERC20InvalidReceiver(address(0)); }",
+      "reads": [
+        "account",
+        "revert",
+        "ERC20InvalidReceiver"
+      ],
+      "semantic": {
+        "expression": "if (account == address(0)) { revert ERC20InvalidReceiver(address(0)); }",
+        "solidity_like": "if (if (account == address(0)) { revert ERC20InvalidReceiver(address(0)); })"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_burn",
+      "contract": "opens",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "error": "ERC20InvalidSender(address(0))"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_burn",
+      "contract": "opens",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "if (account == address(0)) { revert ERC20InvalidSender(address(0)); }",
+      "reads": [
+        "account",
+        "revert",
+        "ERC20InvalidSender"
+      ],
+      "semantic": {
+        "expression": "if (account == address(0)) { revert ERC20InvalidSender(address(0)); }",
+        "solidity_like": "if (if (account == address(0)) { revert ERC20InvalidSender(address(0)); })"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_approve",
+      "contract": "opens",
+      "signature": "_approve(address, address, uint256, bool)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "error": "ERC20InvalidApprover(address(0))"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_24",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_approve",
+      "contract": "opens",
+      "signature": "_approve(address, address, uint256, bool)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "semantic": {
+        "error": "ERC20InvalidSpender(address(0))"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_25",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_approve",
+      "contract": "opens",
+      "signature": "_approve(address, address, uint256, bool)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "if (owner_ == address(0)) { revert ERC20InvalidApprover(address(0)); }",
+      "reads": [
+        "owner_",
+        "revert",
+        "ERC20InvalidApprover"
+      ],
+      "semantic": {
+        "expression": "if (owner_ == address(0)) { revert ERC20InvalidApprover(address(0)); }",
+        "solidity_like": "if (if (owner_ == address(0)) { revert ERC20InvalidApprover(address(0)); })"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_26",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_approve",
+      "contract": "opens",
+      "signature": "_approve(address, address, uint256, bool)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n4",
+        "bb_sol_slither_n6"
+      ],
+      "rvalue": "if (spender == address(0)) { revert ERC20InvalidSpender(address(0)); }",
+      "reads": [
+        "spender",
+        "revert",
+        "ERC20InvalidSpender"
+      ],
+      "semantic": {
+        "expression": "if (spender == address(0)) { revert ERC20InvalidSpender(address(0)); }",
+        "solidity_like": "if (if (spender == address(0)) { revert ERC20InvalidSpender(address(0)); })"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_27",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_approve",
+      "contract": "opens",
+      "signature": "_approve(address, address, uint256, bool)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n8",
+        "bb_sol_slither_n10"
+      ],
+      "rvalue": "if (emitEvent) { emit Approval(owner_, spender, value); }",
+      "reads": [
+        "emitEvent",
+        "emit",
+        "Approval",
+        "owner_",
+        "spender",
+        "value"
+      ],
+      "semantic": {
+        "expression": "if (emitEvent) { emit Approval(owner_, spender, value); }",
+        "solidity_like": "if (if (emitEvent) { emit Approval(owner_, spender, value); })"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_5"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_28",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_spendAllowance",
+      "contract": "opens",
+      "signature": "_spendAllowance(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "semantic": {
+        "error": "ERC20InsufficientAllowance(spender, currentAllowance, value)"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_29",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_spendAllowance",
+      "contract": "opens",
+      "signature": "_spendAllowance(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n2",
+        "bb_sol_slither_n3",
+        "bb_sol_slither_n7"
+      ],
+      "rvalue": "if (currentAllowance < type(uint256).max) { if (currentAllowance < value) { revert ERC20InsufficientAllowance(spender, currentAllowance, value); } unchecked { _approve(owner_, spender, currentAllowance - value, false); } }",
+      "reads": [
+        "currentAllowance",
+        "type",
+        "max",
+        "value",
+        "revert",
+        "ERC20InsufficientAllowance",
+        "spender",
+        "unchecked",
+        "_approve",
+        "owner_"
+      ],
+      "semantic": {
+        "expression": "if (currentAllowance < type(uint256).max) { if (currentAllowance < value) { revert ERC20InsufficientAllowance(spender, currentAllowance, value); } unchecked { _approve(owner_, spender, currentAllowance - value, false); } }",
+        "solidity_like": "if (if (currentAllowance < type(uint256).max) { if (currentAllowance < value) { revert ERC20InsufficientAllowance(spender, currentAllowance, value); } unchecked { _approve(owner_, spender, currentAllowance - value, false); } })"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_30",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_spendAllowance",
+      "contract": "opens",
+      "signature": "_spendAllowance(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n3",
+        "bb_sol_slither_n5"
+      ],
+      "rvalue": "if (currentAllowance < value) { revert ERC20InsufficientAllowance(spender, currentAllowance, value); }",
+      "reads": [
+        "currentAllowance",
+        "value",
+        "revert",
+        "ERC20InsufficientAllowance",
+        "spender"
+      ],
+      "semantic": {
+        "expression": "if (currentAllowance < value) { revert ERC20InsufficientAllowance(spender, currentAllowance, value); }",
+        "solidity_like": "if (if (currentAllowance < value) { revert ERC20InsufficientAllowance(spender, currentAllowance, value); })"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_31",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "withdraw",
+      "contract": "opens",
+      "signature": "withdraw(address)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n3",
+        "bb_sol_slither_n6"
+      ],
+      "rvalue": "if (_token == address(0x0)) { payable(receiver).transfer(address(this).balance); return; }",
+      "reads": [
+        "_token",
+        "payable",
+        "receiver",
+        "transfer",
+        "this",
+        "balance"
+      ],
+      "semantic": {
+        "expression": "if (_token == address(0x0)) { payable(receiver).transfer(address(this).balance); return; }",
+        "solidity_like": "if (if (_token == address(0x0)) { payable(receiver).transfer(address(this).balance); return; })"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_32",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_isAddLiquidity",
+      "contract": "opens",
+      "signature": "_isAddLiquidity(address, address)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n7",
+        "bb_sol_slither_n10"
+      ],
+      "rvalue": "if (tokenOther < _token) { r = r0; } else { r = r1; }",
+      "reads": [
+        "tokenOther",
+        "_token",
+        "r",
+        "r0",
+        "r1"
+      ],
+      "semantic": {
+        "expression": "if (tokenOther < _token) { r = r0; } else { r = r1; }",
+        "solidity_like": "if (if (tokenOther < _token) { r = r0; } else { r = r1; })"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_33",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "_isRemoveLiquidity",
+      "contract": "opens",
+      "signature": "_isRemoveLiquidity(address, address)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n7",
+        "bb_sol_slither_n10"
+      ],
+      "rvalue": "if (tokenOther < _token) { r = r0; } else { r = r1; }",
+      "reads": [
+        "tokenOther",
+        "_token",
+        "r",
+        "r0",
+        "r1"
+      ],
+      "semantic": {
+        "expression": "if (tokenOther < _token) { r = r0; } else { r = r1; }",
+        "solidity_like": "if (if (tokenOther < _token) { r = r0; } else { r = r1; })"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_34",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "updateBlackList",
+      "contract": "opens",
+      "signature": "updateBlackList(address[], bool[])",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n8",
+        "bb_sol_slither_n10"
+      ],
+      "rvalue": "if (addr != taxReceiver && addr != pairAddress) { _blackList[addr] = values[i]; }",
+      "reads": [
+        "addr",
+        "taxReceiver",
+        "pairAddress",
+        "_blackList[addr]",
+        "values[i]"
+      ],
+      "semantic": {
+        "expression": "if (addr != taxReceiver && addr != pairAddress) { _blackList[addr] = values[i]; }",
+        "solidity_like": "if (if (addr != taxReceiver && addr != pairAddress) { _blackList[addr] = values[i]; })"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_35",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "removeBlackList",
+      "contract": "opens",
+      "signature": "removeBlackList(address[])",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n7",
+        "bb_sol_slither_n9"
+      ],
+      "rvalue": "if (_blackList[addr] && addr != address(0)) { delete _blackList[addr]; }",
+      "reads": [
+        "_blackList[addr]",
+        "addr",
+        "delete"
+      ],
+      "semantic": {
+        "expression": "if (_blackList[addr] && addr != address(0)) { delete _blackList[addr]; }",
+        "solidity_like": "if (if (_blackList[addr] && addr != address(0)) { delete _blackList[addr]; })"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_36",
+      "kind": "Revert",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "preUpdateHook",
+      "contract": "opens",
+      "signature": "preUpdateHook(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n14"
+      ],
+      "semantic": {
+        "error": "(\"invalid operation.\")"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "CustomErrorRevert",
+        "effects": [
+          "eff_6"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_37",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "preUpdateHook",
+      "contract": "opens",
+      "signature": "preUpdateHook(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "if (_blackList[from]) { _burn(from, _balances[from]); }",
+      "reads": [
+        "_blackList[from]",
+        "_burn",
+        "from",
+        "_balances[from]"
+      ],
+      "semantic": {
+        "expression": "if (_blackList[from]) { _burn(from, _balances[from]); }",
+        "solidity_like": "if (if (_blackList[from]) { _burn(from, _balances[from]); })"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_38",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "preUpdateHook",
+      "contract": "opens",
+      "signature": "preUpdateHook(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n4",
+        "bb_sol_slither_n7",
+        "bb_sol_slither_n9",
+        "bb_sol_slither_n13",
+        "bb_sol_slither_n16"
+      ],
+      "rvalue": "if (from != address(0) && value > 0) { bool isAdd; bool isRemove; if (to == pairAddress) { isAdd = _isAddLiquidity(address(this), _swapRouter.WETH()); } else if (from == pairAddress) { isRemove = _isRemoveLiquidity(address(this), _swapRouter.WETH()); } if ((to == pairAddress && isAdd && taxReceiver != from) || (from == pairAddress && isRemove && taxReceiver != to) ) { revert(\"invalid operation.\"); } }",
+      "reads": [
+        "from",
+        "value",
+        "bool",
+        "isAdd",
+        "isRemove",
+        "to",
+        "pairAddress",
+        "_isAddLiquidity",
+        "this",
+        "_swapRouter",
+        "WETH",
+        "_isRemoveLiquidity",
+        "taxReceiver",
+        "revert",
+        "invalid",
+        "operation"
+      ],
+      "semantic": {
+        "expression": "if (from != address(0) && value > 0) { bool isAdd; bool isRemove; if (to == pairAddress) { isAdd = _isAddLiquidity(address(this), _swapRouter.WETH()); } else if (from == pairAddress) { isRemove = _isRemoveLiquidity(address(this), _swapRouter.WETH()); } if ((to == pairAddress && isAdd && taxReceiver != from) || (from == pairAddress && isRemove && taxReceiver != to) ) { revert(\"invalid operation.\"); } }",
+        "solidity_like": "if (if (from != address(0) && value > 0) { bool isAdd; bool isRemove; if (to == pairAddress) { isAdd = _isAddLiquidity(address(this), _swapRouter.WETH()); } else if (from == pairAddress) { isRemove = _isRemoveLiquidity(address(this), _swapRouter.WETH()); } if ((to == pairAddress && isAdd && taxReceiver != from) || (from == pairAddress && isRemove && taxReceiver != to) ) { revert(\"invalid operation.\"); } })"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_39",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "preUpdateHook",
+      "contract": "opens",
+      "signature": "preUpdateHook(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n7",
+        "bb_sol_slither_n9",
+        "bb_sol_slither_n12"
+      ],
+      "rvalue": "if (to == pairAddress) { isAdd = _isAddLiquidity(address(this), _swapRouter.WETH()); } else if (from == pairAddress) { isRemove = _isRemoveLiquidity(address(this), _swapRouter.WETH()); }",
+      "reads": [
+        "to",
+        "pairAddress",
+        "isAdd",
+        "_isAddLiquidity",
+        "this",
+        "_swapRouter",
+        "WETH",
+        "from",
+        "isRemove",
+        "_isRemoveLiquidity"
+      ],
+      "semantic": {
+        "expression": "if (to == pairAddress) { isAdd = _isAddLiquidity(address(this), _swapRouter.WETH()); } else if (from == pairAddress) { isRemove = _isRemoveLiquidity(address(this), _swapRouter.WETH()); }",
+        "solidity_like": "if (if (to == pairAddress) { isAdd = _isAddLiquidity(address(this), _swapRouter.WETH()); } else if (from == pairAddress) { isRemove = _isRemoveLiquidity(address(this), _swapRouter.WETH()); })"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_40",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "preUpdateHook",
+      "contract": "opens",
+      "signature": "preUpdateHook(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n9",
+        "bb_sol_slither_n11"
+      ],
+      "rvalue": "if (from == pairAddress) { isRemove = _isRemoveLiquidity(address(this), _swapRouter.WETH()); }",
+      "reads": [
+        "from",
+        "pairAddress",
+        "isRemove",
+        "_isRemoveLiquidity",
+        "this",
+        "_swapRouter",
+        "WETH"
+      ],
+      "semantic": {
+        "expression": "if (from == pairAddress) { isRemove = _isRemoveLiquidity(address(this), _swapRouter.WETH()); }",
+        "solidity_like": "if (if (from == pairAddress) { isRemove = _isRemoveLiquidity(address(this), _swapRouter.WETH()); })"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_41",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "sseir_overlay",
+      "function": "preUpdateHook",
+      "contract": "opens",
+      "signature": "preUpdateHook(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n0",
+        "bb_sol_slither_n13",
+        "bb_sol_slither_n15"
+      ],
+      "rvalue": "if ((to == pairAddress && isAdd && taxReceiver != from) || (from == pairAddress && isRemove && taxReceiver != to) ) { revert(\"invalid operation.\"); }",
+      "reads": [
+        "to",
+        "pairAddress",
+        "isAdd",
+        "taxReceiver",
+        "from",
+        "isRemove",
+        "revert",
+        "invalid",
+        "operation"
+      ],
+      "semantic": {
+        "expression": "if ((to == pairAddress && isAdd && taxReceiver != from) || (from == pairAddress && isRemove && taxReceiver != to) ) { revert(\"invalid operation.\"); }",
+        "solidity_like": "if (if ((to == pairAddress && isAdd && taxReceiver != from) || (from == pairAddress && isRemove && taxReceiver != to) ) { revert(\"invalid operation.\"); })"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_5"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_42",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "airdrop",
+      "contract": "opens",
+      "signature": "airdrop(address[])",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "v",
+      "rvalue": "giftAmount",
+      "reads": [
+        "giftAmount"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "giftAmount",
+        "state_variable": "giftAmount",
+        "slot": "giftAmount.slot"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_9"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_43",
+      "kind": "EventEmit",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "airdrop",
+      "contract": "opens",
+      "signature": "airdrop(address[])",
+      "stmt_refs": [
+        "asm_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n10"
+      ],
+      "condition": "lt(i, len)",
+      "reads": [
+        "address(this)",
+        "account",
+        "v"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "address(this)",
+          "account",
+          "v"
+        ],
+        "candidate_status": "resolved"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "PathConditionedEventEmit",
+        "effects": [
+          "eff_12"
+        ],
+        "candidate": {
+          "status": "resolved",
+          "condition": "lt(i, len)",
+          "values": [
+            "v"
+          ],
+          "memory_slice": {
+            "query_kind": "PathMemoryByteSlice",
+            "path": "lt(i, len)",
+            "complete": true,
+            "slices": [
+              {
+                "query_offset": 0,
+                "size": 32,
+                "source_value": "v",
+                "source_range": [
+                  0,
+                  32
+                ],
+                "source_offset": 0,
+                "source_width": 32,
+                "source_version": "mem_1",
+                "source_node_id": 9,
+                "source_kind": "mstore",
+                "origin_src": "13502:14:0",
+                "extraction": "v",
+                "known_value": {
+                  "known": true,
+                  "kind": "symbolic_known",
+                  "expr": "v"
+                },
+                "overlap_count": 1
+              }
+            ]
+          },
+          "normalized": "MemorySlice(v)",
+          "notes": [
+            "event_data",
+            "byte_axis_memory_slice",
+            "path_sensitive_sink"
+          ],
+          "event": "Transfer",
+          "args": [
+            "address(this)",
+            "account",
+            "v"
+          ],
+          "solidity_like": "emit Transfer(address(this), account, v);"
+        }
+      }
+    },
+    {
+      "fact_id": "fact_44",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "airdrop",
+      "contract": "opens",
+      "signature": "airdrop(address[])",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "len",
+      "rvalue": "mload(to)",
+      "reads": [
+        "mload",
+        "to"
+      ],
+      "writes": [
+        "len"
+      ],
+      "semantic": {
+        "target": "len",
+        "expression": "mload(to)",
+        "solidity_like": "len = to.length;"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_5"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_45",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "airdrop",
+      "contract": "opens",
+      "signature": "airdrop(address[])",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "i",
+      "rvalue": "0",
+      "writes": [
+        "i"
+      ],
+      "semantic": {
+        "target": "i",
+        "expression": "0",
+        "solidity_like": "i = 0;"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_46",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "airdrop",
+      "contract": "opens",
+      "signature": "airdrop(address[])",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "v",
+      "rvalue": "sload(giftAmount.slot)",
+      "reads": [
+        "sload",
+        "giftAmount",
+        "slot"
+      ],
+      "writes": [
+        "v"
+      ],
+      "semantic": {
+        "target": "v",
+        "expression": "sload(giftAmount.slot)",
+        "solidity_like": "v = sload(giftAmount.slot);"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_8"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_47",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "airdrop",
+      "contract": "opens",
+      "signature": "airdrop(address[])",
+      "stmt_refs": [
+        "asm_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n8"
+      ],
+      "lvalue": "account",
+      "rvalue": "mload(add(to, mul(add(i, 1), 0x20)))",
+      "reads": [
+        "mload",
+        "add",
+        "to",
+        "mul",
+        "i"
+      ],
+      "writes": [
+        "account"
+      ],
+      "semantic": {
+        "target": "account",
+        "expression": "mload(add(to, mul(add(i, 1), 0x20)))",
+        "solidity_like": "account = to[i];"
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_10"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_48",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "airdrop",
+      "contract": "opens",
+      "signature": "airdrop(address[])",
+      "stmt_refs": [
+        "asm_s_8"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n11"
+      ],
+      "lvalue": "__sseir_eval_asm_s_8_1",
+      "rvalue": "add(i, 1)",
+      "reads": [
+        "add",
+        "i"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_8_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_8_1",
+        "expression": "add(i, 1)",
+        "solidity_like": "__sseir_eval_asm_s_8_1 = (i + 1);",
+        "call": "add",
+        "raw_args": [
+          "i",
+          "1"
+        ],
+        "evaluated_args": [
+          "i",
+          "1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_14"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_49",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "airdrop",
+      "contract": "opens",
+      "signature": "airdrop(address[])",
+      "stmt_refs": [
+        "asm_s_8"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n11"
+      ],
+      "lvalue": "i",
+      "rvalue": "add(i, 1)",
+      "reads": [
+        "add",
+        "i"
+      ],
+      "writes": [
+        "i"
+      ],
+      "semantic": {
+        "target": "i",
+        "expression": "add(i, 1)",
+        "solidity_like": "i = __sseir_eval_asm_s_8_1;"
+      },
+      "evidence": {
+        "overlay": "ov_10",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_13"
+        ]
+      }
+    }
+  ]
+}
