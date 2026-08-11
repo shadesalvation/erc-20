@@ -807,17 +807,20 @@ def build_function_level_semantic_fact_payload(
 ) -> dict[str, Any]:
     """Build the final function-level fact view.
 
-    Solidity source statements contribute only Slither-style SemanticFact
-    records. Yul inline assembly still lives in the S-SEIR semantic model
-    (effects, roles, overlays) and is additionally projected to SemanticFact
-    records here.
+    Solidity source statements are lifted to high-level SemanticFact records
+    from S-SEIR Solidity overlays. SlithIR SSA remains evidence/debug input,
+    not the default final fact granularity. Yul inline assembly still lives in
+    the S-SEIR semantic model (effects, roles, overlays) and is additionally
+    projected to SemanticFact records here.
     """
-    solidity_adapter = SlitherFactAdapter()
+    from s_seir_solidity_semantic_lifter import SoliditySemanticLifter
+
+    solidity_lifter = SoliditySemanticLifter()
     yul_adapter = SSeirFactAdapter()
     solidity_facts: list[dict[str, Any]] = []
     yul_facts: list[dict[str, Any]] = []
     for fn in functions:
-        solidity_facts.extend(fact.to_dict() for fact in solidity_adapter.facts_from_sseir_control(fn))
+        solidity_facts.extend(solidity_lifter.facts_from_function(fn))
         fn_dict = fn.to_semantic_dict() if hasattr(fn, "to_semantic_dict") else fn
         fn_has_yul = function_dict_has_yul(fn_dict)
         for fact in yul_adapter.function_facts(fn_dict):
@@ -839,7 +842,7 @@ def build_function_level_semantic_fact_payload(
         "result_dir": result_dir,
         "model_boundary": {
             "processing_unit": "function",
-            "solidity": "Slither/SlithIR is projected directly to SemanticFact only.",
+            "solidity": "Solidity source is lifted to high-level SemanticFact rows from S-SEIR Solidity overlays; SlithIR SSA is retained as evidence/debug input.",
             "yul": "S-SEIR keeps low-level roles/effects/overlays in sseir.json and projects overlays to SemanticFact here.",
         },
         "function_count": len(functions),

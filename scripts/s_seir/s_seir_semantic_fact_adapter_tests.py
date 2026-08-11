@@ -124,14 +124,26 @@ class FakeFunction:
     }
 
     def to_semantic_dict(self) -> dict:
-        return function([
-            overlay("MappingWrite", {
+        yul_overlay = overlay("MappingWrite", {
                 "access": "balances[to]",
                 "state_variable": "balances",
                 "keys": ["to"],
                 "value": "amount",
-            }),
-        ])
+            })
+        solidity_overlay = {
+            "overlay_id": "ov_sol_1",
+            "kind": "MappingWrite",
+            "effects": ["eff_sol_1"],
+            "stmt_refs": ["sol_s_1"],
+            "attrs": {
+                "access": "balances[msg.sender]",
+                "state_variable": "balances",
+                "keys": ["msg.sender"],
+                "value": "amount",
+                "source": "slithir_ssa",
+            },
+        }
+        return function([solidity_overlay, yul_overlay])
 
 
 class DuplicateYulRequireFunction:
@@ -346,10 +358,12 @@ def test_function_level_payload_splits_solidity_and_yul_facts() -> None:
     assert payload["schema"] == "s-seir-function-semantic-facts/v1"
     assert payload["solidity_fact_count"] == 1
     assert payload["yul_fact_count"] == 1
-    assert [item["kind"] for item in payload["solidity_facts"]] == ["BinaryOperation"]
-    assert payload["solidity_facts"][0]["condition"] == "flag"
-    assert payload["solidity_facts"][0]["cfg_nodes"] == ["bb_sol_slither_n1"]
+    assert [item["kind"] for item in payload["solidity_facts"]] == ["StateWrite"]
+    assert payload["solidity_facts"][0]["source_lang"] == "solidity"
+    assert payload["solidity_facts"][0]["origin"] == "slither_lifted"
+    assert payload["solidity_facts"][0]["lvalue"] == "balances[msg.sender]"
     assert [item["kind"] for item in payload["yul_facts"]] == ["StateWrite"]
+    assert not any(item["kind"] == "BinaryOperation" for item in payload["facts"])
     assert [item["fact_id"] for item in payload["facts"]] == ["fact_1", "fact_2"]
 
 
