@@ -65,7 +65,9 @@ def block_label(block: dict[str, Any], statements: dict[str, SourceStatement]) -
             lines.append(short_text(f"term={term_kind}: {term_text}"))
         else:
             lines.append(f"term={term_kind}")
-    return "\\n".join(dot_escape(line) for line in lines)
+    # attrs_to_dot performs the DOT escaping once for the complete label.
+    # Returning raw newlines here lets that pass encode them as Graphviz \n.
+    return "\n".join(lines)
 
 
 def block_style(block: dict[str, Any]) -> dict[str, str]:

@@ -28,9 +28,6 @@ class ExpressionRoleAnalyzer:
     def role(self,text,norm,role,type_hint,stmt_ref,attrs=None): return ExpressionRole(self.ids.new('expr'),text,norm,role,type_hint,stmt_ref,attrs or {})
     def analyze(self,unit:FunctionUnit,type_env:Any,memory_results:dict[int,Any])->list[ExpressionRole]:
         roles=[]
-        for stmt in unit.source_statements:
-            if stmt.lang=='solidity' and stmt.text.strip().startswith('if'):
-                roles.append(self.role(stmt.text,None,'guard_condition','bool',stmt.stmt_id,{}))
         lookup={(s.block_id,s.text):s.stmt_id for s in unit.source_statements if s.lang=='yul'}
         for block in unit.assembly_blocks:
             res=memory_results.get(block.block_id); label=f'asm_block_{block.block_id}'

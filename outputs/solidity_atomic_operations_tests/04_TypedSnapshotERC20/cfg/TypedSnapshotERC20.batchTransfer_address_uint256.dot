@@ -1,0 +1,26 @@
+digraph "TypedSnapshotERC20.batchTransfer_address_uint256" {
+  graph [rankdir=TB, bgcolor="#ffffff", labelloc=t, fontsize=14, fontname="Consolas", label="TypedSnapshotERC20.batchTransfer(address[], uint256[])"];
+  node [fontname="Consolas"];
+  edge [fontname="Consolas"];
+  "__cfg_notes" [shape=note, style="filled", fillcolor="#f6f8fa", color="#d0d7de", fontsize="9", label="CFG notes:\nfunction_level_cfg_from_slither\nassembly_subgraph_embedded_from_assembly_ast_cfg\nslither_assembly_nodes_replaced_by_local_yul_cfg\nslither_compile_mode=normal\nfunction_match_method=source_range\nslither_nodes=10\nassembly_blocks=0\nassembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors\nslither_typed_use_def_archived_on_solidity_blocks\nunified_dominance_and_control_dependencies_computed_after_yul_subgraph_embedding\nsolidity_yul_boundary_contexts_attached"];
+  "bb_sol_slither_n0" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e8f2ff", label="bb_sol_slither_n0\nkind=solidity\nslither_node=0\nentrypoint\nterm=Fallthrough: entrypoint"];
+  "bb_sol_slither_n1" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e8f2ff", label="bb_sol_slither_n1\nkind=solidity\nslither_node=1\nstmts=sol_s_1\nsol_s_1: require(receivers.length == values.length, \"length\")\nterm=Fallthrough: require(bool,string)(receivers.length == values.length,length)"];
+  "bb_sol_slither_n2" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e8f2ff", label="bb_sol_slither_n2\nkind=solidity\nslither_node=2\nstmts=sol_s_2\nsol_s_2: for (uint256 i = 0; i < receivers.length; ++i) { _transferWithHook(msg.sender, receivers[i], values[i], _ide...\nterm=Fallthrough: startloop"];
+  "bb_sol_slither_n3" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e8f2ff", label="bb_sol_slither_n3\nkind=solidity\nslither_node=3\nstmts=sol_s_2\nsol_s_2: for (uint256 i = 0; i < receivers.length; ++i) { _transferWithHook(msg.sender, receivers[i], values[i], _ide...\nterm=Fallthrough: endloop"];
+  "bb_sol_slither_n4" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e8f2ff", label="bb_sol_slither_n4\nkind=solidity\nslither_node=4\nstmts=sol_s_5\nsol_s_5: uint256 i = 0\nterm=Fallthrough: i = 0"];
+  "bb_sol_slither_n5" [shape="diamond", style="rounded,filled", fontname="Consolas", fontsize="10", color="#7a4bb3", fillcolor="#f5ecff", label="bb_sol_slither_n5\nkind=solidity\nslither_node=5\nstmts=sol_s_2\nsol_s_2: for (uint256 i = 0; i < receivers.length; ++i) { _transferWithHook(msg.sender, receivers[i], values[i], _ide...\nterm=Branch: i < receivers.length"];
+  "bb_sol_slither_n6" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e8f2ff", label="bb_sol_slither_n6\nkind=solidity\nslither_node=6\nstmts=sol_s_3\nsol_s_3: _transferWithHook(msg.sender, receivers[i], values[i], _identityFee)\nterm=Fallthrough: _transferWithHook(msg.sender,receivers[i],values[i],_identityFee)"];
+  "bb_sol_slither_n7" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e8f2ff", label="bb_sol_slither_n7\nkind=solidity\nslither_node=7\nstmts=sol_s_4\nsol_s_4: totalMoved += values[i]\nterm=Fallthrough: totalMoved += values[i]"];
+  "bb_sol_slither_n8" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e8f2ff", label="bb_sol_slither_n8\nkind=solidity\nslither_node=8\nstmts=sol_s_6\nsol_s_6: ++i\nterm=Fallthrough: ++ i"];
+  "bb_sol_slither_n9" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3f8f42", fillcolor="#e9ffe8", peripheries="2", label="bb_sol_slither_n9\nkind=solidity\nslither_node=9\ntotalMoved\nterm=Return: totalMoved"];
+  "bb_sol_slither_n0" -> "bb_sol_slither_n1" [fontname="Consolas", fontsize="9", label="fallthrough", color="#586069"];
+  "bb_sol_slither_n1" -> "bb_sol_slither_n4" [fontname="Consolas", fontsize="9", label="fallthrough", color="#586069"];
+  "bb_sol_slither_n2" -> "bb_sol_slither_n5" [fontname="Consolas", fontsize="9", label="loop", color="#6f42c1"];
+  "bb_sol_slither_n3" -> "bb_sol_slither_n9" [fontname="Consolas", fontsize="9", label="loop", color="#6f42c1"];
+  "bb_sol_slither_n4" -> "bb_sol_slither_n2" [fontname="Consolas", fontsize="9", label="fallthrough", color="#586069"];
+  "bb_sol_slither_n5" -> "bb_sol_slither_n6" [fontname="Consolas", fontsize="9", label="true", color="#22863a"];
+  "bb_sol_slither_n5" -> "bb_sol_slither_n3" [fontname="Consolas", fontsize="9", label="false", color="#cb2431"];
+  "bb_sol_slither_n6" -> "bb_sol_slither_n7" [fontname="Consolas", fontsize="9", label="fallthrough", color="#586069"];
+  "bb_sol_slither_n7" -> "bb_sol_slither_n8" [fontname="Consolas", fontsize="9", label="fallthrough", color="#586069"];
+  "bb_sol_slither_n8" -> "bb_sol_slither_n5" [fontname="Consolas", fontsize="9", label="fallthrough", color="#586069"];
+}

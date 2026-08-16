@@ -120,7 +120,11 @@
             "reference_kind": "state_variable",
             "type": "string"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -194,7 +198,11 @@
             "reference_kind": "state_variable",
             "type": "string"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 0,
@@ -280,7 +288,11 @@
             "initialSupply"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         }
       ]
     },
@@ -399,7 +411,11 @@
             "value"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -454,7 +470,11 @@
             "True"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         }
       ]
     },
@@ -563,7 +583,11 @@
             "reference_kind": "index",
             "type": "mapping(address => uint256)"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 1,
@@ -663,7 +687,14 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 2,
@@ -718,7 +749,12 @@
           "writes": [
             "allowance"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_2",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 3,
@@ -795,7 +831,14 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -897,7 +940,11 @@
             "value"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 0,
@@ -952,7 +999,11 @@
             "True"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         }
       ]
     },
@@ -967,7 +1018,7 @@
         {
           "order": 0,
           "kind": "Phi",
-          "text": "allowance_2(mapping(address => mapping(address => uint256))) := ϕ(['allowance_3', 'allowance_0', 'allowance_1'])",
+          "text": "allowance_2(mapping(address => mapping(address => uint256))) := ϕ(['allowance_1', 'allowance_3', 'allowance_0'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -983,6 +1034,17 @@
           "read": [
             {
               "kind": "StateIRVariable",
+              "text": "allowance_1",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "mapping(address => mapping(address => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "StateIRVariable",
               "text": "allowance_3",
               "name": "allowance",
               "base_name": "allowance",
@@ -995,17 +1057,6 @@
             {
               "kind": "StateIRVariable",
               "text": "allowance_0",
-              "name": "allowance",
-              "base_name": "allowance",
-              "type": "mapping(address => mapping(address => uint256))",
-              "is_state": true,
-              "is_reference": false,
-              "is_constant": false,
-              "is_solidity_builtin": false
-            },
-            {
-              "kind": "StateIRVariable",
-              "text": "allowance_1",
               "name": "allowance",
               "base_name": "allowance",
               "type": "mapping(address => mapping(address => uint256))",
@@ -1037,7 +1088,11 @@
           "writes": [
             "allowance"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_10"
+          ],
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 0,
@@ -1136,7 +1191,13 @@
             "reference_kind": "index",
             "type": "mapping(address => uint256)"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 1,
@@ -1236,7 +1297,14 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_2",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 2,
@@ -1303,7 +1371,14 @@
           "writes": [
             "current"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -1394,7 +1469,13 @@
           "writes": [
             "TMP_3"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 1,
@@ -1492,7 +1573,14 @@
           "writes": [
             "TMP_4"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_5"
+          ],
+          "previous_atom_id": "sol_atom_5",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 0,
@@ -1591,7 +1679,13 @@
             "reference_kind": "index",
             "type": "mapping(address => uint256)"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 1,
@@ -1691,7 +1785,14 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_7"
+          ],
+          "previous_atom_id": "sol_atom_7",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 2,
@@ -1782,7 +1883,14 @@
           "writes": [
             "TMP_5"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "previous_atom_id": "sol_atom_8",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 3,
@@ -1837,7 +1945,14 @@
           "writes": [
             "allowance"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_9",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 4,
@@ -1914,7 +2029,15 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_9",
+            "sol_atom_8"
+          ],
+          "previous_atom_id": "sol_atom_10",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 0,
@@ -2023,7 +2146,11 @@
             "value"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 0,
@@ -2078,7 +2205,11 @@
             "True"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         }
       ]
     },
@@ -2141,7 +2272,9 @@
           "writes": [
             "to"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 1,
@@ -2194,12 +2327,15 @@
           "writes": [
             "value"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 2,
           "kind": "Phi",
-          "text": "totalSupply_1(uint256) := ϕ(['totalSupply_0', 'totalSupply_2'])",
+          "text": "totalSupply_1(uint256) := ϕ(['totalSupply_2', 'totalSupply_0'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -2215,7 +2351,7 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "totalSupply_0",
+              "text": "totalSupply_2",
               "name": "totalSupply",
               "base_name": "totalSupply",
               "type": "uint256",
@@ -2226,7 +2362,7 @@
             },
             {
               "kind": "StateIRVariable",
-              "text": "totalSupply_2",
+              "text": "totalSupply_0",
               "name": "totalSupply",
               "base_name": "totalSupply",
               "type": "uint256",
@@ -2258,12 +2394,17 @@
           "writes": [
             "totalSupply"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_5"
+          ],
+          "previous_atom_id": "sol_atom_2",
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 3,
           "kind": "Phi",
-          "text": "balanceOf_1(mapping(address => uint256)) := ϕ(['balanceOf_5', 'balanceOf_2', 'balanceOf_0'])",
+          "text": "balanceOf_1(mapping(address => uint256)) := ϕ(['balanceOf_2', 'balanceOf_0', 'balanceOf_5'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -2279,17 +2420,6 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "balanceOf_5",
-              "name": "balanceOf",
-              "base_name": "balanceOf",
-              "type": "mapping(address => uint256)",
-              "is_state": true,
-              "is_reference": false,
-              "is_constant": false,
-              "is_solidity_builtin": false
-            },
-            {
-              "kind": "StateIRVariable",
               "text": "balanceOf_2",
               "name": "balanceOf",
               "base_name": "balanceOf",
@@ -2302,6 +2432,17 @@
             {
               "kind": "StateIRVariable",
               "text": "balanceOf_0",
+              "name": "balanceOf",
+              "base_name": "balanceOf",
+              "type": "mapping(address => uint256)",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "StateIRVariable",
+              "text": "balanceOf_5",
               "name": "balanceOf",
               "base_name": "balanceOf",
               "type": "mapping(address => uint256)",
@@ -2333,7 +2474,12 @@
           "writes": [
             "balanceOf"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_7"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 0,
@@ -2411,7 +2557,7 @@
             "sol_s_1"
           ],
           "path_conditions": [],
-          "atomic_kind": "ValueCompute",
+          "atomic_kind": "StateWrite",
           "semantic_atom": true,
           "runtime_operation": true,
           "result": "totalSupply",
@@ -2424,7 +2570,21 @@
           "writes": [
             "totalSupply"
           ],
-          "source": "slithir_ssa"
+          "storage_access": {
+            "access": "totalSupply",
+            "state_variable": "totalSupply",
+            "keys": [],
+            "reference_kind": "state_variable",
+            "type": "uint256"
+          },
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3",
+            "sol_atom_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -2523,7 +2683,14 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4",
+            "sol_atom_1"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 1,
@@ -2578,7 +2745,14 @@
           "writes": [
             "balanceOf"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "previous_atom_id": "sol_atom_6",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 2,
@@ -2656,7 +2830,7 @@
             "sol_s_2"
           ],
           "path_conditions": [],
-          "atomic_kind": "ValueCompute",
+          "atomic_kind": "StateWrite",
           "semantic_atom": true,
           "runtime_operation": true,
           "result": "REF_6",
@@ -2667,9 +2841,26 @@
             "value"
           ],
           "writes": [
-            "REF_6"
+            "balanceOf[to]"
           ],
-          "source": "slithir_ssa"
+          "storage_access": {
+            "access": "balanceOf[to]",
+            "state_variable": "balanceOf",
+            "keys": [
+              "to"
+            ],
+            "reference_kind": "index",
+            "type": "uint256"
+          },
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_6",
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_7",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 0,
@@ -2737,7 +2928,11 @@
           "writes": [
             "TMP_7"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 1,
@@ -2839,7 +3034,16 @@
             "value"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_9",
+            "sol_atom_1",
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_9",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         }
       ]
     },
@@ -2854,7 +3058,7 @@
         {
           "order": 0,
           "kind": "Phi",
-          "text": "from_1(address) := ϕ(['from_1', 'msg.sender'])",
+          "text": "from_1(address) := ϕ(['msg.sender', 'from_1'])",
           "ssa": true,
           "lvalue": {
             "kind": "LocalIRVariable",
@@ -2869,17 +3073,6 @@
           },
           "read": [
             {
-              "kind": "LocalIRVariable",
-              "text": "from_1",
-              "name": "from",
-              "base_name": "from",
-              "type": "address",
-              "is_state": false,
-              "is_reference": false,
-              "is_constant": false,
-              "is_solidity_builtin": false
-            },
-            {
               "kind": "SolidityVariableComposed",
               "text": "msg.sender",
               "name": "msg.sender",
@@ -2889,6 +3082,17 @@
               "is_reference": false,
               "is_constant": false,
               "is_solidity_builtin": true
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "from_1",
+              "name": "from",
+              "base_name": "from",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
             }
           ],
           "checked": true,
@@ -2908,13 +3112,15 @@
           "result_ssa": "from_1",
           "expression": "from",
           "resolved_reads": [
-            "from",
-            "msg.sender"
+            "msg.sender",
+            "from"
           ],
           "writes": [
             "from"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 1,
@@ -2978,7 +3184,10 @@
           "writes": [
             "to"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 2,
@@ -3042,12 +3251,15 @@
           "writes": [
             "value"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_2",
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 3,
           "kind": "Phi",
-          "text": "balanceOf_3(mapping(address => uint256)) := ϕ(['balanceOf_5', 'balanceOf_2', 'balanceOf_0'])",
+          "text": "balanceOf_3(mapping(address => uint256)) := ϕ(['balanceOf_2', 'balanceOf_0', 'balanceOf_5'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -3063,17 +3275,6 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "balanceOf_5",
-              "name": "balanceOf",
-              "base_name": "balanceOf",
-              "type": "mapping(address => uint256)",
-              "is_state": true,
-              "is_reference": false,
-              "is_constant": false,
-              "is_solidity_builtin": false
-            },
-            {
-              "kind": "StateIRVariable",
               "text": "balanceOf_2",
               "name": "balanceOf",
               "base_name": "balanceOf",
@@ -3086,6 +3287,17 @@
             {
               "kind": "StateIRVariable",
               "text": "balanceOf_0",
+              "name": "balanceOf",
+              "base_name": "balanceOf",
+              "type": "mapping(address => uint256)",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "StateIRVariable",
+              "text": "balanceOf_5",
               "name": "balanceOf",
               "base_name": "balanceOf",
               "type": "mapping(address => uint256)",
@@ -3117,7 +3329,12 @@
           "writes": [
             "balanceOf"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_17"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 0,
@@ -3185,7 +3402,11 @@
           "writes": [
             "TMP_9"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 1,
@@ -3276,7 +3497,15 @@
           "writes": [
             "TMP_10"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2",
+            "sol_atom_5"
+          ],
+          "previous_atom_id": "sol_atom_5",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 2,
@@ -3374,7 +3603,14 @@
           "writes": [
             "TMP_11"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_6"
+          ],
+          "previous_atom_id": "sol_atom_6",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -3473,7 +3709,14 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4",
+            "sol_atom_1"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 1,
@@ -3540,7 +3783,14 @@
           "writes": [
             "bal"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_8"
+          ],
+          "previous_atom_id": "sol_atom_8",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 0,
@@ -3631,7 +3881,14 @@
           "writes": [
             "TMP_12"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_9",
+            "sol_atom_3"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 1,
@@ -3729,7 +3986,14 @@
           "writes": [
             "TMP_13"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_10"
+          ],
+          "previous_atom_id": "sol_atom_10",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 0,
@@ -3828,7 +4092,14 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4",
+            "sol_atom_1"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 1,
@@ -3919,7 +4190,15 @@
           "writes": [
             "TMP_14"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_9",
+            "sol_atom_3"
+          ],
+          "previous_atom_id": "sol_atom_12",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 2,
@@ -3974,7 +4253,14 @@
           "writes": [
             "balanceOf"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "previous_atom_id": "sol_atom_13",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 3,
@@ -4050,7 +4336,15 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_13",
+            "sol_atom_12"
+          ],
+          "previous_atom_id": "sol_atom_14",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 0,
@@ -4149,7 +4443,14 @@
             "reference_kind": "index",
             "type": "uint256"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_14",
+            "sol_atom_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 1,
@@ -4204,7 +4505,14 @@
           "writes": [
             "balanceOf"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_14"
+          ],
+          "previous_atom_id": "sol_atom_16",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 2,
@@ -4282,7 +4590,7 @@
             "sol_s_5"
           ],
           "path_conditions": [],
-          "atomic_kind": "ValueCompute",
+          "atomic_kind": "StateWrite",
           "semantic_atom": true,
           "runtime_operation": true,
           "result": "REF_9",
@@ -4293,9 +4601,26 @@
             "value"
           ],
           "writes": [
-            "REF_9"
+            "balanceOf[to]"
           ],
-          "source": "slithir_ssa"
+          "storage_access": {
+            "access": "balanceOf[to]",
+            "state_variable": "balanceOf",
+            "keys": [
+              "to"
+            ],
+            "reference_kind": "index",
+            "type": "uint256"
+          },
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_16",
+            "sol_atom_3"
+          ],
+          "previous_atom_id": "sol_atom_17",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 0,
@@ -4397,7 +4722,15 @@
             "value"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1",
+            "sol_atom_2",
+            "sol_atom_3"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n5"
+          ]
         }
       ]
     },
@@ -4568,7 +4901,11 @@
           "writes": [
             "TMP_17"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 1,
@@ -4635,7 +4972,14 @@
           "writes": [
             "token"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -4703,7 +5047,13 @@
           "writes": [
             "TMP_18"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 1,
@@ -4771,7 +5121,12 @@
           "writes": [
             "TMP_19"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 2,
@@ -4850,7 +5205,15 @@
             "bytes32(0)"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3",
+            "sol_atom_4"
+          ],
+          "previous_atom_id": "sol_atom_4",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 0,
@@ -4903,7 +5266,13 @@
             "new FactoryMintedERC20{value: msg.value}(name,symbol,msg.sender,supply)"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         }
       ]
     },
@@ -5063,7 +5432,11 @@
           "writes": [
             "TMP_22"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 1,
@@ -5130,7 +5503,14 @@
           "writes": [
             "token"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -5198,7 +5578,13 @@
           "writes": [
             "TMP_23"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 1,
@@ -5277,7 +5663,14 @@
             "salt"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 0,
@@ -5330,7 +5723,13 @@
             "new FactoryMintedERC20(name,symbol,msg.sender,supply)"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         }
       ]
     },
@@ -5439,7 +5838,11 @@
           "writes": [
             "TMP_25"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 1,
@@ -5506,7 +5909,14 @@
           "writes": [
             "a"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -5573,7 +5983,11 @@
           "writes": [
             "REF_13"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 1,
@@ -5695,7 +6109,14 @@
           "writes": [
             "TMP_26"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 2,
@@ -5762,7 +6183,14 @@
           "writes": [
             "b"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "previous_atom_id": "sol_atom_4",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         },
         {
           "order": 0,
@@ -5857,12 +6285,16 @@
             "reference_kind": "member",
             "type": "approve"
           },
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 1,
           "kind": "SolidityCall",
-          "text": "TMP_27(bytes) = SOLIDITY_CALL abi.encodeCall()(REF_15,[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x7559dd5be690>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x7559dd5be7b0>])",
+          "text": "TMP_27(bytes) = SOLIDITY_CALL abi.encodeCall()(REF_15,[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x70b93293a330>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x70b93293a450>])",
           "ssa": true,
           "source_expression": "abi.encodeCall(IERC20View.approve,(to,amount))",
           "lvalue": {
@@ -5925,9 +6357,9 @@
             },
             {
               "kind": "list",
-              "text": "[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x7559dd5be690>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x7559dd5be7b0>]",
-              "name": "[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x7559dd5be690>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x7559dd5be7b0>]",
-              "base_name": "[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x7559dd5be690>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x7559dd5be7b0>]",
+              "text": "[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x70b93293a330>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x70b93293a450>]",
+              "name": "[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x70b93293a330>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x70b93293a450>]",
+              "base_name": "[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x70b93293a330>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x70b93293a450>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -5967,7 +6399,14 @@
           "writes": [
             "TMP_27"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_6"
+          ],
+          "previous_atom_id": "sol_atom_6",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 2,
@@ -6034,7 +6473,14 @@
           "writes": [
             "c"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_7"
+          ],
+          "previous_atom_id": "sol_atom_7",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 0,
@@ -6156,7 +6602,11 @@
           "writes": [
             "TMP_28"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 1,
@@ -6232,7 +6682,14 @@
           "writes": [
             "TMP_29"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_9"
+          ],
+          "previous_atom_id": "sol_atom_9",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 2,
@@ -6299,7 +6756,14 @@
           "writes": [
             "packedHash"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_10"
+          ],
+          "previous_atom_id": "sol_atom_10",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 0,
@@ -6423,7 +6887,16 @@
             "keccak256(bytes)(abi.encodePacked(token,to,amount))"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2",
+            "sol_atom_5",
+            "sol_atom_8",
+            "sol_atom_11"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         }
       ]
     },
@@ -6446,7 +6919,7 @@
             "text": "TUPLE_0",
             "name": "TUPLE_0",
             "base_name": "TUPLE_0",
-            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb7a0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb800>]",
+            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a734d0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a73560>]",
             "is_state": false,
             "is_reference": false,
             "is_constant": false,
@@ -6501,9 +6974,9 @@
             },
             {
               "kind": "list",
-              "text": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb7a0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb800>]",
-              "name": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb7a0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb800>]",
-              "base_name": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb7a0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb800>]",
+              "text": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a734d0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a73560>]",
+              "name": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a734d0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a73560>]",
+              "base_name": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a734d0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a73560>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -6543,7 +7016,11 @@
           "writes": [
             "TUPLE_0"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 1,
@@ -6568,7 +7045,7 @@
               "text": "TUPLE_0",
               "name": "TUPLE_0",
               "base_name": "TUPLE_0",
-              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb7a0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb800>]",
+              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a734d0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a73560>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -6599,7 +7076,14 @@
           "writes": [
             "account"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 2,
@@ -6624,7 +7108,7 @@
               "text": "TUPLE_0",
               "name": "TUPLE_0",
               "base_name": "TUPLE_0",
-              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb7a0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6fb800>]",
+              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a734d0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a73560>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -6655,7 +7139,14 @@
           "writes": [
             "amount"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_2",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -6730,7 +7221,14 @@
             "(account,amount) = abi.decode(data,(address,uint256))"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2",
+            "sol_atom_3"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ]
         }
       ]
     },
@@ -6862,7 +7360,11 @@
           "writes": [
             "TMP_30"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 1,
@@ -6875,7 +7377,7 @@
             "text": "TUPLE_1",
             "name": "TUPLE_1",
             "base_name": "TUPLE_1",
-            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bd370>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bd3a0>]",
+            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b9335f59a0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932939040>]",
             "is_state": false,
             "is_reference": false,
             "is_constant": false,
@@ -6955,7 +7457,14 @@
           "writes": [
             "TUPLE_1"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 2,
@@ -6980,7 +7489,7 @@
               "text": "TUPLE_1",
               "name": "TUPLE_1",
               "base_name": "TUPLE_1",
-              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bd370>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bd3a0>]",
+              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b9335f59a0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932939040>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -7011,7 +7520,14 @@
           "writes": [
             "ok"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_2",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 3,
@@ -7036,7 +7552,7 @@
               "text": "TUPLE_1",
               "name": "TUPLE_1",
               "base_name": "TUPLE_1",
-              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bd370>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bd3a0>]",
+              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b9335f59a0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932939040>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -7067,7 +7583,14 @@
           "writes": [
             "data"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 0,
@@ -7168,7 +7691,14 @@
             "(ok,data) = token.call(abi.encodeWithSignature(transfer(address,uint256),to,amount))"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3",
+            "sol_atom_4"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 0,
@@ -7224,7 +7754,13 @@
           "writes": [
             "REF_20"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 1,
@@ -7315,7 +7851,14 @@
           "writes": [
             "TMP_32"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_6"
+          ],
+          "previous_atom_id": "sol_atom_6",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 2,
@@ -7414,7 +7957,14 @@
           "writes": [
             "TMP_33"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "previous_atom_id": "sol_atom_7",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 3,
@@ -7505,7 +8055,15 @@
           "writes": [
             "TMP_34"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_7",
+            "sol_atom_8"
+          ],
+          "previous_atom_id": "sol_atom_8",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 4,
@@ -7596,7 +8154,15 @@
           "writes": [
             "TMP_35"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3",
+            "sol_atom_9"
+          ],
+          "previous_atom_id": "sol_atom_9",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 5,
@@ -7651,7 +8217,14 @@
             "((ok,data) = token.call(abi.encodeWithSignature(transfer(address,uint256),to,amount)) && (((ok,data) = token.call(abi.encodeWithSignature(transfer(address,uint256),to,amount)).length == 0) || abi.decode(data,(bool))))"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_10"
+          ],
+          "previous_atom_id": "sol_atom_10",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         }
       ]
     },
@@ -7728,7 +8301,11 @@
           "writes": [
             "REF_25"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 1,
@@ -7804,7 +8381,14 @@
           "writes": [
             "TMP_36"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 2,
@@ -7817,7 +8401,7 @@
             "text": "TUPLE_2",
             "name": "TUPLE_2",
             "base_name": "TUPLE_2",
-            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bdb20>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bdb50>]",
+            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b9329397f0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932939820>]",
             "is_state": false,
             "is_reference": false,
             "is_constant": false,
@@ -7897,7 +8481,14 @@
           "writes": [
             "TUPLE_2"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_2",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 3,
@@ -7922,7 +8513,7 @@
               "text": "TUPLE_2",
               "name": "TUPLE_2",
               "base_name": "TUPLE_2",
-              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bdb20>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bdb50>]",
+              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b9329397f0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932939820>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -7953,7 +8544,14 @@
           "writes": [
             "ok"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 4,
@@ -7978,7 +8576,7 @@
               "text": "TUPLE_2",
               "name": "TUPLE_2",
               "base_name": "TUPLE_2",
-              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bdb20>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd5bdb50>]",
+              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b9329397f0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932939820>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -8009,7 +8607,14 @@
           "writes": [
             "data"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3"
+          ],
+          "previous_atom_id": "sol_atom_4",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 0,
@@ -8107,7 +8712,13 @@
           "writes": [
             "TMP_37"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ]
         },
         {
           "order": 0,
@@ -8206,7 +8817,13 @@
           "writes": [
             "TMP_38"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_5"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 1,
@@ -8273,7 +8890,14 @@
           "writes": [
             "supply"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_7"
+          ],
+          "previous_atom_id": "sol_atom_7",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 0,
@@ -8326,7 +8950,13 @@
             "abi.decode(data,(uint256))"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_8"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n5"
+          ]
         }
       ]
     },
@@ -8436,7 +9066,11 @@
           "writes": [
             "TMP_39"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 1,
@@ -8503,7 +9137,14 @@
           "writes": [
             "value"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 0,
@@ -8581,7 +9222,13 @@
             "True"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 0,
@@ -8659,7 +9306,11 @@
             "False"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 0,
@@ -8737,7 +9388,11 @@
             "False"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n6"
+          ]
         },
         {
           "order": 0,
@@ -8815,7 +9470,11 @@
             "False"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n8"
+          ]
         },
         {
           "order": 0,
@@ -8891,7 +9550,9 @@
             "success"
           ],
           "writes": [],
-          "source": "slithir"
+          "source": "slithir",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": []
         }
       ]
     },
@@ -8969,7 +9630,11 @@
           "writes": [
             "TMP_40"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 1,
@@ -8982,7 +9647,7 @@
             "text": "TUPLE_3",
             "name": "TUPLE_3",
             "base_name": "TUPLE_3",
-            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8b00>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8bc0>]",
+            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70770>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70830>]",
             "is_state": false,
             "is_reference": false,
             "is_constant": false,
@@ -9069,7 +9734,14 @@
           "writes": [
             "TUPLE_3"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 2,
@@ -9094,7 +9766,7 @@
               "text": "TUPLE_3",
               "name": "TUPLE_3",
               "base_name": "TUPLE_3",
-              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8b00>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8bc0>]",
+              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70770>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70830>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -9125,7 +9797,14 @@
           "writes": [
             "supply"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_2",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 3,
@@ -9150,7 +9829,7 @@
               "text": "TUPLE_3",
               "name": "TUPLE_3",
               "base_name": "TUPLE_3",
-              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8b00>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8bc0>]",
+              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70770>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70830>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -9181,7 +9860,14 @@
           "writes": [
             "balance"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ]
         },
         {
           "order": 0,
@@ -9249,7 +9935,11 @@
           "writes": [
             "TMP_41"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 1,
@@ -9262,7 +9952,7 @@
             "text": "TUPLE_4",
             "name": "TUPLE_4",
             "base_name": "TUPLE_4",
-            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8b00>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8bc0>]",
+            "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70770>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70830>]",
             "is_state": false,
             "is_reference": false,
             "is_constant": false,
@@ -9349,7 +10039,14 @@
           "writes": [
             "TUPLE_4"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_5"
+          ],
+          "previous_atom_id": "sol_atom_5",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 2,
@@ -9374,7 +10071,7 @@
               "text": "TUPLE_4",
               "name": "TUPLE_4",
               "base_name": "TUPLE_4",
-              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8b00>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x7559dd6f8bc0>]",
+              "type": "[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70770>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x70b932a70830>]",
               "is_state": false,
               "is_reference": false,
               "is_constant": false,
@@ -9405,7 +10102,14 @@
           "writes": [
             "onlyBalance"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_6"
+          ],
+          "previous_atom_id": "sol_atom_6",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ]
         },
         {
           "order": 0,
@@ -9458,7 +10162,13 @@
             "(None,onlyBalance) = _supplyAndBalance(IERC20View(token),account)"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_7"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n5"
+          ]
         }
       ]
     },
@@ -9533,7 +10243,9 @@
           "writes": [
             "token"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 1,
@@ -9586,7 +10298,10 @@
           "writes": [
             "account"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_1",
+          "cfg_predecessor_blocks": []
         },
         {
           "order": 0,
@@ -9662,7 +10377,13 @@
           "writes": [
             "TMP_42"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 1,
@@ -9762,7 +10483,15 @@
           "writes": [
             "TMP_43"
           ],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_1",
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_3",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         },
         {
           "order": 2,
@@ -9840,7 +10569,15 @@
             "token.balanceOf(account)"
           ],
           "writes": [],
-          "source": "slithir_ssa"
+          "source": "slithir_ssa",
+          "depends_on_atoms": [
+            "sol_atom_3",
+            "sol_atom_4"
+          ],
+          "previous_atom_id": "sol_atom_4",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
         }
       ]
     }

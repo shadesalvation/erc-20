@@ -41,7 +41,14 @@ class EffectLifter:
     def effect(self, k, refs, attrs):
         return EffectNode(self.ids.new("eff"), k, [r for r in refs if r], attrs)
 
-    def lift(self, unit: FunctionUnit, memory_results: dict[int, Any], control: dict[str, Any] | None = None):
+    def lift(
+        self,
+        unit: FunctionUnit,
+        memory_results: dict[int, Any],
+        control: dict[str, Any] | None = None,
+        *,
+        include_solidity: bool = False,
+    ):
         effects = []
         facts = []
         self.non_storage_state_names = set((getattr(unit, "constant_values", {}) or {}).keys())
@@ -304,22 +311,23 @@ class EffectLifter:
                     block_loop_context,
                 ),
             )
-        solidity_stmt_text = {
-            stmt.stmt_id: stmt.text
-            for stmt in unit.source_statements
-            if stmt.lang == "solidity"
-        }
-        solidity_effects, represented_solidity_refs = self.lift_solidity_control(control or {}, solidity_stmt_text)
-        effects.extend(solidity_effects)
-        for stmt in unit.source_statements:
-            if stmt.lang == "solidity" and stmt.stmt_id not in represented_solidity_refs:
-                t = stmt.text.strip()
-                if t.startswith("return"):
-                    effects.append(self.effect("Return", [stmt.stmt_id], {"text": t, "language": "solidity", "source": "ast_text_fallback"}))
-                elif t.startswith("revert"):
-                    effects.append(self.effect("Revert", [stmt.stmt_id], {"payload": t.removeprefix("revert").strip(), "language": "solidity", "source": "ast_text_fallback"}))
-                elif t.startswith("if"):
-                    effects.append(self.effect("Branch", [stmt.stmt_id], {"condition": t, "language": "solidity", "source": "ast_text_fallback"}))
+        if include_solidity:
+            solidity_stmt_text = {
+                stmt.stmt_id: stmt.text
+                for stmt in unit.source_statements
+                if stmt.lang == "solidity"
+            }
+            solidity_effects, represented_solidity_refs = self.lift_solidity_control(control or {}, solidity_stmt_text)
+            effects.extend(solidity_effects)
+            for stmt in unit.source_statements:
+                if stmt.lang == "solidity" and stmt.stmt_id not in represented_solidity_refs:
+                    t = stmt.text.strip()
+                    if t.startswith("return"):
+                        effects.append(self.effect("Return", [stmt.stmt_id], {"text": t, "language": "solidity", "source": "ast_text_fallback"}))
+                    elif t.startswith("revert"):
+                        effects.append(self.effect("Revert", [stmt.stmt_id], {"payload": t.removeprefix("revert").strip(), "language": "solidity", "source": "ast_text_fallback"}))
+                    elif t.startswith("if"):
+                        effects.append(self.effect("Branch", [stmt.stmt_id], {"condition": t, "language": "solidity", "source": "ast_text_fallback"}))
         return self.dedupe_effects(effects), facts
 
     def lift_solidity_control(

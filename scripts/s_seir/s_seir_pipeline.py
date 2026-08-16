@@ -141,7 +141,7 @@ def build_sseir(source_path:Path, solc_bin:str|None=None, slither_bin:str|None=N
         solidity_atomic_operations=SolidityAtomicOperationExtractor().extract(unit,control)
         mem=build_memory_ssa_views(unit,control)
         roles=ExpressionRoleAnalyzer().analyze(unit,type_env,mem)
-        effects,facts=EffectLifter().lift(unit,mem,control)
+        effects,facts=EffectLifter().lift(unit,mem,control,include_solidity=False)
         branch_effects,branch_facts=build_branch_materialization_nodes(unit,mem); effects.extend(branch_effects); facts.extend(branch_facts)
         overlays=SemanticOverlayBuilder(events,include_shallow_overlays=True,selector_registry=selector_registry).build(unit,type_env,roles,effects)
         roles,effects,overlays,normalizer_facts=SemanticNormalizer().normalize(unit,type_env,roles,effects,overlays)

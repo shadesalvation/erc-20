@@ -12,6 +12,7 @@ for candidate in (ROOT / "legacy_yul", ROOT / "s_seir"):
 
 from assembly_ast_cfg import discover_solc
 from s_seir_pipeline import build_sseir
+from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload
 
 
 SOURCE = """pragma solidity ^0.8.26;
@@ -157,6 +158,15 @@ def effects(function, kind: str):
     return [item for item in function.effects if item.kind == kind]
 
 
+def semantic_facts(facts, contract: str, function: str, kind: str | None = None):
+    return [
+        item for item in facts
+        if item.get("contract") == contract
+        and item.get("function") == function
+        and (kind is None or item.get("kind") == kind)
+    ]
+
+
 def run() -> None:
     solc = discover_solc(None)
     assert solc, "solc is required"
@@ -164,37 +174,36 @@ def run() -> None:
         source = Path(directory) / "Cases.sol"
         source.write_text(SOURCE, encoding="utf-8")
         functions = build_sseir(source, solc_bin=solc, workdir=Path(directory), branch_preprocess=False)
+    facts = build_function_level_semantic_fact_payload(functions)["facts"]
 
     mapping = next(fn for fn in functions if fn.contract == "MappingCase" and fn.function == "update")
-    mapping_writes = overlays(mapping, "MappingWrite")
-    mapping_reads = overlays(mapping, "MappingRead")
-    event_emits = overlays(mapping, "EventEmit")
-    assert any(item.attrs.get("access") == "allowances[msg.sender][spender]" for item in mapping_writes)
-    assert any(item.attrs.get("access") == "allowances[msg.sender][spender]" for item in mapping_reads)
-    assert any(item.attrs.get("event") == "Approval" and item.attrs.get("args") == ["msg.sender", "spender", "amount"] for item in event_emits)
-    assert overlays(mapping, "ReturnValue")
+    assert not mapping.effects and not mapping.semantic_overlays
+    mapping_facts = semantic_facts(facts, "MappingCase", "update")
+    assert any(item.get("kind") == "StateWrite" and item.get("lvalue") == "allowances[msg.sender][spender]" for item in mapping_facts)
+    assert any(item.get("kind") == "EventEmit" and item.get("semantic", {}).get("event") == "Approval" for item in mapping_facts)
+    assert any(item.get("kind") == "Return" and item.get("semantic", {}).get("resolved_operands") == ["allowances[msg.sender][spender]"] for item in mapping_facts)
 
     branch = next(fn for fn in functions if fn.contract == "BranchCase" and fn.function == "choose")
-    writes = [item for item in effects(branch, "StorageWrite") if item.attrs.get("typed_access")]
+    writes = semantic_facts(facts, "BranchCase", "choose", "StateWrite")
     assert len(writes) == 2
-    assert any(any("flag" in path and not path.startswith("!(") for path in item.attrs.get("path_states") or []) for item in writes)
-    assert any(any("!(flag)" in path for path in item.attrs.get("path_states") or []) for item in writes)
-    assert overlays(branch, "RequireOverlay")
+    assert any("(flag)" in str(item.get("condition")) for item in writes)
+    assert any("!(flag)" in str(item.get("condition")) for item in writes)
+    assert semantic_facts(facts, "BranchCase", "choose", "Require")
 
     relay = next(fn for fn in functions if fn.contract == "CallCase" and fn.function == "relay")
-    external_calls = overlays(relay, "ExternalCall")
-    internal_calls = overlays(relay, "InternalCall")
-    assert any(item.attrs.get("function") == "ping" and item.attrs.get("arguments") == ["value"] for item in external_calls)
-    assert any(item.attrs.get("function") == "twice" for item in internal_calls)
-    assert any(item.attrs.get("values") == ["twice(result)"] for item in overlays(relay, "ReturnValue"))
+    relay_facts = semantic_facts(facts, "CallCase", "relay")
+    assert any(item.get("kind") == "ExternalCall" and item.get("semantic", {}).get("function") == "ping" for item in relay_facts)
+    assert any(item.get("kind") == "InternalCall" and item.get("semantic", {}).get("function") == "twice" for item in relay_facts)
+    assert any(item.get("kind") == "Return" and item.get("semantic", {}).get("resolved_operands") == ["twice(result)"] for item in relay_facts)
 
     mixed = next(fn for fn in functions if fn.contract == "MixedYulCase" and fn.function == "load")
     assert effects(mixed, "MemoryWrite")
     assert any(item.attrs.get("access") == "balances[who]" for item in overlays(mixed, "MappingRead"))
 
     constant_context = next(fn for fn in functions if fn.contract == "ConstantContextCase" and fn.function == "guarded")
-    assert not any(item.attrs.get("state_variable") == "FIXED" for item in effects(constant_context, "StorageRead"))
-    assert any("FIXED" in path for item in constant_context.effects for path in item.attrs.get("path_states") or [])
+    assert all(item.attrs.get("language") != "solidity" for item in constant_context.effects)
+    assert not any(item.attrs.get("state_variable") == "FIXED" for item in constant_context.effects)
+    assert any("FIXED" in str(item.get("condition")) for item in semantic_facts(facts, "ConstantContextCase", "guarded"))
 
     guarded = next(fn for fn in functions if fn.contract == "BoundaryCase" and fn.function == "guarded")
     boundary = next(iter(guarded.control["assembly_boundaries"].values()))
@@ -218,25 +227,26 @@ def run() -> None:
 
     reference_kind = [fn for fn in functions if fn.contract == "SolidityReferenceKindCase"]
     parameter_array = next(fn for fn in reference_kind if fn.function == "parameterArray")
-    assert not any(item.attrs.get("access") == "values[i]" for item in effects(parameter_array, "StorageRead"))
+    assert not parameter_array.effects
+    assert any("values[i]" in item.get("semantic", {}).get("resolved_operands", []) for item in semantic_facts(facts, "SolidityReferenceKindCase", "parameterArray"))
 
     state_array = next(fn for fn in reference_kind if fn.function == "stateArray")
-    assert any(item.attrs.get("access") == "stored[i]" and item.attrs.get("state_variable") == "stored" for item in effects(state_array, "StorageRead"))
+    assert any("stored[i]" in item.get("semantic", {}).get("resolved_operands", []) for item in semantic_facts(facts, "SolidityReferenceKindCase", "stateArray"))
 
     enum_guard = next(fn for fn in reference_kind if fn.function == "enumGuard")
-    assert not any(item.attrs.get("access") == "Flag.Frozen" for item in effects(enum_guard, "StorageRead"))
+    assert not enum_guard.effects
 
     abi_low = next(fn for fn in functions if fn.contract == "AbiExpressionCase" and fn.function == "low")
-    abi_low_call = next(item for item in overlays(abi_low, "ExternalCall"))
-    assert abi_low_call.attrs.get("arguments") == ['abi.encodeWithSignature("transfer(address,uint256)", to, amount)'], abi_low_call.attrs
+    abi_low_call = next(item for item in semantic_facts(facts, "AbiExpressionCase", "low") if item.get("kind") == "LowLevelCall")
+    assert any("abi.encodeWithSignature" in value for value in abi_low_call.get("semantic", {}).get("resolved_operands", []))
 
     abi_stat = next(fn for fn in functions if fn.contract == "AbiExpressionCase" and fn.function == "stat")
-    abi_stat_call = next(item for item in overlays(abi_stat, "ExternalCall"))
-    assert abi_stat_call.attrs.get("arguments") == ["abi.encodeWithSelector(AbiView.totalSupply.selector)"], abi_stat_call.attrs
+    abi_stat_call = next(item for item in semantic_facts(facts, "AbiExpressionCase", "stat") if item.get("kind") == "LowLevelCall")
+    assert any("abi.encodeWithSelector" in value for value in abi_stat_call.get("semantic", {}).get("resolved_operands", []))
 
-    print("PASS mapping_event: typed nested mapping read/write and EventEmit")
-    print("PASS branch_state: path-conditioned state writes and RequireOverlay")
-    print("PASS calls: structured external/internal calls and ReturnValue")
+    print("PASS mapping_event: Solidity sol_atom facts record mapping write, event, and return")
+    print("PASS branch_state: CFG bridge places atomic state writes under their conditions")
+    print("PASS calls: SoliditySemanticLifter projects atomic calls and return")
     print("PASS mixed_yul: existing MemorySSA mapping recovery remains active")
     print("PASS constant_context: Solidity constant guards are context, not storage reads")
     print("PASS guarded_boundary: reaching SSA and state inputs cross into Yul under flag")

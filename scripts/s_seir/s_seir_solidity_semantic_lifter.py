@@ -4,304 +4,280 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from s_seir_semantic_fact_adapter import (
-    SSeirFactAdapter,
-    SlitherFactAdapter,
-    clean_dict,
-)
 
-
-HIGH_LEVEL_SOLIDITY_OVERLAYS = {
-    "StateVariableRead",
-    "StateVariableWrite",
-    "MappingRead",
-    "MappingWrite",
-    "PathConditionedStorageRead",
-    "PathConditionedStorageWrite",
-    "EventEmit",
-    "PathConditionedEventEmit",
-    "RequireOverlay",
-    "CustomErrorRevert",
-    "RawRevertBytes",
-    "RevertOverlay",
-    "PathConditionedCustomErrorRevert",
-    "PathConditionedRevert",
-    "ExternalCall",
-    "LowLevelCall",
-    "StaticCallOverlay",
-    "DelegateCallOverlay",
-    "PathConditionedPrecompileCall",
-    "PathConditionedExternalCall",
-    "PathConditionedLowLevelCall",
-    "PrecompileCall",
-    "InternalCall",
-    "ReturnValue",
-    "MemoryRegionAllocate",
-    "MemoryArrayConstruction",
-    "StructMemoryMutation",
-    "StructInitializationFragment",
-    "MemoryRegionWrite",
-    "CursorBasedMemoryWrite",
-}
-
-
-# These SlithIR operations are already semantic sinks. They are used only when
-# no Solidity overlay covers the same source statement and behavior.
-HIGH_LEVEL_SLITHIR_FALLBACK_KINDS = {
-    "NewContract",
-    "NewArray",
-    "NewStructure",
-    "NewElementaryType",
-    "Delete",
-    "ValueTransferCall",
-}
+Json = dict[str, Any]
 
 
 class SoliditySemanticLifter:
-    """Project Solidity code to high-level SemanticFact rows.
+    """Project ``sol_atom`` records to the common SemanticFact schema.
 
-    This lifter does not expose every SlithIR SSA operation as a final fact.
-    It consumes the Solidity overlays already built inside S-SEIR and uses
-    SlithIR only as evidence or as a conservative fallback for sink operations
-    that are not currently represented by overlays.
+    Slither and ``SolidityAtomicOperationExtractor`` have already performed
+    lowering and SSA construction. This class neither consumes S-SEIR/Yul
+    results nor performs overlay recovery, expression expansion, or semantic
+    guessing. Every input atom produces exactly one output fact.
     """
 
-    def __init__(self) -> None:
-        self.overlay_adapter = SSeirFactAdapter()
-        self.slither_adapter = SlitherFactAdapter()
+    ATOMIC_KIND_MAP = {
+        "Assignment": "ValueAssign",
+        "Binary": "ValueCompute",
+        "Unary": "ValueCompute",
+        "TypeConversion": "TypeConversion",
+        "Index": "IndexAccess",
+        "Member": "MemberAccess",
+        "Length": "LengthRead",
+        "Unpack": "TupleUnpack",
+        "InitArray": "ArrayConstruct",
+        "NewArray": "NewArray",
+        "NewStructure": "NewStructure",
+        "NewElementaryType": "NewElementaryType",
+        "NewContract": "NewContract",
+        "Phi": "ValuePhi",
+        "PhiCallback": "ValuePhi",
+        "InternalCall": "InternalCall",
+        "InternalDynamicCall": "InternalDynamicCall",
+        "HighLevelCall": "ExternalCall",
+        "LibraryCall": "LibraryCall",
+        "LowLevelCall": "LowLevelCall",
+        "SolidityCall": "BuiltinCall",
+        "EventCall": "EventEmit",
+        "Condition": "BranchCondition",
+        "Return": "Return",
+        "Send": "ValueTransferCall",
+        "Transfer": "ValueTransferCall",
+        "Delete": "Delete",
+        "Nop": "Nop",
+    }
 
-    def facts_from_function(self, fn: Any) -> list[dict[str, Any]]:
+    def facts_from_function(self, fn: Any) -> list[Json]:
         fn_dict = fn.to_semantic_dict() if hasattr(fn, "to_semantic_dict") else fn
         if not isinstance(fn_dict, dict):
             return []
-        overlay_facts = self.overlay_facts(fn_dict)
-        fallback_facts = self.slithir_sink_fallback_facts(fn, overlay_facts)
-        return overlay_facts + fallback_facts
+        atomic_table = getattr(fn, "_sseir_solidity_atomic_operations", None)
+        if not isinstance(atomic_table, dict) and isinstance(fn, dict):
+            atomic_table = fn.get("solidity_atomic_operations")
+        if not isinstance(atomic_table, dict):
+            return []
+        return self.atomic_facts(fn_dict, atomic_table)
 
-    def overlay_facts(self, fn: dict[str, Any]) -> list[dict[str, Any]]:
-        out: list[dict[str, Any]] = []
-        stmt_lang = self.overlay_adapter.statement_languages(fn)
-        effect_by_id = {
-            item.get("effect_id"): item
-            for item in fn.get("effects") or []
-            if isinstance(item, dict)
-        }
-        for overlay in fn.get("semantic_overlays") or []:
-            if not isinstance(overlay, dict):
+    def atomic_facts(self, fn_dict: Json, atomic_table: Json) -> list[Json]:
+        out: list[Json] = []
+        function_id = str(atomic_table.get("function_id") or fn_dict.get("function_id") or "")
+        for atom in atomic_table.get("operations") or []:
+            if not isinstance(atom, dict):
                 continue
-            kind = str(overlay.get("kind") or "")
-            if kind not in HIGH_LEVEL_SOLIDITY_OVERLAYS:
-                continue
-            if overlay_source_lang(overlay, stmt_lang, effect_by_id) != "solidity":
-                continue
-            lifted_overlay = self.overlay_adapter.overlay_with_effect_refs(overlay, effect_by_id)
-            for fact in self.overlay_adapter.overlay_facts(fn, lifted_overlay, stmt_lang, effect_by_id):
-                item = fact.to_dict()
-                item["source_lang"] = "solidity"
-                item["origin"] = "slither_lifted"
-                evidence = dict(item.get("evidence") or {})
-                evidence["lifted_from"] = "sseir_solidity_overlay"
-                item["evidence"] = clean_dict(evidence)
-                out.append(item)
+            atom_id = str(atom.get("atom_id") or "")
+            kind = self.atomic_fact_kind(atom)
+            reads = self.atomic_operands(atom)
+            lvalue, rvalue, writes = self.atomic_assignment(atom, kind, reads)
+            out.append(_clean({
+                "fact_id": f"solidity:{function_id}:{atom_id}",
+                "operation_id": atom_id,
+                "kind": kind,
+                "source_lang": "solidity",
+                "origin": "solidity_atomic_operation",
+                "function_id": function_id,
+                "function": fn_dict.get("function") or atomic_table.get("function"),
+                "contract": fn_dict.get("contract") or atomic_table.get("contract"),
+                "signature": fn_dict.get("signature") or atomic_table.get("signature"),
+                "stmt_refs": list(atom.get("stmt_refs") or []),
+                "cfg_nodes": [atom.get("cfg_block_id")] if atom.get("cfg_block_id") else [],
+                "condition": atom.get("condition"),
+                "lvalue": lvalue,
+                "rvalue": rvalue,
+                "reads": reads,
+                "writes": writes,
+                "depends_on": list(atom.get("depends_on_atoms") or []),
+                "cfg_predecessor_blocks": list(atom.get("cfg_predecessor_blocks") or []),
+                "order": {
+                    "kind": "cfg_partial_order",
+                    "cfg_block_order": atom.get("block_order"),
+                    "operation_order": atom.get("operation_order"),
+                    "atomic_sequence": atom.get("sequence"),
+                },
+                "semantic": self.atomic_semantic(atom, kind, reads),
+                "evidence": {
+                    "atomic_operation": {
+                        "atom_id": atom_id,
+                        "source_span": atom.get("source_span"),
+                        "source_expression": atom.get("source_expression"),
+                        "slithir_kind": atom.get("kind"),
+                        "slithir_text": atom.get("text"),
+                    },
+                },
+            }))
         return out
 
-    def slithir_sink_fallback_facts(self, fn: Any, overlay_facts: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        out: list[dict[str, Any]] = []
-        covered = covered_stmt_kind_keys(overlay_facts)
-        for fact in self.slither_adapter.facts_from_sseir_control(fn):
-            item = fact.to_dict()
-            if item.get("kind") not in HIGH_LEVEL_SLITHIR_FALLBACK_KINDS:
-                continue
-            key = stmt_kind_key(item)
-            if key in covered:
-                continue
-            item["origin"] = "slither_lifted"
-            normalize_slithir_sink_fact(item)
-            evidence = dict(item.get("evidence") or {})
-            evidence["lifted_from"] = "slithir_sink_fallback"
-            item["evidence"] = clean_dict(evidence)
-            out.append(item)
-        return out
+    def atomic_fact_kind(self, atom: Json) -> str:
+        if atom.get("atomic_kind") == "StateWrite":
+            return "StateWrite"
+        kind = str(atom.get("kind") or "")
+        if kind == "SolidityCall":
+            function_name = self.atomic_function_name(atom)
+            if function_name.startswith(("require", "assert")):
+                return "Require"
+            if function_name.startswith("revert"):
+                return "Revert"
+        return self.ATOMIC_KIND_MAP.get(kind, "AtomicOperation")
 
+    @classmethod
+    def atomic_operands(cls, atom: Json) -> list[str]:
+        values = atom.get("read") or atom.get("arguments") or atom.get("values") or []
+        return cls.unique_text(cls.ssa_value(value) for value in values)
 
-def overlay_source_lang(
-    overlay: dict[str, Any],
-    stmt_lang: dict[str, str],
-    effect_by_id: dict[str, dict[str, Any]],
-) -> str:
-    langs = {
-        stmt_lang.get(str(ref))
-        for ref in overlay.get("stmt_refs") or []
-        if stmt_lang.get(str(ref))
-    }
-    if langs == {"solidity"}:
-        return "solidity"
-    if langs == {"yul"}:
-        return "yul"
-    if "solidity" in langs and "yul" in langs:
-        return "mixed"
+    @classmethod
+    def atomic_assignment(cls, atom: Json, fact_kind: str, reads: list[str]) -> tuple[Any, Any, list[str]]:
+        operation = str(atom.get("kind") or "")
+        result_ssa = str(atom.get("result_ssa") or "")
+        lvalue: Any = result_ssa or None
+        writes = [result_ssa] if result_ssa else []
+        rvalue: Any = cls.atomic_rvalue(atom, reads)
+        if fact_kind == "StateWrite":
+            storage = atom.get("storage_access") or {}
+            access = storage.get("access") or cls.source_value(atom.get("lvalue"))
+            lvalue = access
+            writes = [access] if access else []
+            if operation not in {"Binary", "Unary"}:
+                value = atom.get("rvalue") or ((atom.get("read") or [None])[0])
+                rvalue = cls.ssa_value(value)
+        elif operation == "Delete":
+            storage = atom.get("storage_access") or {}
+            target = storage.get("access") or cls.source_value(atom.get("variable") or atom.get("lvalue"))
+            lvalue = target
+            rvalue = "0"
+            writes = [target] if target else []
+        return lvalue, rvalue, writes
 
-    attrs = overlay.get("attrs") or {}
-    if attrs.get("source") == "slithir_ssa" or attrs.get("language") == "solidity":
-        return "solidity"
-    if attrs.get("language") == "yul":
-        return "yul"
+    @classmethod
+    def atomic_rvalue(cls, atom: Json, reads: list[str]) -> Any:
+        kind = str(atom.get("kind") or "")
+        operator = str(atom.get("operator") or "")
+        if kind == "Assignment":
+            return cls.ssa_value(atom.get("rvalue") or ((atom.get("read") or [None])[0]))
+        if kind == "Binary" and len(reads) >= 2:
+            return f"{reads[0]} {operator} {reads[1]}"
+        if kind == "Unary" and reads:
+            return f"{operator}{reads[0]}"
+        if kind == "TypeConversion" and reads:
+            target_type = cls.value_type(atom.get("lvalue"))
+            return f"{target_type}({reads[0]})" if target_type else f"convert({reads[0]})"
+        if kind == "Index" and len(reads) >= 2:
+            return f"{reads[0]}[{reads[1]}]"
+        if kind == "Member" and len(reads) >= 2:
+            return f"{reads[0]}.{reads[1]}"
+        if kind == "Length" and reads:
+            return f"{reads[0]}.length"
+        if kind in {"Phi", "PhiCallback"}:
+            return reads
+        if kind in {"Condition", "Return"}:
+            return reads[0] if len(reads) == 1 else reads
+        if kind == "EventCall":
+            return f"{atom.get('name') or 'event'}({', '.join(reads)})"
+        if kind in cls.ATOMIC_KIND_MAP and (
+            kind.endswith("Call") or kind in {"Send", "Transfer", "NewContract", "NewArray", "NewStructure"}
+        ):
+            name = cls.atomic_function_name(atom) or kind
+            destination = cls.ssa_value(atom.get("destination"))
+            call_name = f"{destination}.{name}" if destination else name
+            arguments = [cls.ssa_value(value) for value in atom.get("arguments") or atom.get("read") or []]
+            return f"{call_name}({', '.join(arguments)})"
+        return atom.get("text") or atom.get("source_expression") or kind
 
-    effect_langs = {
-        (effect_by_id.get(effect_id) or {}).get("attrs", {}).get("language")
-        for effect_id in overlay.get("effects") or []
-    }
-    effect_langs = {str(item) for item in effect_langs if item}
-    if effect_langs == {"solidity"}:
-        return "solidity"
-    if effect_langs == {"yul"}:
-        return "yul"
-    if "solidity" in effect_langs and "yul" in effect_langs:
-        return "mixed"
-    return "unknown"
-
-
-def covered_stmt_kind_keys(facts: list[dict[str, Any]]) -> set[tuple[tuple[str, ...], str]]:
-    return {stmt_kind_key(fact) for fact in facts}
-
-
-def stmt_kind_key(fact: dict[str, Any]) -> tuple[tuple[str, ...], str]:
-    return (tuple(str(item) for item in fact.get("stmt_refs") or []), str(fact.get("kind") or ""))
-
-
-def normalize_slithir_sink_fact(fact: dict[str, Any]) -> None:
-    op = (fact.get("evidence") or {}).get("slither") or {}
-    kind = str(fact.get("kind") or "")
-    if kind == "NewContract":
-        semantic = {
-            "operation": "new_contract",
-            "contract": contract_name_from_new_contract(op, fact),
-            "arguments": high_level_values(op.get("arguments")),
-            "value": high_level_value(op.get("call_value")),
-            "salt": salt_from_new_contract(op),
-            "source_expression": op.get("source_expression"),
+    @classmethod
+    def atomic_semantic(cls, atom: Json, fact_kind: str, reads: list[str]) -> Json:
+        semantic: Json = {
+            "operation": cls.atomic_operation_name(fact_kind),
+            "atomic_operation": atom.get("kind"),
+            "atomic_operation_count": 1,
+            "operator": atom.get("operator"),
+            "result_ssa": atom.get("result_ssa"),
+            "operand_ssa": reads,
+            "resolved_operands": list(atom.get("resolved_reads") or []),
+            "checked": atom.get("checked"),
+            "runtime_operation": atom.get("runtime_operation"),
         }
-        fact["semantic"] = clean_dict(semantic)
-        fact["reads"] = clean_value_list(semantic.get("arguments"), semantic.get("value"), semantic.get("salt"))
-        return
-    if kind == "NewArray":
-        semantic = {
-            "operation": "new_array",
-            "array_type": high_level_value(op.get("array_type") or op.get("type")),
-            "arguments": high_level_values(op.get("arguments")),
-            "source_expression": op.get("source_expression"),
-        }
-        fact["semantic"] = clean_dict(semantic)
-        fact["reads"] = clean_value_list(semantic.get("arguments"))
-        return
-    if kind == "NewStructure":
-        semantic = {
-            "operation": "new_structure",
-            "struct_type": high_level_value(op.get("structure_name") or op.get("type")),
-            "arguments": high_level_values(op.get("arguments")),
-            "source_expression": op.get("source_expression"),
-        }
-        fact["semantic"] = clean_dict(semantic)
-        fact["reads"] = clean_value_list(semantic.get("arguments"))
-        return
-    if kind == "NewElementaryType":
-        semantic = {
-            "operation": "new_elementary_type",
-            "type": high_level_value(op.get("type")),
-            "arguments": high_level_values(op.get("arguments")),
-            "source_expression": op.get("source_expression"),
-        }
-        fact["semantic"] = clean_dict(semantic)
-        fact["reads"] = clean_value_list(semantic.get("arguments"))
-        return
-    if kind == "Delete":
-        target = delete_target_from_source(op.get("source_expression")) or high_level_value(op.get("variable") or op.get("lvalue") or fact.get("lvalue"))
-        fact["semantic"] = clean_dict({
-            "operation": "delete",
-            "target": target,
-            "source_expression": op.get("source_expression"),
-        })
-        fact["lvalue"] = target
-        fact["rvalue"] = op.get("source_expression") or f"delete {target}"
-        fact["reads"] = []
-        fact["writes"] = clean_value_list(target)
-        return
-    if kind == "ValueTransferCall":
-        fact["semantic"] = clean_dict({
-            "operation": "value_transfer",
-            "call_kind": op.get("kind"),
-            "destination": high_level_value(op.get("destination")),
-            "value": high_level_value(op.get("call_value")),
-            "source_expression": op.get("source_expression"),
-        })
-        fact["reads"] = clean_value_list(fact["semantic"].get("destination"), fact["semantic"].get("value"))
+        if fact_kind == "StateWrite":
+            storage = atom.get("storage_access") or {}
+            semantic.update({
+                "operation": "state_write",
+                "access": storage.get("access"),
+                "state_variable": storage.get("state_variable"),
+                "keys": storage.get("keys"),
+            })
+        elif fact_kind in {
+            "InternalCall", "InternalDynamicCall", "ExternalCall", "LibraryCall",
+            "LowLevelCall", "BuiltinCall", "Require", "Revert",
+        }:
+            semantic.update({
+                "function": cls.atomic_function_name(atom),
+                "arguments": [cls.ssa_value(value) for value in atom.get("arguments") or atom.get("read") or []],
+                "target": cls.ssa_value(atom.get("destination")),
+            })
+            if fact_kind == "Require":
+                resolved = list(atom.get("resolved_reads") or [])
+                semantic["guard"] = resolved[0] if resolved else (reads[0] if reads else None)
+        elif fact_kind == "EventEmit":
+            semantic.update({"operation": "event_emit", "event": atom.get("name"), "arguments": reads})
+        elif fact_kind == "Return":
+            semantic.update({"operation": "return", "values": reads})
+        elif fact_kind == "ValuePhi":
+            semantic.update({"operation": "phi", "runtime_operation": False})
+        elif fact_kind == "BranchCondition":
+            resolved = list(atom.get("resolved_reads") or [])
+            semantic.update({
+                "operation": "branch_condition",
+                "predicate": resolved[0] if resolved else (reads[0] if reads else None),
+                "runtime_operation": False,
+            })
+        return _clean(semantic)
 
-
-def delete_target_from_source(source_expression: Any) -> str | None:
-    text = str(source_expression or "").strip()
-    if not text.startswith("delete "):
-        return None
-    target = text.removeprefix("delete ").strip().rstrip(";")
-    return target or None
-
-
-def contract_name_from_new_contract(op: dict[str, Any], fact: dict[str, Any]) -> Any:
-    explicit = high_level_value(op.get("contract_name") or op.get("type"))
-    if explicit:
-        return explicit
-    lvalue = op.get("lvalue") or fact.get("lvalue")
-    if isinstance(lvalue, dict):
-        return lvalue.get("type") or lvalue.get("base_name") or lvalue.get("text")
-    return None
-
-
-def salt_from_new_contract(op: dict[str, Any]) -> Any:
-    text = str(op.get("text") or "")
-    match = re.search(r"\bsalt:([A-Za-z_$][A-Za-z0-9_$]*)", text)
-    if not match:
-        return None
-    token = match.group(1)
-    for item in op.get("read") or []:
-        if isinstance(item, dict) and item.get("text") == token:
-            return high_level_value(item)
-    return strip_ssa_suffix(token)
-
-
-def high_level_values(value: Any) -> list[Any]:
-    if isinstance(value, (list, tuple, set)):
-        return [high_level_value(item) for item in value if high_level_value(item) is not None]
-    item = high_level_value(value)
-    return [] if item is None else [item]
-
-
-def high_level_value(value: Any) -> Any:
-    if value is None:
-        return None
-    if isinstance(value, dict):
-        kind = str(value.get("kind") or "")
-        text = value.get("text")
-        base = value.get("base_name") or value.get("name")
-        if kind in {"LocalIRVariable", "StateIRVariable", "LocalVariable", "StateVariable"} and base:
-            return str(base)
-        if kind in {"SolidityVariable", "SolidityVariableComposed", "Constant"} and text is not None:
-            return str(text)
-        return text or base or value
-    if isinstance(value, str):
-        return strip_ssa_suffix(value)
-    return value
-
-
-def strip_ssa_suffix(value: str) -> str:
-    return re.sub(r"_(?:\\d+)$", "", value)
-
-
-def clean_value_list(*values: Any) -> list[Any]:
-    out: list[Any] = []
-    for value in values:
+    @staticmethod
+    def ssa_value(value: Any) -> str:
         if value is None:
-            continue
-        if isinstance(value, list):
-            out.extend(item for item in value if item is not None)
+            return ""
+        if not isinstance(value, dict):
+            return str(value)
+        text = str(value.get("text") or value.get("name") or value.get("base_name") or "")
+        if value.get("is_constant") and text in {"True", "False"}:
+            return text.lower()
+        return text
+
+    @staticmethod
+    def source_value(value: Any) -> str:
+        if value is None:
+            return ""
+        if not isinstance(value, dict):
+            return str(value)
+        return str(value.get("base_name") or value.get("name") or value.get("text") or "")
+
+    @staticmethod
+    def value_type(value: Any) -> str:
+        return str(value.get("type") or "") if isinstance(value, dict) else ""
+
+    @staticmethod
+    def unique_text(values: Any) -> list[str]:
+        return list(dict.fromkeys(str(value) for value in values if value not in {None, ""}))
+
+    @staticmethod
+    def atomic_function_name(atom: Json) -> str:
+        function = atom.get("function") or {}
+        if isinstance(function, dict):
+            name = str(atom.get("function_name") or function.get("name") or function.get("full_name") or atom.get("name") or "")
         else:
-            out.append(value)
-    return list(dict.fromkeys(str(item) for item in out))
+            name = str(atom.get("function_name") or function or atom.get("name") or "")
+        if not name.startswith(("revert ", "require", "assert")):
+            match = re.fullmatch(r"([A-Za-z_$][A-Za-z0-9_.$]*)\([^)]*\)", name)
+            if match:
+                return match.group(1)
+        return name
+
+    @staticmethod
+    def atomic_operation_name(fact_kind: str) -> str:
+        return re.sub(r"(?<!^)(?=[A-Z])", "_", fact_kind).lower()
+
+
+def _clean(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: _clean(item) for key, item in value.items() if item is not None}
+    if isinstance(value, list):
+        return [_clean(item) for item in value]
+    return value

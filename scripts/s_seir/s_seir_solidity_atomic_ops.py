@@ -41,6 +41,7 @@ class SolidityAtomicOperationExtractor:
         "Transfer",
         "SolidityCall",
     }
+    LVALUE_WRITE_KINDS = {"Assignment", "Delete", "Binary", "Unary"}
     OPERATOR_TEXT = {
         "ADDITION": "+",
         "SUBTRACTION": "-",
@@ -109,6 +110,9 @@ class SolidityAtomicOperationExtractor:
                 operations.append(atom)
             self._mark_control_dependencies(block_atoms)
             attrs["solidity_atomic_ops"] = block_atoms
+
+        self._link_atomic_dependencies(operations)
+        self._attach_cfg_predecessors(operations, control)
 
         return {
             "schema": "s-seir-solidity-atomic-operations/v1",
@@ -195,7 +199,7 @@ class SolidityAtomicOperationExtractor:
             reference_defs[lvalue_key] = reference_definition
             value_defs[lvalue_key] = expression
 
-        if kind in {"Assignment", "Delete"}:
+        if kind in self.LVALUE_WRITE_KINDS:
             target = lvalue or raw.get("variable")
             target_info = self._reference_info(target, reference_defs)
             if target_info and target_info.get("state_variable"):
@@ -408,6 +412,57 @@ class SolidityAtomicOperationExtractor:
         for atom in atoms:
             if atom.get("result_ssa") in required or atom.get("kind") == "Condition":
                 atom["control_only"] = True
+
+    @classmethod
+    def _link_atomic_dependencies(cls, atoms: list[Json]) -> None:
+        definitions: dict[str, str] = {}
+        for atom in atoms:
+            result = str(atom.get("result_ssa") or "")
+            atom_id = str(atom.get("atom_id") or "")
+            if result and atom_id:
+                # Reference assignments reuse the REF produced by Index/Member.
+                # Keep the defining access atom instead of replacing it with the
+                # later write that consumes the same REF.
+                definitions.setdefault(result, atom_id)
+        previous_by_block: dict[str, str] = {}
+        for atom in atoms:
+            operand_keys = [
+                cls._value_key(value)
+                for value in atom.get("read") or []
+            ]
+            if atom.get("atomic_kind") == "StateWrite":
+                operand_keys.append(cls._value_key(atom.get("lvalue")))
+            dependencies = cls._unique([
+                definitions[key]
+                for key in operand_keys
+                if key in definitions and definitions[key] != atom.get("atom_id")
+            ])
+            atom["depends_on_atoms"] = dependencies
+            block_id = str(atom.get("cfg_block_id") or "")
+            previous = previous_by_block.get(block_id)
+            if previous:
+                atom["previous_atom_id"] = previous
+            if atom.get("atom_id"):
+                previous_by_block[block_id] = str(atom["atom_id"])
+
+    @staticmethod
+    def _attach_cfg_predecessors(atoms: list[Json], control: Json) -> None:
+        predecessors: dict[str, list[str]] = {}
+        for edge in control.get("edges") or []:
+            if not isinstance(edge, dict):
+                continue
+            source = str(edge.get("from") or "")
+            target = str(edge.get("to") or "")
+            if not source or not target:
+                continue
+            bucket = predecessors.setdefault(target, [])
+            if source not in bucket:
+                bucket.append(source)
+        for atom in atoms:
+            atom["cfg_predecessor_blocks"] = predecessors.get(
+                str(atom.get("cfg_block_id") or ""),
+                [],
+            )
 
     @staticmethod
     def _unique(values: list[str]) -> list[str]:

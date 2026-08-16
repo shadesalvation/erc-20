@@ -805,54 +805,54 @@ def build_function_level_semantic_fact_payload(
     source: str | None = None,
     result_dir: str | None = None,
 ) -> dict[str, Any]:
-    """Build the final function-level fact view.
-
-    Solidity source statements are lifted to high-level SemanticFact records
-    from S-SEIR Solidity overlays. SlithIR SSA remains evidence/debug input,
-    not the default final fact granularity. Yul inline assembly still lives in
-    the S-SEIR semantic model (effects, roles, overlays) and is additionally
-    projected to SemanticFact records here.
-    """
+    """Build facts through two isolated lifters, then organize them by CFG."""
     from s_seir_solidity_semantic_lifter import SoliditySemanticLifter
+    from s_seir_yul_semantic_lifter import YulSemanticLifter
+    from s_seir_semantic_fact_bridge import (
+        FunctionSemanticInput,
+        SemanticFactBridge,
+        renumber_and_relink_facts,
+    )
 
     solidity_lifter = SoliditySemanticLifter()
-    yul_adapter = SSeirFactAdapter()
-    solidity_facts: list[dict[str, Any]] = []
-    yul_facts: list[dict[str, Any]] = []
+    yul_lifter = YulSemanticLifter()
+    bridge = SemanticFactBridge()
+    merged_facts: list[dict[str, Any]] = []
     for fn in functions:
-        solidity_facts.extend(solidity_lifter.facts_from_function(fn))
-        fn_dict = fn.to_semantic_dict() if hasattr(fn, "to_semantic_dict") else fn
-        fn_has_yul = function_dict_has_yul(fn_dict)
-        for fact in yul_adapter.function_facts(fn_dict):
-            item = fact.to_dict()
-            if item.get("source_lang") == "solidity":
-                continue
-            if item.get("source_lang") in {None, "unknown"}:
-                if not fn_has_yul:
-                    continue
-                item["source_lang"] = "yul"
-            yul_facts.append(item)
-    solidity_facts = [semantic_fact_public_view(item) for item in solidity_facts]
-    yul_facts = [semantic_fact_public_view(item) for item in yul_facts]
-    solidity_facts = dedupe_semantic_facts(solidity_facts)
-    yul_facts = dedupe_semantic_facts(yul_facts)
-    facts = renumber_facts(solidity_facts + yul_facts)
-    solidity_count = len(solidity_facts)
+        function_solidity_facts = [
+            semantic_fact_public_view(item)
+            for item in solidity_lifter.facts_from_function(fn)
+        ]
+        function_yul_facts = [
+            semantic_fact_public_view(item)
+            for item in yul_lifter.facts_from_function(fn)
+        ]
+        merged_facts.extend(bridge.merge_function_facts(
+            FunctionSemanticInput.from_function(fn),
+            function_solidity_facts,
+            function_yul_facts,
+        ))
+    facts = renumber_and_relink_facts(merged_facts)
+    solidity_facts = [fact for fact in facts if fact.get("source_lang") == "solidity"]
+    yul_facts = [fact for fact in facts if fact.get("source_lang") == "yul"]
     return {
-        "schema": "s-seir-function-semantic-facts/v1",
+        "schema": "s-seir-function-semantic-facts/v2",
         "source": source,
         "result_dir": result_dir,
         "model_boundary": {
             "processing_unit": "function",
-            "solidity": "Solidity source is lifted to high-level SemanticFact rows from S-SEIR Solidity overlays; SlithIR SSA is retained as evidence/debug input.",
-            "yul": "S-SEIR keeps low-level roles/effects/overlays in sseir.json and projects overlays to SemanticFact here.",
+            "fact_granularity": "one_atomic_operation_per_fact",
+            "ordering": "function-level CFG partial order plus block-local operation order",
+            "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter only projects each atom to the common schema.",
+            "yul": "S-SEIR alone analyzes Yul; YulSemanticLifter only projects completed S-SEIR results to the common schema.",
+            "bridge": "SemanticFactBridge restores function-level CFG order and dependencies after both sources already share one schema.",
         },
         "function_count": len(functions),
-        "solidity_fact_count": solidity_count,
+        "solidity_fact_count": len(solidity_facts),
         "yul_fact_count": len(yul_facts),
         "fact_count": len(facts),
-        "solidity_facts": facts[:solidity_count],
-        "yul_facts": facts[solidity_count:],
+        "solidity_facts": solidity_facts,
+        "yul_facts": yul_facts,
         "facts": facts,
     }
 
@@ -921,6 +921,8 @@ def semantic_fact_dedupe_key(fact: dict[str, Any]) -> str:
     stable = {
         key: fact.get(key)
         for key in (
+            "atom_id",
+            "operation_id",
             "kind",
             "source_lang",
             "origin",

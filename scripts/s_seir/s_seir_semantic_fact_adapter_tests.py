@@ -13,7 +13,6 @@ for item in (ROOT / "legacy_yul", ROOT / "s_seir"):
         sys.path.insert(0, text)
 
 from s_seir_semantic_fact_adapter import SSeirFactAdapter, SlitherFactAdapter, build_function_level_semantic_fact_payload
-from s_seir_solidity_semantic_lifter import normalize_slithir_sink_fact
 
 
 SLITHER_SOURCE = """pragma solidity ^0.8.26;
@@ -84,6 +83,7 @@ def overlay(kind: str, attrs: dict, overlay_id: str = "ov_1") -> dict:
 
 
 class FakeFunction:
+    function_id = "Token.transfer(address,uint256)"
     contract = "Token"
     function = "transfer"
     signature = "transfer(address,uint256)"
@@ -121,6 +121,33 @@ class FakeFunction:
                 "controller": "bb_sol_slither_n0",
                 "dependent": "bb_sol_slither_n1",
                 "predicate": "flag",
+            }
+        ],
+    }
+    _sseir_solidity_atomic_operations = {
+        "function_id": function_id,
+        "contract": contract,
+        "function": function,
+        "signature": signature,
+        "operation_count": 1,
+        "operations": [
+            {
+                "atom_id": "sol_atom_1",
+                "sequence": 1,
+                "block_order": 0,
+                "operation_order": 0,
+                "cfg_block_id": "bb_sol_slither_n1",
+                "stmt_refs": ["sol_s_1"],
+                "kind": "Binary",
+                "atomic_kind": "ValueCompute",
+                "result_ssa": "TMP_0",
+                "read": ["amount", "1"],
+                "resolved_reads": ["amount", "1"],
+                "operator": "+",
+                "text": "TMP_0 = amount + 1",
+                "source_expression": "amount + 1",
+                "runtime_operation": True,
+                "depends_on_atoms": [],
             }
         ],
     }
@@ -330,28 +357,6 @@ def test_slither_defined_operation_dicts_are_covered() -> None:
     assert any(item["kind"] == "ValueTransferCall" for item in facts)
 
 
-def test_delete_fallback_uses_source_level_target() -> None:
-    fact = {
-        "kind": "Delete",
-        "lvalue": "REF_11",
-        "writes": ["REF_11"],
-        "semantic": {},
-        "evidence": {
-            "slither": {
-                "kind": "Delete",
-                "source_expression": "delete allowance[msg.sender][spender]",
-                "variable": {"kind": "ReferenceVariableSSA", "text": "REF_11", "base_name": "REF_11"},
-            }
-        },
-    }
-    normalize_slithir_sink_fact(fact)
-    assert fact["lvalue"] == "allowance[msg.sender][spender]"
-    assert fact["rvalue"] == "delete allowance[msg.sender][spender]"
-    assert fact["reads"] == []
-    assert fact["writes"] == ["allowance[msg.sender][spender]"]
-    assert fact["semantic"]["target"] == "allowance[msg.sender][spender]"
-
-
 def test_real_slither_operations_project_to_semantic_facts() -> None:
     try:
         from slither.slither import Slither  # type: ignore
@@ -380,29 +385,29 @@ def test_real_slither_operations_project_to_semantic_facts() -> None:
 
 def test_function_level_payload_splits_solidity_and_yul_facts() -> None:
     payload = build_function_level_semantic_fact_payload([FakeFunction()], source="Token.sol", result_dir="outputs/test")
-    assert payload["schema"] == "s-seir-function-semantic-facts/v1"
+    assert payload["schema"] == "s-seir-function-semantic-facts/v2"
     assert payload["solidity_fact_count"] == 1
     assert payload["yul_fact_count"] == 1
-    assert [item["kind"] for item in payload["solidity_facts"]] == ["StateWrite"]
+    assert [item["kind"] for item in payload["solidity_facts"]] == ["ValueCompute"]
     assert payload["solidity_facts"][0]["source_lang"] == "solidity"
-    assert payload["solidity_facts"][0]["origin"] == "slither_lifted"
-    assert payload["solidity_facts"][0]["lvalue"] == "balances[msg.sender]"
+    assert payload["solidity_facts"][0]["origin"] == "solidity_atomic_operation"
+    assert payload["solidity_facts"][0]["operation_id"] == "sol_atom_1"
+    assert payload["solidity_facts"][0]["lvalue"] == "TMP_0"
+    assert "high_level_semantics" not in payload["solidity_facts"][0]["semantic"]
     assert [item["kind"] for item in payload["yul_facts"]] == ["StateWrite"]
     assert not any(item["kind"] == "BinaryOperation" for item in payload["facts"])
     assert "solidity_like" not in json.dumps(payload["facts"], ensure_ascii=False)
     assert [item["fact_id"] for item in payload["facts"]] == ["fact_1", "fact_2"]
 
 
-def test_function_level_payload_dedupes_same_semantic_fact_and_merges_evidence() -> None:
+def test_function_level_payload_preserves_distinct_yul_operations() -> None:
     payload = build_function_level_semantic_fact_payload([DuplicateYulRequireFunction()])
-    assert payload["yul_fact_count"] == 1
-    fact = payload["yul_facts"][0]
-    assert fact["kind"] == "Require"
-    assert fact["condition"] == "D != 0"
-    assert fact["stmt_refs"] == ["asm_s_1", "asm_s_2"]
-    assert fact["evidence"]["overlay"] == ["ov_1", "ov_2"]
-    assert fact["evidence"]["effects"] == ["eff_1", "eff_2"]
-    assert fact["evidence"]["deduped_fact_count"] == 2
+    assert payload["yul_fact_count"] == 2
+    assert [fact["stmt_refs"] for fact in payload["yul_facts"]] == [["asm_s_1"], ["asm_s_2"]]
+    assert [fact["operation_id"] for fact in payload["yul_facts"]] == [
+        "yul_overlay:ov_1",
+        "yul_overlay:ov_2",
+    ]
 
 
 if __name__ == "__main__":
@@ -413,10 +418,9 @@ if __name__ == "__main__":
         test_sseir_event_and_revert_become_behavior_facts,
         test_slither_like_operations_map_to_semantic_facts,
         test_slither_defined_operation_dicts_are_covered,
-        test_delete_fallback_uses_source_level_target,
         test_real_slither_operations_project_to_semantic_facts,
         test_function_level_payload_splits_solidity_and_yul_facts,
-        test_function_level_payload_dedupes_same_semantic_fact_and_merges_evidence,
+        test_function_level_payload_preserves_distinct_yul_operations,
     ]
     for test in tests:
         test()
