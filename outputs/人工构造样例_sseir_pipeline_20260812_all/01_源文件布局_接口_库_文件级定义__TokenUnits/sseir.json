@@ -1,0 +1,766 @@
+[
+  {
+    "function_id": "TokenAmountLib.wrap(uint256)",
+    "contract": "TokenAmountLib",
+    "function": "wrap",
+    "signature": "wrap(uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "if (value == 0) revert ZeroTokenAmount()",
+        "src": "767:40:0",
+        "function_id": "TokenAmountLib.wrap(uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "revert ZeroTokenAmount()",
+        "src": "783:24:0",
+        "function_id": "TokenAmountLib.wrap(uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "return TokenAmount.wrap(value)",
+        "src": "817:30:0",
+        "function_id": "TokenAmountLib.wrap(uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "text": "entrypoint",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "757:97:slither"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "value == 0"
+          },
+          "attrs": {
+            "text": "value == 0",
+            "slither_node_type": "NodeType.IF",
+            "src": "771:10:slither"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert ZeroTokenAmount()()"
+          },
+          "attrs": {
+            "text": "revert ZeroTokenAmount()()",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "783:24:slither"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "text": "endif",
+            "slither_node_type": "NodeType.ENDIF",
+            "src": "767:40:slither"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "TokenAmount.wrap(value)"
+          },
+          "attrs": {
+            "text": "TokenAmount.wrap(value)",
+            "slither_node_type": "NodeType.RETURN",
+            "src": "817:30:slither"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n3",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "join"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n1",
+          "dependent": "bb_sol_slither_n2",
+          "edge_kind": "true",
+          "condition": "value == 0",
+          "predicate": "value == 0"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [
+      {
+        "expr_id": "expr_1",
+        "text": "if (value == 0) revert ZeroTokenAmount()",
+        "normalized": null,
+        "role": "guard_condition",
+        "type_hint": "bool",
+        "stmt_ref": "sol_s_1",
+        "attrs": {}
+      },
+      {
+        "expr_id": "expr_2",
+        "text": "(value == 0)",
+        "normalized": "(value == 0)",
+        "role": "branch_condition",
+        "type_hint": "bool",
+        "stmt_ref": "sol_s_1",
+        "attrs": {
+          "effect": "eff_2"
+        }
+      },
+      {
+        "expr_id": "expr_3",
+        "text": "TokenAmount(value)",
+        "normalized": "TokenAmount(value)",
+        "role": "return_value",
+        "type_hint": null,
+        "stmt_ref": "sol_s_3",
+        "attrs": {
+          "overlay": "ov_1",
+          "index": 0,
+          "source": "slithir_ssa"
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect_id": "eff_1",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "sol_s_1"
+        ],
+        "attrs": {
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "language": "solidity",
+          "source": "slithir_ssa",
+          "path_states": [
+            "entry"
+          ],
+          "targets": [
+            "TMP_0"
+          ],
+          "target_versions": {
+            "TMP_0": [
+              "TMP_0"
+            ]
+          },
+          "value": "(value == 0)",
+          "atomic_operation": "Binary"
+        }
+      },
+      {
+        "effect_id": "eff_2",
+        "kind": "Branch",
+        "stmt_refs": [
+          "sol_s_1"
+        ],
+        "attrs": {
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "language": "solidity",
+          "source": "slithir_ssa",
+          "path_states": [
+            "entry"
+          ],
+          "condition": "(value == 0)",
+          "condition_ssa": "TMP_0"
+        }
+      },
+      {
+        "effect_id": "eff_3",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "sol_s_2"
+        ],
+        "attrs": {
+          "cfg_block_id": "bb_sol_slither_n2",
+          "cfg_node_id": 2,
+          "language": "solidity",
+          "source": "slithir_ssa",
+          "path_states": [
+            "value == 0"
+          ],
+          "targets": [
+            "TMP_1"
+          ],
+          "target_versions": {
+            "TMP_1": [
+              "TMP_1"
+            ]
+          },
+          "value": "revert ZeroTokenAmount()()",
+          "atomic_operation": "SolidityCall"
+        }
+      },
+      {
+        "effect_id": "eff_4",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "sol_s_3"
+        ],
+        "attrs": {
+          "cfg_block_id": "bb_sol_slither_n4",
+          "cfg_node_id": 4,
+          "language": "solidity",
+          "source": "slithir_ssa",
+          "path_states": [
+            "!(value == 0)"
+          ],
+          "targets": [
+            "TMP_2"
+          ],
+          "target_versions": {
+            "TMP_2": [
+              "TMP_2"
+            ]
+          },
+          "value": "TokenAmount(value)",
+          "atomic_operation": "TypeConversion"
+        }
+      },
+      {
+        "effect_id": "eff_5",
+        "kind": "Return",
+        "stmt_refs": [
+          "sol_s_3"
+        ],
+        "attrs": {
+          "cfg_block_id": "bb_sol_slither_n4",
+          "cfg_node_id": 4,
+          "language": "solidity",
+          "source": "slithir_ssa",
+          "path_states": [
+            "!(value == 0)"
+          ],
+          "values": [
+            "TokenAmount(value)"
+          ],
+          "value": "TokenAmount(value)",
+          "value_versions": [
+            "TMP_2"
+          ]
+        }
+      }
+    ],
+    "semantic_overlays": [
+      {
+        "overlay_id": "ov_1",
+        "kind": "ReturnValue",
+        "effects": [
+          "eff_5"
+        ],
+        "stmt_refs": [
+          "sol_s_3"
+        ],
+        "attrs": {
+          "values": [
+            "TokenAmount(value)"
+          ],
+          "return_like": "return TokenAmount(value);",
+          "path_states": [
+            "!(value == 0)"
+          ],
+          "exact_solidity_semantics": true,
+          "source": "slithir_ssa"
+        }
+      },
+      {
+        "overlay_id": "ov_2",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ],
+        "stmt_refs": [
+          "sol_s_1"
+        ],
+        "attrs": {
+          "target": "TMP_0",
+          "expression": "(value == 0)",
+          "expression_normalized": "(value == 0)",
+          "solidity_like": "TMP_0 = (value == 0);",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": null,
+          "atomized_value": null
+        }
+      },
+      {
+        "overlay_id": "ov_3",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_2"
+        ],
+        "stmt_refs": [
+          "sol_s_1"
+        ],
+        "attrs": {
+          "expression": "(value == 0)",
+          "solidity_like": "if ((value == 0))",
+          "context": "condition",
+          "condition_final_temp": null,
+          "condition_evaluation": null,
+          "division_guards": []
+        }
+      },
+      {
+        "overlay_id": "ov_4",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ],
+        "stmt_refs": [
+          "sol_s_2"
+        ],
+        "attrs": {
+          "target": "TMP_1",
+          "expression": "revert ZeroTokenAmount()()",
+          "expression_normalized": "revert ZeroTokenAmount()()",
+          "solidity_like": "TMP_1 = revert ZeroTokenAmount()();",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": null,
+          "atomized_value": null
+        }
+      },
+      {
+        "overlay_id": "ov_5",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_4"
+        ],
+        "stmt_refs": [
+          "sol_s_3"
+        ],
+        "attrs": {
+          "target": "TMP_2",
+          "expression": "TokenAmount(value)",
+          "expression_normalized": "TokenAmount(value)",
+          "solidity_like": "TMP_2 = TokenAmount(value);",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": null,
+          "atomized_value": null
+        }
+      }
+    ],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TokenAmountLib.wrap(uint256)",
+        "state_variables": []
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {}
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 3,
+        "selectors": {
+          "0xd92e233d": [
+            {
+              "selector": "0xd92e233d",
+              "signature": "ZeroAddress()",
+              "name": "ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "217:20:0"
+            }
+          ],
+          "0x82c4a8c9": [
+            {
+              "selector": "0x82c4a8c9",
+              "signature": "ZeroTokenAmount()",
+              "name": "ZeroTokenAmount",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "238:24:0"
+            }
+          ],
+          "0xea598cb0": [
+            {
+              "selector": "0xea598cb0",
+              "signature": "wrap(uint256)",
+              "name": "wrap",
+              "kind": "function",
+              "contract": "TokenAmountLib",
+              "source": "ast",
+              "src": "692:162:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol",
+        "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  },
+  {
+    "function_id": "TokenAmountLib.add(TokenAmount, TokenAmount)",
+    "contract": "TokenAmountLib",
+    "function": "add",
+    "signature": "add(TokenAmount, TokenAmount)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "return a + b",
+        "src": "949:12:0",
+        "function_id": "TokenAmountLib.add(TokenAmount, TokenAmount)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "text": "entrypoint",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "939:29:slither"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "tokenAmountAdd(a,b)"
+          },
+          "attrs": {
+            "text": "tokenAmountAdd(a,b)",
+            "slither_node_type": "NodeType.RETURN",
+            "src": "949:12:slither"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [
+      {
+        "expr_id": "expr_1",
+        "text": "tokenAmountAdd(a, b)",
+        "normalized": "tokenAmountAdd(a, b)",
+        "role": "return_value",
+        "type_hint": null,
+        "stmt_ref": "sol_s_1",
+        "attrs": {
+          "overlay": "ov_1",
+          "index": 0,
+          "source": "slithir_ssa"
+        }
+      },
+      {
+        "expr_id": "expr_2",
+        "text": "a",
+        "normalized": "a",
+        "role": "abi_argument",
+        "type_hint": null,
+        "stmt_ref": "sol_s_1",
+        "attrs": {
+          "overlay": "ov_2",
+          "index": 0,
+          "function": "tokenAmountAdd"
+        }
+      },
+      {
+        "expr_id": "expr_3",
+        "text": "b",
+        "normalized": "b",
+        "role": "abi_argument",
+        "type_hint": null,
+        "stmt_ref": "sol_s_1",
+        "attrs": {
+          "overlay": "ov_2",
+          "index": 1,
+          "function": "tokenAmountAdd"
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect_id": "eff_1",
+        "kind": "InternalCall",
+        "stmt_refs": [
+          "sol_s_1"
+        ],
+        "attrs": {
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "language": "solidity",
+          "source": "slithir_ssa",
+          "path_states": [
+            "entry"
+          ],
+          "typed_call": true,
+          "call_kind": "InternalCall",
+          "function": "tokenAmountAdd",
+          "function_signature": "tokenAmountAdd(TokenAmount,TokenAmount)",
+          "canonical_function": "tokenAmountAdd(TokenAmount,TokenAmount)",
+          "arguments": [
+            "a",
+            "b"
+          ],
+          "result": "TMP_3",
+          "result_version": "TMP_3"
+        }
+      },
+      {
+        "effect_id": "eff_2",
+        "kind": "Return",
+        "stmt_refs": [
+          "sol_s_1"
+        ],
+        "attrs": {
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "language": "solidity",
+          "source": "slithir_ssa",
+          "path_states": [
+            "entry"
+          ],
+          "values": [
+            "tokenAmountAdd(a, b)"
+          ],
+          "value": "tokenAmountAdd(a, b)",
+          "value_versions": [
+            "TMP_3"
+          ]
+        }
+      }
+    ],
+    "semantic_overlays": [
+      {
+        "overlay_id": "ov_1",
+        "kind": "ReturnValue",
+        "effects": [
+          "eff_2"
+        ],
+        "stmt_refs": [
+          "sol_s_1"
+        ],
+        "attrs": {
+          "values": [
+            "tokenAmountAdd(a, b)"
+          ],
+          "return_like": "return tokenAmountAdd(a, b);",
+          "path_states": [
+            "entry"
+          ],
+          "exact_solidity_semantics": true,
+          "source": "slithir_ssa"
+        }
+      },
+      {
+        "overlay_id": "ov_2",
+        "kind": "InternalCall",
+        "effects": [
+          "eff_1"
+        ],
+        "stmt_refs": [
+          "sol_s_1"
+        ],
+        "attrs": {
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "language": "solidity",
+          "source": "slithir_ssa",
+          "path_states": [
+            "entry"
+          ],
+          "typed_call": true,
+          "call_kind": "InternalCall",
+          "function": "tokenAmountAdd",
+          "function_signature": "tokenAmountAdd(TokenAmount,TokenAmount)",
+          "canonical_function": "tokenAmountAdd(TokenAmount,TokenAmount)",
+          "arguments": [
+            "a",
+            "b"
+          ],
+          "result": "TMP_3",
+          "result_version": "TMP_3",
+          "call_expression": "tokenAmountAdd(a, b)",
+          "solidity_like": "TMP_3 = tokenAmountAdd(a, b);",
+          "exact_solidity_semantics": true
+        }
+      }
+    ],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TokenAmountLib.add(TokenAmount, TokenAmount)",
+        "state_variables": []
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {}
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 3,
+        "selectors": {
+          "0xd92e233d": [
+            {
+              "selector": "0xd92e233d",
+              "signature": "ZeroAddress()",
+              "name": "ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "217:20:0"
+            }
+          ],
+          "0x82c4a8c9": [
+            {
+              "selector": "0x82c4a8c9",
+              "signature": "ZeroTokenAmount()",
+              "name": "ZeroTokenAmount",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "238:24:0"
+            }
+          ],
+          "0xea598cb0": [
+            {
+              "selector": "0xea598cb0",
+              "signature": "wrap(uint256)",
+              "name": "wrap",
+              "kind": "function",
+              "contract": "TokenAmountLib",
+              "source": "ast",
+              "src": "692:162:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol",
+        "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  }
+]

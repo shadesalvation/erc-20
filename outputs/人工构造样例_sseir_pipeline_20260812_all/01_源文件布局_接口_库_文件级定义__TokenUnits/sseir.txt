@@ -1,0 +1,57 @@
+Function TokenAmountLib.wrap(uint256)
+  function_id: TokenAmountLib.wrap(uint256)
+  SourceStatements:
+    sol_s_1 [solidity] if (value == 0) revert ZeroTokenAmount()
+    sol_s_2 [solidity] revert ZeroTokenAmount()
+    sol_s_3 [solidity] return TokenAmount.wrap(value)
+  Control:
+    blocks: 5
+    edges: 5
+  ExpressionRoles:
+    expr_1 guard_condition: if (value == 0) revert ZeroTokenAmount() @ sol_s_1
+    expr_2 branch_condition: (value == 0) -> (value == 0) @ sol_s_1
+    expr_3 return_value: TokenAmount(value) -> TokenAmount(value) @ sol_s_3
+  Effects:
+    eff_1 ValueDef refs=['sol_s_1'] attrs={"cfg_block_id": "bb_sol_slither_n1", "cfg_node_id": 1, "language": "solidity", "source": "slithir_ssa", "path_states": ["entry"], "targets": ["TMP_0"], "target_versions": {"TMP_0": ["TMP_0"]}, "value": "(value == 0)", "atomic_operation": "Binary"}
+    eff_2 Branch refs=['sol_s_1'] attrs={"cfg_block_id": "bb_sol_slither_n1", "cfg_node_id": 1, "language": "solidity", "source": "slithir_ssa", "path_states": ["entry"], "condition": "(value == 0)", "condition_ssa": "TMP_0"}
+    eff_3 ValueDef refs=['sol_s_2'] attrs={"cfg_block_id": "bb_sol_slither_n2", "cfg_node_id": 2, "language": "solidity", "source": "slithir_ssa", "path_states": ["value == 0"], "targets": ["TMP_1"], "target_versions": {"TMP_1": ["TMP_1"]}, "value": "revert ZeroTokenAmount()()", "atomic_operation": "SolidityCall"}
+    eff_4 ValueDef refs=['sol_s_3'] attrs={"cfg_block_id": "bb_sol_slither_n4", "cfg_node_id": 4, "language": "solidity", "source": "slithir_ssa", "path_states": ["!(value == 0)"], "targets": ["TMP_2"], "target_versions": {"TMP_2": ["TMP_2"]}, "value": "TokenAmount(value)", "atomic_operation": "TypeConversion"}
+    eff_5 Return refs=['sol_s_3'] attrs={"cfg_block_id": "bb_sol_slither_n4", "cfg_node_id": 4, "language": "solidity", "source": "slithir_ssa", "path_states": ["!(value == 0)"], "values": ["TokenAmount(value)"], "value": "TokenAmount(value)", "value_versions": ["TMP_2"]}
+  SemanticOverlays:
+    ov_1 ReturnValue effects=['eff_5'] attrs={"values": ["TokenAmount(value)"], "return_like": "return TokenAmount(value);", "path_states": ["!(value == 0)"], "exact_solidity_semantics": true, "source": "slithir_ssa"}
+    ov_2 ExpressionNormalization effects=['eff_1'] attrs={"target": "TMP_0", "expression": "(value == 0)", "expression_normalized": "(value == 0)", "solidity_like": "TMP_0 = (value == 0);", "context": "value", "division_guards": [], "memory_hash": null, "atomized_value": null}
+    ov_3 ExpressionNormalization effects=['eff_2'] attrs={"expression": "(value == 0)", "solidity_like": "if ((value == 0))", "context": "condition", "condition_final_temp": null, "condition_evaluation": null, "division_guards": []}
+    ov_4 ExpressionNormalization effects=['eff_3'] attrs={"target": "TMP_1", "expression": "revert ZeroTokenAmount()()", "expression_normalized": "revert ZeroTokenAmount()()", "solidity_like": "TMP_1 = revert ZeroTokenAmount()();", "context": "value", "division_guards": [], "memory_hash": null, "atomized_value": null}
+    ov_5 ExpressionNormalization effects=['eff_4'] attrs={"target": "TMP_2", "expression": "TokenAmount(value)", "expression_normalized": "TokenAmount(value)", "solidity_like": "TMP_2 = TokenAmount(value);", "context": "value", "division_guards": [], "memory_hash": null, "atomized_value": null}
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "TokenAmountLib.wrap(uint256)", "state_variables": []}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 3, "selectors": {"0xd92e233d": [{"selector": "0xd92e233d", "signature": "ZeroAddress()", "name": "ZeroAddress", "kind": "error", "contract": null, "source": "ast", "src": "217:20:0"}], "0x82c4a8c9": [{"selector": "0x82c4a8c9", "signature": "ZeroTokenAmount()", "name": "ZeroTokenAmount", "kind": "error", "contract": null, "source": "ast", "src": "238:24:0"}], "0xea598cb0": [{"selector": "0xea598cb0", "signature": "wrap(uint256)", "name": "wrap", "kind": "function", "contract": "TokenAmountLib", "source": "ast", "src": "692:162:0"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol", "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol", "rewrite_count": 0, "enabled": false, "flattened_imports": false, "imported_files": [], "preprocessed_files": []}
+
+Function TokenAmountLib.add(TokenAmount, TokenAmount)
+  function_id: TokenAmountLib.add(TokenAmount, TokenAmount)
+  SourceStatements:
+    sol_s_1 [solidity] return a + b
+  Control:
+    blocks: 2
+    edges: 1
+  ExpressionRoles:
+    expr_1 return_value: tokenAmountAdd(a, b) -> tokenAmountAdd(a, b) @ sol_s_1
+    expr_2 abi_argument: a -> a @ sol_s_1
+    expr_3 abi_argument: b -> b @ sol_s_1
+  Effects:
+    eff_1 InternalCall refs=['sol_s_1'] attrs={"cfg_block_id": "bb_sol_slither_n1", "cfg_node_id": 1, "language": "solidity", "source": "slithir_ssa", "path_states": ["entry"], "typed_call": true, "call_kind": "InternalCall", "function": "tokenAmountAdd", "function_signature": "tokenAmountAdd(TokenAmount,TokenAmount)", "canonical_function": "tokenAmountAdd(TokenAmount,TokenAmount)", "arguments": ["a", "b"], "result": "TMP_3", "result_version": "TMP_3"}
+    eff_2 Return refs=['sol_s_1'] attrs={"cfg_block_id": "bb_sol_slither_n1", "cfg_node_id": 1, "language": "solidity", "source": "slithir_ssa", "path_states": ["entry"], "values": ["tokenAmountAdd(a, b)"], "value": "tokenAmountAdd(a, b)", "value_versions": ["TMP_3"]}
+  SemanticOverlays:
+    ov_1 ReturnValue effects=['eff_2'] attrs={"values": ["tokenAmountAdd(a, b)"], "return_like": "return tokenAmountAdd(a, b);", "path_states": ["entry"], "exact_solidity_semantics": true, "source": "slithir_ssa"}
+    ov_2 InternalCall effects=['eff_1'] attrs={"cfg_block_id": "bb_sol_slither_n1", "cfg_node_id": 1, "language": "solidity", "source": "slithir_ssa", "path_states": ["entry"], "typed_call": true, "call_kind": "InternalCall", "function": "tokenAmountAdd", "function_signature": "tokenAmountAdd(TokenAmount,TokenAmount)", "canonical_function": "tokenAmountAdd(TokenAmount,TokenAmount)", "arguments": ["a", "b"], "result": "TMP_3", "result_version": "TMP_3", "call_expression": "tokenAmountAdd(a, b)", "solidity_like": "TMP_3 = tokenAmountAdd(a, b);", "exact_solidity_semantics": true}
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "TokenAmountLib.add(TokenAmount, TokenAmount)", "state_variables": []}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 3, "selectors": {"0xd92e233d": [{"selector": "0xd92e233d", "signature": "ZeroAddress()", "name": "ZeroAddress", "kind": "error", "contract": null, "source": "ast", "src": "217:20:0"}], "0x82c4a8c9": [{"selector": "0x82c4a8c9", "signature": "ZeroTokenAmount()", "name": "ZeroTokenAmount", "kind": "error", "contract": null, "source": "ast", "src": "238:24:0"}], "0xea598cb0": [{"selector": "0xea598cb0", "signature": "wrap(uint256)", "name": "wrap", "kind": "function", "contract": "TokenAmountLib", "source": "ast", "src": "692:162:0"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol", "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/TokenUnits.sol", "rewrite_count": 0, "enabled": false, "flattened_imports": false, "imported_files": [], "preprocessed_files": []}

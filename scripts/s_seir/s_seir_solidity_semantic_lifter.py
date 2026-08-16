@@ -215,13 +215,15 @@ def normalize_slithir_sink_fact(fact: dict[str, Any]) -> None:
         fact["reads"] = clean_value_list(semantic.get("arguments"))
         return
     if kind == "Delete":
-        target = high_level_value(op.get("variable") or op.get("lvalue") or fact.get("lvalue"))
+        target = delete_target_from_source(op.get("source_expression")) or high_level_value(op.get("variable") or op.get("lvalue") or fact.get("lvalue"))
         fact["semantic"] = clean_dict({
             "operation": "delete",
             "target": target,
             "source_expression": op.get("source_expression"),
         })
         fact["lvalue"] = target
+        fact["rvalue"] = op.get("source_expression") or f"delete {target}"
+        fact["reads"] = []
         fact["writes"] = clean_value_list(target)
         return
     if kind == "ValueTransferCall":
@@ -233,6 +235,14 @@ def normalize_slithir_sink_fact(fact: dict[str, Any]) -> None:
             "source_expression": op.get("source_expression"),
         })
         fact["reads"] = clean_value_list(fact["semantic"].get("destination"), fact["semantic"].get("value"))
+
+
+def delete_target_from_source(source_expression: Any) -> str | None:
+    text = str(source_expression or "").strip()
+    if not text.startswith("delete "):
+        return None
+    target = text.removeprefix("delete ").strip().rstrip(";")
+    return target or None
 
 
 def contract_name_from_new_contract(op: dict[str, Any], fact: dict[str, Any]) -> Any:

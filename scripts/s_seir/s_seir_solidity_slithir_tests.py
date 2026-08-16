@@ -109,6 +109,43 @@ contract BoundaryCase {
         }
     }
 }
+
+contract SolidityReferenceKindCase {
+    enum Flag {
+        None,
+        Frozen
+    }
+
+    uint256[] public stored;
+    mapping(address => uint256) public balances;
+
+    function parameterArray(uint256[] calldata values, uint256 i) external pure returns (uint256) {
+        return values[i];
+    }
+
+    function stateArray(uint256 i) external view returns (uint256) {
+        return stored[i];
+    }
+
+    function enumGuard(Flag flag) external pure returns (bool) {
+        require(flag != Flag.Frozen, "frozen");
+        return true;
+    }
+}
+
+interface AbiView {
+    function totalSupply() external view returns (uint256);
+}
+
+contract AbiExpressionCase {
+    function low(address token, address to, uint256 amount) external returns (bool ok) {
+        (ok,) = token.call(abi.encodeWithSignature("transfer(address,uint256)", to, amount));
+    }
+
+    function stat(address token) external view returns (bool ok) {
+        (ok,) = token.staticcall(abi.encodeWithSelector(AbiView.totalSupply.selector));
+    }
+}
 """
 
 
@@ -179,6 +216,24 @@ def run() -> None:
     assert loop_write.control["dominance"]["immediate_dominator"]
     assert loop_write.control["typed_def_use"]["blocks"]
 
+    reference_kind = [fn for fn in functions if fn.contract == "SolidityReferenceKindCase"]
+    parameter_array = next(fn for fn in reference_kind if fn.function == "parameterArray")
+    assert not any(item.attrs.get("access") == "values[i]" for item in effects(parameter_array, "StorageRead"))
+
+    state_array = next(fn for fn in reference_kind if fn.function == "stateArray")
+    assert any(item.attrs.get("access") == "stored[i]" and item.attrs.get("state_variable") == "stored" for item in effects(state_array, "StorageRead"))
+
+    enum_guard = next(fn for fn in reference_kind if fn.function == "enumGuard")
+    assert not any(item.attrs.get("access") == "Flag.Frozen" for item in effects(enum_guard, "StorageRead"))
+
+    abi_low = next(fn for fn in functions if fn.contract == "AbiExpressionCase" and fn.function == "low")
+    abi_low_call = next(item for item in overlays(abi_low, "ExternalCall"))
+    assert abi_low_call.attrs.get("arguments") == ['abi.encodeWithSignature("transfer(address,uint256)", to, amount)'], abi_low_call.attrs
+
+    abi_stat = next(fn for fn in functions if fn.contract == "AbiExpressionCase" and fn.function == "stat")
+    abi_stat_call = next(item for item in overlays(abi_stat, "ExternalCall"))
+    assert abi_stat_call.attrs.get("arguments") == ["abi.encodeWithSelector(AbiView.totalSupply.selector)"], abi_stat_call.attrs
+
     print("PASS mapping_event: typed nested mapping read/write and EventEmit")
     print("PASS branch_state: path-conditioned state writes and RequireOverlay")
     print("PASS calls: structured external/internal calls and ReturnValue")
@@ -187,6 +242,8 @@ def run() -> None:
     print("PASS guarded_boundary: reaching SSA and state inputs cross into Yul under flag")
     print("PASS nested_boundary: outer and inner control dependencies are preserved")
     print("PASS loop_boundary: Solidity loop control and Yul memory effects remain aligned")
+    print("PASS solidity_reference_kind: calldata arrays and enum members are not storage reads")
+    print("PASS abi_expression_pretty: Solidity ABI call arguments keep source-level form")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,3007 @@
+{
+  "schema": "s-seir-function-semantic-facts/v1",
+  "source": "人工构造样例/05_表达式_运算符_控制流_checked_unchecked/contracts/ControlFlowERC20.sol",
+  "result_dir": "outputs/solidity_atomic_operations_tests/05_ControlFlowERC20",
+  "model_boundary": {
+    "processing_unit": "function",
+    "solidity": "Solidity source is lifted to high-level SemanticFact rows from S-SEIR Solidity overlays; SlithIR SSA is retained as evidence/debug input.",
+    "yul": "S-SEIR keeps low-level roles/effects/overlays in sseir.json and projects overlays to SemanticFact here."
+  },
+  "function_count": 12,
+  "solidity_fact_count": 40,
+  "yul_fact_count": 0,
+  "fact_count": 40,
+  "solidity_facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "ControlFlowERC20",
+      "signature": "constructor(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "reads": [
+        "msg.sender",
+        "initialSupply"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "initialSupply"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "ControlFlowERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "ControlFlowERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "msg.sender",
+        "to",
+        "value",
+        "fee"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "to",
+          "value",
+          "fee"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "ControlFlowERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "ControlFlowERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[msg.sender][spender]",
+        "state_variable": "allowance",
+        "keys": [
+          "msg.sender",
+          "spender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "ControlFlowERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "msg.sender",
+        "spender",
+        "value"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "msg.sender",
+          "spender",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "ControlFlowERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "condition": "((current >= value) && (to != address(0)))",
+      "reads": [
+        "((current >= value) && (to != address(0)))"
+      ],
+      "semantic": {
+        "condition": "((current >= value) && (to != address(0)))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "ControlFlowERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_17"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "ControlFlowERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1",
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": [
+          "ov_3",
+          "ov_4"
+        ],
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_4",
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay",
+        "deduped_fact_count": 2
+      },
+      "writes": []
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "ControlFlowERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "reads": [
+        "from",
+        "to",
+        "value",
+        "0"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "from",
+          "to",
+          "value",
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_16"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "distribute",
+      "contract": "ControlFlowERC20",
+      "signature": "distribute(address[], uint256)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_18"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "distribute",
+      "contract": "ControlFlowERC20",
+      "signature": "distribute(address[], uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n11"
+      ],
+      "condition": "i < receivers.length && !(receivers[i] == address(0)) && !(sent >= 10)",
+      "reads": [
+        "msg.sender",
+        "receivers[i]",
+        "amount",
+        "0"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "receivers[i]",
+          "amount",
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "condition": "(step != 0)",
+      "reads": [
+        "(step != 0)"
+      ],
+      "semantic": {
+        "condition": "(step != 0)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "condition": "!(totalSupply > targetSupply)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_20"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_2",
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2",
+        "bb_sol_slither_n3",
+        "bb_sol_slither_n7",
+        "bb_sol_slither_n8",
+        "bb_sol_slither_n9",
+        "bb_sol_slither_n10",
+        "bb_sol_slither_n11"
+      ],
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": [
+          "ov_3",
+          "ov_4"
+        ],
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_5",
+          "eff_11"
+        ],
+        "lifted_from": "sseir_solidity_overlay",
+        "deduped_fact_count": 2
+      },
+      "writes": []
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n8",
+        "bb_sol_slither_n9",
+        "bb_sol_slither_n10",
+        "bb_sol_slither_n11"
+      ],
+      "condition": "totalSupply > targetSupply && !(totalSupply - targetSupply > step)",
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_16"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "reads": [
+        "msg.sender",
+        "burnAmount"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "burnAmount"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_8"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "fillPreview",
+      "contract": "ControlFlowERC20",
+      "signature": "fillPreview(uint256)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "NewArray",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "fillPreview",
+      "contract": "ControlFlowERC20",
+      "signature": "fillPreview(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": {
+        "kind": "TemporaryVariableSSA",
+        "text": "TMP_25",
+        "name": "TMP_25",
+        "base_name": "TMP_25",
+        "type": "uint256[]",
+        "is_state": false,
+        "is_reference": false,
+        "is_constant": false,
+        "is_solidity_builtin": false
+      },
+      "rvalue": "new uint256[](length)",
+      "reads": [
+        "length"
+      ],
+      "writes": [
+        "TMP_25"
+      ],
+      "semantic": {
+        "operation": "new_array",
+        "arguments": [
+          "length"
+        ],
+        "source_expression": "new uint256[](length)"
+      },
+      "evidence": {
+        "slither": {
+          "order": 0,
+          "kind": "NewArray",
+          "text": "TMP_25(uint256[])  = new uint256[](length_1)",
+          "ssa": true,
+          "source_expression": "new uint256[](length)",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_25",
+            "name": "TMP_25",
+            "base_name": "TMP_25",
+            "type": "uint256[]",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "length_1",
+              "name": "length",
+              "base_name": "length",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "arguments": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "length_1",
+              "name": "length",
+              "base_name": "length",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "source_span": "2214:31:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "atomic_kind": "ValueCompute",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_25",
+          "result_ssa": "TMP_25",
+          "expression": "new uint256[](length)",
+          "resolved_reads": [
+            "length"
+          ],
+          "writes": [
+            "TMP_25"
+          ],
+          "source": "slithir_ssa",
+          "cfg_node": "bb_sol_slither_n1",
+          "node_id": 1
+        },
+        "lifted_from": "slithir_sink_fallback"
+      }
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "resetAllowance",
+      "contract": "ControlFlowERC20",
+      "signature": "resetAllowance(address)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "0",
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[msg.sender][spender]",
+        "state_variable": "allowance",
+        "keys": [
+          "msg.sender",
+          "spender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "resetAllowance",
+      "contract": "ControlFlowERC20",
+      "signature": "resetAllowance(address)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "msg.sender",
+        "spender",
+        "0"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "msg.sender",
+          "spender",
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "Delete",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "resetAllowance",
+      "contract": "ControlFlowERC20",
+      "signature": "resetAllowance(address)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "delete allowance[msg.sender][spender]",
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "delete",
+        "target": "allowance[msg.sender][spender]",
+        "source_expression": "delete allowance[msg.sender][spender]"
+      },
+      "evidence": {
+        "slither": {
+          "order": 2,
+          "kind": "Delete",
+          "text": "REF_10 = delete REF_11 ",
+          "ssa": true,
+          "source_expression": "delete allowance[msg.sender][spender]",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_10",
+            "name": "REF_10",
+            "base_name": "REF_10",
+            "type": "mapping(address => uint256)",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_11",
+            "name": "REF_11",
+            "base_name": "REF_11",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "ReferenceVariableSSA",
+              "text": "REF_11",
+              "name": "REF_11",
+              "base_name": "REF_11",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": true,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_4",
+          "sequence": 4,
+          "block_order": 1,
+          "operation_order": 2,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "source_span": "2466:37:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "atomic_kind": "StateWrite",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_10",
+          "result_ssa": "REF_10",
+          "expression": "0",
+          "resolved_reads": [
+            "allowance[msg.sender][spender]"
+          ],
+          "writes": [
+            "allowance[msg.sender]"
+          ],
+          "storage_access": {
+            "access": "allowance[msg.sender]",
+            "state_variable": "allowance",
+            "keys": [
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "type": "mapping(address => uint256)"
+          },
+          "source": "slithir_ssa",
+          "cfg_node": "bb_sol_slither_n1",
+          "node_id": 1
+        },
+        "lifted_from": "slithir_sink_fallback"
+      }
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "bitOps",
+      "contract": "ControlFlowERC20",
+      "signature": "bitOps(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_24",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "condition": "((to != address(0)) && ((value != 0) || (fee == 0)))",
+      "reads": [
+        "((to != address(0)) && ((value != 0) || (fee == 0)))"
+      ],
+      "semantic": {
+        "condition": "((to != address(0)) && ((value != 0) || (fee == 0)))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_25",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "(bal >= debit)",
+      "reads": [
+        "(bal >= debit)"
+      ],
+      "semantic": {
+        "condition": "(bal >= debit)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_21"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_26",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_18"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_27",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "lvalue": "balanceOf[from]",
+      "rvalue": "(bal - debit)",
+      "reads": [
+        "bal",
+        "debit"
+      ],
+      "writes": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_25"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_28",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_28"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_29",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "condition": "fee > 0",
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_32"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_30",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n11"
+      ],
+      "rvalue": "transferBitmap",
+      "reads": [
+        "transferBitmap"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "transferBitmap",
+        "state_variable": "transferBitmap"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_37"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_31",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n9"
+      ],
+      "condition": "fee > 0",
+      "reads": [
+        "from",
+        "address(0)",
+        "fee"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "address(0)",
+          "fee"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_35"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_32",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n12"
+      ],
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_39"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_33",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "ControlFlowERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_34",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "ControlFlowERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_35",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "ControlFlowERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "reads": [
+        "address(0)",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "address(0)",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_12"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_36",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "condition": "(bal >= value)",
+      "reads": [
+        "(bal >= value)"
+      ],
+      "semantic": {
+        "condition": "(bal >= value)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_37",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_38",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "lvalue": "balanceOf[from]",
+      "rvalue": "(bal - value)",
+      "reads": [
+        "bal",
+        "value"
+      ],
+      "writes": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_39",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_40",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "reads": [
+        "from",
+        "address(0)",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "address(0)",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_17"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    }
+  ],
+  "yul_facts": [],
+  "facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "ControlFlowERC20",
+      "signature": "constructor(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "reads": [
+        "msg.sender",
+        "initialSupply"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "initialSupply"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "ControlFlowERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "ControlFlowERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "msg.sender",
+        "to",
+        "value",
+        "fee"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "to",
+          "value",
+          "fee"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "ControlFlowERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "ControlFlowERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[msg.sender][spender]",
+        "state_variable": "allowance",
+        "keys": [
+          "msg.sender",
+          "spender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "ControlFlowERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "msg.sender",
+        "spender",
+        "value"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "msg.sender",
+          "spender",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "ControlFlowERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "condition": "((current >= value) && (to != address(0)))",
+      "reads": [
+        "((current >= value) && (to != address(0)))"
+      ],
+      "semantic": {
+        "condition": "((current >= value) && (to != address(0)))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "ControlFlowERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_17"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "ControlFlowERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1",
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": [
+          "ov_3",
+          "ov_4"
+        ],
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_4",
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay",
+        "deduped_fact_count": 2
+      },
+      "writes": []
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "ControlFlowERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "reads": [
+        "from",
+        "to",
+        "value",
+        "0"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "from",
+          "to",
+          "value",
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_16"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "distribute",
+      "contract": "ControlFlowERC20",
+      "signature": "distribute(address[], uint256)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_18"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "distribute",
+      "contract": "ControlFlowERC20",
+      "signature": "distribute(address[], uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n11"
+      ],
+      "condition": "i < receivers.length && !(receivers[i] == address(0)) && !(sent >= 10)",
+      "reads": [
+        "msg.sender",
+        "receivers[i]",
+        "amount",
+        "0"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "receivers[i]",
+          "amount",
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "condition": "(step != 0)",
+      "reads": [
+        "(step != 0)"
+      ],
+      "semantic": {
+        "condition": "(step != 0)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "condition": "!(totalSupply > targetSupply)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_20"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_2",
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2",
+        "bb_sol_slither_n3",
+        "bb_sol_slither_n7",
+        "bb_sol_slither_n8",
+        "bb_sol_slither_n9",
+        "bb_sol_slither_n10",
+        "bb_sol_slither_n11"
+      ],
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": [
+          "ov_3",
+          "ov_4"
+        ],
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_5",
+          "eff_11"
+        ],
+        "lifted_from": "sseir_solidity_overlay",
+        "deduped_fact_count": 2
+      },
+      "writes": []
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n8",
+        "bb_sol_slither_n9",
+        "bb_sol_slither_n10",
+        "bb_sol_slither_n11"
+      ],
+      "condition": "totalSupply > targetSupply && !(totalSupply - targetSupply > step)",
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_16"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "burnUntilBelow",
+      "contract": "ControlFlowERC20",
+      "signature": "burnUntilBelow(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "reads": [
+        "msg.sender",
+        "burnAmount"
+      ],
+      "semantic": {
+        "target": "ControlFlowERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "burnAmount"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_8"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "fillPreview",
+      "contract": "ControlFlowERC20",
+      "signature": "fillPreview(uint256)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "NewArray",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "fillPreview",
+      "contract": "ControlFlowERC20",
+      "signature": "fillPreview(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": {
+        "kind": "TemporaryVariableSSA",
+        "text": "TMP_25",
+        "name": "TMP_25",
+        "base_name": "TMP_25",
+        "type": "uint256[]",
+        "is_state": false,
+        "is_reference": false,
+        "is_constant": false,
+        "is_solidity_builtin": false
+      },
+      "rvalue": "new uint256[](length)",
+      "reads": [
+        "length"
+      ],
+      "writes": [
+        "TMP_25"
+      ],
+      "semantic": {
+        "operation": "new_array",
+        "arguments": [
+          "length"
+        ],
+        "source_expression": "new uint256[](length)"
+      },
+      "evidence": {
+        "slither": {
+          "order": 0,
+          "kind": "NewArray",
+          "text": "TMP_25(uint256[])  = new uint256[](length_1)",
+          "ssa": true,
+          "source_expression": "new uint256[](length)",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_25",
+            "name": "TMP_25",
+            "base_name": "TMP_25",
+            "type": "uint256[]",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "length_1",
+              "name": "length",
+              "base_name": "length",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "arguments": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "length_1",
+              "name": "length",
+              "base_name": "length",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "source_span": "2214:31:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "atomic_kind": "ValueCompute",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_25",
+          "result_ssa": "TMP_25",
+          "expression": "new uint256[](length)",
+          "resolved_reads": [
+            "length"
+          ],
+          "writes": [
+            "TMP_25"
+          ],
+          "source": "slithir_ssa",
+          "cfg_node": "bb_sol_slither_n1",
+          "node_id": 1
+        },
+        "lifted_from": "slithir_sink_fallback"
+      }
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "resetAllowance",
+      "contract": "ControlFlowERC20",
+      "signature": "resetAllowance(address)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "0",
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[msg.sender][spender]",
+        "state_variable": "allowance",
+        "keys": [
+          "msg.sender",
+          "spender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "resetAllowance",
+      "contract": "ControlFlowERC20",
+      "signature": "resetAllowance(address)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "msg.sender",
+        "spender",
+        "0"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "msg.sender",
+          "spender",
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "Delete",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "resetAllowance",
+      "contract": "ControlFlowERC20",
+      "signature": "resetAllowance(address)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "delete allowance[msg.sender][spender]",
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "delete",
+        "target": "allowance[msg.sender][spender]",
+        "source_expression": "delete allowance[msg.sender][spender]"
+      },
+      "evidence": {
+        "slither": {
+          "order": 2,
+          "kind": "Delete",
+          "text": "REF_10 = delete REF_11 ",
+          "ssa": true,
+          "source_expression": "delete allowance[msg.sender][spender]",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_10",
+            "name": "REF_10",
+            "base_name": "REF_10",
+            "type": "mapping(address => uint256)",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_11",
+            "name": "REF_11",
+            "base_name": "REF_11",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "ReferenceVariableSSA",
+              "text": "REF_11",
+              "name": "REF_11",
+              "base_name": "REF_11",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": true,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_4",
+          "sequence": 4,
+          "block_order": 1,
+          "operation_order": 2,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "source_span": "2466:37:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "atomic_kind": "StateWrite",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_10",
+          "result_ssa": "REF_10",
+          "expression": "0",
+          "resolved_reads": [
+            "allowance[msg.sender][spender]"
+          ],
+          "writes": [
+            "allowance[msg.sender]"
+          ],
+          "storage_access": {
+            "access": "allowance[msg.sender]",
+            "state_variable": "allowance",
+            "keys": [
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "type": "mapping(address => uint256)"
+          },
+          "source": "slithir_ssa",
+          "cfg_node": "bb_sol_slither_n1",
+          "node_id": 1
+        },
+        "lifted_from": "slithir_sink_fallback"
+      }
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "bitOps",
+      "contract": "ControlFlowERC20",
+      "signature": "bitOps(uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_24",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "condition": "((to != address(0)) && ((value != 0) || (fee == 0)))",
+      "reads": [
+        "((to != address(0)) && ((value != 0) || (fee == 0)))"
+      ],
+      "semantic": {
+        "condition": "((to != address(0)) && ((value != 0) || (fee == 0)))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_25",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "(bal >= debit)",
+      "reads": [
+        "(bal >= debit)"
+      ],
+      "semantic": {
+        "condition": "(bal >= debit)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_21"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_26",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_18"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_27",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "lvalue": "balanceOf[from]",
+      "rvalue": "(bal - debit)",
+      "reads": [
+        "bal",
+        "debit"
+      ],
+      "writes": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_25"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_28",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_28"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_29",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "condition": "fee > 0",
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_32"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_30",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n11"
+      ],
+      "rvalue": "transferBitmap",
+      "reads": [
+        "transferBitmap"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "transferBitmap",
+        "state_variable": "transferBitmap"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_37"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_31",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n9"
+      ],
+      "condition": "fee > 0",
+      "reads": [
+        "from",
+        "address(0)",
+        "fee"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "address(0)",
+          "fee"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_35"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_32",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_move",
+      "contract": "ControlFlowERC20",
+      "signature": "_move(address, address, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n12"
+      ],
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_39"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_33",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "ControlFlowERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_34",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "ControlFlowERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_35",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "ControlFlowERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "reads": [
+        "address(0)",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "address(0)",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_12"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_36",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "condition": "(bal >= value)",
+      "reads": [
+        "(bal >= value)"
+      ],
+      "semantic": {
+        "condition": "(bal >= value)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_37",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_38",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "lvalue": "balanceOf[from]",
+      "rvalue": "(bal - value)",
+      "reads": [
+        "bal",
+        "value"
+      ],
+      "writes": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_39",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_40",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_burn",
+      "contract": "ControlFlowERC20",
+      "signature": "_burn(address, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "reads": [
+        "from",
+        "address(0)",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "address(0)",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_17"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    }
+  ]
+}

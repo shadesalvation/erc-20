@@ -33,6 +33,9 @@ _QUERY_DETAIL_FIELDS = {
     "memory_ssa",
     "memory_version",
     "memory_versions",
+    "atomic_operation_id",
+    "atomic_kind",
+    "atomic_sequence",
 }
 _QUERY_ANALYSIS_FACTS = {"MemorySSAQueryLayer", "SemanticSinkMemoryQuery"}
 _QUERY_NOTES = {

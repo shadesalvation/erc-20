@@ -553,6 +553,10 @@ class ControlBuilder:
         operation_type = getattr(op, "type", None)
         if operation_type is not None:
             item["operator"] = self._enum_text(operation_type)
+        node = getattr(op, "node", None)
+        scope = getattr(node, "scope", None) if node is not None else None
+        if scope is not None and hasattr(scope, "is_checked"):
+            item["checked"] = bool(scope.is_checked)
         operation_name = getattr(op, "name", None)
         if operation_name is not None:
             item["name"] = str(operation_name)

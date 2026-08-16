@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -12,6 +13,7 @@ for item in (ROOT / "legacy_yul", ROOT / "s_seir"):
         sys.path.insert(0, text)
 
 from s_seir_semantic_fact_adapter import SSeirFactAdapter, SlitherFactAdapter, build_function_level_semantic_fact_payload
+from s_seir_solidity_semantic_lifter import normalize_slithir_sink_fact
 
 
 SLITHER_SOURCE = """pragma solidity ^0.8.26;
@@ -140,6 +142,7 @@ class FakeFunction:
                 "state_variable": "balances",
                 "keys": ["msg.sender"],
                 "value": "amount",
+                "solidity_like": "balances[msg.sender] = amount;",
                 "source": "slithir_ssa",
             },
         }
@@ -327,6 +330,28 @@ def test_slither_defined_operation_dicts_are_covered() -> None:
     assert any(item["kind"] == "ValueTransferCall" for item in facts)
 
 
+def test_delete_fallback_uses_source_level_target() -> None:
+    fact = {
+        "kind": "Delete",
+        "lvalue": "REF_11",
+        "writes": ["REF_11"],
+        "semantic": {},
+        "evidence": {
+            "slither": {
+                "kind": "Delete",
+                "source_expression": "delete allowance[msg.sender][spender]",
+                "variable": {"kind": "ReferenceVariableSSA", "text": "REF_11", "base_name": "REF_11"},
+            }
+        },
+    }
+    normalize_slithir_sink_fact(fact)
+    assert fact["lvalue"] == "allowance[msg.sender][spender]"
+    assert fact["rvalue"] == "delete allowance[msg.sender][spender]"
+    assert fact["reads"] == []
+    assert fact["writes"] == ["allowance[msg.sender][spender]"]
+    assert fact["semantic"]["target"] == "allowance[msg.sender][spender]"
+
+
 def test_real_slither_operations_project_to_semantic_facts() -> None:
     try:
         from slither.slither import Slither  # type: ignore
@@ -364,6 +389,7 @@ def test_function_level_payload_splits_solidity_and_yul_facts() -> None:
     assert payload["solidity_facts"][0]["lvalue"] == "balances[msg.sender]"
     assert [item["kind"] for item in payload["yul_facts"]] == ["StateWrite"]
     assert not any(item["kind"] == "BinaryOperation" for item in payload["facts"])
+    assert "solidity_like" not in json.dumps(payload["facts"], ensure_ascii=False)
     assert [item["fact_id"] for item in payload["facts"]] == ["fact_1", "fact_2"]
 
 
@@ -387,6 +413,7 @@ if __name__ == "__main__":
         test_sseir_event_and_revert_become_behavior_facts,
         test_slither_like_operations_map_to_semantic_facts,
         test_slither_defined_operation_dicts_are_covered,
+        test_delete_fallback_uses_source_level_target,
         test_real_slither_operations_project_to_semantic_facts,
         test_function_level_payload_splits_solidity_and_yul_facts,
         test_function_level_payload_dedupes_same_semantic_fact_and_merges_evidence,

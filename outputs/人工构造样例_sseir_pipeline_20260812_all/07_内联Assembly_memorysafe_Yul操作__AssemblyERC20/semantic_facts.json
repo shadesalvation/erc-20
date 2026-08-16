@@ -1,0 +1,4644 @@
+{
+  "schema": "s-seir-function-semantic-facts/v1",
+  "source": "人工构造样例/07_内联Assembly_memorysafe_Yul操作/contracts/AssemblyERC20.sol",
+  "result_dir": "outputs/人工构造样例_sseir_pipeline_20260812_all/07_内联Assembly_memorysafe_Yul操作__AssemblyERC20",
+  "model_boundary": {
+    "processing_unit": "function",
+    "solidity": "Solidity source is lifted to high-level SemanticFact rows from S-SEIR Solidity overlays; SlithIR SSA is retained as evidence/debug input.",
+    "yul": "S-SEIR keeps low-level roles/effects/overlays in sseir.json and projects overlays to SemanticFact here."
+  },
+  "function_count": 9,
+  "solidity_fact_count": 18,
+  "yul_fact_count": 47,
+  "fact_count": 65,
+  "solidity_facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "AssemblyERC20",
+      "signature": "constructor(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "totalSupply",
+      "rvalue": "initialSupply",
+      "reads": [
+        "initialSupply"
+      ],
+      "writes": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "AssemblyERC20",
+      "signature": "constructor(uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "lvalue": "balanceOf[msg.sender]",
+      "rvalue": "initialSupply",
+      "reads": [
+        "initialSupply"
+      ],
+      "writes": [
+        "balanceOf[msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[msg.sender]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "AssemblyERC20",
+      "signature": "constructor(uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "reads": [
+        "address(0)",
+        "msg.sender",
+        "initialSupply"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "address(0)",
+          "msg.sender",
+          "initialSupply"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "AssemblyERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "AssemblyERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "reads": [
+        "msg.sender",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "target": "AssemblyERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "to",
+          "value"
+        ],
+        "solidity_like": "AssemblyERC20._assemblyMove(msg.sender, to, value);"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "AssemblyERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "AssemblyERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[msg.sender][spender]",
+        "state_variable": "allowance",
+        "keys": [
+          "msg.sender",
+          "spender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "AssemblyERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "msg.sender",
+        "spender",
+        "value"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "msg.sender",
+          "spender",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "condition": "(current >= value)",
+      "reads": [
+        "(current >= value)"
+      ],
+      "semantic": {
+        "condition": "(current >= value)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_7"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "lvalue": "allowance[from][msg.sender]",
+      "rvalue": "(current - value)",
+      "reads": [
+        "current",
+        "value"
+      ],
+      "writes": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_12"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "target": "AssemblyERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "from",
+          "to",
+          "value"
+        ],
+        "solidity_like": "AssemblyERC20._assemblyMove(from, to, value);"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "hashMemorySafe",
+      "contract": "AssemblyERC20",
+      "signature": "hashMemorySafe(bytes)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_21"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "condition": "(to != address(0))",
+      "reads": [
+        "(to != address(0))"
+      ],
+      "semantic": {
+        "condition": "(to != address(0))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_26"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    }
+  ],
+  "yul_facts": [
+    {
+      "fact_id": "fact_19",
+      "kind": "Return",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_1",
+      "rvalue": "calldataload(0)",
+      "reads": [
+        "calldataload"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_1_1",
+        "expression": "calldataload(0)",
+        "solidity_like": "__sseir_eval_asm_s_1_1 = calldataload(0);",
+        "call": "calldataload",
+        "raw_args": [
+          "0"
+        ],
+        "evaluated_args": [
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_2",
+      "rvalue": "shr(224, __sseir_eval_asm_s_1_1)",
+      "reads": [
+        "shr",
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_2"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_1_2",
+        "expression": "shr(224, __sseir_eval_asm_s_1_1)",
+        "solidity_like": "__sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 >> 224);",
+        "call": "shr",
+        "raw_args": [
+          "224",
+          "calldataload(0)"
+        ],
+        "evaluated_args": [
+          "224",
+          "__sseir_eval_asm_s_1_1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "selector",
+      "rvalue": "shr(224, calldataload(0))",
+      "reads": [
+        "shr",
+        "calldataload"
+      ],
+      "writes": [
+        "selector"
+      ],
+      "semantic": {
+        "target": "selector",
+        "expression": "shr(224, calldataload(0))",
+        "solidity_like": "selector = __sseir_eval_asm_s_1_2;"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "Return",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "hashMemorySafe",
+      "contract": "AssemblyERC20",
+      "signature": "hashMemorySafe(bytes)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_24",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "hashMemorySafe",
+      "contract": "AssemblyERC20",
+      "signature": "hashMemorySafe(bytes)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n2"
+      ],
+      "lvalue": "h",
+      "rvalue": "keccak256(add(data, 0x20), mload(data))",
+      "reads": [
+        "add",
+        "data",
+        "mload"
+      ],
+      "writes": [
+        "h"
+      ],
+      "semantic": {
+        "target": "h",
+        "expression": "keccak256(add(data, 0x20), mload(data))",
+        "solidity_like": "h = keccak256(data);"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_25",
+      "kind": "Return",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_21"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_26",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "len",
+      "rvalue": "mload(values)",
+      "reads": [
+        "mload",
+        "values"
+      ],
+      "writes": [
+        "len"
+      ],
+      "semantic": {
+        "target": "len",
+        "expression": "mload(values)",
+        "solidity_like": "len = values.length;"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_27",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_6_1",
+      "rvalue": "add(values, 0x20)",
+      "reads": [
+        "add",
+        "values"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_6_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_6_1",
+        "expression": "add(values, 0x20)",
+        "solidity_like": "__sseir_eval_asm_s_6_1 = (values + 0x20);",
+        "call": "add",
+        "raw_args": [
+          "values",
+          "0x20"
+        ],
+        "evaluated_args": [
+          "values",
+          "0x20"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_28",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n3"
+      ],
+      "lvalue": "ptr",
+      "rvalue": "add(values, 0x20)",
+      "reads": [
+        "add",
+        "values"
+      ],
+      "writes": [
+        "ptr"
+      ],
+      "semantic": {
+        "target": "ptr",
+        "expression": "add(values, 0x20)",
+        "solidity_like": "ptr = __sseir_eval_asm_s_6_1;"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_29",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_8"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n4"
+      ],
+      "lvalue": "i",
+      "rvalue": "0",
+      "writes": [
+        "i"
+      ],
+      "semantic": {
+        "target": "i",
+        "expression": "0",
+        "solidity_like": "i = 0;"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_5"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_30",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n8"
+      ],
+      "condition": "lt(i, len)",
+      "lvalue": "v",
+      "rvalue": "mload(add(ptr, mul(i, 0x20)))",
+      "reads": [
+        "mload",
+        "add",
+        "ptr",
+        "mul",
+        "i"
+      ],
+      "writes": [
+        "v"
+      ],
+      "semantic": {
+        "target": "v",
+        "expression": "mload(add(ptr, mul(i, 0x20)))",
+        "solidity_like": "v = mload((ptr + (i * 0x20)));"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_6"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_31",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n9",
+        "bb_asm3_n10"
+      ],
+      "condition": "lt(i, len)",
+      "lvalue": "__sseir_eval_asm_s_10_1",
+      "rvalue": "eq(v, 0)",
+      "reads": [
+        "eq",
+        "v"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_10_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_10_1",
+        "expression": "eq(v, 0)",
+        "solidity_like": "__sseir_eval_asm_s_10_1 = (v == 0);",
+        "call": "eq",
+        "raw_args": [
+          "v",
+          "0"
+        ],
+        "evaluated_args": [
+          "v",
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_9"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_32",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n9",
+        "bb_asm3_n10"
+      ],
+      "condition": "lt(i, len)",
+      "rvalue": "eq(v, 0)",
+      "reads": [
+        "eq",
+        "v"
+      ],
+      "semantic": {
+        "expression": "eq(v, 0)",
+        "solidity_like": "if (__sseir_eval_asm_s_10_1)"
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_8"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_33",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n12",
+        "bb_asm3_n13"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0))",
+      "lvalue": "__sseir_eval_asm_s_12_1",
+      "rvalue": "gt(v, 1000000)",
+      "reads": [
+        "gt",
+        "v"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_12_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_12_1",
+        "expression": "gt(v, 1000000)",
+        "solidity_like": "__sseir_eval_asm_s_12_1 = (v > 1000000);",
+        "call": "gt",
+        "raw_args": [
+          "v",
+          "1000000"
+        ],
+        "evaluated_args": [
+          "v",
+          "1000000"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_10",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_12"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_34",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n12",
+        "bb_asm3_n13"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0))",
+      "rvalue": "gt(v, 1000000)",
+      "reads": [
+        "gt",
+        "v"
+      ],
+      "semantic": {
+        "expression": "gt(v, 1000000)",
+        "solidity_like": "if (__sseir_eval_asm_s_12_1)"
+      },
+      "evidence": {
+        "overlay": "ov_11",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_35",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_16"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n17"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && and(v, 1) == 0",
+      "lvalue": "__sseir_eval_asm_s_16_1",
+      "rvalue": "addOrLeave(total, v)",
+      "reads": [
+        "addOrLeave",
+        "total",
+        "v"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_16_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_16_1",
+        "expression": "addOrLeave(total, v)",
+        "solidity_like": "__sseir_eval_asm_s_16_1 = addOrLeave(total, v);",
+        "call": "addOrLeave",
+        "raw_args": [
+          "total",
+          "v"
+        ],
+        "evaluated_args": [
+          "total",
+          "v"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_12",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_15"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_36",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_16"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n17"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && and(v, 1) == 0",
+      "lvalue": "total",
+      "rvalue": "addOrLeave(total, v)",
+      "reads": [
+        "addOrLeave",
+        "total",
+        "v"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "target": "total",
+        "expression": "addOrLeave(total, v)",
+        "solidity_like": "total = __sseir_eval_asm_s_16_1;"
+      },
+      "evidence": {
+        "overlay": "ov_13",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_14"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_37",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_18"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n18"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && !(and(v, 1) == 0)",
+      "lvalue": "__sseir_eval_asm_s_18_1",
+      "rvalue": "mul(v, 2)",
+      "reads": [
+        "mul",
+        "v"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_18_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_18_1",
+        "expression": "mul(v, 2)",
+        "solidity_like": "__sseir_eval_asm_s_18_1 = (v * 2);",
+        "call": "mul",
+        "raw_args": [
+          "v",
+          "2"
+        ],
+        "evaluated_args": [
+          "v",
+          "2"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_14",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_17"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_38",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_18"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n18"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && !(and(v, 1) == 0)",
+      "lvalue": "__sseir_eval_asm_s_18_2",
+      "rvalue": "addOrLeave(total, __sseir_eval_asm_s_18_1)",
+      "reads": [
+        "addOrLeave",
+        "total",
+        "__sseir_eval_asm_s_18_1"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_18_2"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_18_2",
+        "expression": "addOrLeave(total, __sseir_eval_asm_s_18_1)",
+        "solidity_like": "__sseir_eval_asm_s_18_2 = addOrLeave(total, __sseir_eval_asm_s_18_1);",
+        "call": "addOrLeave",
+        "raw_args": [
+          "total",
+          "mul(v, 2)"
+        ],
+        "evaluated_args": [
+          "total",
+          "__sseir_eval_asm_s_18_1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_15",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_18"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_39",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_18"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n18"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && !(and(v, 1) == 0)",
+      "lvalue": "total",
+      "rvalue": "addOrLeave(total, mul(v, 2))",
+      "reads": [
+        "addOrLeave",
+        "total",
+        "mul",
+        "v"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "target": "total",
+        "expression": "addOrLeave(total, mul(v, 2))",
+        "solidity_like": "total = __sseir_eval_asm_s_18_2;"
+      },
+      "evidence": {
+        "overlay": "ov_16",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_16"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_40",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_19"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n19"
+      ],
+      "lvalue": "__sseir_eval_asm_s_19_1",
+      "rvalue": "add(i, 1)",
+      "reads": [
+        "add",
+        "i"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_19_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_19_1",
+        "expression": "add(i, 1)",
+        "solidity_like": "__sseir_eval_asm_s_19_1 = (i + 1);",
+        "call": "add",
+        "raw_args": [
+          "i",
+          "1"
+        ],
+        "evaluated_args": [
+          "i",
+          "1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_17",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_20"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_41",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_19"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n19"
+      ],
+      "lvalue": "i",
+      "rvalue": "add(i, 1)",
+      "reads": [
+        "add",
+        "i"
+      ],
+      "writes": [
+        "i"
+      ],
+      "semantic": {
+        "target": "i",
+        "expression": "add(i, 1)",
+        "solidity_like": "i = __sseir_eval_asm_s_19_1;"
+      },
+      "evidence": {
+        "overlay": "ov_18",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_19"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_42",
+      "kind": "Return",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_9"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_43",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_1",
+      "rvalue": "caller()",
+      "reads": [
+        "caller"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_1_1",
+        "expression": "caller()",
+        "solidity_like": "__sseir_eval_asm_s_1_1 = msg.sender;",
+        "call": "caller"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_44",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n2"
+      ],
+      "lvalue": "who",
+      "rvalue": "caller()",
+      "reads": [
+        "caller"
+      ],
+      "writes": [
+        "who"
+      ],
+      "semantic": {
+        "target": "who",
+        "expression": "caller()",
+        "solidity_like": "who = __sseir_eval_asm_s_1_1;"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_45",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "callvalue()",
+      "reads": [
+        "callvalue"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "callvalue()",
+        "solidity_like": "__sseir_eval_asm_s_2_1 = msg.value;",
+        "call": "callvalue"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_46",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n3"
+      ],
+      "lvalue": "value",
+      "rvalue": "callvalue()",
+      "reads": [
+        "callvalue"
+      ],
+      "writes": [
+        "value"
+      ],
+      "semantic": {
+        "target": "value",
+        "expression": "callvalue()",
+        "solidity_like": "value = __sseir_eval_asm_s_2_1;"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_47",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_3_1",
+      "rvalue": "calldatasize()",
+      "reads": [
+        "calldatasize"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_3_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_3_1",
+        "expression": "calldatasize()",
+        "solidity_like": "__sseir_eval_asm_s_3_1 = msg.data.length;",
+        "call": "calldatasize"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_6"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_48",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n4"
+      ],
+      "lvalue": "size",
+      "rvalue": "calldatasize()",
+      "reads": [
+        "calldatasize"
+      ],
+      "writes": [
+        "size"
+      ],
+      "semantic": {
+        "target": "size",
+        "expression": "calldatasize()",
+        "solidity_like": "size = __sseir_eval_asm_s_3_1;"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_5"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_49",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n5"
+      ],
+      "lvalue": "__sseir_eval_asm_s_4_1",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_4_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_4_1",
+        "expression": "gas()",
+        "solidity_like": "__sseir_eval_asm_s_4_1 = gasleft();",
+        "call": "gas"
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_8"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_50",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n5"
+      ],
+      "lvalue": "gasLeft",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "gasLeft"
+      ],
+      "semantic": {
+        "target": "gasLeft",
+        "expression": "gas()",
+        "solidity_like": "gasLeft = __sseir_eval_asm_s_4_1;"
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_51",
+      "kind": "Revert",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n9"
+      ],
+      "condition": "lt(fromBalance, value)",
+      "semantic": {
+        "operation": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "PathConditionedCustomErrorRevert",
+        "effects": [
+          "eff_13"
+        ],
+        "candidate": {
+          "condition": "lt(fromBalance, value)",
+          "values": [
+            "low_bytes(0x08c379a0, 4)"
+          ],
+          "normalized": "MemorySlice(low_bytes(0x08c379a0, 4))",
+          "notes": [
+            "revert_payload"
+          ],
+          "selector_source": "low_bytes(0x08c379a0, 4)",
+          "selector": "0x08c379a0",
+          "selector_match": {
+            "selector": "0x08c379a0",
+            "selector_source": "low_bytes(0x08c379a0, 4)",
+            "preferred_kind": "error",
+            "best_match": null,
+            "matches": [],
+            "match_status": "unmatched",
+            "abi_hint": {
+              "kind": "selector",
+              "selector": "low_bytes(0x08c379a0, 4)"
+            }
+          },
+          "solidity_like": "revertRawSelector(low_bytes(0x08c379a0, 4));"
+        }
+      }
+    },
+    {
+      "fact_id": "fact_52",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_3",
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n4",
+        "bb_asm5_n5"
+      ],
+      "lvalue": "fromBalance",
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ],
+        "slot": "fromSlot",
+        "slot_key": "fromSlot__ssa1",
+        "slot_versions": [
+          "fromSlot__ssa1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_8",
+          "eff_10"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_53",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_3",
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n4",
+        "bb_asm5_n13"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "lvalue": "balanceOf[from]",
+      "rvalue": "(fromBalance - value)",
+      "reads": [
+        "fromBalance",
+        "value"
+      ],
+      "writes": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ],
+        "slot": "fromSlot",
+        "slot_key": "fromSlot__ssa1",
+        "slot_versions": [
+          "fromSlot__ssa1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_8",
+          "eff_16"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_54",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n12",
+        "bb_asm5_n14"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ],
+        "slot": "toSlot",
+        "slot_key": "toSlot__ssa3",
+        "slot_versions": [
+          "toSlot__ssa3"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_15",
+          "eff_17"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_55",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n12",
+        "bb_asm5_n14"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "lvalue": "balanceOf[to]",
+      "rvalue": "(balanceOf[to] + value)",
+      "reads": [
+        "balanceOf[to]",
+        "value"
+      ],
+      "writes": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ],
+        "slot": "toSlot",
+        "slot_key": "toSlot__ssa3",
+        "slot_versions": [
+          "toSlot__ssa3"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_10",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_15",
+          "eff_18"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_56",
+      "kind": "EventEmit",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_14"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n16"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_11",
+        "overlay_kind": "PathConditionedEventEmit",
+        "effects": [
+          "eff_19"
+        ],
+        "candidate": {
+          "condition": "!(lt(fromBalance, value))",
+          "values": [
+            "value"
+          ],
+          "normalized": "MemorySlice(value)",
+          "notes": [
+            "event_data",
+            "event_topic_address_projection_resolved"
+          ],
+          "event": "Transfer",
+          "args": [
+            "from",
+            "to",
+            "value"
+          ],
+          "solidity_like": "emit Transfer(from, to, value);"
+        }
+      }
+    },
+    {
+      "fact_id": "fact_57",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n4"
+      ],
+      "lvalue": "fromSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "fromSlot"
+      ],
+      "semantic": {
+        "target": "fromSlot",
+        "expression": "keccak256(0x00, 0x40)",
+        "solidity_like": "fromSlot = keccak256(abi.encode(from, balanceOf.slot));"
+      },
+      "evidence": {
+        "overlay": "ov_12",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_58",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n5"
+      ],
+      "lvalue": "fromBalance",
+      "rvalue": "sload(fromSlot)",
+      "reads": [
+        "sload",
+        "fromSlot"
+      ],
+      "writes": [
+        "fromBalance"
+      ],
+      "semantic": {
+        "target": "fromBalance",
+        "expression": "sload(fromSlot)",
+        "solidity_like": "fromBalance = sload(fromSlot);"
+      },
+      "evidence": {
+        "overlay": "ov_13",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_59",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n6",
+        "bb_asm5_n7"
+      ],
+      "lvalue": "__sseir_eval_asm_s_5_1",
+      "rvalue": "lt(fromBalance, value)",
+      "reads": [
+        "lt",
+        "fromBalance",
+        "value"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_5_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_5_1",
+        "expression": "lt(fromBalance, value)",
+        "solidity_like": "__sseir_eval_asm_s_5_1 = (fromBalance < value);",
+        "call": "lt",
+        "raw_args": [
+          "fromBalance",
+          "value"
+        ],
+        "evaluated_args": [
+          "fromBalance",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_14",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_12"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_60",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n6",
+        "bb_asm5_n7"
+      ],
+      "rvalue": "lt(fromBalance, value)",
+      "reads": [
+        "lt",
+        "fromBalance",
+        "value"
+      ],
+      "semantic": {
+        "expression": "lt(fromBalance, value)",
+        "solidity_like": "if (__sseir_eval_asm_s_5_1)"
+      },
+      "evidence": {
+        "overlay": "ov_15",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_61",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n12"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "lvalue": "toSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "toSlot"
+      ],
+      "semantic": {
+        "target": "toSlot",
+        "expression": "keccak256(0x00, 0x40)",
+        "solidity_like": "toSlot = keccak256(abi.encode(to, balanceOf.slot));"
+      },
+      "evidence": {
+        "overlay": "ov_16",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_14"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_62",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "lvalue": "from",
+      "rvalue": "phi(from, msg.sender)",
+      "reads": [
+        "phi",
+        "from"
+      ],
+      "writes": [
+        "from"
+      ],
+      "semantic": {
+        "target": "from",
+        "expression": "phi(from, msg.sender)",
+        "solidity_like": "from = phi(from, msg.sender);"
+      },
+      "evidence": {
+        "overlay": "ov_17",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_20"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_63",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "lvalue": "to",
+      "rvalue": "to",
+      "reads": [
+        "to"
+      ],
+      "writes": [
+        "to"
+      ],
+      "semantic": {
+        "target": "to",
+        "expression": "to",
+        "solidity_like": "to = to;"
+      },
+      "evidence": {
+        "overlay": "ov_18",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_21"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_64",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "lvalue": "value",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "value"
+      ],
+      "semantic": {
+        "target": "value",
+        "expression": "value",
+        "solidity_like": "value = value;"
+      },
+      "evidence": {
+        "overlay": "ov_19",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_22"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_65",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "lvalue": "balanceOf",
+      "rvalue": "balanceOf",
+      "reads": [
+        "balanceOf"
+      ],
+      "writes": [
+        "balanceOf"
+      ],
+      "semantic": {
+        "target": "balanceOf",
+        "expression": "balanceOf",
+        "solidity_like": "balanceOf = balanceOf;"
+      },
+      "evidence": {
+        "overlay": "ov_20",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_23"
+        ]
+      }
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "AssemblyERC20",
+      "signature": "constructor(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "totalSupply",
+      "rvalue": "initialSupply",
+      "reads": [
+        "initialSupply"
+      ],
+      "writes": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "AssemblyERC20",
+      "signature": "constructor(uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "lvalue": "balanceOf[msg.sender]",
+      "rvalue": "initialSupply",
+      "reads": [
+        "initialSupply"
+      ],
+      "writes": [
+        "balanceOf[msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[msg.sender]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "AssemblyERC20",
+      "signature": "constructor(uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "reads": [
+        "address(0)",
+        "msg.sender",
+        "initialSupply"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "address(0)",
+          "msg.sender",
+          "initialSupply"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "AssemblyERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "AssemblyERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "reads": [
+        "msg.sender",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "target": "AssemblyERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "to",
+          "value"
+        ],
+        "solidity_like": "AssemblyERC20._assemblyMove(msg.sender, to, value);"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "AssemblyERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "AssemblyERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[msg.sender][spender]",
+        "state_variable": "allowance",
+        "keys": [
+          "msg.sender",
+          "spender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "AssemblyERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "msg.sender",
+        "spender",
+        "value"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "msg.sender",
+          "spender",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "condition": "(current >= value)",
+      "reads": [
+        "(current >= value)"
+      ],
+      "semantic": {
+        "condition": "(current >= value)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_7"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_14"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "lvalue": "allowance[from][msg.sender]",
+      "rvalue": "(current - value)",
+      "reads": [
+        "current",
+        "value"
+      ],
+      "writes": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_12"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "target": "AssemblyERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "from",
+          "to",
+          "value"
+        ],
+        "solidity_like": "AssemblyERC20._assemblyMove(from, to, value);"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "hashMemorySafe",
+      "contract": "AssemblyERC20",
+      "signature": "hashMemorySafe(bytes)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_21"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "condition": "(to != address(0))",
+      "reads": [
+        "(to != address(0))"
+      ],
+      "semantic": {
+        "condition": "(to != address(0))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_26"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "Return",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_1",
+      "rvalue": "calldataload(0)",
+      "reads": [
+        "calldataload"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_1_1",
+        "expression": "calldataload(0)",
+        "solidity_like": "__sseir_eval_asm_s_1_1 = calldataload(0);",
+        "call": "calldataload",
+        "raw_args": [
+          "0"
+        ],
+        "evaluated_args": [
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_2",
+      "rvalue": "shr(224, __sseir_eval_asm_s_1_1)",
+      "reads": [
+        "shr",
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_2"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_1_2",
+        "expression": "shr(224, __sseir_eval_asm_s_1_1)",
+        "solidity_like": "__sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 >> 224);",
+        "call": "shr",
+        "raw_args": [
+          "224",
+          "calldataload(0)"
+        ],
+        "evaluated_args": [
+          "224",
+          "__sseir_eval_asm_s_1_1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "selectorFromCalldata",
+      "contract": "AssemblyERC20",
+      "signature": "selectorFromCalldata()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "selector",
+      "rvalue": "shr(224, calldataload(0))",
+      "reads": [
+        "shr",
+        "calldataload"
+      ],
+      "writes": [
+        "selector"
+      ],
+      "semantic": {
+        "target": "selector",
+        "expression": "shr(224, calldataload(0))",
+        "solidity_like": "selector = __sseir_eval_asm_s_1_2;"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "Return",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "hashMemorySafe",
+      "contract": "AssemblyERC20",
+      "signature": "hashMemorySafe(bytes)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_24",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "hashMemorySafe",
+      "contract": "AssemblyERC20",
+      "signature": "hashMemorySafe(bytes)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n2"
+      ],
+      "lvalue": "h",
+      "rvalue": "keccak256(add(data, 0x20), mload(data))",
+      "reads": [
+        "add",
+        "data",
+        "mload"
+      ],
+      "writes": [
+        "h"
+      ],
+      "semantic": {
+        "target": "h",
+        "expression": "keccak256(add(data, 0x20), mload(data))",
+        "solidity_like": "h = keccak256(data);"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_25",
+      "kind": "Return",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_21"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_26",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "len",
+      "rvalue": "mload(values)",
+      "reads": [
+        "mload",
+        "values"
+      ],
+      "writes": [
+        "len"
+      ],
+      "semantic": {
+        "target": "len",
+        "expression": "mload(values)",
+        "solidity_like": "len = values.length;"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_27",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_6_1",
+      "rvalue": "add(values, 0x20)",
+      "reads": [
+        "add",
+        "values"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_6_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_6_1",
+        "expression": "add(values, 0x20)",
+        "solidity_like": "__sseir_eval_asm_s_6_1 = (values + 0x20);",
+        "call": "add",
+        "raw_args": [
+          "values",
+          "0x20"
+        ],
+        "evaluated_args": [
+          "values",
+          "0x20"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_28",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n3"
+      ],
+      "lvalue": "ptr",
+      "rvalue": "add(values, 0x20)",
+      "reads": [
+        "add",
+        "values"
+      ],
+      "writes": [
+        "ptr"
+      ],
+      "semantic": {
+        "target": "ptr",
+        "expression": "add(values, 0x20)",
+        "solidity_like": "ptr = __sseir_eval_asm_s_6_1;"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_29",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_8"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n4"
+      ],
+      "lvalue": "i",
+      "rvalue": "0",
+      "writes": [
+        "i"
+      ],
+      "semantic": {
+        "target": "i",
+        "expression": "0",
+        "solidity_like": "i = 0;"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_5"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_30",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n8"
+      ],
+      "condition": "lt(i, len)",
+      "lvalue": "v",
+      "rvalue": "mload(add(ptr, mul(i, 0x20)))",
+      "reads": [
+        "mload",
+        "add",
+        "ptr",
+        "mul",
+        "i"
+      ],
+      "writes": [
+        "v"
+      ],
+      "semantic": {
+        "target": "v",
+        "expression": "mload(add(ptr, mul(i, 0x20)))",
+        "solidity_like": "v = mload((ptr + (i * 0x20)));"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_6"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_31",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n9",
+        "bb_asm3_n10"
+      ],
+      "condition": "lt(i, len)",
+      "lvalue": "__sseir_eval_asm_s_10_1",
+      "rvalue": "eq(v, 0)",
+      "reads": [
+        "eq",
+        "v"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_10_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_10_1",
+        "expression": "eq(v, 0)",
+        "solidity_like": "__sseir_eval_asm_s_10_1 = (v == 0);",
+        "call": "eq",
+        "raw_args": [
+          "v",
+          "0"
+        ],
+        "evaluated_args": [
+          "v",
+          "0"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_9"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_32",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n9",
+        "bb_asm3_n10"
+      ],
+      "condition": "lt(i, len)",
+      "rvalue": "eq(v, 0)",
+      "reads": [
+        "eq",
+        "v"
+      ],
+      "semantic": {
+        "expression": "eq(v, 0)",
+        "solidity_like": "if (__sseir_eval_asm_s_10_1)"
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_8"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_33",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n12",
+        "bb_asm3_n13"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0))",
+      "lvalue": "__sseir_eval_asm_s_12_1",
+      "rvalue": "gt(v, 1000000)",
+      "reads": [
+        "gt",
+        "v"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_12_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_12_1",
+        "expression": "gt(v, 1000000)",
+        "solidity_like": "__sseir_eval_asm_s_12_1 = (v > 1000000);",
+        "call": "gt",
+        "raw_args": [
+          "v",
+          "1000000"
+        ],
+        "evaluated_args": [
+          "v",
+          "1000000"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_10",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_12"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_34",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n12",
+        "bb_asm3_n13"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0))",
+      "rvalue": "gt(v, 1000000)",
+      "reads": [
+        "gt",
+        "v"
+      ],
+      "semantic": {
+        "expression": "gt(v, 1000000)",
+        "solidity_like": "if (__sseir_eval_asm_s_12_1)"
+      },
+      "evidence": {
+        "overlay": "ov_11",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_35",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_16"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n17"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && and(v, 1) == 0",
+      "lvalue": "__sseir_eval_asm_s_16_1",
+      "rvalue": "addOrLeave(total, v)",
+      "reads": [
+        "addOrLeave",
+        "total",
+        "v"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_16_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_16_1",
+        "expression": "addOrLeave(total, v)",
+        "solidity_like": "__sseir_eval_asm_s_16_1 = addOrLeave(total, v);",
+        "call": "addOrLeave",
+        "raw_args": [
+          "total",
+          "v"
+        ],
+        "evaluated_args": [
+          "total",
+          "v"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_12",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_15"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_36",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_16"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n17"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && and(v, 1) == 0",
+      "lvalue": "total",
+      "rvalue": "addOrLeave(total, v)",
+      "reads": [
+        "addOrLeave",
+        "total",
+        "v"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "target": "total",
+        "expression": "addOrLeave(total, v)",
+        "solidity_like": "total = __sseir_eval_asm_s_16_1;"
+      },
+      "evidence": {
+        "overlay": "ov_13",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_14"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_37",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_18"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n18"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && !(and(v, 1) == 0)",
+      "lvalue": "__sseir_eval_asm_s_18_1",
+      "rvalue": "mul(v, 2)",
+      "reads": [
+        "mul",
+        "v"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_18_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_18_1",
+        "expression": "mul(v, 2)",
+        "solidity_like": "__sseir_eval_asm_s_18_1 = (v * 2);",
+        "call": "mul",
+        "raw_args": [
+          "v",
+          "2"
+        ],
+        "evaluated_args": [
+          "v",
+          "2"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_14",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_17"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_38",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_18"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n18"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && !(and(v, 1) == 0)",
+      "lvalue": "__sseir_eval_asm_s_18_2",
+      "rvalue": "addOrLeave(total, __sseir_eval_asm_s_18_1)",
+      "reads": [
+        "addOrLeave",
+        "total",
+        "__sseir_eval_asm_s_18_1"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_18_2"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_18_2",
+        "expression": "addOrLeave(total, __sseir_eval_asm_s_18_1)",
+        "solidity_like": "__sseir_eval_asm_s_18_2 = addOrLeave(total, __sseir_eval_asm_s_18_1);",
+        "call": "addOrLeave",
+        "raw_args": [
+          "total",
+          "mul(v, 2)"
+        ],
+        "evaluated_args": [
+          "total",
+          "__sseir_eval_asm_s_18_1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_15",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_18"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_39",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_18"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n18"
+      ],
+      "condition": "lt(i, len) && !(eq(v, 0)) && !(gt(v, 1000000)) && !(and(v, 1) == 0)",
+      "lvalue": "total",
+      "rvalue": "addOrLeave(total, mul(v, 2))",
+      "reads": [
+        "addOrLeave",
+        "total",
+        "mul",
+        "v"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "target": "total",
+        "expression": "addOrLeave(total, mul(v, 2))",
+        "solidity_like": "total = __sseir_eval_asm_s_18_2;"
+      },
+      "evidence": {
+        "overlay": "ov_16",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_16"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_40",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_19"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n19"
+      ],
+      "lvalue": "__sseir_eval_asm_s_19_1",
+      "rvalue": "add(i, 1)",
+      "reads": [
+        "add",
+        "i"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_19_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_19_1",
+        "expression": "add(i, 1)",
+        "solidity_like": "__sseir_eval_asm_s_19_1 = (i + 1);",
+        "call": "add",
+        "raw_args": [
+          "i",
+          "1"
+        ],
+        "evaluated_args": [
+          "i",
+          "1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_17",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_20"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_41",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "sumSkipping",
+      "contract": "AssemblyERC20",
+      "signature": "sumSkipping(uint256[])",
+      "stmt_refs": [
+        "asm_s_19"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n19"
+      ],
+      "lvalue": "i",
+      "rvalue": "add(i, 1)",
+      "reads": [
+        "add",
+        "i"
+      ],
+      "writes": [
+        "i"
+      ],
+      "semantic": {
+        "target": "i",
+        "expression": "add(i, 1)",
+        "solidity_like": "i = __sseir_eval_asm_s_19_1;"
+      },
+      "evidence": {
+        "overlay": "ov_18",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_19"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_42",
+      "kind": "Return",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_9"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_43",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_1",
+      "rvalue": "caller()",
+      "reads": [
+        "caller"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_1_1",
+        "expression": "caller()",
+        "solidity_like": "__sseir_eval_asm_s_1_1 = msg.sender;",
+        "call": "caller"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_2"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_44",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n2"
+      ],
+      "lvalue": "who",
+      "rvalue": "caller()",
+      "reads": [
+        "caller"
+      ],
+      "writes": [
+        "who"
+      ],
+      "semantic": {
+        "target": "who",
+        "expression": "caller()",
+        "solidity_like": "who = __sseir_eval_asm_s_1_1;"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_45",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "callvalue()",
+      "reads": [
+        "callvalue"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "callvalue()",
+        "solidity_like": "__sseir_eval_asm_s_2_1 = msg.value;",
+        "call": "callvalue"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_4"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_46",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n3"
+      ],
+      "lvalue": "value",
+      "rvalue": "callvalue()",
+      "reads": [
+        "callvalue"
+      ],
+      "writes": [
+        "value"
+      ],
+      "semantic": {
+        "target": "value",
+        "expression": "callvalue()",
+        "solidity_like": "value = __sseir_eval_asm_s_2_1;"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_47",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_3_1",
+      "rvalue": "calldatasize()",
+      "reads": [
+        "calldatasize"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_3_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_3_1",
+        "expression": "calldatasize()",
+        "solidity_like": "__sseir_eval_asm_s_3_1 = msg.data.length;",
+        "call": "calldatasize"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_6"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_48",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n4"
+      ],
+      "lvalue": "size",
+      "rvalue": "calldatasize()",
+      "reads": [
+        "calldatasize"
+      ],
+      "writes": [
+        "size"
+      ],
+      "semantic": {
+        "target": "size",
+        "expression": "calldatasize()",
+        "solidity_like": "size = __sseir_eval_asm_s_3_1;"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_5"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_49",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n5"
+      ],
+      "lvalue": "__sseir_eval_asm_s_4_1",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_4_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_4_1",
+        "expression": "gas()",
+        "solidity_like": "__sseir_eval_asm_s_4_1 = gasleft();",
+        "call": "gas"
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_8"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_50",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "rawContext",
+      "contract": "AssemblyERC20",
+      "signature": "rawContext()",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n5"
+      ],
+      "lvalue": "gasLeft",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "gasLeft"
+      ],
+      "semantic": {
+        "target": "gasLeft",
+        "expression": "gas()",
+        "solidity_like": "gasLeft = __sseir_eval_asm_s_4_1;"
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_51",
+      "kind": "Revert",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n9"
+      ],
+      "condition": "lt(fromBalance, value)",
+      "semantic": {
+        "operation": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "PathConditionedCustomErrorRevert",
+        "effects": [
+          "eff_13"
+        ],
+        "candidate": {
+          "condition": "lt(fromBalance, value)",
+          "values": [
+            "low_bytes(0x08c379a0, 4)"
+          ],
+          "normalized": "MemorySlice(low_bytes(0x08c379a0, 4))",
+          "notes": [
+            "revert_payload"
+          ],
+          "selector_source": "low_bytes(0x08c379a0, 4)",
+          "selector": "0x08c379a0",
+          "selector_match": {
+            "selector": "0x08c379a0",
+            "selector_source": "low_bytes(0x08c379a0, 4)",
+            "preferred_kind": "error",
+            "best_match": null,
+            "matches": [],
+            "match_status": "unmatched",
+            "abi_hint": {
+              "kind": "selector",
+              "selector": "low_bytes(0x08c379a0, 4)"
+            }
+          },
+          "solidity_like": "revertRawSelector(low_bytes(0x08c379a0, 4));"
+        }
+      }
+    },
+    {
+      "fact_id": "fact_52",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_3",
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n4",
+        "bb_asm5_n5"
+      ],
+      "lvalue": "fromBalance",
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ],
+        "slot": "fromSlot",
+        "slot_key": "fromSlot__ssa1",
+        "slot_versions": [
+          "fromSlot__ssa1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_8",
+          "eff_10"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_53",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_3",
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n4",
+        "bb_asm5_n13"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "lvalue": "balanceOf[from]",
+      "rvalue": "(fromBalance - value)",
+      "reads": [
+        "fromBalance",
+        "value"
+      ],
+      "writes": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ],
+        "slot": "fromSlot",
+        "slot_key": "fromSlot__ssa1",
+        "slot_versions": [
+          "fromSlot__ssa1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_8",
+          "eff_16"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_54",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n12",
+        "bb_asm5_n14"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ],
+        "slot": "toSlot",
+        "slot_key": "toSlot__ssa3",
+        "slot_versions": [
+          "toSlot__ssa3"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_15",
+          "eff_17"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_55",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n12",
+        "bb_asm5_n14"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "lvalue": "balanceOf[to]",
+      "rvalue": "(balanceOf[to] + value)",
+      "reads": [
+        "balanceOf[to]",
+        "value"
+      ],
+      "writes": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ],
+        "slot": "toSlot",
+        "slot_key": "toSlot__ssa3",
+        "slot_versions": [
+          "toSlot__ssa3"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_10",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_15",
+          "eff_18"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_56",
+      "kind": "EventEmit",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_14"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n16"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_11",
+        "overlay_kind": "PathConditionedEventEmit",
+        "effects": [
+          "eff_19"
+        ],
+        "candidate": {
+          "condition": "!(lt(fromBalance, value))",
+          "values": [
+            "value"
+          ],
+          "normalized": "MemorySlice(value)",
+          "notes": [
+            "event_data",
+            "event_topic_address_projection_resolved"
+          ],
+          "event": "Transfer",
+          "args": [
+            "from",
+            "to",
+            "value"
+          ],
+          "solidity_like": "emit Transfer(from, to, value);"
+        }
+      }
+    },
+    {
+      "fact_id": "fact_57",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n4"
+      ],
+      "lvalue": "fromSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "fromSlot"
+      ],
+      "semantic": {
+        "target": "fromSlot",
+        "expression": "keccak256(0x00, 0x40)",
+        "solidity_like": "fromSlot = keccak256(abi.encode(from, balanceOf.slot));"
+      },
+      "evidence": {
+        "overlay": "ov_12",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_58",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n5"
+      ],
+      "lvalue": "fromBalance",
+      "rvalue": "sload(fromSlot)",
+      "reads": [
+        "sload",
+        "fromSlot"
+      ],
+      "writes": [
+        "fromBalance"
+      ],
+      "semantic": {
+        "target": "fromBalance",
+        "expression": "sload(fromSlot)",
+        "solidity_like": "fromBalance = sload(fromSlot);"
+      },
+      "evidence": {
+        "overlay": "ov_13",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_59",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n6",
+        "bb_asm5_n7"
+      ],
+      "lvalue": "__sseir_eval_asm_s_5_1",
+      "rvalue": "lt(fromBalance, value)",
+      "reads": [
+        "lt",
+        "fromBalance",
+        "value"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_5_1"
+      ],
+      "semantic": {
+        "temp": "__sseir_eval_asm_s_5_1",
+        "expression": "lt(fromBalance, value)",
+        "solidity_like": "__sseir_eval_asm_s_5_1 = (fromBalance < value);",
+        "call": "lt",
+        "raw_args": [
+          "fromBalance",
+          "value"
+        ],
+        "evaluated_args": [
+          "fromBalance",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_14",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_12"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_60",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n6",
+        "bb_asm5_n7"
+      ],
+      "rvalue": "lt(fromBalance, value)",
+      "reads": [
+        "lt",
+        "fromBalance",
+        "value"
+      ],
+      "semantic": {
+        "expression": "lt(fromBalance, value)",
+        "solidity_like": "if (__sseir_eval_asm_s_5_1)"
+      },
+      "evidence": {
+        "overlay": "ov_15",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_61",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n12"
+      ],
+      "condition": "!(lt(fromBalance, value))",
+      "lvalue": "toSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "toSlot"
+      ],
+      "semantic": {
+        "target": "toSlot",
+        "expression": "keccak256(0x00, 0x40)",
+        "solidity_like": "toSlot = keccak256(abi.encode(to, balanceOf.slot));"
+      },
+      "evidence": {
+        "overlay": "ov_16",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_14"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_62",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "lvalue": "from",
+      "rvalue": "phi(from, msg.sender)",
+      "reads": [
+        "phi",
+        "from"
+      ],
+      "writes": [
+        "from"
+      ],
+      "semantic": {
+        "target": "from",
+        "expression": "phi(from, msg.sender)",
+        "solidity_like": "from = phi(from, msg.sender);"
+      },
+      "evidence": {
+        "overlay": "ov_17",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_20"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_63",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "lvalue": "to",
+      "rvalue": "to",
+      "reads": [
+        "to"
+      ],
+      "writes": [
+        "to"
+      ],
+      "semantic": {
+        "target": "to",
+        "expression": "to",
+        "solidity_like": "to = to;"
+      },
+      "evidence": {
+        "overlay": "ov_18",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_21"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_64",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "lvalue": "value",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "value"
+      ],
+      "semantic": {
+        "target": "value",
+        "expression": "value",
+        "solidity_like": "value = value;"
+      },
+      "evidence": {
+        "overlay": "ov_19",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_22"
+        ]
+      }
+    },
+    {
+      "fact_id": "fact_65",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "sseir_overlay",
+      "function": "_assemblyMove",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "lvalue": "balanceOf",
+      "rvalue": "balanceOf",
+      "reads": [
+        "balanceOf"
+      ],
+      "writes": [
+        "balanceOf"
+      ],
+      "semantic": {
+        "target": "balanceOf",
+        "expression": "balanceOf",
+        "solidity_like": "balanceOf = balanceOf;"
+      },
+      "evidence": {
+        "overlay": "ov_20",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_23"
+        ]
+      }
+    }
+  ]
+}

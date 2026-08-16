@@ -1,0 +1,2767 @@
+{
+  "schema": "s-seir-function-semantic-facts/v1",
+  "source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+  "result_dir": "outputs/solidity_atomic_operations_tests/02_GuardedERC20",
+  "model_boundary": {
+    "processing_unit": "function",
+    "solidity": "Solidity source is lifted to high-level SemanticFact rows from S-SEIR Solidity overlays; SlithIR SSA is retained as evidence/debug input.",
+    "yul": "S-SEIR keeps low-level roles/effects/overlays in sseir.json and projects overlays to SemanticFact here."
+  },
+  "function_count": 10,
+  "solidity_fact_count": 41,
+  "yul_fact_count": 0,
+  "fact_count": 41,
+  "solidity_facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "onlyOwner",
+      "contract": "GuardedERC20",
+      "signature": "onlyOwner()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "owner",
+      "reads": [
+        "owner"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "owner",
+        "state_variable": "owner"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "nonReentrant",
+      "contract": "GuardedERC20",
+      "signature": "nonReentrant()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "transferLock",
+      "reads": [
+        "transferLock"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "transferLock",
+        "state_variable": "transferLock"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "nonReentrant",
+      "contract": "GuardedERC20",
+      "signature": "nonReentrant()",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "!(transferLock == 1)",
+      "lvalue": "transferLock",
+      "rvalue": "1",
+      "writes": [
+        "transferLock"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "transferLock",
+        "state_variable": "transferLock"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "nonReentrant",
+      "contract": "GuardedERC20",
+      "signature": "nonReentrant()",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(transferLock == 1)",
+      "lvalue": "transferLock",
+      "rvalue": "0",
+      "writes": [
+        "transferLock"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "transferLock",
+        "state_variable": "transferLock"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_7"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "owner",
+      "rvalue": "msg.sender",
+      "writes": [
+        "owner"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "owner",
+        "state_variable": "owner"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "lvalue": "name",
+      "rvalue": "tokenName",
+      "reads": [
+        "tokenName"
+      ],
+      "writes": [
+        "name"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "name",
+        "state_variable": "name"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "lvalue": "symbol",
+      "rvalue": "tokenSymbol",
+      "reads": [
+        "tokenSymbol"
+      ],
+      "writes": [
+        "symbol"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "symbol",
+        "state_variable": "symbol"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "lvalue": "maxOwnerMint",
+      "rvalue": "(initialSupply * 2)",
+      "reads": [
+        "initialSupply"
+      ],
+      "writes": [
+        "maxOwnerMint"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "maxOwnerMint",
+        "state_variable": "maxOwnerMint"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "lvalue": "deploymentSalt",
+      "rvalue": "keccak256(bytes)(abi.encodePacked(block.chainid,address(this),tokenName))",
+      "reads": [
+        "chainid",
+        "this",
+        "tokenName"
+      ],
+      "writes": [
+        "deploymentSalt"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "deploymentSalt",
+        "state_variable": "deploymentSalt"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n7"
+      ],
+      "reads": [
+        "keccak256(bytes)(DEPLOY)",
+        "abi.encode(msg.sender, initialSupply)"
+      ],
+      "semantic": {
+        "event": "Audit",
+        "args": [
+          "keccak256(bytes)(DEPLOY)",
+          "abi.encode(msg.sender, initialSupply)"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "reads": [
+        "msg.sender",
+        "initialSupply"
+      ],
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "initialSupply"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "GuardedERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "GuardedERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "reads": [
+        "msg.sender",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "GuardedERC20",
+      "signature": "transfer(address, uint256)",
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "GuardedERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(spender == address(0))",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "GuardedERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "!(spender == address(0))",
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[msg.sender][spender]",
+        "state_variable": "allowance",
+        "keys": [
+          "msg.sender",
+          "spender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_8"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "GuardedERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "condition": "!(spender == address(0))",
+      "reads": [
+        "msg.sender",
+        "spender",
+        "value"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "msg.sender",
+          "spender",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_19"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "lvalue": "allowance[from][msg.sender]",
+      "rvalue": "(currentAllowance - value)",
+      "reads": [
+        "currentAllowance",
+        "value"
+      ],
+      "writes": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_16"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "reads": [
+        "from",
+        "msg.sender",
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "from",
+          "msg.sender",
+          "allowance[from][msg.sender]"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_17"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n7"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "from",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_18"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_24",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_20"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_25",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "condition": "((totalSupply + value) <= maxOwnerMint)",
+      "reads": [
+        "((totalSupply + value) <= maxOwnerMint)"
+      ],
+      "semantic": {
+        "condition": "((totalSupply + value) <= maxOwnerMint)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_7"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_26",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_27",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "maxOwnerMint",
+      "reads": [
+        "maxOwnerMint"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "maxOwnerMint",
+        "state_variable": "maxOwnerMint"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_28",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "reads": [
+        "receiver",
+        "value"
+      ],
+      "semantic": {
+        "event": "OwnerMint",
+        "args": [
+          "receiver",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_29",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "reads": [
+        "keccak256(bytes)(OWNER_MINT)",
+        "abi.encode(receiver, value)"
+      ],
+      "semantic": {
+        "event": "Audit",
+        "args": [
+          "keccak256(bytes)(OWNER_MINT)",
+          "abi.encode(receiver, value)"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_12"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_30",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "receiver",
+        "value"
+      ],
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "receiver",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_8"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_31",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_32",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "deploymentInfo",
+      "contract": "GuardedERC20",
+      "signature": "deploymentInfo()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_33",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "deploymentInfo",
+      "contract": "GuardedERC20",
+      "signature": "deploymentInfo()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "owner",
+      "reads": [
+        "owner"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "owner",
+        "state_variable": "owner"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_34",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "deploymentInfo",
+      "contract": "GuardedERC20",
+      "signature": "deploymentInfo()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "deploymentSalt",
+      "reads": [
+        "deploymentSalt"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "deploymentSalt",
+        "state_variable": "deploymentSalt"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_35",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "GuardedERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "!(to == address(0))",
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_36",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "GuardedERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "condition": "!(to == address(0))",
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_37",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "GuardedERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(to == address(0))",
+      "reads": [
+        "address(0)",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "address(0)",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_16"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_38",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_transfer",
+      "contract": "GuardedERC20",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "!(to == address(0))",
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_39",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_transfer",
+      "contract": "GuardedERC20",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "condition": "!(to == address(0)) && !(bal < value)",
+      "lvalue": "balanceOf[from]",
+      "rvalue": "(bal - value)",
+      "reads": [
+        "bal",
+        "value"
+      ],
+      "writes": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_18"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_40",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_transfer",
+      "contract": "GuardedERC20",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n9"
+      ],
+      "condition": "!(to == address(0)) && !(bal < value)",
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_21"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_41",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_transfer",
+      "contract": "GuardedERC20",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_8"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n10"
+      ],
+      "condition": "!(to == address(0)) && !(bal < value)",
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_23"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    }
+  ],
+  "yul_facts": [],
+  "facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "onlyOwner",
+      "contract": "GuardedERC20",
+      "signature": "onlyOwner()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "owner",
+      "reads": [
+        "owner"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "owner",
+        "state_variable": "owner"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "nonReentrant",
+      "contract": "GuardedERC20",
+      "signature": "nonReentrant()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1",
+        "bb_sol_slither_n3"
+      ],
+      "rvalue": "transferLock",
+      "reads": [
+        "transferLock"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "transferLock",
+        "state_variable": "transferLock"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "nonReentrant",
+      "contract": "GuardedERC20",
+      "signature": "nonReentrant()",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "!(transferLock == 1)",
+      "lvalue": "transferLock",
+      "rvalue": "1",
+      "writes": [
+        "transferLock"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "transferLock",
+        "state_variable": "transferLock"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_6"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "nonReentrant",
+      "contract": "GuardedERC20",
+      "signature": "nonReentrant()",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(transferLock == 1)",
+      "lvalue": "transferLock",
+      "rvalue": "0",
+      "writes": [
+        "transferLock"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "transferLock",
+        "state_variable": "transferLock"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_7"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "owner",
+      "rvalue": "msg.sender",
+      "writes": [
+        "owner"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "owner",
+        "state_variable": "owner"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "lvalue": "name",
+      "rvalue": "tokenName",
+      "reads": [
+        "tokenName"
+      ],
+      "writes": [
+        "name"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "name",
+        "state_variable": "name"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "lvalue": "symbol",
+      "rvalue": "tokenSymbol",
+      "reads": [
+        "tokenSymbol"
+      ],
+      "writes": [
+        "symbol"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "symbol",
+        "state_variable": "symbol"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "lvalue": "maxOwnerMint",
+      "rvalue": "(initialSupply * 2)",
+      "reads": [
+        "initialSupply"
+      ],
+      "writes": [
+        "maxOwnerMint"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "maxOwnerMint",
+        "state_variable": "maxOwnerMint"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "lvalue": "deploymentSalt",
+      "rvalue": "keccak256(bytes)(abi.encodePacked(block.chainid,address(this),tokenName))",
+      "reads": [
+        "chainid",
+        "this",
+        "tokenName"
+      ],
+      "writes": [
+        "deploymentSalt"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "deploymentSalt",
+        "state_variable": "deploymentSalt"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n7"
+      ],
+      "reads": [
+        "keccak256(bytes)(DEPLOY)",
+        "abi.encode(msg.sender, initialSupply)"
+      ],
+      "semantic": {
+        "event": "Audit",
+        "args": [
+          "keccak256(bytes)(DEPLOY)",
+          "abi.encode(msg.sender, initialSupply)"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "constructor",
+      "contract": "GuardedERC20",
+      "signature": "constructor(string, string, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "reads": [
+        "msg.sender",
+        "initialSupply"
+      ],
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "initialSupply"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "GuardedERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_2"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "GuardedERC20",
+      "signature": "transfer(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "reads": [
+        "msg.sender",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "msg.sender",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_1"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transfer",
+      "contract": "GuardedERC20",
+      "signature": "transfer(address, uint256)",
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "GuardedERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(spender == address(0))",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "GuardedERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "!(spender == address(0))",
+      "lvalue": "allowance[msg.sender][spender]",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "allowance[msg.sender][spender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[msg.sender][spender]",
+        "state_variable": "allowance",
+        "keys": [
+          "msg.sender",
+          "spender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_8"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "approve",
+      "contract": "GuardedERC20",
+      "signature": "approve(address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "condition": "!(spender == address(0))",
+      "reads": [
+        "msg.sender",
+        "spender",
+        "value"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "msg.sender",
+          "spender",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_19"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "lvalue": "allowance[from][msg.sender]",
+      "rvalue": "(currentAllowance - value)",
+      "reads": [
+        "currentAllowance",
+        "value"
+      ],
+      "writes": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_16"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "reads": [
+        "from",
+        "msg.sender",
+        "allowance[from][msg.sender]"
+      ],
+      "semantic": {
+        "event": "Approval",
+        "args": [
+          "from",
+          "msg.sender",
+          "allowance[from][msg.sender]"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_17"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n7"
+      ],
+      "condition": "!(currentAllowance < value)",
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "from",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_18"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_24",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "transferFrom",
+      "contract": "GuardedERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_20"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_25",
+      "kind": "Require",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "condition": "((totalSupply + value) <= maxOwnerMint)",
+      "reads": [
+        "((totalSupply + value) <= maxOwnerMint)"
+      ],
+      "semantic": {
+        "condition": "((totalSupply + value) <= maxOwnerMint)",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_7"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_26",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_27",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "maxOwnerMint",
+      "reads": [
+        "maxOwnerMint"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "maxOwnerMint",
+        "state_variable": "maxOwnerMint"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_28",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "reads": [
+        "receiver",
+        "value"
+      ],
+      "semantic": {
+        "event": "OwnerMint",
+        "args": [
+          "receiver",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_29",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "reads": [
+        "keccak256(bytes)(OWNER_MINT)",
+        "abi.encode(receiver, value)"
+      ],
+      "semantic": {
+        "event": "Audit",
+        "args": [
+          "keccak256(bytes)(OWNER_MINT)",
+          "abi.encode(receiver, value)"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_12"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_30",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "reads": [
+        "receiver",
+        "value"
+      ],
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall",
+        "arguments": [
+          "receiver",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_8"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_31",
+      "kind": "InternalCall",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "ownerMint",
+      "contract": "GuardedERC20",
+      "signature": "ownerMint(address, uint256)",
+      "semantic": {
+        "target": "GuardedERC20",
+        "call_kind": "InternalCall"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "InternalCall",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_32",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "deploymentInfo",
+      "contract": "GuardedERC20",
+      "signature": "deploymentInfo()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "semantic": {
+        "operation": "return"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "ReturnValue",
+        "effects": [
+          "eff_5"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_33",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "deploymentInfo",
+      "contract": "GuardedERC20",
+      "signature": "deploymentInfo()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "owner",
+      "reads": [
+        "owner"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "owner",
+        "state_variable": "owner"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_3"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_34",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "deploymentInfo",
+      "contract": "GuardedERC20",
+      "signature": "deploymentInfo()",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "rvalue": "deploymentSalt",
+      "reads": [
+        "deploymentSalt"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "deploymentSalt",
+        "state_variable": "deploymentSalt"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_4"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_35",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "GuardedERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "!(to == address(0))",
+      "rvalue": "totalSupply",
+      "reads": [
+        "totalSupply"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "totalSupply",
+        "state_variable": "totalSupply"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_9"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_36",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "GuardedERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "condition": "!(to == address(0))",
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_13"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_37",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_mint",
+      "contract": "GuardedERC20",
+      "signature": "_mint(address, uint256)",
+      "stmt_refs": [
+        "sol_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n6"
+      ],
+      "condition": "!(to == address(0))",
+      "reads": [
+        "address(0)",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "address(0)",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_16"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_38",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_transfer",
+      "contract": "GuardedERC20",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "condition": "!(to == address(0))",
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_10"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_39",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_transfer",
+      "contract": "GuardedERC20",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "condition": "!(to == address(0)) && !(bal < value)",
+      "lvalue": "balanceOf[from]",
+      "rvalue": "(bal - value)",
+      "reads": [
+        "bal",
+        "value"
+      ],
+      "writes": [
+        "balanceOf[from]"
+      ],
+      "semantic": {
+        "operation": "state_write",
+        "access": "balanceOf[from]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "from"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_18"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_40",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_transfer",
+      "contract": "GuardedERC20",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n9"
+      ],
+      "condition": "!(to == address(0)) && !(bal < value)",
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "balanceOf[to]"
+      ],
+      "semantic": {
+        "operation": "state_read",
+        "access": "balanceOf[to]",
+        "state_variable": "balanceOf",
+        "keys": [
+          "to"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_21"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    },
+    {
+      "fact_id": "fact_41",
+      "kind": "EventEmit",
+      "source_lang": "solidity",
+      "origin": "slither_lifted",
+      "function": "_transfer",
+      "contract": "GuardedERC20",
+      "signature": "_transfer(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_8"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n10"
+      ],
+      "condition": "!(to == address(0)) && !(bal < value)",
+      "reads": [
+        "from",
+        "to",
+        "value"
+      ],
+      "semantic": {
+        "event": "Transfer",
+        "args": [
+          "from",
+          "to",
+          "value"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EventEmit",
+        "effects": [
+          "eff_23"
+        ],
+        "lifted_from": "sseir_solidity_overlay"
+      }
+    }
+  ]
+}

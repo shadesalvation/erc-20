@@ -1,0 +1,1400 @@
+{
+  "schema": "s-seir-assembly-llm-compact/v1",
+  "functions": [
+    {
+      "function_id": "AssemblyERC20.selectorFromCalldata()",
+      "contract": "AssemblyERC20",
+      "function": "selectorFromCalldata",
+      "signature": "selectorFromCalldata()",
+      "recovery_task": "Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.",
+      "function_source": {
+        "src": "1422:158:0",
+        "text": "function selectorFromCalldata() external pure returns (bytes4 selector) {\n        assembly {\n            selector := shr(224, calldataload(0))\n        }\n    }"
+      },
+      "assembly_blocks": [
+        {
+          "block_id": "asm_block_1",
+          "src": "1504:70:0",
+          "text": "assembly {\n            selector := shr(224, calldataload(0))\n        }"
+        }
+      ],
+      "control_summary": {
+        "block_count": 5,
+        "edge_count": 4,
+        "assembly_cfg_block_count": 3,
+        "has_branch": false,
+        "has_loop": true,
+        "notes": [
+          "function_level_cfg_from_slither",
+          "assembly_subgraph_embedded_from_assembly_ast_cfg",
+          "slither_assembly_nodes_replaced_by_local_yul_cfg",
+          "slither_compile_mode=normal",
+          "function_match_method=source_range",
+          "slither_nodes=5",
+          "assembly_blocks=1",
+          "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors",
+          "slither_typed_use_def_archived_on_solidity_blocks",
+          "unified_dominance_and_control_dependencies_computed_after_yul_subgraph_embedding",
+          "solidity_yul_boundary_contexts_attached"
+        ],
+        "assembly_blocks": [
+          1
+        ]
+      },
+      "key_expression_roles": [],
+      "effect_summary": {
+        "counts": {
+          "EvaluationStep": 2,
+          "ValueDef": 1
+        },
+        "selected_effects": []
+      },
+      "semantic_overlays": [
+        {
+          "overlay_id": "ov_2",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_2"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_1_1",
+            "expression": "calldataload(0)",
+            "expression_normalized": "calldataload(0)",
+            "solidity_like": "__sseir_eval_asm_s_1_1 = calldataload(0);",
+            "order": 1,
+            "call": "calldataload",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_3",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_3"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_1_2",
+            "expression": "shr(224, __sseir_eval_asm_s_1_1)",
+            "expression_normalized": "(__sseir_eval_asm_s_1_1 >> 224)",
+            "solidity_like": "__sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 >> 224);",
+            "order": 2,
+            "call": "shr",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_4",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_1"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "target": "selector",
+            "expression": "shr(224, calldataload(0))",
+            "solidity_like": "selector = __sseir_eval_asm_s_1_2;",
+            "context": "value",
+            "division_guards": []
+          }
+        }
+      ],
+      "unresolved_low_level_semantics": []
+    },
+    {
+      "function_id": "AssemblyERC20.hashMemorySafe(bytes)",
+      "contract": "AssemblyERC20",
+      "function": "hashMemorySafe",
+      "signature": "hashMemorySafe(bytes)",
+      "recovery_task": "Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.",
+      "function_source": {
+        "src": "1586:186:0",
+        "text": "function hashMemorySafe(bytes memory data) external pure returns (bytes32 h) {\n        assembly (\"memory-safe\") {\n            h := keccak256(add(data, 0x20), mload(data))\n        }\n    }"
+      },
+      "assembly_blocks": [
+        {
+          "block_id": "asm_block_2",
+          "src": "1673:93:0",
+          "text": "assembly (\"memory-safe\") {\n            h := keccak256(add(data, 0x20), mload(data))\n        }"
+        }
+      ],
+      "control_summary": {
+        "block_count": 5,
+        "edge_count": 4,
+        "assembly_cfg_block_count": 3,
+        "has_branch": false,
+        "has_loop": true,
+        "notes": [
+          "function_level_cfg_from_slither",
+          "assembly_subgraph_embedded_from_assembly_ast_cfg",
+          "slither_assembly_nodes_replaced_by_local_yul_cfg",
+          "slither_compile_mode=normal",
+          "function_match_method=source_range",
+          "slither_nodes=5",
+          "assembly_blocks=1",
+          "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors",
+          "slither_typed_use_def_archived_on_solidity_blocks",
+          "unified_dominance_and_control_dependencies_computed_after_yul_subgraph_embedding",
+          "solidity_yul_boundary_contexts_attached"
+        ],
+        "assembly_blocks": [
+          2
+        ]
+      },
+      "key_expression_roles": [],
+      "effect_summary": {
+        "counts": {
+          "ValueDef": 1,
+          "MemoryHash": 1
+        },
+        "selected_effects": []
+      },
+      "semantic_overlays": [
+        {
+          "overlay_id": "ov_1",
+          "kind": "BytesContentHash",
+          "effects": [
+            "eff_2"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "solidity_like": "h = keccak256(data);",
+            "target": "h"
+          }
+        },
+        {
+          "overlay_id": "ov_3",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_1"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "target": "h",
+            "expression": "keccak256(add(data, 0x20), mload(data))",
+            "solidity_like": "h = keccak256(data);",
+            "context": "value",
+            "division_guards": []
+          }
+        }
+      ],
+      "unresolved_low_level_semantics": []
+    },
+    {
+      "function_id": "AssemblyERC20.sumSkipping(uint256[])",
+      "contract": "AssemblyERC20",
+      "function": "sumSkipping",
+      "signature": "sumSkipping(uint256[])",
+      "recovery_task": "Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.",
+      "function_source": {
+        "src": "1778:841:0",
+        "text": "function sumSkipping(uint256[] memory values) external pure returns (uint256 total) {\n        assembly {\n            function addOrLeave(a, b) -> r {\n                if gt(a, not(b)) {\n                    r := 0\n                    leave\n                }\n                r := add(a, b)\n            }\n\n            let len := mload(values)\n            let ptr := add(values, 0x20)\n            for { let i := 0 } lt(i, len) { i := add(i, 1) } {\n                let v := mload(add(ptr, mul(i, 0x20)))\n                if eq(v, 0) { continue }\n                if gt(v, 1000000) { break }\n\n                switch and(v, 1)\n                case 0 {\n                    total := addOrLeave(total, v)\n                }\n                default {\n                    total := addOrLeave(total, mul(v, 2))\n                }\n            }\n        }\n    }"
+      },
+      "assembly_blocks": [
+        {
+          "block_id": "asm_block_3",
+          "src": "1872:741:0",
+          "text": "assembly {\n            function addOrLeave(a, b) -> r {\n                if gt(a, not(b)) {\n                    r := 0\n                    leave\n                }\n                r := add(a, b)\n            }\n\n            let len := mload(values)\n            let ptr := add(values, 0x20)\n            for { let i := 0 } lt(i, len) { i := add(i, 1) } {\n                let v := mload(add(ptr, mul(i, 0x20)))\n                if eq(v, 0) { continue }\n                if gt(v, 1000000) { break }\n\n                switch and(v, 1)\n                case 0 {\n                    total := addOrLeave(total, v)\n                }\n                default {\n                    total := addOrLeave(total, mul(v, 2))\n                }\n            }\n        }"
+        }
+      ],
+      "control_summary": {
+        "block_count": 22,
+        "edge_count": 25,
+        "assembly_cfg_block_count": 20,
+        "has_branch": true,
+        "has_loop": true,
+        "notes": [
+          "function_level_cfg_from_slither",
+          "assembly_subgraph_embedded_from_assembly_ast_cfg",
+          "slither_assembly_nodes_replaced_by_local_yul_cfg",
+          "slither_compile_mode=normal",
+          "function_match_method=source_range",
+          "slither_nodes=28",
+          "assembly_blocks=1",
+          "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors",
+          "slither_typed_use_def_archived_on_solidity_blocks",
+          "unified_dominance_and_control_dependencies_computed_after_yul_subgraph_embedding",
+          "solidity_yul_boundary_contexts_attached"
+        ],
+        "assembly_blocks": [
+          3
+        ]
+      },
+      "key_expression_roles": [
+        {
+          "expr_id": "expr_5",
+          "role": "branch_condition",
+          "text": "eq(v, 0)",
+          "normalized": "(v == 0)",
+          "stmt_ref": "asm_s_10",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_6",
+          "role": "branch_condition",
+          "text": "gt(v, 1000000)",
+          "normalized": "(v > 1000000)",
+          "stmt_ref": "asm_s_12",
+          "type_hint": "bool"
+        }
+      ],
+      "effect_summary": {
+        "counts": {
+          "ValueDef": 7,
+          "MemoryRead": 2,
+          "EvaluationStep": 7,
+          "Branch": 2,
+          "ControlTransfer": 2
+        },
+        "selected_effects": []
+      },
+      "semantic_overlays": [
+        {
+          "overlay_id": "ov_2",
+          "kind": "MemoryArrayLengthRead",
+          "effects": [
+            "eff_2"
+          ],
+          "stmt_refs": [
+            "asm_s_5"
+          ],
+          "attrs": {
+            "access": "values.length",
+            "target": "len"
+          }
+        },
+        {
+          "overlay_id": "ov_3",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_1"
+          ],
+          "stmt_refs": [
+            "asm_s_5"
+          ],
+          "attrs": {
+            "target": "len",
+            "expression": "mload(values)",
+            "solidity_like": "len = values.length;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_4",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_4"
+          ],
+          "stmt_refs": [
+            "asm_s_6"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_6_1",
+            "expression": "add(values, 0x20)",
+            "expression_normalized": "(values + 0x20)",
+            "solidity_like": "__sseir_eval_asm_s_6_1 = (values + 0x20);",
+            "order": 1,
+            "call": "add",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_5",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_3"
+          ],
+          "stmt_refs": [
+            "asm_s_6"
+          ],
+          "attrs": {
+            "target": "ptr",
+            "expression": "add(values, 0x20)",
+            "solidity_like": "ptr = __sseir_eval_asm_s_6_1;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_6",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_5"
+          ],
+          "stmt_refs": [
+            "asm_s_8"
+          ],
+          "attrs": {
+            "target": "i",
+            "expression": "0",
+            "solidity_like": "i = 0;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_7",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_6"
+          ],
+          "stmt_refs": [
+            "asm_s_9"
+          ],
+          "attrs": {
+            "target": "v",
+            "expression": "mload(add(ptr, mul(i, 0x20)))",
+            "solidity_like": "v = mload((ptr + (i * 0x20)));",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_8",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_9"
+          ],
+          "stmt_refs": [
+            "asm_s_10"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_10_1",
+            "expression": "eq(v, 0)",
+            "expression_normalized": "(v == 0)",
+            "solidity_like": "__sseir_eval_asm_s_10_1 = (v == 0);",
+            "order": 1,
+            "call": "eq",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_9",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_8"
+          ],
+          "stmt_refs": [
+            "asm_s_10"
+          ],
+          "attrs": {
+            "expression": "eq(v, 0)",
+            "solidity_like": "if (__sseir_eval_asm_s_10_1)",
+            "context": "condition",
+            "condition_evaluation": {
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "final": "__sseir_eval_asm_s_10_1",
+              "final_normalized": "(__sseir_eval_asm_s_10_1 != 0)",
+              "steps": [
+                {
+                  "order": 1,
+                  "temp": "__sseir_eval_asm_s_10_1",
+                  "expression": "eq(v, 0)",
+                  "expression_normalized": "(v == 0)",
+                  "call": "eq",
+                  "raw_args": [
+                    "v",
+                    "0"
+                  ],
+                  "evaluated_args": [
+                    "v",
+                    "0"
+                  ]
+                }
+              ]
+            },
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_10",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_12"
+          ],
+          "stmt_refs": [
+            "asm_s_12"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_12_1",
+            "expression": "gt(v, 1000000)",
+            "expression_normalized": "(v > 1000000)",
+            "solidity_like": "__sseir_eval_asm_s_12_1 = (v > 1000000);",
+            "order": 1,
+            "call": "gt",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_11",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_11"
+          ],
+          "stmt_refs": [
+            "asm_s_12"
+          ],
+          "attrs": {
+            "expression": "gt(v, 1000000)",
+            "solidity_like": "if (__sseir_eval_asm_s_12_1)",
+            "context": "condition",
+            "condition_evaluation": {
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "final": "__sseir_eval_asm_s_12_1",
+              "final_normalized": "(__sseir_eval_asm_s_12_1 != 0)",
+              "steps": [
+                {
+                  "order": 1,
+                  "temp": "__sseir_eval_asm_s_12_1",
+                  "expression": "gt(v, 1000000)",
+                  "expression_normalized": "(v > 1000000)",
+                  "call": "gt",
+                  "raw_args": [
+                    "v",
+                    "1000000"
+                  ],
+                  "evaluated_args": [
+                    "v",
+                    "1000000"
+                  ]
+                }
+              ]
+            },
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_12",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_15"
+          ],
+          "stmt_refs": [
+            "asm_s_16"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_16_1",
+            "expression": "addOrLeave(total, v)",
+            "expression_normalized": "addOrLeave(total, v)",
+            "solidity_like": "__sseir_eval_asm_s_16_1 = addOrLeave(total, v);",
+            "order": 1,
+            "call": "addOrLeave",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_13",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_14"
+          ],
+          "stmt_refs": [
+            "asm_s_16"
+          ],
+          "attrs": {
+            "target": "total",
+            "expression": "addOrLeave(total, v)",
+            "solidity_like": "total = __sseir_eval_asm_s_16_1;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_14",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_17"
+          ],
+          "stmt_refs": [
+            "asm_s_18"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_18_1",
+            "expression": "mul(v, 2)",
+            "expression_normalized": "(v * 2)",
+            "solidity_like": "__sseir_eval_asm_s_18_1 = (v * 2);",
+            "order": 1,
+            "call": "mul",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_15",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_18"
+          ],
+          "stmt_refs": [
+            "asm_s_18"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_18_2",
+            "expression": "addOrLeave(total, __sseir_eval_asm_s_18_1)",
+            "expression_normalized": "addOrLeave(total, __sseir_eval_asm_s_18_1)",
+            "solidity_like": "__sseir_eval_asm_s_18_2 = addOrLeave(total, __sseir_eval_asm_s_18_1);",
+            "order": 2,
+            "call": "addOrLeave",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_16",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_16"
+          ],
+          "stmt_refs": [
+            "asm_s_18"
+          ],
+          "attrs": {
+            "target": "total",
+            "expression": "addOrLeave(total, mul(v, 2))",
+            "solidity_like": "total = __sseir_eval_asm_s_18_2;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_17",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_20"
+          ],
+          "stmt_refs": [
+            "asm_s_19"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_19_1",
+            "expression": "add(i, 1)",
+            "expression_normalized": "(i + 1)",
+            "solidity_like": "__sseir_eval_asm_s_19_1 = (i + 1);",
+            "order": 1,
+            "call": "add",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_18",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_19"
+          ],
+          "stmt_refs": [
+            "asm_s_19"
+          ],
+          "attrs": {
+            "target": "i",
+            "expression": "add(i, 1)",
+            "solidity_like": "i = __sseir_eval_asm_s_19_1;",
+            "context": "value",
+            "division_guards": []
+          }
+        }
+      ],
+      "unresolved_low_level_semantics": []
+    },
+    {
+      "function_id": "AssemblyERC20.rawContext()",
+      "contract": "AssemblyERC20",
+      "function": "rawContext",
+      "signature": "rawContext()",
+      "recovery_task": "Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.",
+      "function_source": {
+        "src": "2625:268:0",
+        "text": "function rawContext() external payable returns (address who, uint256 value, uint256 size, uint256 gasLeft) {\n        assembly {\n            who := caller()\n            value := callvalue()\n            size := calldatasize()\n            gasLeft := gas()\n        }\n    }"
+      },
+      "assembly_blocks": [
+        {
+          "block_id": "asm_block_4",
+          "src": "2742:145:0",
+          "text": "assembly {\n            who := caller()\n            value := callvalue()\n            size := calldatasize()\n            gasLeft := gas()\n        }"
+        }
+      ],
+      "control_summary": {
+        "block_count": 8,
+        "edge_count": 7,
+        "assembly_cfg_block_count": 6,
+        "has_branch": false,
+        "has_loop": true,
+        "notes": [
+          "function_level_cfg_from_slither",
+          "assembly_subgraph_embedded_from_assembly_ast_cfg",
+          "slither_assembly_nodes_replaced_by_local_yul_cfg",
+          "slither_compile_mode=normal",
+          "function_match_method=source_range",
+          "slither_nodes=8",
+          "assembly_blocks=1",
+          "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors",
+          "slither_typed_use_def_archived_on_solidity_blocks",
+          "unified_dominance_and_control_dependencies_computed_after_yul_subgraph_embedding",
+          "solidity_yul_boundary_contexts_attached"
+        ],
+        "assembly_blocks": [
+          4
+        ]
+      },
+      "key_expression_roles": [],
+      "effect_summary": {
+        "counts": {
+          "EvaluationStep": 4,
+          "ValueDef": 4
+        },
+        "selected_effects": []
+      },
+      "semantic_overlays": [
+        {
+          "overlay_id": "ov_2",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_2"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_1_1",
+            "expression": "caller()",
+            "expression_normalized": "msg.sender",
+            "solidity_like": "__sseir_eval_asm_s_1_1 = msg.sender;",
+            "order": 1,
+            "call": "caller",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_3",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_1"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "target": "who",
+            "expression": "caller()",
+            "solidity_like": "who = __sseir_eval_asm_s_1_1;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_4",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_4"
+          ],
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_2_1",
+            "expression": "callvalue()",
+            "expression_normalized": "msg.value",
+            "solidity_like": "__sseir_eval_asm_s_2_1 = msg.value;",
+            "order": 1,
+            "call": "callvalue",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_5",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_3"
+          ],
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "attrs": {
+            "target": "value",
+            "expression": "callvalue()",
+            "solidity_like": "value = __sseir_eval_asm_s_2_1;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_6",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_6"
+          ],
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_3_1",
+            "expression": "calldatasize()",
+            "expression_normalized": "msg.data.length",
+            "solidity_like": "__sseir_eval_asm_s_3_1 = msg.data.length;",
+            "order": 1,
+            "call": "calldatasize",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_7",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_5"
+          ],
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "attrs": {
+            "target": "size",
+            "expression": "calldatasize()",
+            "solidity_like": "size = __sseir_eval_asm_s_3_1;",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_8",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_8"
+          ],
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_4_1",
+            "expression": "gas()",
+            "expression_normalized": "gasleft()",
+            "solidity_like": "__sseir_eval_asm_s_4_1 = gasleft();",
+            "order": 1,
+            "call": "gas",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_9",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_7"
+          ],
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "attrs": {
+            "target": "gasLeft",
+            "expression": "gas()",
+            "solidity_like": "gasLeft = __sseir_eval_asm_s_4_1;",
+            "context": "value",
+            "division_guards": []
+          }
+        }
+      ],
+      "unresolved_low_level_semantics": []
+    },
+    {
+      "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
+      "contract": "AssemblyERC20",
+      "function": "_assemblyMove",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "recovery_task": "Recover only the assembly region using function source and semantic overlays. Decide which semantics can be rendered as Solidity-like code and preserve assembly where exact recovery is unsafe.",
+      "function_source": {
+        "src": "2899:913:0",
+        "text": "function _assemblyMove(address from, address to, uint256 value) internal {\n        require(to != address(0), \"zero\");\n        assembly {\n            mstore(0x00, from)\n            mstore(0x20, balanceOf.slot)\n            let fromSlot := keccak256(0x00, 0x40)\n            let fromBalance := sload(fromSlot)\n            if lt(fromBalance, value) {\n                mstore(0x00, 0x08c379a0)\n                revert(0x1c, 0x04)\n            }\n\n            mstore(0x00, to)\n            mstore(0x20, balanceOf.slot)\n            let toSlot := keccak256(0x00, 0x40)\n\n            sstore(fromSlot, sub(fromBalance, value))\n            sstore(toSlot, add(sload(toSlot), value))\n\n            mstore(0x00, value)\n            log3(\n                0x00,\n                0x20,\n                0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,\n                from,\n                to\n            )\n        }\n    }"
+      },
+      "assembly_blocks": [
+        {
+          "block_id": "asm_block_5",
+          "src": "3025:781:0",
+          "text": "assembly {\n            mstore(0x00, from)\n            mstore(0x20, balanceOf.slot)\n            let fromSlot := keccak256(0x00, 0x40)\n            let fromBalance := sload(fromSlot)\n            if lt(fromBalance, value) {\n                mstore(0x00, 0x08c379a0)\n                revert(0x1c, 0x04)\n            }\n\n            mstore(0x00, to)\n            mstore(0x20, balanceOf.slot)\n            let toSlot := keccak256(0x00, 0x40)\n\n            sstore(fromSlot, sub(fromBalance, value))\n            sstore(toSlot, add(sload(toSlot), value))\n\n            mstore(0x00, value)\n            log3(\n                0x00,\n                0x20,\n                0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,\n                from,\n                to\n            )\n        }"
+        }
+      ],
+      "control_summary": {
+        "block_count": 19,
+        "edge_count": 19,
+        "assembly_cfg_block_count": 17,
+        "has_branch": true,
+        "has_loop": true,
+        "notes": [
+          "function_level_cfg_from_slither",
+          "assembly_subgraph_embedded_from_assembly_ast_cfg",
+          "slither_assembly_nodes_replaced_by_local_yul_cfg",
+          "slither_compile_mode=normal",
+          "function_match_method=source_range",
+          "slither_nodes=22",
+          "assembly_blocks=1",
+          "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors",
+          "slither_typed_use_def_archived_on_solidity_blocks",
+          "unified_dominance_and_control_dependencies_computed_after_yul_subgraph_embedding",
+          "solidity_yul_boundary_contexts_attached"
+        ],
+        "assembly_blocks": [
+          5
+        ]
+      },
+      "key_expression_roles": [
+        {
+          "expr_id": "expr_6",
+          "role": "storage_slot_expr",
+          "text": "fromSlot",
+          "normalized": "fromSlot",
+          "stmt_ref": "asm_s_4",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_7",
+          "role": "branch_condition",
+          "text": "lt(fromBalance, value)",
+          "normalized": "(fromBalance < value)",
+          "stmt_ref": "asm_s_5",
+          "type_hint": "bool"
+        },
+        {
+          "expr_id": "expr_8",
+          "role": "storage_slot_expr",
+          "text": "fromSlot",
+          "normalized": "fromSlot",
+          "stmt_ref": "asm_s_11",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_9",
+          "role": "storage_write_value",
+          "text": "sub(fromBalance, value)",
+          "normalized": "(fromBalance - value)",
+          "stmt_ref": "asm_s_11"
+        },
+        {
+          "expr_id": "expr_10",
+          "role": "storage_slot_expr",
+          "text": "toSlot",
+          "normalized": "toSlot",
+          "stmt_ref": "asm_s_12",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_11",
+          "role": "storage_write_value",
+          "text": "add(sload(toSlot), value)",
+          "normalized": "(sload(toSlot) + value)",
+          "stmt_ref": "asm_s_12"
+        },
+        {
+          "expr_id": "expr_14",
+          "role": "event_topic0",
+          "text": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+          "normalized": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+          "stmt_ref": "asm_s_14",
+          "type_hint": "bytes32"
+        },
+        {
+          "expr_id": "expr_15",
+          "role": "event_indexed_argument",
+          "text": "from",
+          "normalized": "from",
+          "stmt_ref": "asm_s_14"
+        },
+        {
+          "expr_id": "expr_16",
+          "role": "event_indexed_argument",
+          "text": "to",
+          "normalized": "to",
+          "stmt_ref": "asm_s_14"
+        },
+        {
+          "expr_id": "expr_18",
+          "role": "mapping_slot_expr",
+          "text": "balanceOf[from]",
+          "normalized": "balanceOf[from]",
+          "stmt_ref": "asm_s_3",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_19",
+          "role": "mapping_key_material",
+          "text": "from",
+          "normalized": "from",
+          "stmt_ref": "asm_s_3"
+        },
+        {
+          "expr_id": "expr_20",
+          "role": "mapping_slot_expr",
+          "text": "balanceOf[to]",
+          "normalized": "balanceOf[to]",
+          "stmt_ref": "asm_s_10",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_21",
+          "role": "mapping_key_material",
+          "text": "to",
+          "normalized": "to",
+          "stmt_ref": "asm_s_10"
+        },
+        {
+          "expr_id": "expr_22",
+          "role": "mapping_slot_expr",
+          "text": "fromSlot",
+          "normalized": "balanceOf[from]",
+          "stmt_ref": "asm_s_3",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_23",
+          "role": "state_access_expr",
+          "text": "balanceOf[from]",
+          "normalized": "balanceOf[from]",
+          "stmt_ref": "asm_s_3"
+        },
+        {
+          "expr_id": "expr_24",
+          "role": "mapping_slot_expr",
+          "text": "toSlot",
+          "normalized": "balanceOf[to]",
+          "stmt_ref": "asm_s_10",
+          "type_hint": "storage_slot"
+        },
+        {
+          "expr_id": "expr_25",
+          "role": "state_access_expr",
+          "text": "balanceOf[to]",
+          "normalized": "balanceOf[to]",
+          "stmt_ref": "asm_s_10"
+        }
+      ],
+      "effect_summary": {
+        "counts": {
+          "MemoryWrite": 6,
+          "ValueDef": 3,
+          "MemoryHash": 2,
+          "StorageRead": 2,
+          "EvaluationStep": 1,
+          "Branch": 1,
+          "Revert": 1,
+          "StorageWrite": 2,
+          "EventLog": 1,
+          "BranchMaterialization": 1
+        },
+        "selected_effects": [
+          {
+            "effect_id": "eff_10",
+            "kind": "StorageRead",
+            "stmt_refs": [
+              "asm_s_4"
+            ],
+            "slot": "fromSlot",
+            "value": "fromBalance",
+            "path_states": [
+              "entry"
+            ]
+          },
+          {
+            "effect_id": "eff_13",
+            "kind": "Revert",
+            "stmt_refs": [
+              "asm_s_7"
+            ],
+            "payload_ptr": "0x1c",
+            "payload_size": "0x04",
+            "path_states": [
+              "lt(fromBalance, value)"
+            ]
+          },
+          {
+            "effect_id": "eff_16",
+            "kind": "StorageWrite",
+            "stmt_refs": [
+              "asm_s_11"
+            ],
+            "slot": "fromSlot",
+            "value": "sub(fromBalance, value)",
+            "path_states": [
+              "!(lt(fromBalance, value))"
+            ]
+          },
+          {
+            "effect_id": "eff_17",
+            "kind": "StorageRead",
+            "stmt_refs": [
+              "asm_s_12"
+            ],
+            "slot": "toSlot",
+            "value": null,
+            "path_states": [
+              "!(lt(fromBalance, value))"
+            ]
+          },
+          {
+            "effect_id": "eff_18",
+            "kind": "StorageWrite",
+            "stmt_refs": [
+              "asm_s_12"
+            ],
+            "slot": "toSlot",
+            "value": "add(sload(toSlot), value)",
+            "path_states": [
+              "!(lt(fromBalance, value))"
+            ]
+          },
+          {
+            "effect_id": "eff_19",
+            "kind": "EventLog",
+            "stmt_refs": [
+              "asm_s_14"
+            ],
+            "op": "log3",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "from",
+              "to"
+            ],
+            "path_states": [
+              "!(lt(fromBalance, value))"
+            ]
+          },
+          {
+            "effect_id": "eff_branch_1",
+            "kind": "BranchMaterialization",
+            "stmt_refs": [
+              "asm_s_4"
+            ]
+          }
+        ]
+      },
+      "semantic_overlays": [
+        {
+          "overlay_id": "ov_2",
+          "kind": "PathConditionedCustomErrorRevert",
+          "effects": [
+            "eff_13"
+          ],
+          "stmt_refs": [
+            "asm_s_7"
+          ],
+          "attrs": {}
+        },
+        {
+          "overlay_id": "ov_3",
+          "kind": "MappingSlot",
+          "effects": [
+            "eff_8"
+          ],
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "attrs": {
+            "target": "fromSlot",
+            "target_key": "fromSlot__ssa1",
+            "expression": "balanceOf[from]",
+            "state_variable": "balanceOf",
+            "storage_reference": null,
+            "storage_reference_type": null,
+            "storage_reference_kind": null,
+            "storage_field": null,
+            "key": "from",
+            "base": "balanceOf.slot",
+            "slot_kind": "mapping_slot",
+            "activation": "storage_consumer",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_4",
+          "kind": "MappingSlot",
+          "effects": [
+            "eff_8"
+          ],
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "attrs": {
+            "target": "fromSlot",
+            "target_key": "fromSlot",
+            "expression": "balanceOf[from]",
+            "state_variable": "balanceOf",
+            "storage_reference": null,
+            "storage_reference_type": null,
+            "storage_reference_kind": null,
+            "storage_field": null,
+            "key": "from",
+            "base": "balanceOf.slot",
+            "slot_kind": "mapping_slot",
+            "activation": "storage_consumer",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_5",
+          "kind": "MappingSlot",
+          "effects": [
+            "eff_15"
+          ],
+          "stmt_refs": [
+            "asm_s_10"
+          ],
+          "attrs": {
+            "target": "toSlot",
+            "target_key": "toSlot__ssa3",
+            "expression": "balanceOf[to]",
+            "state_variable": "balanceOf",
+            "storage_reference": null,
+            "storage_reference_type": null,
+            "storage_reference_kind": null,
+            "storage_field": null,
+            "key": "to",
+            "base": "balanceOf.slot",
+            "slot_kind": "mapping_slot",
+            "activation": "storage_consumer",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_6",
+          "kind": "MappingSlot",
+          "effects": [
+            "eff_15"
+          ],
+          "stmt_refs": [
+            "asm_s_10"
+          ],
+          "attrs": {
+            "target": "toSlot",
+            "target_key": "toSlot",
+            "expression": "balanceOf[to]",
+            "state_variable": "balanceOf",
+            "storage_reference": null,
+            "storage_reference_type": null,
+            "storage_reference_kind": null,
+            "storage_field": null,
+            "key": "to",
+            "base": "balanceOf.slot",
+            "slot_kind": "mapping_slot",
+            "activation": "storage_consumer",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_7",
+          "kind": "MappingRead",
+          "effects": [
+            "eff_8",
+            "eff_10"
+          ],
+          "stmt_refs": [
+            "asm_s_3",
+            "asm_s_4"
+          ],
+          "attrs": {
+            "access": "balanceOf[from]",
+            "target": "fromBalance",
+            "state_variable": "balanceOf",
+            "key": "from",
+            "slot": "fromSlot",
+            "slot_key": "fromSlot__ssa1",
+            "solidity_like": "fromBalance = balanceOf[from];",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_8",
+          "kind": "MappingWrite",
+          "effects": [
+            "eff_8",
+            "eff_16"
+          ],
+          "stmt_refs": [
+            "asm_s_3",
+            "asm_s_11"
+          ],
+          "attrs": {
+            "access": "balanceOf[from]",
+            "value": "(fromBalance - value)",
+            "value_yul": "sub(fromBalance, value)",
+            "state_variable": "balanceOf",
+            "key": "from",
+            "slot": "fromSlot",
+            "slot_key": "fromSlot__ssa1",
+            "solidity_like": "balanceOf[from] = (fromBalance - value);",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_9",
+          "kind": "MappingRead",
+          "effects": [
+            "eff_15",
+            "eff_17"
+          ],
+          "stmt_refs": [
+            "asm_s_10",
+            "asm_s_12"
+          ],
+          "attrs": {
+            "access": "balanceOf[to]",
+            "state_variable": "balanceOf",
+            "key": "to",
+            "slot": "toSlot",
+            "slot_key": "toSlot__ssa3",
+            "solidity_like": "read balanceOf[to];",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_10",
+          "kind": "MappingWrite",
+          "effects": [
+            "eff_15",
+            "eff_18"
+          ],
+          "stmt_refs": [
+            "asm_s_10",
+            "asm_s_12"
+          ],
+          "attrs": {
+            "access": "balanceOf[to]",
+            "value": "(balanceOf[to] + value)",
+            "value_yul": "add(sload(toSlot), value)",
+            "state_variable": "balanceOf",
+            "key": "to",
+            "slot": "toSlot",
+            "slot_key": "toSlot__ssa3",
+            "solidity_like": "balanceOf[to] = (balanceOf[to] + value);",
+            "notes": []
+          }
+        },
+        {
+          "overlay_id": "ov_11",
+          "kind": "PathConditionedEventEmit",
+          "effects": [
+            "eff_19"
+          ],
+          "stmt_refs": [
+            "asm_s_14"
+          ],
+          "attrs": {
+            "event": "Transfer",
+            "signature": "Transfer(address,address,uint256)"
+          }
+        },
+        {
+          "overlay_id": "ov_12",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_7"
+          ],
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "attrs": {
+            "target": "fromSlot",
+            "expression": "keccak256(0x00, 0x40)",
+            "solidity_like": "fromSlot = keccak256(abi.encode(from, balanceOf.slot));",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_13",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_9"
+          ],
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "attrs": {
+            "target": "fromBalance",
+            "expression": "sload(fromSlot)",
+            "solidity_like": "fromBalance = sload(fromSlot);",
+            "context": "value",
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_14",
+          "kind": "EvaluationStep",
+          "effects": [
+            "eff_12"
+          ],
+          "stmt_refs": [
+            "asm_s_5"
+          ],
+          "attrs": {
+            "temp": "__sseir_eval_asm_s_5_1",
+            "expression": "lt(fromBalance, value)",
+            "expression_normalized": "(fromBalance < value)",
+            "solidity_like": "__sseir_eval_asm_s_5_1 = (fromBalance < value);",
+            "order": 1,
+            "call": "lt",
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments"
+          }
+        },
+        {
+          "overlay_id": "ov_15",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_11"
+          ],
+          "stmt_refs": [
+            "asm_s_5"
+          ],
+          "attrs": {
+            "expression": "lt(fromBalance, value)",
+            "solidity_like": "if (__sseir_eval_asm_s_5_1)",
+            "context": "condition",
+            "condition_evaluation": {
+              "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+              "final": "__sseir_eval_asm_s_5_1",
+              "final_normalized": "(__sseir_eval_asm_s_5_1 != 0)",
+              "steps": [
+                {
+                  "order": 1,
+                  "temp": "__sseir_eval_asm_s_5_1",
+                  "expression": "lt(fromBalance, value)",
+                  "expression_normalized": "(fromBalance < value)",
+                  "call": "lt",
+                  "raw_args": [
+                    "fromBalance",
+                    "value"
+                  ],
+                  "evaluated_args": [
+                    "fromBalance",
+                    "value"
+                  ]
+                }
+              ]
+            },
+            "division_guards": []
+          }
+        },
+        {
+          "overlay_id": "ov_16",
+          "kind": "ExpressionNormalization",
+          "effects": [
+            "eff_14"
+          ],
+          "stmt_refs": [
+            "asm_s_10"
+          ],
+          "attrs": {
+            "target": "toSlot",
+            "expression": "keccak256(0x00, 0x40)",
+            "solidity_like": "toSlot = keccak256(abi.encode(to, balanceOf.slot));",
+            "context": "value",
+            "division_guards": []
+          }
+        }
+      ],
+      "unresolved_low_level_semantics": []
+    }
+  ]
+}

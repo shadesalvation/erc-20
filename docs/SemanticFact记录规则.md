@@ -10,6 +10,7 @@ scripts/s_seir/s_seir_solidity_semantic_lifter.py
 scripts/s_seir/s_seir_pipeline.py
 scripts/s_seir/s_seir_batch_contracts.py
 scripts/s_seir/s_seir_control_builder.py
+scripts/s_seir/s_seir_effect_lifter.py
 scripts/s_seir/s_seir_overlay_builder.py
 ```
 
@@ -429,8 +430,7 @@ Yul call / precompile / low-level call 会记录：
   "selector": "0x263c69d6",
   "arguments": ["logs"],
   "value": "0",
-  "precompile": null,
-  "solidity_like": "mirror.call(...)"
+  "precompile": null
 }
 ```
 
@@ -485,7 +485,6 @@ Yul 表达式原子化和归一化会输出 `ValueCompute`：
 {
   "temp": "__sseir_eval_asm_s_1_2",
   "expression": "shr(224, __sseir_eval_asm_s_1_1)",
-  "solidity_like": "__sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 >> 224);",
   "call": "shr",
   "raw_args": ["224", "calldataload(0)"],
   "evaluated_args": ["224", "__sseir_eval_asm_s_1_1"]
@@ -497,8 +496,7 @@ Yul 表达式原子化和归一化会输出 `ValueCompute`：
 ```json
 {
   "target": "h",
-  "expression": "keccak256(add(data, 0x20), mload(data))",
-  "solidity_like": "h = keccak256(data);"
+  "expression": "keccak256(add(data, 0x20), mload(data))"
 }
 ```
 
@@ -539,7 +537,54 @@ Yul 表达式原子化和归一化会输出 `ValueCompute`：
 | `cfg_node/node_id` | Slither CFG 节点 |
 | `stmt_refs` | S-SEIR SourceStatement 引用 |
 
-### 7.2 Yul / S-SEIR evidence
+### 7.2 Solidity ABI 表达式归一化
+
+Solidity 低级调用的参数经常来自 ABI 内建函数，例如：
+
+```solidity
+token.call(abi.encodeWithSignature("transfer(address,uint256)", to, amount));
+token.staticcall(abi.encodeWithSelector(IERC20View.totalSupply.selector));
+```
+
+SlithIR SSA 中这类表达式可能被拆成临时变量，例如：
+
+```text
+TMP_30 = abi.encodeWithSignature()(transfer(address,uint256), to, amount)
+TUPLE_1 = token.call(TMP_30)
+
+REF_25 = IERC20View.totalSupply.selector
+TMP_36 = abi.encodeWithSelector()(REF_25)
+TUPLE_2 = token.staticcall(TMP_36)
+```
+
+SemanticFact 不直接记录这些 SlithIR 展示形式。当前规则是：
+
+```text
+1. EffectLifter 处理 SolidityCall 时，先根据 stmt_refs 查询 SourceStatementTable。
+2. 如果原始 Solidity 语句中存在 abi.* 调用，则按括号平衡提取完整 ABI 子表达式。
+3. 该源码级表达式写入 ValueDef。
+4. ExternalCall effect / overlay 再通过 value_defs 继承该表达式。
+5. 最终 SemanticFact.semantic.arguments 使用源码级 ABI 表达式。
+6. 如果 SourceStatementTable 中无法提取，再退回 SlithIR source_expression 或格式化后的 SlithIR 参数。
+```
+
+因此，以下旧式表达不会作为最终 semantic argument 输出：
+
+```text
+abi.encodeWithSignature()(transfer(address,uint256), to, amount)
+abi.encodeWithSelector()(REF_25)
+```
+
+而会记录为：
+
+```text
+abi.encodeWithSignature("transfer(address,uint256)", to, amount)
+abi.encodeWithSelector(IERC20View.totalSupply.selector)
+```
+
+同时，`semantic_facts.json` 的最终 fact 视图会递归移除 `solidity_like` 字段。该字段只属于 `sseir.json` 的 overlay/debug 信息或可选展示视图，不能作为精确语义字段传递给后续消费端。
+
+### 7.3 Yul / S-SEIR evidence
 
 ```json
 {
@@ -549,8 +594,7 @@ Yul 表达式原子化和归一化会输出 `ValueCompute`：
   "candidate": {
     "condition": "!(lt(fromBalance, value))",
     "event": "Transfer",
-    "args": ["from", "to", "value"],
-    "solidity_like": "emit Transfer(from, to, value);"
+    "args": ["from", "to", "value"]
   }
 }
 ```
@@ -788,8 +832,7 @@ Solidity assignment
   "semantic": {
     "target": "token",
     "call_kind": "LowLevelCall",
-    "arguments": ["abi.encodeWithSignature()(transfer(address,uint256), to, amount)"],
-    "solidity_like": "TUPLE_1 = token.call(abi.encodeWithSignature()(transfer(address,uint256), to, amount));"
+    "arguments": ["abi.encodeWithSignature(\"transfer(address,uint256)\", to, amount)"]
   },
   "evidence": {
     "overlay": "ov_3",
@@ -809,6 +852,41 @@ Solidity low-level call
   -> ExternalCall overlay
   -> SemanticFact kind = ExternalCall
   -> semantic.target / call_kind / arguments 记录调用行为
+```
+
+### 11.3 staticcall selector 示例
+
+源码：
+
+```solidity
+(bool ok, bytes memory data) =
+    token.staticcall(abi.encodeWithSelector(IERC20View.totalSupply.selector));
+```
+
+SemanticFact：
+
+```json
+{
+  "kind": "ExternalCall",
+  "source_lang": "solidity",
+  "origin": "slither_lifted",
+  "function": "staticSupply",
+  "semantic": {
+    "target": "token",
+    "call_kind": "LowLevelCall",
+    "arguments": ["abi.encodeWithSelector(IERC20View.totalSupply.selector)"]
+  }
+}
+```
+
+推导过程：
+
+```text
+SourceStatementTable 保存原始 Solidity 语句
+  -> EffectLifter 在 SolidityCall 中提取 abi.encodeWithSelector(...)
+  -> LowLevelCall 的 TMP 参数解析为该 ABI 表达式
+  -> ExternalCall overlay
+  -> ExternalCall SemanticFact
 ```
 
 ## 12. 示例三：Yul mapping 读写
@@ -939,8 +1017,7 @@ log3(
     "candidate": {
       "condition": "!(lt(fromBalance, value))",
       "event": "Transfer",
-      "args": ["from", "to", "value"],
-      "solidity_like": "emit Transfer(from, to, value);"
+      "args": ["from", "to", "value"]
     }
   }
 }
@@ -980,7 +1057,6 @@ selector := shr(224, calldataload(0))
   "semantic": {
     "temp": "__sseir_eval_asm_s_1_1",
     "expression": "calldataload(0)",
-    "solidity_like": "__sseir_eval_asm_s_1_1 = calldataload(0);",
     "call": "calldataload",
     "raw_args": ["0"],
     "evaluated_args": ["0"]
@@ -998,8 +1074,7 @@ selector := shr(224, calldataload(0))
   "rvalue": "shr(224, calldataload(0))",
   "semantic": {
     "target": "selector",
-    "expression": "shr(224, calldataload(0))",
-    "solidity_like": "selector = __sseir_eval_asm_s_1_2;"
+    "expression": "shr(224, calldataload(0))"
   }
 }
 ```

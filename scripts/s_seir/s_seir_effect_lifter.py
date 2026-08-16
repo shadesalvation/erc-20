@@ -304,7 +304,12 @@ class EffectLifter:
                     block_loop_context,
                 ),
             )
-        solidity_effects, represented_solidity_refs = self.lift_solidity_control(control or {})
+        solidity_stmt_text = {
+            stmt.stmt_id: stmt.text
+            for stmt in unit.source_statements
+            if stmt.lang == "solidity"
+        }
+        solidity_effects, represented_solidity_refs = self.lift_solidity_control(control or {}, solidity_stmt_text)
         effects.extend(solidity_effects)
         for stmt in unit.source_statements:
             if stmt.lang == "solidity" and stmt.stmt_id not in represented_solidity_refs:
@@ -317,8 +322,13 @@ class EffectLifter:
                     effects.append(self.effect("Branch", [stmt.stmt_id], {"condition": t, "language": "solidity", "source": "ast_text_fallback"}))
         return self.dedupe_effects(effects), facts
 
-    def lift_solidity_control(self, control: dict[str, Any]) -> tuple[list[EffectNode], set[str]]:
+    def lift_solidity_control(
+        self,
+        control: dict[str, Any],
+        stmt_text: dict[str, str] | None = None,
+    ) -> tuple[list[EffectNode], set[str]]:
         """Lift SlithIR-SSA archived on Solidity CFG blocks into shared S-SEIR effects."""
+        stmt_text = stmt_text or {}
         blocks = [block for block in control.get("blocks", []) if block.get("kind") == "solidity"]
         if not blocks:
             return [], set()
@@ -330,7 +340,7 @@ class EffectLifter:
 
         for block in blocks:
             attrs = block.get("attrs") or {}
-            operations = attrs.get("slithir_ssa") or attrs.get("slithir") or []
+            operations = attrs.get("solidity_atomic_ops") or attrs.get("slithir_ssa") or attrs.get("slithir") or []
             refs = list(block.get("stmts") or [])
             if operations:
                 represented.update(refs)
@@ -349,6 +359,12 @@ class EffectLifter:
                     "path_states": path_states,
                     "slithir": operation,
                 }
+                if operation.get("atom_id"):
+                    common.update({
+                        "atomic_operation_id": operation.get("atom_id"),
+                        "atomic_kind": operation.get("atomic_kind"),
+                        "atomic_sequence": operation.get("sequence"),
+                    })
 
                 if kind == "Index":
                     left = self.resolve_slithir_value(operation.get("variable_left"), value_defs, reference_defs)
@@ -409,7 +425,7 @@ class EffectLifter:
                     rvalue = operation.get("rvalue") or self.first_slithir_value(operation.get("read"))
                     value = self.resolve_slithir_value(rvalue, value_defs, reference_defs)
                     target_ref = self.reference_info(lvalue, reference_defs)
-                    if target_ref or self.is_storage_state(lvalue):
+                    if (target_ref and self.is_storage_reference_info(target_ref)) or self.is_storage_state(lvalue):
                         info = target_ref or {
                             "access": self.slithir_source_name(lvalue),
                             "state_variable": self.state_variable_name(lvalue),
@@ -550,7 +566,7 @@ class EffectLifter:
                             "source_revert": True,
                         }))
                     else:
-                        value = f"{function_name}({', '.join(arguments)})"
+                        value = self.solidity_call_expression(operation, function_name, arguments, refs, stmt_text)
                         if lvalue_key:
                             value_defs[lvalue_key] = value
                         effects.append(self.effect("ValueDef", refs, {
@@ -559,13 +575,14 @@ class EffectLifter:
                             "target_versions": self.slithir_target_versions(lvalue),
                             "value": value,
                             "atomic_operation": "SolidityCall",
+                            "source_expression": operation.get("source_expression"),
                         }))
                     continue
 
                 if kind == "Delete":
                     target = operation.get("variable") or lvalue
                     info = self.reference_info(target, reference_defs)
-                    if info or self.is_storage_state(target):
+                    if (info and self.is_storage_reference_info(info)) or self.is_storage_state(target):
                         info = info or {
                             "access": self.slithir_source_name(target),
                             "state_variable": self.state_variable_name(target),
@@ -610,6 +627,8 @@ class EffectLifter:
                     "type": value.get("type"),
                 }
             if not info:
+                continue
+            if not self.is_storage_reference_info(info):
                 continue
             seen.add(key)
             out.append(self.effect("StorageRead", refs, {
@@ -671,6 +690,19 @@ class EffectLifter:
         return self.is_slithir_state(value) and self.slithir_source_name(value) not in self.non_storage_state_names
 
     @staticmethod
+    def is_storage_reference_info(info: dict[str, Any] | None) -> bool:
+        """Return true only for typed references rooted in contract storage.
+
+        SlithIR Index/Member operations also describe calldata, memory, enum and
+        struct-field references. S-SEIR keeps those ValueDef references for
+        expression recovery, but they must not be lifted as StorageRead/Write
+        unless the reference chain is rooted in a real state variable.
+        """
+        if not info:
+            return False
+        return bool(info.get("state_variable")) or info.get("reference_kind") == "state_variable"
+
+    @staticmethod
     def state_variable_name(value: dict[str, Any] | None) -> str | None:
         return EffectLifter.slithir_source_name(value) if EffectLifter.is_slithir_state(value) else None
 
@@ -724,6 +756,83 @@ class EffectLifter:
             return reads[0]
         source = operation.get("source_expression")
         return str(source or operation.get("text") or kind)
+
+    @classmethod
+    def solidity_call_expression(
+        cls,
+        operation: dict[str, Any],
+        function_name: str,
+        arguments: list[str],
+        refs: list[str] | None = None,
+        stmt_text: dict[str, str] | None = None,
+    ) -> str:
+        callee = cls.pretty_solidity_call_name(function_name)
+        source_from_stmt = cls.source_call_expression(callee, refs or [], stmt_text or {})
+        if source_from_stmt:
+            return source_from_stmt
+        source = str(operation.get("source_expression") or "").strip()
+        if source:
+            return source
+        pretty_args = [
+            cls.pretty_solidity_call_argument(callee, index, argument)
+            for index, argument in enumerate(arguments)
+        ]
+        return f"{callee}({', '.join(pretty_args)})"
+
+    @classmethod
+    def source_call_expression(cls, callee: str, refs: list[str], stmt_text: dict[str, str]) -> str | None:
+        if not callee.startswith("abi."):
+            return None
+        for ref in refs:
+            text = str(stmt_text.get(str(ref)) or "")
+            expr = cls.extract_balanced_call(text, callee)
+            if expr:
+                return expr
+        return None
+
+    @staticmethod
+    def extract_balanced_call(text: str, callee: str) -> str | None:
+        start = text.find(f"{callee}(")
+        if start < 0:
+            return None
+        depth = 0
+        quote: str | None = None
+        escaped = False
+        for index in range(start + len(callee), len(text)):
+            char = text[index]
+            if quote:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = None
+                continue
+            if char in {'"', "'"}:
+                quote = char
+                continue
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+                if depth == 0:
+                    return text[start:index + 1].strip()
+        return None
+
+    @staticmethod
+    def pretty_solidity_call_name(function_name: str) -> str:
+        name = str(function_name or "").strip()
+        if name.endswith("()"):
+            name = name[:-2]
+        return name
+
+    @staticmethod
+    def pretty_solidity_call_argument(callee: str, index: int, argument: str) -> str:
+        text = str(argument or "").strip()
+        if callee == "abi.encodeWithSignature" and index == 0:
+            if not (text.startswith('"') or text.startswith("'")):
+                return f'"{text}"'
+        return text
 
     @staticmethod
     def slithir_operator(operator: Any) -> str:

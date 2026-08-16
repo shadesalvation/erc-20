@@ -477,7 +477,7 @@ class SlitherFactAdapter:
             attrs = block.get("attrs") or {}
             block_id = block.get("block_id")
             stmt_refs = list(block.get("stmts") or [])
-            archived = attrs.get("slithir_ssa") or attrs.get("slithir") or []
+            archived = attrs.get("solidity_atomic_ops") or attrs.get("slithir_ssa") or attrs.get("slithir") or []
             using_ssa = bool(attrs.get("slithir_ssa"))
             for op in archived:
                 if not isinstance(op, dict):
@@ -832,6 +832,8 @@ def build_function_level_semantic_fact_payload(
                     continue
                 item["source_lang"] = "yul"
             yul_facts.append(item)
+    solidity_facts = [semantic_fact_public_view(item) for item in solidity_facts]
+    yul_facts = [semantic_fact_public_view(item) for item in yul_facts]
     solidity_facts = dedupe_semantic_facts(solidity_facts)
     yul_facts = dedupe_semantic_facts(yul_facts)
     facts = renumber_facts(solidity_facts + yul_facts)
@@ -862,6 +864,29 @@ def renumber_facts(facts: list[dict[str, Any]], prefix: str = "fact") -> list[di
         item["fact_id"] = f"{prefix}_{index}"
         out.append(item)
     return out
+
+
+def semantic_fact_public_view(fact: dict[str, Any]) -> dict[str, Any]:
+    """Keep final SemanticFact output free of display-only projection fields.
+
+    ``solidity_like`` belongs to the optional audit/rendering views and to the
+    full S-SEIR overlay model. It is intentionally stripped from
+    semantic_facts.json so downstream consumers do not treat it as exact source
+    semantics.
+    """
+    return strip_key_recursive(fact, "solidity_like")
+
+
+def strip_key_recursive(value: Any, key_to_strip: str) -> Any:
+    if isinstance(value, dict):
+        return clean_dict({
+            key: strip_key_recursive(item, key_to_strip)
+            for key, item in value.items()
+            if key != key_to_strip
+        })
+    if isinstance(value, list):
+        return [strip_key_recursive(item, key_to_strip) for item in value]
+    return value
 
 
 def dedupe_semantic_facts(facts: list[dict[str, Any]]) -> list[dict[str, Any]]:
