@@ -72,6 +72,38 @@ def run() -> None:
         and fact.get("condition") == "!(spender == address(0))"
         for fact in facts
     )
+    approve_facts = [fact for fact in facts if fact.get("function") == "approve"]
+    allowance_location = next(
+        fact for fact in approve_facts
+        if fact.get("kind") == "StorageLocationResolve"
+        and (fact.get("semantic") or {}).get("location", {}).get("access")
+        == "allowance[msg.sender][spender]"
+    )
+    allowance_write = next(
+        fact for fact in approve_facts
+        if fact.get("kind") == "StateWrite"
+        and fact.get("lvalue") == "allowance[msg.sender][spender]"
+    )
+    assert allowance_write["depends_on"] == [allowance_location["fact_id"]]
+    assert allowance_write["semantic"]["location"] == allowance_location["semantic"]["location"]
+    assert allowance_location["fact_role"] == "support"
+    assert allowance_write["fact_role"] == "effect"
+    assert allowance_write["semantic"]["value"] == "value"
+    print("PASS storage location: Solidity mapping writes use a canonical location fact")
+
+    transfer_from_facts = [fact for fact in facts if fact.get("function") == "transferFrom"]
+    allowance_read = next(
+        fact for fact in transfer_from_facts
+        if fact.get("kind") == "StateRead"
+        and fact.get("rvalue") == "allowance[from][msg.sender]"
+    )
+    read_location = next(
+        fact for fact in transfer_from_facts
+        if fact.get("fact_id") in allowance_read.get("depends_on", [])
+    )
+    assert read_location["kind"] == "StorageLocationResolve"
+    assert allowance_read["semantic"]["location"] == read_location["semantic"]["location"]
+    print("PASS storage read: implicit SlithIR dereference is an explicit StateRead atom")
     print("PASS guarded: nested mapping assignment is an atomic StateWrite")
 
     transfer = next(fn for fn in analyzed["typed"] if fn.function == "_transferWithHook")
@@ -156,6 +188,31 @@ def run() -> None:
     assert solidity_return["control_predecessors"] == [yul_hash["fact_id"]]
     assert not any(fact.get("source_lang") == "yul" and fact.get("kind") == "Return" for fact in hash_facts)
     print("PASS mixed frontend: Solidity and Yul facts share the function CFG order without duplicate return")
+
+    assembly_move_facts = [
+        fact for fact in mixed_payload["facts"]
+        if fact.get("function") == "_assemblyMove" and fact.get("source_lang") == "yul"
+    ]
+    yul_location = next(
+        fact for fact in assembly_move_facts
+        if fact.get("kind") == "StorageLocationResolve"
+        and (fact.get("semantic") or {}).get("location", {}).get("access") == "balanceOf[to]"
+    )
+    yul_read = next(
+        fact for fact in assembly_move_facts
+        if fact.get("kind") == "StateRead" and fact.get("rvalue") == "balanceOf[to]"
+    )
+    yul_write = next(
+        fact for fact in assembly_move_facts
+        if fact.get("kind") == "StateWrite" and fact.get("lvalue") == "balanceOf[to]"
+    )
+    assert yul_location["fact_id"] in yul_read["depends_on"]
+    assert yul_location["fact_id"] in yul_write["depends_on"]
+    assert yul_read["fact_id"] in yul_write["depends_on"]
+    assert yul_location["semantic"]["location"] == yul_write["semantic"]["location"]
+    assert yul_location["fact_role"] == "support"
+    assert yul_read["fact_role"] == yul_write["fact_role"] == "effect"
+    print("PASS Yul parity: MappingSlot, StateRead, and StateWrite form one dependency chain")
 
 
 if __name__ == "__main__":

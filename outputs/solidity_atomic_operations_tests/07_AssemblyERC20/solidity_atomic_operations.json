@@ -2,7 +2,7 @@
   "schema": "s-seir-solidity-atomic-operations/v1",
   "source": "人工构造样例/07_内联Assembly_memorysafe_Yul操作/contracts/AssemblyERC20.sol",
   "function_count": 9,
-  "operation_count": 38,
+  "operation_count": 39,
   "functions": [
     {
       "schema": "s-seir-solidity-atomic-operations/v1",
@@ -84,6 +84,7 @@
             "reference_kind": "state_variable",
             "type": "uint256"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -185,8 +186,10 @@
               "msg.sender"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
             "type": "uint256"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -246,6 +249,7 @@
           "writes": [
             "balanceOf"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "previous_atom_id": "sol_atom_2",
@@ -325,8 +329,10 @@
               "msg.sender"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
             "type": "uint256"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_2"
@@ -402,6 +408,7 @@
           "writes": [
             "TMP_0"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -508,6 +515,7 @@
             "initialSupply"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_5"
@@ -634,6 +642,7 @@
             "value"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -693,6 +702,7 @@
             "True"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -804,8 +814,10 @@
               "msg.sender"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => mapping(address => uint256))",
             "type": "mapping(address => uint256)"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -908,8 +920,10 @@
               "spender"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
             "type": "uint256"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_1"
@@ -972,6 +986,7 @@
           "writes": [
             "allowance"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "previous_atom_id": "sol_atom_2",
@@ -1052,8 +1067,10 @@
               "spender"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
             "type": "uint256"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_2"
@@ -1163,6 +1180,7 @@
             "value"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -1222,6 +1240,7 @@
             "True"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -1236,12 +1255,12 @@
       "contract": "AssemblyERC20",
       "function": "transferFrom",
       "signature": "transferFrom(address, address, uint256)",
-      "operation_count": 13,
+      "operation_count": 14,
       "operations": [
         {
           "order": 0,
           "kind": "Phi",
-          "text": "allowance_2(mapping(address => mapping(address => uint256))) := ϕ(['allowance_0', 'allowance_1', 'allowance_3'])",
+          "text": "allowance_2(mapping(address => mapping(address => uint256))) := ϕ(['allowance_1', 'allowance_0', 'allowance_3'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -1257,7 +1276,7 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "allowance_0",
+              "text": "allowance_1",
               "name": "allowance",
               "base_name": "allowance",
               "type": "mapping(address => mapping(address => uint256))",
@@ -1268,7 +1287,7 @@
             },
             {
               "kind": "StateIRVariable",
-              "text": "allowance_1",
+              "text": "allowance_0",
               "name": "allowance",
               "base_name": "allowance",
               "type": "mapping(address => mapping(address => uint256))",
@@ -1311,6 +1330,7 @@
           "writes": [
             "allowance"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_10"
@@ -1412,8 +1432,10 @@
               "from"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => mapping(address => uint256))",
             "type": "mapping(address => uint256)"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_1"
@@ -1518,13 +1540,62 @@
               "msg.sender"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
             "type": "uint256"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_2"
           ],
           "previous_atom_id": "sol_atom_2",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
+        },
+        {
+          "atom_id": "sol_atom_4:state_read:1",
+          "kind": "StorageRead",
+          "atomic_kind": "StateRead",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "block_order": 1,
+          "source_span": "1166:45:slither",
+          "source_expression": "allowance[from][msg.sender]",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "result": "REF_4",
+          "result_ssa": "REF_4",
+          "expression": "allowance[from][msg.sender]",
+          "resolved_reads": [
+            "allowance[from][msg.sender]"
+          ],
+          "writes": [
+            "REF_4"
+          ],
+          "storage_access": {
+            "access": "allowance[from][msg.sender]",
+            "state_variable": "allowance",
+            "keys": [
+              "from",
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
+            "type": "uint256"
+          },
+          "depends_on_atoms": [
+            "sol_atom_3"
+          ],
+          "source": "slithir_ssa",
+          "implicit_slithir_operation": true,
+          "consumer_atom_id": "sol_atom_4",
+          "sequence": 4,
+          "operation_order": 2,
           "cfg_predecessor_blocks": [
             "bb_sol_slither_n0"
           ]
@@ -1572,9 +1643,9 @@
           ],
           "checked": true,
           "atom_id": "sol_atom_4",
-          "sequence": 4,
+          "sequence": 5,
           "block_order": 1,
-          "operation_order": 2,
+          "operation_order": 3,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
           "source_span": "1166:45:slither",
@@ -1594,9 +1665,34 @@
           "writes": [
             "current"
           ],
+          "storage_reads": [
+            {
+              "access": "allowance[from][msg.sender]",
+              "state_variable": "allowance",
+              "keys": [
+                "from",
+                "msg.sender"
+              ],
+              "reference_kind": "index",
+              "container_type": "mapping(address => uint256)",
+              "type": "uint256",
+              "operand_ssa": "REF_4",
+              "operand": {
+                "kind": "ReferenceVariableSSA",
+                "text": "REF_4",
+                "name": "REF_4",
+                "base_name": "REF_4",
+                "type": "uint256",
+                "is_state": false,
+                "is_reference": true,
+                "is_constant": false,
+                "is_solidity_builtin": false
+              }
+            }
+          ],
           "source": "slithir_ssa",
           "depends_on_atoms": [
-            "sol_atom_3"
+            "sol_atom_4:state_read:1"
           ],
           "previous_atom_id": "sol_atom_3",
           "cfg_predecessor_blocks": [
@@ -1669,7 +1765,7 @@
           "operator": ">=",
           "checked": true,
           "atom_id": "sol_atom_5",
-          "sequence": 5,
+          "sequence": 6,
           "block_order": 2,
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n2",
@@ -1692,6 +1788,7 @@
           "writes": [
             "TMP_4"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_4"
@@ -1773,7 +1870,7 @@
             "contract": ""
           },
           "atom_id": "sol_atom_6",
-          "sequence": 6,
+          "sequence": 7,
           "block_order": 2,
           "operation_order": 1,
           "cfg_block_id": "bb_sol_slither_n2",
@@ -1796,6 +1893,7 @@
           "writes": [
             "TMP_5"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_5"
@@ -1870,7 +1968,7 @@
           ],
           "checked": false,
           "atom_id": "sol_atom_7",
-          "sequence": 7,
+          "sequence": 8,
           "block_order": 3,
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n3",
@@ -1900,8 +1998,10 @@
               "from"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => mapping(address => uint256))",
             "type": "mapping(address => uint256)"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_1"
@@ -1975,7 +2075,7 @@
           ],
           "checked": false,
           "atom_id": "sol_atom_8",
-          "sequence": 8,
+          "sequence": 9,
           "block_order": 3,
           "operation_order": 1,
           "cfg_block_id": "bb_sol_slither_n3",
@@ -2006,8 +2106,10 @@
               "msg.sender"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
             "type": "uint256"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_7"
@@ -2083,7 +2185,7 @@
           "operator": "-",
           "checked": false,
           "atom_id": "sol_atom_9",
-          "sequence": 9,
+          "sequence": 10,
           "block_order": 3,
           "operation_order": 2,
           "cfg_block_id": "bb_sol_slither_n3",
@@ -2106,6 +2208,7 @@
           "writes": [
             "TMP_6"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_4"
@@ -2146,7 +2249,7 @@
           ],
           "checked": false,
           "atom_id": "sol_atom_10",
-          "sequence": 10,
+          "sequence": 11,
           "block_order": 3,
           "operation_order": 3,
           "cfg_block_id": "bb_sol_slither_n3",
@@ -2168,6 +2271,7 @@
           "writes": [
             "allowance"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_1"
@@ -2220,7 +2324,7 @@
           ],
           "checked": false,
           "atom_id": "sol_atom_11",
-          "sequence": 11,
+          "sequence": 12,
           "block_order": 3,
           "operation_order": 4,
           "cfg_block_id": "bb_sol_slither_n3",
@@ -2250,8 +2354,10 @@
               "msg.sender"
             ],
             "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
             "type": "uint256"
           },
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_9",
@@ -2348,7 +2454,7 @@
           },
           "function_name": "_assemblyMove",
           "atom_id": "sol_atom_12",
-          "sequence": 12,
+          "sequence": 13,
           "block_order": 4,
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n4",
@@ -2369,6 +2475,7 @@
             "value"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -2409,7 +2516,7 @@
           ],
           "checked": true,
           "atom_id": "sol_atom_13",
-          "sequence": 13,
+          "sequence": 14,
           "block_order": 5,
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n5",
@@ -2428,6 +2535,7 @@
             "True"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -2495,6 +2603,7 @@
             "selector"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -2562,6 +2671,7 @@
             "h"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -2629,6 +2739,7 @@
             "total"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -2765,6 +2876,7 @@
             "gasLeft"
           ],
           "writes": [],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -2844,6 +2956,7 @@
           "writes": [
             "from"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": []
@@ -2910,6 +3023,7 @@
           "writes": [
             "to"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "previous_atom_id": "sol_atom_1",
@@ -2977,6 +3091,7 @@
           "writes": [
             "value"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "previous_atom_id": "sol_atom_2",
@@ -2985,7 +3100,7 @@
         {
           "order": 3,
           "kind": "Phi",
-          "text": "balanceOf_2(mapping(address => uint256)) := ϕ(['balanceOf_0', 'balanceOf_1'])",
+          "text": "balanceOf_2(mapping(address => uint256)) := ϕ(['balanceOf_1', 'balanceOf_0'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -3001,7 +3116,7 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "balanceOf_0",
+              "text": "balanceOf_1",
               "name": "balanceOf",
               "base_name": "balanceOf",
               "type": "mapping(address => uint256)",
@@ -3012,7 +3127,7 @@
             },
             {
               "kind": "StateIRVariable",
-              "text": "balanceOf_1",
+              "text": "balanceOf_0",
               "name": "balanceOf",
               "base_name": "balanceOf",
               "type": "mapping(address => uint256)",
@@ -3044,6 +3159,7 @@
           "writes": [
             "balanceOf"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "previous_atom_id": "sol_atom_3",
@@ -3115,6 +3231,7 @@
           "writes": [
             "TMP_31"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [],
           "cfg_predecessor_blocks": [
@@ -3210,6 +3327,7 @@
           "writes": [
             "TMP_32"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_2",
@@ -3316,6 +3434,7 @@
           "writes": [
             "TMP_33"
           ],
+          "storage_reads": [],
           "source": "slithir_ssa",
           "depends_on_atoms": [
             "sol_atom_6"

@@ -109,10 +109,16 @@ class SolidityAtomicOperationExtractor:
                 block_atoms.append(atom)
                 operations.append(atom)
             self._mark_control_dependencies(block_atoms)
-            attrs["solidity_atomic_ops"] = block_atoms
 
         self._link_atomic_dependencies(operations)
+        operations = self._materialize_storage_reads(operations)
         self._attach_cfg_predecessors(operations, control)
+        atoms_by_block: dict[str, list[Json]] = {}
+        for atom in operations:
+            atoms_by_block.setdefault(str(atom.get("cfg_block_id") or ""), []).append(atom)
+        for block in solidity_blocks:
+            block_id = str(block.get("block_id") or "")
+            block.setdefault("attrs", {})["solidity_atomic_ops"] = atoms_by_block.get(block_id, [])
 
         return {
             "schema": "s-seir-solidity-atomic-operations/v1",
@@ -174,6 +180,7 @@ class SolidityAtomicOperationExtractor:
                 "state_variable": state_variable,
                 "keys": keys,
                 "reference_kind": "index",
+                "container_type": left_value.get("type") if isinstance(left_value, dict) else None,
                 "type": (lvalue or {}).get("type") if isinstance(lvalue, dict) else None,
             }
         elif kind == "Member":
@@ -219,6 +226,8 @@ class SolidityAtomicOperationExtractor:
         if lvalue_key and expression and kind not in self.REFERENCE_KINDS:
             value_defs[lvalue_key] = expression
 
+        storage_reads = self._storage_reads(raw, kind, reference_defs)
+
         atom.update({
             "atom_id": atom_id,
             "sequence": sequence,
@@ -240,9 +249,119 @@ class SolidityAtomicOperationExtractor:
             "writes": writes,
             "reference_definition": reference_definition,
             "storage_access": storage_access,
+            "storage_reads": storage_reads,
             "source": "slithir_ssa" if raw.get("ssa") else "slithir",
         })
         return self._clean(atom)
+
+    @classmethod
+    def _storage_reads(
+        cls,
+        raw: Json,
+        kind: str,
+        reference_defs: dict[str, Json],
+    ) -> list[Json]:
+        """Identify implicit storage dereferences in a SlithIR operation.
+
+        SlithIR models an index/member access as a reference and dereferences
+        that reference only when a later operation consumes it.  Materializing
+        that implicit read keeps location resolution, state read, and the
+        consuming computation as separate atomic operations.
+        """
+        if kind in cls.REFERENCE_KINDS | {"Phi", "PhiCallback"}:
+            return []
+        out: list[Json] = []
+        seen: set[tuple[str, str]] = set()
+        for value in raw.get("read") or []:
+            operand_ssa = cls._value_key(value)
+            reference = cls._reference_info(value, reference_defs)
+            if reference and reference.get("state_variable"):
+                info = dict(reference)
+            elif cls._is_state(value):
+                info = {
+                    "access": cls._source_name(value),
+                    "state_variable": cls._state_variable_name(value),
+                    "keys": [],
+                    "reference_kind": "state_variable",
+                    "type": value.get("type") if isinstance(value, dict) else None,
+                }
+            else:
+                continue
+            identity = (str(info.get("access") or ""), operand_ssa)
+            if identity in seen:
+                continue
+            seen.add(identity)
+            info["operand_ssa"] = operand_ssa
+            info["operand"] = value
+            out.append(cls._clean(info))
+        return out
+
+    @classmethod
+    def _materialize_storage_reads(cls, atoms: list[Json]) -> list[Json]:
+        """Insert explicit StateRead atoms before their consuming operations."""
+        definition_by_result: dict[str, str] = {}
+        for item in atoms:
+            result = str(item.get("result_ssa") or "")
+            atom_id = str(item.get("atom_id") or "")
+            if result and atom_id:
+                definition_by_result.setdefault(result, atom_id)
+        expanded: list[Json] = []
+        for atom in atoms:
+            storage_reads = list(atom.get("storage_reads") or [])
+            dependencies = list(atom.get("depends_on_atoms") or [])
+            for index, storage in enumerate(storage_reads, start=1):
+                operand_ssa = str(storage.get("operand_ssa") or "")
+                access = str(storage.get("access") or "")
+                read_id = f"{atom.get('atom_id')}:state_read:{index}"
+                location_dependency = definition_by_result.get(operand_ssa)
+                read_atom = cls._clean({
+                    "atom_id": read_id,
+                    "kind": "StorageRead",
+                    "atomic_kind": "StateRead",
+                    "semantic_atom": True,
+                    "runtime_operation": True,
+                    "cfg_block_id": atom.get("cfg_block_id"),
+                    "cfg_node_id": atom.get("cfg_node_id"),
+                    "block_order": atom.get("block_order"),
+                    "source_span": atom.get("source_span"),
+                    "source_expression": access,
+                    "stmt_refs": list(atom.get("stmt_refs") or []),
+                    "path_conditions": list(atom.get("path_conditions") or []),
+                    "condition": atom.get("condition"),
+                    "control_only": atom.get("control_only"),
+                    "result": operand_ssa,
+                    "result_ssa": operand_ssa,
+                    "expression": access,
+                    "resolved_reads": [access],
+                    "writes": [operand_ssa] if operand_ssa else [],
+                    "storage_access": {
+                        key: value
+                        for key, value in storage.items()
+                        if key not in {"operand", "operand_ssa"}
+                    },
+                    "depends_on_atoms": [location_dependency] if location_dependency else [],
+                    "source": atom.get("source"),
+                    "implicit_slithir_operation": True,
+                    "consumer_atom_id": atom.get("atom_id"),
+                })
+                expanded.append(read_atom)
+                dependencies = [
+                    dependency
+                    for dependency in dependencies
+                    if dependency != location_dependency
+                ]
+                dependencies.append(read_id)
+            atom["depends_on_atoms"] = cls._unique(dependencies)
+            expanded.append(atom)
+
+        block_positions: dict[str, int] = {}
+        for sequence, atom in enumerate(expanded, start=1):
+            block_id = str(atom.get("cfg_block_id") or "")
+            operation_order = block_positions.get(block_id, 0)
+            block_positions[block_id] = operation_order + 1
+            atom["sequence"] = sequence
+            atom["operation_order"] = operation_order
+        return expanded
 
     @classmethod
     def _atomic_kind(cls, kind: str) -> str:

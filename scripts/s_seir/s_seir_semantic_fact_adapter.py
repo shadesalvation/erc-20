@@ -17,6 +17,7 @@ class SemanticFact:
     source_lang: str
     origin: str
     function: str
+    fact_role: str | None = None
     contract: str | None = None
     signature: str | None = None
     stmt_refs: list[str] = field(default_factory=list)
@@ -119,10 +120,42 @@ class SSeirFactAdapter:
     ) -> SemanticFact | None:
         kind = str(overlay.get("kind") or "")
         attrs = overlay.get("attrs") or {}
+        if kind in {"MappingSlot", "DynamicArraySlot"}:
+            expression = attrs.get("expression") or attrs.get("access") or attrs.get("slot")
+            target = attrs.get("target") or attrs.get("target_key")
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "StorageLocationResolve",
+                lvalue=target,
+                rvalue=expression,
+                reads=clean_list([attrs.get("key"), attrs.get("base")]),
+                writes=clean_list([target]),
+                semantic={
+                    "operation": "storage_location_resolve",
+                    "location": self.storage_location(attrs),
+                },
+                extra_evidence={
+                    "physical_reference": target,
+                    "slot_kind": attrs.get("slot_kind"),
+                    "resolved_inputs": attrs.get("resolved_inputs"),
+                },
+            )
         if kind in {"StateVariableRead", "MappingRead"}:
             access = attrs.get("access") or attrs.get("slot")
             target = attrs.get("target")
-            return self.fact(fn, overlay, stmt_lang, "StateRead", lvalue=target, rvalue=access, reads=[access], semantic=self.state_semantic(attrs, "state_read"))
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "StateRead",
+                lvalue=target,
+                rvalue=access,
+                reads=[access],
+                semantic=self.state_semantic(attrs, "state_read"),
+                extra_evidence={"storage_resolution": self.storage_resolution_evidence(attrs)},
+            )
         if kind in {"StateVariableWrite", "MappingWrite"}:
             access = attrs.get("access") or attrs.get("slot")
             value = attrs.get("value") or attrs.get("value_yul")
@@ -135,7 +168,11 @@ class SSeirFactAdapter:
                 rvalue=value,
                 reads=self.reads_for_value(value, attrs),
                 writes=[access],
-                semantic=self.state_semantic(attrs, "state_write"),
+                semantic={
+                    **self.state_semantic(attrs, "state_write"),
+                    "value": value,
+                },
+                extra_evidence={"storage_resolution": self.storage_resolution_evidence(attrs)},
             )
         if kind == "EventEmit":
             return self.fact(fn, overlay, stmt_lang, "EventEmit", reads=flat_list(attrs.get("args")), semantic={
@@ -217,6 +254,7 @@ class SSeirFactAdapter:
             writes=[access] if is_write else [],
             semantic={
                 **self.state_semantic(candidate, "state_write" if is_write else "state_read"),
+                "value": value if is_write else None,
                 "candidate_status": candidate.get("status"),
                 "unresolved_reason": candidate.get("unresolved_reason") or candidate.get("reason"),
             },
@@ -315,6 +353,7 @@ class SSeirFactAdapter:
             source_lang=source_lang,
             origin="sseir_overlay",
             function=str(fn.get("function") or ""),
+            fact_role=semantic_fact_role(kind),
             contract=fn.get("contract"),
             signature=fn.get("signature"),
             stmt_refs=stmt_refs,
@@ -324,7 +363,7 @@ class SSeirFactAdapter:
             rvalue=rvalue,
             reads=clean_list(reads or []),
             writes=clean_list(writes or []),
-            semantic=clean_dict(semantic or {}),
+            semantic=clean_dict({"atomic_operation_count": 1, **(semantic or {})}),
             evidence=clean_dict(evidence),
         )
 
@@ -344,11 +383,38 @@ class SSeirFactAdapter:
             "access": access,
             "state_variable": attrs.get("state_variable") or attrs.get("state_var"),
             "keys": attrs.get("keys") or bracket_keys(str(access or "")),
+            "location": SSeirFactAdapter.storage_location(attrs),
+            "candidate_status": attrs.get("status"),
+        })
+
+    @staticmethod
+    def storage_resolution_evidence(attrs: dict[str, Any]) -> dict[str, Any]:
+        return clean_dict({
             "storage_model": attrs.get("storage_model"),
             "slot": attrs.get("slot"),
             "slot_key": attrs.get("slot_key"),
             "slot_versions": attrs.get("slot_versions") or attrs.get("slot_keys"),
-            "candidate_status": attrs.get("status"),
+            "slot_effect": attrs.get("slot_effect"),
+        })
+
+    @staticmethod
+    def storage_location(attrs: dict[str, Any]) -> dict[str, Any]:
+        access = attrs.get("access") or attrs.get("expression") or attrs.get("slot")
+        keys = attrs.get("keys") or clean_list([attrs.get("key")]) or bracket_keys(str(access or ""))
+        slot_kind = str(attrs.get("slot_kind") or "")
+        if slot_kind == "dynamic_array_slot":
+            kind = "dynamic_array"
+        elif slot_kind == "mapping_slot" or keys:
+            kind = "mapping"
+        elif attrs.get("state_variable") or attrs.get("state_var"):
+            kind = "state_variable"
+        else:
+            kind = "manual_slot"
+        return clean_dict({
+            "kind": kind,
+            "access": access,
+            "state_variable": attrs.get("state_variable") or attrs.get("state_var"),
+            "keys": keys,
         })
 
     @staticmethod
@@ -442,6 +508,7 @@ class SlitherFactAdapter:
                 source_lang="solidity",
                 origin="slither_ir",
                 function=str(function.get("function") or function.get("name") or ""),
+                fact_role=semantic_fact_role(kind),
                 contract=function.get("contract"),
                 signature=function.get("signature"),
                 stmt_refs=list(op.get("stmt_refs") or []),
@@ -970,6 +1037,21 @@ def source_lang_for_refs(stmt_refs: list[str], stmt_lang: dict[str, str]) -> str
     if "yul" in langs and "solidity" in langs:
         return "mixed"
     return "unknown"
+
+
+def semantic_fact_role(kind: str) -> str:
+    if kind in {
+        "StateRead", "StateWrite", "EventEmit", "ExternalCall", "InternalCall",
+        "InternalDynamicCall", "LibraryCall", "BuiltinCall", "LowLevelCall",
+        "StaticCall", "DelegateCall", "ValueTransferCall", "PrecompileCall",
+        "Revert", "Return",
+    }:
+        return "effect"
+    if kind in {"Require", "BranchCondition"}:
+        return "control"
+    if kind in {"ValuePhi", "Phi", "PhiCallback"}:
+        return "analysis_support"
+    return "support"
 
 
 def function_dict_has_yul(fn: dict[str, Any]) -> bool:

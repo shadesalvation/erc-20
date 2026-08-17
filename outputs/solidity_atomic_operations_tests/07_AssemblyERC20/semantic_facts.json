@@ -11,9 +11,9 @@
     "bridge": "SemanticFactBridge restores function-level CFG order and dependencies after both sources already share one schema."
   },
   "function_count": 9,
-  "solidity_fact_count": 38,
-  "yul_fact_count": 39,
-  "fact_count": 77,
+  "solidity_fact_count": 39,
+  "yul_fact_count": 41,
+  "fact_count": 80,
   "solidity_facts": [
     {
       "fact_id": "fact_1",
@@ -21,6 +21,7 @@
       "kind": "StateWrite",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -49,19 +50,15 @@
       },
       "semantic": {
         "operation": "state_write",
-        "atomic_operation": "Assignment",
         "atomic_operation_count": 1,
-        "result_ssa": "totalSupply_1",
-        "operand_ssa": [
-          "initialSupply_1"
-        ],
-        "resolved_operands": [
-          "initialSupply"
-        ],
-        "checked": true,
-        "runtime_operation": true,
         "access": "totalSupply",
-        "state_variable": "totalSupply"
+        "state_variable": "totalSupply",
+        "location": {
+          "kind": "state_variable",
+          "access": "totalSupply",
+          "state_variable": "totalSupply"
+        },
+        "value": "initialSupply"
       },
       "evidence": {
         "atomic_operation": {
@@ -69,7 +66,8 @@
           "source_span": "565:27:slither",
           "source_expression": "totalSupply = initialSupply",
           "slithir_kind": "Assignment",
-          "slithir_text": "totalSupply_1(uint256) := initialSupply_1(uint256)"
+          "slithir_text": "totalSupply_1(uint256) := initialSupply_1(uint256)",
+          "physical_reference": "totalSupply_1"
         }
       },
       "depends_on": [],
@@ -78,9 +76,10 @@
     {
       "fact_id": "fact_2",
       "operation_id": "sol_atom_2",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -92,7 +91,7 @@
         "bb_sol_slither_n2"
       ],
       "lvalue": "REF_0",
-      "rvalue": "balanceOf_0[msg.sender]",
+      "rvalue": "balanceOf[msg.sender]",
       "reads": [
         "balanceOf_0",
         "msg.sender"
@@ -109,20 +108,16 @@
         "operation_order": 0
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_0",
-        "operand_ssa": [
-          "balanceOf_0",
-          "msg.sender"
-        ],
-        "resolved_operands": [
-          "balanceOf",
-          "msg.sender"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[msg.sender]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "msg.sender"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -130,7 +125,8 @@
           "source_span": "602:37:slither",
           "source_expression": "balanceOf[msg.sender]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_0(uint256) -> balanceOf_0[msg.sender]"
+          "slithir_text": "REF_0(uint256) -> balanceOf_0[msg.sender]",
+          "physical_reference": "REF_0"
         }
       },
       "depends_on": [],
@@ -144,6 +140,7 @@
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -191,7 +188,8 @@
           "atom_id": "sol_atom_3",
           "source_span": "602:37:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "balanceOf_1(mapping(address => uint256)) := ϕ(['balanceOf_0'])"
+          "slithir_text": "balanceOf_1(mapping(address => uint256)) := ϕ(['balanceOf_0'])",
+          "physical_reference": "balanceOf_1"
         }
       },
       "depends_on": [],
@@ -205,6 +203,7 @@
       "kind": "StateWrite",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -236,22 +235,21 @@
       },
       "semantic": {
         "operation": "state_write",
-        "atomic_operation": "Assignment",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_0",
-        "operand_ssa": [
-          "initialSupply_1"
-        ],
-        "resolved_operands": [
-          "initialSupply"
-        ],
-        "checked": true,
-        "runtime_operation": true,
         "access": "balanceOf[msg.sender]",
         "state_variable": "balanceOf",
         "keys": [
           "msg.sender"
-        ]
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[msg.sender]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "msg.sender"
+          ]
+        },
+        "value": "initialSupply"
       },
       "evidence": {
         "atomic_operation": {
@@ -259,7 +257,8 @@
           "source_span": "602:37:slither",
           "source_expression": "balanceOf[msg.sender] = initialSupply",
           "slithir_kind": "Assignment",
-          "slithir_text": "REF_0(uint256) (->balanceOf_1) := initialSupply_1(uint256)"
+          "slithir_text": "REF_0(uint256) (->balanceOf_1) := initialSupply_1(uint256)",
+          "physical_reference": "REF_0"
         }
       },
       "control_predecessors": [
@@ -272,6 +271,7 @@
       "kind": "TypeConversion",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -319,7 +319,8 @@
           "source_span": "649:52:slither",
           "source_expression": "address(0)",
           "slithir_kind": "TypeConversion",
-          "slithir_text": "TMP_0 = CONVERT 0 to address"
+          "slithir_text": "TMP_0 = CONVERT 0 to address",
+          "physical_reference": "TMP_0"
         }
       },
       "depends_on": [],
@@ -333,6 +334,7 @@
       "kind": "EventEmit",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -402,6 +404,7 @@
       "kind": "InternalCall",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transfer(address, uint256)",
       "function": "transfer",
       "contract": "AssemblyERC20",
@@ -467,6 +470,7 @@
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transfer(address, uint256)",
       "function": "transfer",
       "contract": "AssemblyERC20",
@@ -522,9 +526,10 @@
     {
       "fact_id": "fact_9",
       "operation_id": "sol_atom_1",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -536,7 +541,7 @@
         "bb_sol_slither_n1"
       ],
       "lvalue": "REF_1",
-      "rvalue": "allowance_0[msg.sender]",
+      "rvalue": "allowance[msg.sender]",
       "reads": [
         "allowance_0",
         "msg.sender"
@@ -553,20 +558,16 @@
         "operation_order": 0
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_1",
-        "operand_ssa": [
-          "allowance_0",
-          "msg.sender"
-        ],
-        "resolved_operands": [
-          "allowance",
-          "msg.sender"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "msg.sender"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -574,7 +575,8 @@
           "source_span": "946:38:slither",
           "source_expression": "allowance[msg.sender]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_1(mapping(address => uint256)) -> allowance_0[msg.sender]"
+          "slithir_text": "REF_1(mapping(address => uint256)) -> allowance_0[msg.sender]",
+          "physical_reference": "REF_1"
         }
       },
       "depends_on": [],
@@ -583,9 +585,10 @@
     {
       "fact_id": "fact_10",
       "operation_id": "sol_atom_2",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -597,7 +600,7 @@
         "bb_sol_slither_n1"
       ],
       "lvalue": "REF_2",
-      "rvalue": "REF_1[spender_1]",
+      "rvalue": "allowance[msg.sender][spender]",
       "reads": [
         "REF_1",
         "spender_1"
@@ -617,20 +620,17 @@
         "operation_order": 1
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_2",
-        "operand_ssa": [
-          "REF_1",
-          "spender_1"
-        ],
-        "resolved_operands": [
-          "allowance[msg.sender]",
-          "spender"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[msg.sender][spender]",
+          "state_variable": "allowance",
+          "keys": [
+            "msg.sender",
+            "spender"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -638,7 +638,8 @@
           "source_span": "946:38:slither",
           "source_expression": "allowance[msg.sender][spender]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_2(uint256) -> REF_1[spender_1]"
+          "slithir_text": "REF_2(uint256) -> REF_1[spender_1]",
+          "physical_reference": "REF_2"
         }
       },
       "control_predecessors": [
@@ -651,6 +652,7 @@
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -698,7 +700,8 @@
           "atom_id": "sol_atom_3",
           "source_span": "946:38:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "allowance_1(mapping(address => mapping(address => uint256))) := ϕ(['allowance_0'])"
+          "slithir_text": "allowance_1(mapping(address => mapping(address => uint256))) := ϕ(['allowance_0'])",
+          "physical_reference": "allowance_1"
         }
       },
       "depends_on": [],
@@ -712,6 +715,7 @@
       "kind": "StateWrite",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -743,23 +747,23 @@
       },
       "semantic": {
         "operation": "state_write",
-        "atomic_operation": "Assignment",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_2",
-        "operand_ssa": [
-          "value_1"
-        ],
-        "resolved_operands": [
-          "value"
-        ],
-        "checked": true,
-        "runtime_operation": true,
         "access": "allowance[msg.sender][spender]",
         "state_variable": "allowance",
         "keys": [
           "msg.sender",
           "spender"
-        ]
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[msg.sender][spender]",
+          "state_variable": "allowance",
+          "keys": [
+            "msg.sender",
+            "spender"
+          ]
+        },
+        "value": "value"
       },
       "evidence": {
         "atomic_operation": {
@@ -767,7 +771,8 @@
           "source_span": "946:38:slither",
           "source_expression": "allowance[msg.sender][spender] = value",
           "slithir_kind": "Assignment",
-          "slithir_text": "REF_2(uint256) (->allowance_1) := value_1(uint256)"
+          "slithir_text": "REF_2(uint256) (->allowance_1) := value_1(uint256)",
+          "physical_reference": "REF_2"
         }
       },
       "control_predecessors": [
@@ -780,6 +785,7 @@
       "kind": "EventEmit",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -847,6 +853,7 @@
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -905,6 +912,7 @@
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -914,20 +922,20 @@
       ],
       "lvalue": "allowance_2",
       "rvalue": [
-        "allowance_0",
         "allowance_1",
+        "allowance_0",
         "allowance_3"
       ],
       "reads": [
-        "allowance_0",
         "allowance_1",
+        "allowance_0",
         "allowance_3"
       ],
       "writes": [
         "allowance_2"
       ],
       "depends_on": [
-        "fact_24"
+        "fact_25"
       ],
       "order": {
         "kind": "cfg_partial_order",
@@ -940,8 +948,8 @@
         "atomic_operation_count": 1,
         "result_ssa": "allowance_2",
         "operand_ssa": [
-          "allowance_0",
           "allowance_1",
+          "allowance_0",
           "allowance_3"
         ],
         "resolved_operands": [
@@ -955,7 +963,8 @@
           "atom_id": "sol_atom_1",
           "source_span": "1156:260:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "allowance_2(mapping(address => mapping(address => uint256))) := ϕ(['allowance_0', 'allowance_1', 'allowance_3'])"
+          "slithir_text": "allowance_2(mapping(address => mapping(address => uint256))) := ϕ(['allowance_1', 'allowance_0', 'allowance_3'])",
+          "physical_reference": "allowance_2"
         }
       },
       "control_predecessors": [],
@@ -964,9 +973,10 @@
     {
       "fact_id": "fact_16",
       "operation_id": "sol_atom_2",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -978,7 +988,7 @@
         "bb_sol_slither_n1"
       ],
       "lvalue": "REF_3",
-      "rvalue": "allowance_2[from_1]",
+      "rvalue": "allowance[from]",
       "reads": [
         "allowance_2",
         "from_1"
@@ -998,20 +1008,16 @@
         "operation_order": 0
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_3",
-        "operand_ssa": [
-          "allowance_2",
-          "from_1"
-        ],
-        "resolved_operands": [
-          "allowance",
-          "from"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from]",
+          "state_variable": "allowance",
+          "keys": [
+            "from"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -1019,7 +1025,8 @@
           "source_span": "1166:45:slither",
           "source_expression": "allowance[from]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_3(mapping(address => uint256)) -> allowance_2[from_1]"
+          "slithir_text": "REF_3(mapping(address => uint256)) -> allowance_2[from_1]",
+          "physical_reference": "REF_3"
         }
       },
       "control_predecessors": [
@@ -1029,9 +1036,10 @@
     {
       "fact_id": "fact_17",
       "operation_id": "sol_atom_3",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1043,7 +1051,7 @@
         "bb_sol_slither_n1"
       ],
       "lvalue": "REF_4",
-      "rvalue": "REF_3[msg.sender]",
+      "rvalue": "allowance[from][msg.sender]",
       "reads": [
         "REF_3",
         "msg.sender"
@@ -1063,20 +1071,17 @@
         "operation_order": 1
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_4",
-        "operand_ssa": [
-          "REF_3",
-          "msg.sender"
-        ],
-        "resolved_operands": [
-          "allowance[from]",
-          "msg.sender"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from][msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "from",
+            "msg.sender"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -1084,7 +1089,8 @@
           "source_span": "1166:45:slither",
           "source_expression": "allowance[from][msg.sender]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_4(uint256) -> REF_3[msg.sender]"
+          "slithir_text": "REF_4(uint256) -> REF_3[msg.sender]",
+          "physical_reference": "REF_4"
         }
       },
       "control_predecessors": [
@@ -1093,10 +1099,80 @@
     },
     {
       "fact_id": "fact_18",
+      "operation_id": "sol_atom_4:state_read:1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_4",
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "writes": [
+        "REF_4"
+      ],
+      "depends_on": [
+        "fact_17"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "state_read",
+        "atomic_operation_count": 1,
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from][msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "from",
+            "msg.sender"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4:state_read:1",
+          "source_span": "1166:45:slither",
+          "source_expression": "allowance[from][msg.sender]",
+          "slithir_kind": "StorageRead",
+          "implicit_slithir_operation": true,
+          "physical_reference": "REF_4"
+        }
+      },
+      "control_predecessors": [
+        "fact_17"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
       "operation_id": "sol_atom_4",
       "kind": "ValueAssign",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1116,7 +1192,7 @@
         "current_1"
       ],
       "depends_on": [
-        "fact_17"
+        "fact_18"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -1124,7 +1200,7 @@
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 1,
-        "operation_order": 2
+        "operation_order": 3
       },
       "semantic": {
         "operation": "value_assign",
@@ -1146,19 +1222,21 @@
           "source_span": "1166:45:slither",
           "source_expression": "current = allowance[from][msg.sender]",
           "slithir_kind": "Assignment",
-          "slithir_text": "current_1(uint256) := REF_4(uint256)"
+          "slithir_text": "current_1(uint256) := REF_4(uint256)",
+          "physical_reference": "current_1"
         }
       },
       "control_predecessors": [
-        "fact_17"
+        "fact_18"
       ]
     },
     {
-      "fact_id": "fact_19",
+      "fact_id": "fact_20",
       "operation_id": "sol_atom_5",
       "kind": "ValueCompute",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1179,7 +1257,7 @@
         "TMP_4"
       ],
       "depends_on": [
-        "fact_18"
+        "fact_19"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n1"
@@ -1212,19 +1290,21 @@
           "source_span": "1221:38:slither",
           "source_expression": "current >= value",
           "slithir_kind": "Binary",
-          "slithir_text": "TMP_4(bool) = current_1 >= value_1"
+          "slithir_text": "TMP_4(bool) = current_1 >= value_1",
+          "physical_reference": "TMP_4"
         }
       },
       "control_predecessors": [
-        "fact_18"
+        "fact_19"
       ]
     },
     {
-      "fact_id": "fact_20",
+      "fact_id": "fact_21",
       "operation_id": "sol_atom_6",
       "kind": "Require",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "control",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1245,7 +1325,7 @@
         "TMP_5"
       ],
       "depends_on": [
-        "fact_19"
+        "fact_20"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n1"
@@ -1283,19 +1363,21 @@
           "source_span": "1221:38:slither",
           "source_expression": "require(bool,string)(current >= value,allowance)",
           "slithir_kind": "SolidityCall",
-          "slithir_text": "TMP_5(None) = SOLIDITY_CALL require(bool,string)(TMP_4,allowance)"
+          "slithir_text": "TMP_5(None) = SOLIDITY_CALL require(bool,string)(TMP_4,allowance)",
+          "physical_reference": "TMP_5"
         }
       },
       "control_predecessors": [
-        "fact_19"
+        "fact_20"
       ]
     },
     {
-      "fact_id": "fact_21",
+      "fact_id": "fact_22",
       "operation_id": "sol_atom_7",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1307,7 +1389,7 @@
         "bb_sol_slither_n3"
       ],
       "lvalue": "REF_5",
-      "rvalue": "allowance_2[from_1]",
+      "rvalue": "allowance[from]",
       "reads": [
         "allowance_2",
         "from_1"
@@ -1327,20 +1409,16 @@
         "operation_order": 0
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_5",
-        "operand_ssa": [
-          "allowance_2",
-          "from_1"
-        ],
-        "resolved_operands": [
-          "allowance",
-          "from"
-        ],
-        "checked": false,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from]",
+          "state_variable": "allowance",
+          "keys": [
+            "from"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -1348,76 +1426,8 @@
           "source_span": "1293:45:slither",
           "source_expression": "allowance[from]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_5(mapping(address => uint256)) -> allowance_2[from_1]"
-        }
-      },
-      "control_predecessors": [
-        "fact_20"
-      ],
-      "guard_conditions": [
-        "(allowance[from][msg.sender] >= value)"
-      ],
-      "condition": "((allowance[from][msg.sender] >= value))"
-    },
-    {
-      "fact_id": "fact_22",
-      "operation_id": "sol_atom_8",
-      "kind": "IndexAccess",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
-      "function": "transferFrom",
-      "contract": "AssemblyERC20",
-      "signature": "transferFrom(address, address, uint256)",
-      "stmt_refs": [
-        "sol_s_4"
-      ],
-      "cfg_nodes": [
-        "bb_sol_slither_n3"
-      ],
-      "lvalue": "REF_6",
-      "rvalue": "REF_5[msg.sender]",
-      "reads": [
-        "REF_5",
-        "msg.sender"
-      ],
-      "writes": [
-        "REF_6"
-      ],
-      "depends_on": [
-        "fact_21"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n2"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 3,
-        "operation_order": 1
-      },
-      "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
-        "atomic_operation_count": 1,
-        "result_ssa": "REF_6",
-        "operand_ssa": [
-          "REF_5",
-          "msg.sender"
-        ],
-        "resolved_operands": [
-          "allowance[from]",
-          "msg.sender"
-        ],
-        "checked": false,
-        "runtime_operation": true
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_8",
-          "source_span": "1293:45:slither",
-          "source_expression": "allowance[from][msg.sender]",
-          "slithir_kind": "Index",
-          "slithir_text": "REF_6(uint256) -> REF_5[msg.sender]"
+          "slithir_text": "REF_5(mapping(address => uint256)) -> allowance_2[from_1]",
+          "physical_reference": "REF_5"
         }
       },
       "control_predecessors": [
@@ -1430,10 +1440,79 @@
     },
     {
       "fact_id": "fact_23",
+      "operation_id": "sol_atom_8",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "lvalue": "REF_6",
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "REF_5",
+        "msg.sender"
+      ],
+      "writes": [
+        "REF_6"
+      ],
+      "depends_on": [
+        "fact_22"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n2"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from][msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "from",
+            "msg.sender"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_8",
+          "source_span": "1293:45:slither",
+          "source_expression": "allowance[from][msg.sender]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_6(uint256) -> REF_5[msg.sender]",
+          "physical_reference": "REF_6"
+        }
+      },
+      "control_predecessors": [
+        "fact_22"
+      ],
+      "guard_conditions": [
+        "(allowance[from][msg.sender] >= value)"
+      ],
+      "condition": "((allowance[from][msg.sender] >= value))"
+    },
+    {
+      "fact_id": "fact_24",
       "operation_id": "sol_atom_9",
       "kind": "ValueCompute",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1454,7 +1533,7 @@
         "TMP_6"
       ],
       "depends_on": [
-        "fact_18"
+        "fact_19"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n2"
@@ -1487,11 +1566,12 @@
           "source_span": "1293:45:slither",
           "source_expression": "current - value",
           "slithir_kind": "Binary",
-          "slithir_text": "TMP_6(uint256) = current_1 - value_1"
+          "slithir_text": "TMP_6(uint256) = current_1 - value_1",
+          "physical_reference": "TMP_6"
         }
       },
       "control_predecessors": [
-        "fact_22"
+        "fact_23"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -1499,11 +1579,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_24",
+      "fact_id": "fact_25",
       "operation_id": "sol_atom_10",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1554,11 +1635,12 @@
           "atom_id": "sol_atom_10",
           "source_span": "1293:45:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "allowance_3(mapping(address => mapping(address => uint256))) := ϕ(['allowance_2'])"
+          "slithir_text": "allowance_3(mapping(address => mapping(address => uint256))) := ϕ(['allowance_2'])",
+          "physical_reference": "allowance_3"
         }
       },
       "control_predecessors": [
-        "fact_23"
+        "fact_24"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -1566,11 +1648,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_25",
+      "fact_id": "fact_26",
       "operation_id": "sol_atom_11",
       "kind": "StateWrite",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1590,8 +1673,8 @@
         "allowance[from][msg.sender]"
       ],
       "depends_on": [
-        "fact_23",
-        "fact_22"
+        "fact_24",
+        "fact_23"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n2"
@@ -1603,23 +1686,23 @@
       },
       "semantic": {
         "operation": "state_write",
-        "atomic_operation": "Assignment",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_6",
-        "operand_ssa": [
-          "TMP_6"
-        ],
-        "resolved_operands": [
-          "(allowance[from][msg.sender] - value)"
-        ],
-        "checked": false,
-        "runtime_operation": true,
         "access": "allowance[from][msg.sender]",
         "state_variable": "allowance",
         "keys": [
           "from",
           "msg.sender"
-        ]
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from][msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "from",
+            "msg.sender"
+          ]
+        },
+        "value": "(allowance[from][msg.sender] - value)"
       },
       "evidence": {
         "atomic_operation": {
@@ -1627,11 +1710,12 @@
           "source_span": "1293:45:slither",
           "source_expression": "allowance[from][msg.sender] = current - value",
           "slithir_kind": "Assignment",
-          "slithir_text": "REF_6(uint256) (->allowance_3) := TMP_6(uint256)"
+          "slithir_text": "REF_6(uint256) (->allowance_3) := TMP_6(uint256)",
+          "physical_reference": "REF_6"
         }
       },
       "control_predecessors": [
-        "fact_24"
+        "fact_25"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -1639,11 +1723,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_26",
+      "fact_id": "fact_27",
       "operation_id": "sol_atom_12",
       "kind": "InternalCall",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1702,7 +1787,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_25"
+        "fact_26"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -1710,11 +1795,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_27",
+      "fact_id": "fact_28",
       "operation_id": "sol_atom_13",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -1764,7 +1850,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_26"
+        "fact_27"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -1772,11 +1858,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_31",
+      "fact_id": "fact_32",
       "operation_id": "sol_atom_1",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.selectorFromCalldata()",
       "function": "selectorFromCalldata",
       "contract": "AssemblyERC20",
@@ -1823,15 +1910,16 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_30"
+        "fact_31"
       ]
     },
     {
-      "fact_id": "fact_33",
+      "fact_id": "fact_34",
       "operation_id": "sol_atom_1",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.hashMemorySafe(bytes)",
       "function": "hashMemorySafe",
       "contract": "AssemblyERC20",
@@ -1878,15 +1966,16 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_32"
+        "fact_33"
       ]
     },
     {
-      "fact_id": "fact_48",
+      "fact_id": "fact_49",
       "operation_id": "sol_atom_1",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.sumSkipping(uint256[])",
       "function": "sumSkipping",
       "contract": "AssemblyERC20",
@@ -1933,17 +2022,18 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_42",
-        "fact_37",
-        "fact_50"
+        "fact_43",
+        "fact_38",
+        "fact_51"
       ]
     },
     {
-      "fact_id": "fact_59",
+      "fact_id": "fact_60",
       "operation_id": "sol_atom_1",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.rawContext()",
       "function": "rawContext",
       "contract": "AssemblyERC20",
@@ -2007,15 +2097,16 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_58"
+        "fact_59"
       ]
     },
     {
-      "fact_id": "fact_60",
+      "fact_id": "fact_61",
       "operation_id": "sol_atom_1",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -2061,7 +2152,8 @@
           "atom_id": "sol_atom_1",
           "source_span": "2972:840:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "from_1(address) := ϕ(['from_1', 'msg.sender'])"
+          "slithir_text": "from_1(address) := ϕ(['from_1', 'msg.sender'])",
+          "physical_reference": "from_1"
         }
       },
       "depends_on": [],
@@ -2069,11 +2161,12 @@
       "cfg_predecessor_blocks": []
     },
     {
-      "fact_id": "fact_61",
+      "fact_id": "fact_62",
       "operation_id": "sol_atom_2",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -2115,21 +2208,23 @@
           "atom_id": "sol_atom_2",
           "source_span": "2972:840:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "to_1(address) := ϕ(['to_1', 'to_1'])"
+          "slithir_text": "to_1(address) := ϕ(['to_1', 'to_1'])",
+          "physical_reference": "to_1"
         }
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_60"
+        "fact_61"
       ],
       "cfg_predecessor_blocks": []
     },
     {
-      "fact_id": "fact_62",
+      "fact_id": "fact_63",
       "operation_id": "sol_atom_3",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -2171,21 +2266,23 @@
           "atom_id": "sol_atom_3",
           "source_span": "2972:840:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "value_1(uint256) := ϕ(['value_1', 'value_1'])"
+          "slithir_text": "value_1(uint256) := ϕ(['value_1', 'value_1'])",
+          "physical_reference": "value_1"
         }
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_61"
+        "fact_62"
       ],
       "cfg_predecessor_blocks": []
     },
     {
-      "fact_id": "fact_63",
+      "fact_id": "fact_64",
       "operation_id": "sol_atom_4",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -2195,12 +2292,12 @@
       ],
       "lvalue": "balanceOf_2",
       "rvalue": [
-        "balanceOf_0",
-        "balanceOf_1"
+        "balanceOf_1",
+        "balanceOf_0"
       ],
       "reads": [
-        "balanceOf_0",
-        "balanceOf_1"
+        "balanceOf_1",
+        "balanceOf_0"
       ],
       "writes": [
         "balanceOf_2"
@@ -2216,8 +2313,8 @@
         "atomic_operation_count": 1,
         "result_ssa": "balanceOf_2",
         "operand_ssa": [
-          "balanceOf_0",
-          "balanceOf_1"
+          "balanceOf_1",
+          "balanceOf_0"
         ],
         "resolved_operands": [
           "balanceOf"
@@ -2230,21 +2327,23 @@
           "atom_id": "sol_atom_4",
           "source_span": "2972:840:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "balanceOf_2(mapping(address => uint256)) := ϕ(['balanceOf_0', 'balanceOf_1'])"
+          "slithir_text": "balanceOf_2(mapping(address => uint256)) := ϕ(['balanceOf_1', 'balanceOf_0'])",
+          "physical_reference": "balanceOf_2"
         }
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_62"
+        "fact_63"
       ],
       "cfg_predecessor_blocks": []
     },
     {
-      "fact_id": "fact_64",
+      "fact_id": "fact_65",
       "operation_id": "sol_atom_5",
       "kind": "TypeConversion",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -2292,20 +2391,22 @@
           "source_span": "2982:33:slither",
           "source_expression": "address(0)",
           "slithir_kind": "TypeConversion",
-          "slithir_text": "TMP_31 = CONVERT 0 to address"
+          "slithir_text": "TMP_31 = CONVERT 0 to address",
+          "physical_reference": "TMP_31"
         }
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_63"
+        "fact_64"
       ]
     },
     {
-      "fact_id": "fact_65",
+      "fact_id": "fact_66",
       "operation_id": "sol_atom_6",
       "kind": "ValueCompute",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -2326,8 +2427,8 @@
         "TMP_32"
       ],
       "depends_on": [
-        "fact_61",
-        "fact_64"
+        "fact_62",
+        "fact_65"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -2360,19 +2461,21 @@
           "source_span": "2982:33:slither",
           "source_expression": "to != address(0)",
           "slithir_kind": "Binary",
-          "slithir_text": "TMP_32(bool) = to_1 != TMP_31"
+          "slithir_text": "TMP_32(bool) = to_1 != TMP_31",
+          "physical_reference": "TMP_32"
         }
       },
       "control_predecessors": [
-        "fact_64"
+        "fact_65"
       ]
     },
     {
-      "fact_id": "fact_66",
+      "fact_id": "fact_67",
       "operation_id": "sol_atom_7",
       "kind": "Require",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "control",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -2393,7 +2496,7 @@
         "TMP_33"
       ],
       "depends_on": [
-        "fact_65"
+        "fact_66"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -2431,21 +2534,23 @@
           "source_span": "2982:33:slither",
           "source_expression": "require(bool,string)(to != address(0),zero)",
           "slithir_kind": "SolidityCall",
-          "slithir_text": "TMP_33(None) = SOLIDITY_CALL require(bool,string)(TMP_32,zero)"
+          "slithir_text": "TMP_33(None) = SOLIDITY_CALL require(bool,string)(TMP_32,zero)",
+          "physical_reference": "TMP_33"
         }
       },
       "control_predecessors": [
-        "fact_65"
+        "fact_66"
       ]
     }
   ],
   "yul_facts": [
     {
-      "fact_id": "fact_28",
+      "fact_id": "fact_29",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "selectorFromCalldata",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "selectorFromCalldata()",
       "stmt_refs": [
@@ -2463,6 +2568,7 @@
         "__sseir_eval_asm_s_1_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_1_1",
         "expression": "calldataload(0)",
         "call": "calldataload",
@@ -2494,11 +2600,12 @@
       ]
     },
     {
-      "fact_id": "fact_29",
+      "fact_id": "fact_30",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "selectorFromCalldata",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "selectorFromCalldata()",
       "stmt_refs": [
@@ -2517,6 +2624,7 @@
         "__sseir_eval_asm_s_1_2"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_1_2",
         "expression": "shr(224, __sseir_eval_asm_s_1_1)",
         "call": "shr",
@@ -2545,18 +2653,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_28"
+        "fact_29"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n0"
       ]
     },
     {
-      "fact_id": "fact_30",
+      "fact_id": "fact_31",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "selectorFromCalldata",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "selectorFromCalldata()",
       "stmt_refs": [
@@ -2575,6 +2684,7 @@
         "selector"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "selector",
         "expression": "shr(224, calldataload(0))"
       },
@@ -2594,18 +2704,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_29"
+        "fact_30"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n0"
       ]
     },
     {
-      "fact_id": "fact_32",
+      "fact_id": "fact_33",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "hashMemorySafe",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "hashMemorySafe(bytes)",
       "stmt_refs": [
@@ -2625,6 +2736,7 @@
         "h"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "h",
         "expression": "keccak256(add(data, 0x20), mload(data))"
       },
@@ -2649,11 +2761,12 @@
       ]
     },
     {
-      "fact_id": "fact_34",
+      "fact_id": "fact_35",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -2672,6 +2785,7 @@
         "len"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "len",
         "expression": "mload(values)"
       },
@@ -2696,11 +2810,12 @@
       ]
     },
     {
-      "fact_id": "fact_35",
+      "fact_id": "fact_36",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -2719,6 +2834,7 @@
         "__sseir_eval_asm_s_6_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_6_1",
         "expression": "add(values, 0x20)",
         "call": "add",
@@ -2747,18 +2863,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_34"
+        "fact_35"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n2"
       ]
     },
     {
-      "fact_id": "fact_36",
+      "fact_id": "fact_37",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -2777,6 +2894,7 @@
         "ptr"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "ptr",
         "expression": "add(values, 0x20)"
       },
@@ -2796,18 +2914,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_35"
+        "fact_36"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n2"
       ]
     },
     {
-      "fact_id": "fact_37",
+      "fact_id": "fact_38",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -2822,6 +2941,7 @@
         "i"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "i",
         "expression": "0"
       },
@@ -2841,18 +2961,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_36"
+        "fact_37"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n3"
       ]
     },
     {
-      "fact_id": "fact_38",
+      "fact_id": "fact_39",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -2875,6 +2996,7 @@
         "v"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "v",
         "expression": "mload(add(ptr, mul(i, 0x20)))"
       },
@@ -2894,19 +3016,20 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_37",
-        "fact_50"
+        "fact_38",
+        "fact_51"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n5"
       ]
     },
     {
-      "fact_id": "fact_39",
+      "fact_id": "fact_40",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -2927,6 +3050,7 @@
         "__sseir_eval_asm_s_10_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_10_1",
         "expression": "eq(v, 0)",
         "call": "eq",
@@ -2955,18 +3079,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_38"
+        "fact_39"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n8"
       ]
     },
     {
-      "fact_id": "fact_40",
+      "fact_id": "fact_41",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -2983,6 +3108,7 @@
         "v"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "expression": "eq(v, 0)"
       },
       "evidence": {
@@ -3001,18 +3127,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_39"
+        "fact_40"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n8"
       ]
     },
     {
-      "fact_id": "fact_41",
+      "fact_id": "fact_42",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -3033,6 +3160,7 @@
         "__sseir_eval_asm_s_12_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_12_1",
         "expression": "gt(v, 1000000)",
         "call": "gt",
@@ -3061,18 +3189,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_40"
+        "fact_41"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n10"
       ]
     },
     {
-      "fact_id": "fact_42",
+      "fact_id": "fact_43",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -3089,6 +3218,7 @@
         "v"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "expression": "gt(v, 1000000)"
       },
       "evidence": {
@@ -3107,18 +3237,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_41"
+        "fact_42"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n10"
       ]
     },
     {
-      "fact_id": "fact_43",
+      "fact_id": "fact_44",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -3138,6 +3269,7 @@
         "__sseir_eval_asm_s_18_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_18_1",
         "expression": "mul(v, 2)",
         "call": "mul",
@@ -3166,18 +3298,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_42"
+        "fact_43"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_44",
+      "fact_id": "fact_45",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -3198,6 +3331,7 @@
         "__sseir_eval_asm_s_18_2"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_18_2",
         "expression": "addOrLeave(total, __sseir_eval_asm_s_18_1)",
         "call": "addOrLeave",
@@ -3226,18 +3360,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_43"
+        "fact_44"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_45",
+      "fact_id": "fact_46",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -3259,6 +3394,7 @@
         "total"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "total",
         "expression": "addOrLeave(total, mul(v, 2))"
       },
@@ -3278,18 +3414,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_44"
+        "fact_45"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_46",
+      "fact_id": "fact_47",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -3310,6 +3447,7 @@
         "__sseir_eval_asm_s_16_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_16_1",
         "expression": "addOrLeave(total, v)",
         "call": "addOrLeave",
@@ -3338,18 +3476,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_42"
+        "fact_43"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_47",
+      "fact_id": "fact_48",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -3370,6 +3509,7 @@
         "total"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "total",
         "expression": "addOrLeave(total, v)"
       },
@@ -3389,18 +3529,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_46"
+        "fact_47"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_49",
+      "fact_id": "fact_50",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -3419,6 +3560,7 @@
         "__sseir_eval_asm_s_19_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_19_1",
         "expression": "add(i, 1)",
         "call": "add",
@@ -3447,20 +3589,21 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_40",
-        "fact_47",
-        "fact_45"
+        "fact_41",
+        "fact_48",
+        "fact_46"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n7"
       ]
     },
     {
-      "fact_id": "fact_50",
+      "fact_id": "fact_51",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -3479,6 +3622,7 @@
         "i"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "i",
         "expression": "add(i, 1)"
       },
@@ -3498,18 +3642,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_49"
+        "fact_50"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n7"
       ]
     },
     {
-      "fact_id": "fact_51",
+      "fact_id": "fact_52",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -3527,6 +3672,7 @@
         "__sseir_eval_asm_s_1_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_1_1",
         "expression": "caller()",
         "call": "caller"
@@ -3552,11 +3698,12 @@
       ]
     },
     {
-      "fact_id": "fact_52",
+      "fact_id": "fact_53",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -3574,6 +3721,7 @@
         "who"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "who",
         "expression": "caller()"
       },
@@ -3593,18 +3741,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_51"
+        "fact_52"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n0"
       ]
     },
     {
-      "fact_id": "fact_53",
+      "fact_id": "fact_54",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -3622,6 +3771,7 @@
         "__sseir_eval_asm_s_2_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_2_1",
         "expression": "callvalue()",
         "call": "callvalue"
@@ -3642,18 +3792,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_52"
+        "fact_53"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n2"
       ]
     },
     {
-      "fact_id": "fact_54",
+      "fact_id": "fact_55",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -3671,6 +3822,7 @@
         "value"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "value",
         "expression": "callvalue()"
       },
@@ -3690,18 +3842,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_53"
+        "fact_54"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n2"
       ]
     },
     {
-      "fact_id": "fact_55",
+      "fact_id": "fact_56",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -3719,6 +3872,7 @@
         "__sseir_eval_asm_s_3_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_3_1",
         "expression": "calldatasize()",
         "call": "calldatasize"
@@ -3739,18 +3893,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_54"
+        "fact_55"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n3"
       ]
     },
     {
-      "fact_id": "fact_56",
+      "fact_id": "fact_57",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -3768,6 +3923,7 @@
         "size"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "size",
         "expression": "calldatasize()"
       },
@@ -3787,18 +3943,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_55"
+        "fact_56"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n3"
       ]
     },
     {
-      "fact_id": "fact_57",
+      "fact_id": "fact_58",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -3816,6 +3973,7 @@
         "__sseir_eval_asm_s_4_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_4_1",
         "expression": "gas()",
         "call": "gas"
@@ -3836,18 +3994,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_56"
+        "fact_57"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n4"
       ]
     },
     {
-      "fact_id": "fact_58",
+      "fact_id": "fact_59",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -3865,6 +4024,7 @@
         "gasLeft"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "gasLeft",
         "expression": "gas()"
       },
@@ -3884,18 +4044,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_57"
+        "fact_58"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n4"
       ]
     },
     {
-      "fact_id": "fact_67",
+      "fact_id": "fact_68",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -3910,6 +4071,7 @@
         "fromSlot"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "fromSlot",
         "expression": "keccak256(0x00, 0x40)"
       },
@@ -3929,7 +4091,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_66"
+        "fact_67"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n3"
@@ -3940,11 +4102,90 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_68",
+      "fact_id": "fact_69",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "_assemblyMove",
+      "fact_role": "support",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n4"
+      ],
+      "lvalue": "fromSlot",
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "from",
+        "balanceOf.slot"
+      ],
+      "writes": [
+        "fromSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[from]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "from"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_8"
+        ],
+        "physical_reference": "fromSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "from"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "balanceOf.slot"
+          }
+        ]
+      },
+      "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 7
+      },
+      "depends_on": [],
+      "control_predecessors": [
+        "fact_68"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n3"
+      ],
+      "guard_conditions": [
+        "(to != address(0))"
+      ],
+      "condition": "((to != address(0)))"
+    },
+    {
+      "fact_id": "fact_70",
       "kind": "StateRead",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -3961,17 +4202,21 @@
         "balanceOf[from]"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "state_read",
         "access": "balanceOf[from]",
         "state_variable": "balanceOf",
         "keys": [
           "from"
         ],
-        "slot": "fromSlot",
-        "slot_key": "fromSlot__ssa1",
-        "slot_versions": [
-          "fromSlot__ssa1"
-        ]
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[from]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "from"
+          ]
+        }
       },
       "evidence": {
         "overlay": "ov_6",
@@ -3979,18 +4224,28 @@
         "effects": [
           "eff_8",
           "eff_10"
-        ]
+        ],
+        "storage_resolution": {
+          "slot": "fromSlot",
+          "slot_key": "fromSlot__ssa1",
+          "slot_versions": [
+            "fromSlot__ssa1"
+          ],
+          "slot_effect": "eff_8"
+        }
       },
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "operation_id": "yul_overlay:ov_6",
+      "depends_on": [
+        "fact_69"
+      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 5,
-        "operation_order": 7
+        "operation_order": 9
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_67"
+        "fact_69"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n3"
@@ -4001,11 +4256,12 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_69",
+      "fact_id": "fact_71",
       "kind": "StateWrite",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -4027,17 +4283,22 @@
         "balanceOf[from]"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "state_write",
         "access": "balanceOf[from]",
         "state_variable": "balanceOf",
         "keys": [
           "from"
         ],
-        "slot": "fromSlot",
-        "slot_key": "fromSlot__ssa1",
-        "slot_versions": [
-          "fromSlot__ssa1"
-        ]
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[from]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "from"
+          ]
+        },
+        "value": "(fromBalance - value)"
       },
       "evidence": {
         "overlay": "ov_7",
@@ -4045,18 +4306,29 @@
         "effects": [
           "eff_8",
           "eff_16"
-        ]
+        ],
+        "storage_resolution": {
+          "slot": "fromSlot",
+          "slot_key": "fromSlot__ssa1",
+          "slot_versions": [
+            "fromSlot__ssa1"
+          ],
+          "slot_effect": "eff_8"
+        }
       },
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "operation_id": "yul_overlay:ov_7",
+      "depends_on": [
+        "fact_69",
+        "fact_70"
+      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 5,
-        "operation_order": 7
+        "operation_order": 15
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_68"
+        "fact_70"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n3"
@@ -4066,11 +4338,12 @@
       ]
     },
     {
-      "fact_id": "fact_70",
+      "fact_id": "fact_72",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -4089,6 +4362,7 @@
         "fromBalance"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "fromBalance",
         "expression": "sload(fromSlot)"
       },
@@ -4108,7 +4382,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_69"
+        "fact_71"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n4"
@@ -4119,11 +4393,12 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_71",
+      "fact_id": "fact_73",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -4144,6 +4419,7 @@
         "__sseir_eval_asm_s_5_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_5_1",
         "expression": "lt(fromBalance, value)",
         "call": "lt",
@@ -4172,7 +4448,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_70"
+        "fact_72"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n5"
@@ -4183,11 +4459,12 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_72",
+      "fact_id": "fact_74",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -4204,6 +4481,7 @@
         "value"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "expression": "lt(fromBalance, value)"
       },
       "evidence": {
@@ -4222,7 +4500,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_71"
+        "fact_73"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n5"
@@ -4233,11 +4511,12 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_73",
+      "fact_id": "fact_75",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -4253,6 +4532,7 @@
         "toSlot"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "toSlot",
         "expression": "keccak256(0x00, 0x40)"
       },
@@ -4272,7 +4552,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_72"
+        "fact_74"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n11"
@@ -4282,11 +4562,90 @@
       ]
     },
     {
-      "fact_id": "fact_74",
+      "fact_id": "fact_76",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "_assemblyMove",
+      "fact_role": "support",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n12"
+      ],
+      "condition": "(!(lt(fromBalance, value))) && ((to != address(0)))",
+      "lvalue": "toSlot",
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "to",
+        "balanceOf.slot"
+      ],
+      "writes": [
+        "toSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[to]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "to"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_15"
+        ],
+        "physical_reference": "toSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "to"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "balanceOf.slot"
+          }
+        ]
+      },
+      "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 11,
+        "operation_order": 14
+      },
+      "depends_on": [],
+      "control_predecessors": [
+        "fact_75"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n11"
+      ],
+      "guard_conditions": [
+        "(to != address(0))"
+      ]
+    },
+    {
+      "fact_id": "fact_77",
       "kind": "StateRead",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -4303,17 +4662,21 @@
         "balanceOf[to]"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "state_read",
         "access": "balanceOf[to]",
         "state_variable": "balanceOf",
         "keys": [
           "to"
         ],
-        "slot": "toSlot",
-        "slot_key": "toSlot__ssa3",
-        "slot_versions": [
-          "toSlot__ssa3"
-        ]
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[to]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "to"
+          ]
+        }
       },
       "evidence": {
         "overlay": "ov_8",
@@ -4321,18 +4684,28 @@
         "effects": [
           "eff_15",
           "eff_17"
-        ]
+        ],
+        "storage_resolution": {
+          "slot": "toSlot",
+          "slot_key": "toSlot__ssa3",
+          "slot_versions": [
+            "toSlot__ssa3"
+          ],
+          "slot_effect": "eff_15"
+        }
       },
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "operation_id": "yul_overlay:ov_8",
+      "depends_on": [
+        "fact_76"
+      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 11,
-        "operation_order": 14
+        "operation_order": 16
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_73"
+        "fact_76"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n11"
@@ -4342,11 +4715,12 @@
       ]
     },
     {
-      "fact_id": "fact_75",
+      "fact_id": "fact_78",
       "kind": "StateWrite",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -4368,17 +4742,22 @@
         "balanceOf[to]"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "state_write",
         "access": "balanceOf[to]",
         "state_variable": "balanceOf",
         "keys": [
           "to"
         ],
-        "slot": "toSlot",
-        "slot_key": "toSlot__ssa3",
-        "slot_versions": [
-          "toSlot__ssa3"
-        ]
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[to]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "to"
+          ]
+        },
+        "value": "(balanceOf[to] + value)"
       },
       "evidence": {
         "overlay": "ov_9",
@@ -4386,18 +4765,29 @@
         "effects": [
           "eff_15",
           "eff_18"
-        ]
+        ],
+        "storage_resolution": {
+          "slot": "toSlot",
+          "slot_key": "toSlot__ssa3",
+          "slot_versions": [
+            "toSlot__ssa3"
+          ],
+          "slot_effect": "eff_15"
+        }
       },
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "operation_id": "yul_overlay:ov_9",
+      "depends_on": [
+        "fact_76",
+        "fact_77"
+      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 11,
-        "operation_order": 14
+        "operation_order": 17
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_74"
+        "fact_77"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n11"
@@ -4407,11 +4797,12 @@
       ]
     },
     {
-      "fact_id": "fact_76",
+      "fact_id": "fact_79",
       "kind": "EventEmit",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -4427,6 +4818,7 @@
         "value"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "event": "Transfer",
         "args": [
           "from",
@@ -4467,7 +4859,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_75"
+        "fact_78"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n15"
@@ -4477,11 +4869,12 @@
       ]
     },
     {
-      "fact_id": "fact_77",
+      "fact_id": "fact_80",
       "kind": "Revert",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -4492,6 +4885,7 @@
       ],
       "condition": "(lt(fromBalance, value)) && ((to != address(0)))",
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "revert"
       },
       "evidence": {
@@ -4532,7 +4926,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_72"
+        "fact_74"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n8"
@@ -4549,6 +4943,7 @@
       "kind": "StateWrite",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -4577,19 +4972,15 @@
       },
       "semantic": {
         "operation": "state_write",
-        "atomic_operation": "Assignment",
         "atomic_operation_count": 1,
-        "result_ssa": "totalSupply_1",
-        "operand_ssa": [
-          "initialSupply_1"
-        ],
-        "resolved_operands": [
-          "initialSupply"
-        ],
-        "checked": true,
-        "runtime_operation": true,
         "access": "totalSupply",
-        "state_variable": "totalSupply"
+        "state_variable": "totalSupply",
+        "location": {
+          "kind": "state_variable",
+          "access": "totalSupply",
+          "state_variable": "totalSupply"
+        },
+        "value": "initialSupply"
       },
       "evidence": {
         "atomic_operation": {
@@ -4597,7 +4988,8 @@
           "source_span": "565:27:slither",
           "source_expression": "totalSupply = initialSupply",
           "slithir_kind": "Assignment",
-          "slithir_text": "totalSupply_1(uint256) := initialSupply_1(uint256)"
+          "slithir_text": "totalSupply_1(uint256) := initialSupply_1(uint256)",
+          "physical_reference": "totalSupply_1"
         }
       },
       "depends_on": [],
@@ -4606,9 +4998,10 @@
     {
       "fact_id": "fact_2",
       "operation_id": "sol_atom_2",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -4620,7 +5013,7 @@
         "bb_sol_slither_n2"
       ],
       "lvalue": "REF_0",
-      "rvalue": "balanceOf_0[msg.sender]",
+      "rvalue": "balanceOf[msg.sender]",
       "reads": [
         "balanceOf_0",
         "msg.sender"
@@ -4637,20 +5030,16 @@
         "operation_order": 0
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_0",
-        "operand_ssa": [
-          "balanceOf_0",
-          "msg.sender"
-        ],
-        "resolved_operands": [
-          "balanceOf",
-          "msg.sender"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[msg.sender]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "msg.sender"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -4658,7 +5047,8 @@
           "source_span": "602:37:slither",
           "source_expression": "balanceOf[msg.sender]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_0(uint256) -> balanceOf_0[msg.sender]"
+          "slithir_text": "REF_0(uint256) -> balanceOf_0[msg.sender]",
+          "physical_reference": "REF_0"
         }
       },
       "depends_on": [],
@@ -4672,6 +5062,7 @@
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -4719,7 +5110,8 @@
           "atom_id": "sol_atom_3",
           "source_span": "602:37:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "balanceOf_1(mapping(address => uint256)) := ϕ(['balanceOf_0'])"
+          "slithir_text": "balanceOf_1(mapping(address => uint256)) := ϕ(['balanceOf_0'])",
+          "physical_reference": "balanceOf_1"
         }
       },
       "depends_on": [],
@@ -4733,6 +5125,7 @@
       "kind": "StateWrite",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -4764,22 +5157,21 @@
       },
       "semantic": {
         "operation": "state_write",
-        "atomic_operation": "Assignment",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_0",
-        "operand_ssa": [
-          "initialSupply_1"
-        ],
-        "resolved_operands": [
-          "initialSupply"
-        ],
-        "checked": true,
-        "runtime_operation": true,
         "access": "balanceOf[msg.sender]",
         "state_variable": "balanceOf",
         "keys": [
           "msg.sender"
-        ]
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[msg.sender]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "msg.sender"
+          ]
+        },
+        "value": "initialSupply"
       },
       "evidence": {
         "atomic_operation": {
@@ -4787,7 +5179,8 @@
           "source_span": "602:37:slither",
           "source_expression": "balanceOf[msg.sender] = initialSupply",
           "slithir_kind": "Assignment",
-          "slithir_text": "REF_0(uint256) (->balanceOf_1) := initialSupply_1(uint256)"
+          "slithir_text": "REF_0(uint256) (->balanceOf_1) := initialSupply_1(uint256)",
+          "physical_reference": "REF_0"
         }
       },
       "control_predecessors": [
@@ -4800,6 +5193,7 @@
       "kind": "TypeConversion",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -4847,7 +5241,8 @@
           "source_span": "649:52:slither",
           "source_expression": "address(0)",
           "slithir_kind": "TypeConversion",
-          "slithir_text": "TMP_0 = CONVERT 0 to address"
+          "slithir_text": "TMP_0 = CONVERT 0 to address",
+          "physical_reference": "TMP_0"
         }
       },
       "depends_on": [],
@@ -4861,6 +5256,7 @@
       "kind": "EventEmit",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.constructor(uint256)",
       "function": "constructor",
       "contract": "AssemblyERC20",
@@ -4930,6 +5326,7 @@
       "kind": "InternalCall",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transfer(address, uint256)",
       "function": "transfer",
       "contract": "AssemblyERC20",
@@ -4995,6 +5392,7 @@
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transfer(address, uint256)",
       "function": "transfer",
       "contract": "AssemblyERC20",
@@ -5050,9 +5448,10 @@
     {
       "fact_id": "fact_9",
       "operation_id": "sol_atom_1",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -5064,7 +5463,7 @@
         "bb_sol_slither_n1"
       ],
       "lvalue": "REF_1",
-      "rvalue": "allowance_0[msg.sender]",
+      "rvalue": "allowance[msg.sender]",
       "reads": [
         "allowance_0",
         "msg.sender"
@@ -5081,20 +5480,16 @@
         "operation_order": 0
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_1",
-        "operand_ssa": [
-          "allowance_0",
-          "msg.sender"
-        ],
-        "resolved_operands": [
-          "allowance",
-          "msg.sender"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "msg.sender"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -5102,7 +5497,8 @@
           "source_span": "946:38:slither",
           "source_expression": "allowance[msg.sender]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_1(mapping(address => uint256)) -> allowance_0[msg.sender]"
+          "slithir_text": "REF_1(mapping(address => uint256)) -> allowance_0[msg.sender]",
+          "physical_reference": "REF_1"
         }
       },
       "depends_on": [],
@@ -5111,9 +5507,10 @@
     {
       "fact_id": "fact_10",
       "operation_id": "sol_atom_2",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -5125,7 +5522,7 @@
         "bb_sol_slither_n1"
       ],
       "lvalue": "REF_2",
-      "rvalue": "REF_1[spender_1]",
+      "rvalue": "allowance[msg.sender][spender]",
       "reads": [
         "REF_1",
         "spender_1"
@@ -5145,20 +5542,17 @@
         "operation_order": 1
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_2",
-        "operand_ssa": [
-          "REF_1",
-          "spender_1"
-        ],
-        "resolved_operands": [
-          "allowance[msg.sender]",
-          "spender"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[msg.sender][spender]",
+          "state_variable": "allowance",
+          "keys": [
+            "msg.sender",
+            "spender"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -5166,7 +5560,8 @@
           "source_span": "946:38:slither",
           "source_expression": "allowance[msg.sender][spender]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_2(uint256) -> REF_1[spender_1]"
+          "slithir_text": "REF_2(uint256) -> REF_1[spender_1]",
+          "physical_reference": "REF_2"
         }
       },
       "control_predecessors": [
@@ -5179,6 +5574,7 @@
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -5226,7 +5622,8 @@
           "atom_id": "sol_atom_3",
           "source_span": "946:38:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "allowance_1(mapping(address => mapping(address => uint256))) := ϕ(['allowance_0'])"
+          "slithir_text": "allowance_1(mapping(address => mapping(address => uint256))) := ϕ(['allowance_0'])",
+          "physical_reference": "allowance_1"
         }
       },
       "depends_on": [],
@@ -5240,6 +5637,7 @@
       "kind": "StateWrite",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -5271,23 +5669,23 @@
       },
       "semantic": {
         "operation": "state_write",
-        "atomic_operation": "Assignment",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_2",
-        "operand_ssa": [
-          "value_1"
-        ],
-        "resolved_operands": [
-          "value"
-        ],
-        "checked": true,
-        "runtime_operation": true,
         "access": "allowance[msg.sender][spender]",
         "state_variable": "allowance",
         "keys": [
           "msg.sender",
           "spender"
-        ]
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[msg.sender][spender]",
+          "state_variable": "allowance",
+          "keys": [
+            "msg.sender",
+            "spender"
+          ]
+        },
+        "value": "value"
       },
       "evidence": {
         "atomic_operation": {
@@ -5295,7 +5693,8 @@
           "source_span": "946:38:slither",
           "source_expression": "allowance[msg.sender][spender] = value",
           "slithir_kind": "Assignment",
-          "slithir_text": "REF_2(uint256) (->allowance_1) := value_1(uint256)"
+          "slithir_text": "REF_2(uint256) (->allowance_1) := value_1(uint256)",
+          "physical_reference": "REF_2"
         }
       },
       "control_predecessors": [
@@ -5308,6 +5707,7 @@
       "kind": "EventEmit",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -5375,6 +5775,7 @@
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.approve(address, uint256)",
       "function": "approve",
       "contract": "AssemblyERC20",
@@ -5433,6 +5834,7 @@
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -5442,20 +5844,20 @@
       ],
       "lvalue": "allowance_2",
       "rvalue": [
-        "allowance_0",
         "allowance_1",
+        "allowance_0",
         "allowance_3"
       ],
       "reads": [
-        "allowance_0",
         "allowance_1",
+        "allowance_0",
         "allowance_3"
       ],
       "writes": [
         "allowance_2"
       ],
       "depends_on": [
-        "fact_24"
+        "fact_25"
       ],
       "order": {
         "kind": "cfg_partial_order",
@@ -5468,8 +5870,8 @@
         "atomic_operation_count": 1,
         "result_ssa": "allowance_2",
         "operand_ssa": [
-          "allowance_0",
           "allowance_1",
+          "allowance_0",
           "allowance_3"
         ],
         "resolved_operands": [
@@ -5483,7 +5885,8 @@
           "atom_id": "sol_atom_1",
           "source_span": "1156:260:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "allowance_2(mapping(address => mapping(address => uint256))) := ϕ(['allowance_0', 'allowance_1', 'allowance_3'])"
+          "slithir_text": "allowance_2(mapping(address => mapping(address => uint256))) := ϕ(['allowance_1', 'allowance_0', 'allowance_3'])",
+          "physical_reference": "allowance_2"
         }
       },
       "control_predecessors": [],
@@ -5492,9 +5895,10 @@
     {
       "fact_id": "fact_16",
       "operation_id": "sol_atom_2",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -5506,7 +5910,7 @@
         "bb_sol_slither_n1"
       ],
       "lvalue": "REF_3",
-      "rvalue": "allowance_2[from_1]",
+      "rvalue": "allowance[from]",
       "reads": [
         "allowance_2",
         "from_1"
@@ -5526,20 +5930,16 @@
         "operation_order": 0
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_3",
-        "operand_ssa": [
-          "allowance_2",
-          "from_1"
-        ],
-        "resolved_operands": [
-          "allowance",
-          "from"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from]",
+          "state_variable": "allowance",
+          "keys": [
+            "from"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -5547,7 +5947,8 @@
           "source_span": "1166:45:slither",
           "source_expression": "allowance[from]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_3(mapping(address => uint256)) -> allowance_2[from_1]"
+          "slithir_text": "REF_3(mapping(address => uint256)) -> allowance_2[from_1]",
+          "physical_reference": "REF_3"
         }
       },
       "control_predecessors": [
@@ -5557,9 +5958,10 @@
     {
       "fact_id": "fact_17",
       "operation_id": "sol_atom_3",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -5571,7 +5973,7 @@
         "bb_sol_slither_n1"
       ],
       "lvalue": "REF_4",
-      "rvalue": "REF_3[msg.sender]",
+      "rvalue": "allowance[from][msg.sender]",
       "reads": [
         "REF_3",
         "msg.sender"
@@ -5591,20 +5993,17 @@
         "operation_order": 1
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_4",
-        "operand_ssa": [
-          "REF_3",
-          "msg.sender"
-        ],
-        "resolved_operands": [
-          "allowance[from]",
-          "msg.sender"
-        ],
-        "checked": true,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from][msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "from",
+            "msg.sender"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -5612,7 +6011,8 @@
           "source_span": "1166:45:slither",
           "source_expression": "allowance[from][msg.sender]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_4(uint256) -> REF_3[msg.sender]"
+          "slithir_text": "REF_4(uint256) -> REF_3[msg.sender]",
+          "physical_reference": "REF_4"
         }
       },
       "control_predecessors": [
@@ -5621,10 +6021,80 @@
     },
     {
       "fact_id": "fact_18",
+      "operation_id": "sol_atom_4:state_read:1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_4",
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "allowance[from][msg.sender]"
+      ],
+      "writes": [
+        "REF_4"
+      ],
+      "depends_on": [
+        "fact_17"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "state_read",
+        "atomic_operation_count": 1,
+        "access": "allowance[from][msg.sender]",
+        "state_variable": "allowance",
+        "keys": [
+          "from",
+          "msg.sender"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from][msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "from",
+            "msg.sender"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4:state_read:1",
+          "source_span": "1166:45:slither",
+          "source_expression": "allowance[from][msg.sender]",
+          "slithir_kind": "StorageRead",
+          "implicit_slithir_operation": true,
+          "physical_reference": "REF_4"
+        }
+      },
+      "control_predecessors": [
+        "fact_17"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
       "operation_id": "sol_atom_4",
       "kind": "ValueAssign",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -5644,7 +6114,7 @@
         "current_1"
       ],
       "depends_on": [
-        "fact_17"
+        "fact_18"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -5652,7 +6122,7 @@
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 1,
-        "operation_order": 2
+        "operation_order": 3
       },
       "semantic": {
         "operation": "value_assign",
@@ -5674,19 +6144,21 @@
           "source_span": "1166:45:slither",
           "source_expression": "current = allowance[from][msg.sender]",
           "slithir_kind": "Assignment",
-          "slithir_text": "current_1(uint256) := REF_4(uint256)"
+          "slithir_text": "current_1(uint256) := REF_4(uint256)",
+          "physical_reference": "current_1"
         }
       },
       "control_predecessors": [
-        "fact_17"
+        "fact_18"
       ]
     },
     {
-      "fact_id": "fact_19",
+      "fact_id": "fact_20",
       "operation_id": "sol_atom_5",
       "kind": "ValueCompute",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -5707,7 +6179,7 @@
         "TMP_4"
       ],
       "depends_on": [
-        "fact_18"
+        "fact_19"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n1"
@@ -5740,19 +6212,21 @@
           "source_span": "1221:38:slither",
           "source_expression": "current >= value",
           "slithir_kind": "Binary",
-          "slithir_text": "TMP_4(bool) = current_1 >= value_1"
+          "slithir_text": "TMP_4(bool) = current_1 >= value_1",
+          "physical_reference": "TMP_4"
         }
       },
       "control_predecessors": [
-        "fact_18"
+        "fact_19"
       ]
     },
     {
-      "fact_id": "fact_20",
+      "fact_id": "fact_21",
       "operation_id": "sol_atom_6",
       "kind": "Require",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "control",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -5773,7 +6247,7 @@
         "TMP_5"
       ],
       "depends_on": [
-        "fact_19"
+        "fact_20"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n1"
@@ -5811,19 +6285,21 @@
           "source_span": "1221:38:slither",
           "source_expression": "require(bool,string)(current >= value,allowance)",
           "slithir_kind": "SolidityCall",
-          "slithir_text": "TMP_5(None) = SOLIDITY_CALL require(bool,string)(TMP_4,allowance)"
+          "slithir_text": "TMP_5(None) = SOLIDITY_CALL require(bool,string)(TMP_4,allowance)",
+          "physical_reference": "TMP_5"
         }
       },
       "control_predecessors": [
-        "fact_19"
+        "fact_20"
       ]
     },
     {
-      "fact_id": "fact_21",
+      "fact_id": "fact_22",
       "operation_id": "sol_atom_7",
-      "kind": "IndexAccess",
+      "kind": "StorageLocationResolve",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -5835,7 +6311,7 @@
         "bb_sol_slither_n3"
       ],
       "lvalue": "REF_5",
-      "rvalue": "allowance_2[from_1]",
+      "rvalue": "allowance[from]",
       "reads": [
         "allowance_2",
         "from_1"
@@ -5855,20 +6331,16 @@
         "operation_order": 0
       },
       "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
+        "operation": "storage_location_resolve",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_5",
-        "operand_ssa": [
-          "allowance_2",
-          "from_1"
-        ],
-        "resolved_operands": [
-          "allowance",
-          "from"
-        ],
-        "checked": false,
-        "runtime_operation": true
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from]",
+          "state_variable": "allowance",
+          "keys": [
+            "from"
+          ]
+        }
       },
       "evidence": {
         "atomic_operation": {
@@ -5876,76 +6348,8 @@
           "source_span": "1293:45:slither",
           "source_expression": "allowance[from]",
           "slithir_kind": "Index",
-          "slithir_text": "REF_5(mapping(address => uint256)) -> allowance_2[from_1]"
-        }
-      },
-      "control_predecessors": [
-        "fact_20"
-      ],
-      "guard_conditions": [
-        "(allowance[from][msg.sender] >= value)"
-      ],
-      "condition": "((allowance[from][msg.sender] >= value))"
-    },
-    {
-      "fact_id": "fact_22",
-      "operation_id": "sol_atom_8",
-      "kind": "IndexAccess",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
-      "function": "transferFrom",
-      "contract": "AssemblyERC20",
-      "signature": "transferFrom(address, address, uint256)",
-      "stmt_refs": [
-        "sol_s_4"
-      ],
-      "cfg_nodes": [
-        "bb_sol_slither_n3"
-      ],
-      "lvalue": "REF_6",
-      "rvalue": "REF_5[msg.sender]",
-      "reads": [
-        "REF_5",
-        "msg.sender"
-      ],
-      "writes": [
-        "REF_6"
-      ],
-      "depends_on": [
-        "fact_21"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n2"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 3,
-        "operation_order": 1
-      },
-      "semantic": {
-        "operation": "index_access",
-        "atomic_operation": "Index",
-        "atomic_operation_count": 1,
-        "result_ssa": "REF_6",
-        "operand_ssa": [
-          "REF_5",
-          "msg.sender"
-        ],
-        "resolved_operands": [
-          "allowance[from]",
-          "msg.sender"
-        ],
-        "checked": false,
-        "runtime_operation": true
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_8",
-          "source_span": "1293:45:slither",
-          "source_expression": "allowance[from][msg.sender]",
-          "slithir_kind": "Index",
-          "slithir_text": "REF_6(uint256) -> REF_5[msg.sender]"
+          "slithir_text": "REF_5(mapping(address => uint256)) -> allowance_2[from_1]",
+          "physical_reference": "REF_5"
         }
       },
       "control_predecessors": [
@@ -5958,10 +6362,79 @@
     },
     {
       "fact_id": "fact_23",
+      "operation_id": "sol_atom_8",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
+      "function": "transferFrom",
+      "contract": "AssemblyERC20",
+      "signature": "transferFrom(address, address, uint256)",
+      "stmt_refs": [
+        "sol_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "lvalue": "REF_6",
+      "rvalue": "allowance[from][msg.sender]",
+      "reads": [
+        "REF_5",
+        "msg.sender"
+      ],
+      "writes": [
+        "REF_6"
+      ],
+      "depends_on": [
+        "fact_22"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n2"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from][msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "from",
+            "msg.sender"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_8",
+          "source_span": "1293:45:slither",
+          "source_expression": "allowance[from][msg.sender]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_6(uint256) -> REF_5[msg.sender]",
+          "physical_reference": "REF_6"
+        }
+      },
+      "control_predecessors": [
+        "fact_22"
+      ],
+      "guard_conditions": [
+        "(allowance[from][msg.sender] >= value)"
+      ],
+      "condition": "((allowance[from][msg.sender] >= value))"
+    },
+    {
+      "fact_id": "fact_24",
       "operation_id": "sol_atom_9",
       "kind": "ValueCompute",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -5982,7 +6455,7 @@
         "TMP_6"
       ],
       "depends_on": [
-        "fact_18"
+        "fact_19"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n2"
@@ -6015,11 +6488,12 @@
           "source_span": "1293:45:slither",
           "source_expression": "current - value",
           "slithir_kind": "Binary",
-          "slithir_text": "TMP_6(uint256) = current_1 - value_1"
+          "slithir_text": "TMP_6(uint256) = current_1 - value_1",
+          "physical_reference": "TMP_6"
         }
       },
       "control_predecessors": [
-        "fact_22"
+        "fact_23"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -6027,11 +6501,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_24",
+      "fact_id": "fact_25",
       "operation_id": "sol_atom_10",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -6082,11 +6557,12 @@
           "atom_id": "sol_atom_10",
           "source_span": "1293:45:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "allowance_3(mapping(address => mapping(address => uint256))) := ϕ(['allowance_2'])"
+          "slithir_text": "allowance_3(mapping(address => mapping(address => uint256))) := ϕ(['allowance_2'])",
+          "physical_reference": "allowance_3"
         }
       },
       "control_predecessors": [
-        "fact_23"
+        "fact_24"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -6094,11 +6570,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_25",
+      "fact_id": "fact_26",
       "operation_id": "sol_atom_11",
       "kind": "StateWrite",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -6118,8 +6595,8 @@
         "allowance[from][msg.sender]"
       ],
       "depends_on": [
-        "fact_23",
-        "fact_22"
+        "fact_24",
+        "fact_23"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n2"
@@ -6131,23 +6608,23 @@
       },
       "semantic": {
         "operation": "state_write",
-        "atomic_operation": "Assignment",
         "atomic_operation_count": 1,
-        "result_ssa": "REF_6",
-        "operand_ssa": [
-          "TMP_6"
-        ],
-        "resolved_operands": [
-          "(allowance[from][msg.sender] - value)"
-        ],
-        "checked": false,
-        "runtime_operation": true,
         "access": "allowance[from][msg.sender]",
         "state_variable": "allowance",
         "keys": [
           "from",
           "msg.sender"
-        ]
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "allowance[from][msg.sender]",
+          "state_variable": "allowance",
+          "keys": [
+            "from",
+            "msg.sender"
+          ]
+        },
+        "value": "(allowance[from][msg.sender] - value)"
       },
       "evidence": {
         "atomic_operation": {
@@ -6155,11 +6632,12 @@
           "source_span": "1293:45:slither",
           "source_expression": "allowance[from][msg.sender] = current - value",
           "slithir_kind": "Assignment",
-          "slithir_text": "REF_6(uint256) (->allowance_3) := TMP_6(uint256)"
+          "slithir_text": "REF_6(uint256) (->allowance_3) := TMP_6(uint256)",
+          "physical_reference": "REF_6"
         }
       },
       "control_predecessors": [
-        "fact_24"
+        "fact_25"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -6167,11 +6645,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_26",
+      "fact_id": "fact_27",
       "operation_id": "sol_atom_12",
       "kind": "InternalCall",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -6230,7 +6709,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_25"
+        "fact_26"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -6238,11 +6717,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_27",
+      "fact_id": "fact_28",
       "operation_id": "sol_atom_13",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
       "function": "transferFrom",
       "contract": "AssemblyERC20",
@@ -6292,7 +6772,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_26"
+        "fact_27"
       ],
       "guard_conditions": [
         "(allowance[from][msg.sender] >= value)"
@@ -6300,11 +6780,12 @@
       "condition": "((allowance[from][msg.sender] >= value))"
     },
     {
-      "fact_id": "fact_28",
+      "fact_id": "fact_29",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "selectorFromCalldata",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "selectorFromCalldata()",
       "stmt_refs": [
@@ -6322,6 +6803,7 @@
         "__sseir_eval_asm_s_1_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_1_1",
         "expression": "calldataload(0)",
         "call": "calldataload",
@@ -6353,11 +6835,12 @@
       ]
     },
     {
-      "fact_id": "fact_29",
+      "fact_id": "fact_30",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "selectorFromCalldata",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "selectorFromCalldata()",
       "stmt_refs": [
@@ -6376,6 +6859,7 @@
         "__sseir_eval_asm_s_1_2"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_1_2",
         "expression": "shr(224, __sseir_eval_asm_s_1_1)",
         "call": "shr",
@@ -6404,18 +6888,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_28"
+        "fact_29"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n0"
       ]
     },
     {
-      "fact_id": "fact_30",
+      "fact_id": "fact_31",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "selectorFromCalldata",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "selectorFromCalldata()",
       "stmt_refs": [
@@ -6434,6 +6919,7 @@
         "selector"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "selector",
         "expression": "shr(224, calldataload(0))"
       },
@@ -6453,18 +6939,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_29"
+        "fact_30"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n0"
       ]
     },
     {
-      "fact_id": "fact_31",
+      "fact_id": "fact_32",
       "operation_id": "sol_atom_1",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.selectorFromCalldata()",
       "function": "selectorFromCalldata",
       "contract": "AssemblyERC20",
@@ -6511,15 +6998,16 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_30"
+        "fact_31"
       ]
     },
     {
-      "fact_id": "fact_32",
+      "fact_id": "fact_33",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "hashMemorySafe",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "hashMemorySafe(bytes)",
       "stmt_refs": [
@@ -6539,6 +7027,7 @@
         "h"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "h",
         "expression": "keccak256(add(data, 0x20), mload(data))"
       },
@@ -6563,11 +7052,12 @@
       ]
     },
     {
-      "fact_id": "fact_33",
+      "fact_id": "fact_34",
       "operation_id": "sol_atom_1",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.hashMemorySafe(bytes)",
       "function": "hashMemorySafe",
       "contract": "AssemblyERC20",
@@ -6614,15 +7104,16 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_32"
+        "fact_33"
       ]
     },
     {
-      "fact_id": "fact_34",
+      "fact_id": "fact_35",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -6641,6 +7132,7 @@
         "len"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "len",
         "expression": "mload(values)"
       },
@@ -6665,11 +7157,12 @@
       ]
     },
     {
-      "fact_id": "fact_35",
+      "fact_id": "fact_36",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -6688,6 +7181,7 @@
         "__sseir_eval_asm_s_6_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_6_1",
         "expression": "add(values, 0x20)",
         "call": "add",
@@ -6716,18 +7210,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_34"
+        "fact_35"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n2"
       ]
     },
     {
-      "fact_id": "fact_36",
+      "fact_id": "fact_37",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -6746,6 +7241,7 @@
         "ptr"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "ptr",
         "expression": "add(values, 0x20)"
       },
@@ -6765,18 +7261,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_35"
+        "fact_36"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n2"
       ]
     },
     {
-      "fact_id": "fact_37",
+      "fact_id": "fact_38",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -6791,6 +7288,7 @@
         "i"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "i",
         "expression": "0"
       },
@@ -6810,18 +7308,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_36"
+        "fact_37"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n3"
       ]
     },
     {
-      "fact_id": "fact_38",
+      "fact_id": "fact_39",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -6844,6 +7343,7 @@
         "v"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "v",
         "expression": "mload(add(ptr, mul(i, 0x20)))"
       },
@@ -6863,19 +7363,20 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_37",
-        "fact_50"
+        "fact_38",
+        "fact_51"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n5"
       ]
     },
     {
-      "fact_id": "fact_39",
+      "fact_id": "fact_40",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -6896,6 +7397,7 @@
         "__sseir_eval_asm_s_10_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_10_1",
         "expression": "eq(v, 0)",
         "call": "eq",
@@ -6924,18 +7426,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_38"
+        "fact_39"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n8"
       ]
     },
     {
-      "fact_id": "fact_40",
+      "fact_id": "fact_41",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -6952,6 +7455,7 @@
         "v"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "expression": "eq(v, 0)"
       },
       "evidence": {
@@ -6970,18 +7474,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_39"
+        "fact_40"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n8"
       ]
     },
     {
-      "fact_id": "fact_41",
+      "fact_id": "fact_42",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -7002,6 +7507,7 @@
         "__sseir_eval_asm_s_12_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_12_1",
         "expression": "gt(v, 1000000)",
         "call": "gt",
@@ -7030,18 +7536,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_40"
+        "fact_41"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n10"
       ]
     },
     {
-      "fact_id": "fact_42",
+      "fact_id": "fact_43",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -7058,6 +7565,7 @@
         "v"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "expression": "gt(v, 1000000)"
       },
       "evidence": {
@@ -7076,18 +7584,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_41"
+        "fact_42"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n10"
       ]
     },
     {
-      "fact_id": "fact_43",
+      "fact_id": "fact_44",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -7107,6 +7616,7 @@
         "__sseir_eval_asm_s_18_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_18_1",
         "expression": "mul(v, 2)",
         "call": "mul",
@@ -7135,18 +7645,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_42"
+        "fact_43"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_44",
+      "fact_id": "fact_45",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -7167,6 +7678,7 @@
         "__sseir_eval_asm_s_18_2"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_18_2",
         "expression": "addOrLeave(total, __sseir_eval_asm_s_18_1)",
         "call": "addOrLeave",
@@ -7195,18 +7707,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_43"
+        "fact_44"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_45",
+      "fact_id": "fact_46",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -7228,6 +7741,7 @@
         "total"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "total",
         "expression": "addOrLeave(total, mul(v, 2))"
       },
@@ -7247,18 +7761,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_44"
+        "fact_45"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_46",
+      "fact_id": "fact_47",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -7279,6 +7794,7 @@
         "__sseir_eval_asm_s_16_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_16_1",
         "expression": "addOrLeave(total, v)",
         "call": "addOrLeave",
@@ -7307,18 +7823,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_42"
+        "fact_43"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_47",
+      "fact_id": "fact_48",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -7339,6 +7856,7 @@
         "total"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "total",
         "expression": "addOrLeave(total, v)"
       },
@@ -7358,18 +7876,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_46"
+        "fact_47"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n15"
       ]
     },
     {
-      "fact_id": "fact_48",
+      "fact_id": "fact_49",
       "operation_id": "sol_atom_1",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.sumSkipping(uint256[])",
       "function": "sumSkipping",
       "contract": "AssemblyERC20",
@@ -7416,17 +7935,18 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_42",
-        "fact_37",
-        "fact_50"
+        "fact_43",
+        "fact_38",
+        "fact_51"
       ]
     },
     {
-      "fact_id": "fact_49",
+      "fact_id": "fact_50",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -7445,6 +7965,7 @@
         "__sseir_eval_asm_s_19_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_19_1",
         "expression": "add(i, 1)",
         "call": "add",
@@ -7473,20 +7994,21 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_40",
-        "fact_47",
-        "fact_45"
+        "fact_41",
+        "fact_48",
+        "fact_46"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n7"
       ]
     },
     {
-      "fact_id": "fact_50",
+      "fact_id": "fact_51",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "sumSkipping",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "sumSkipping(uint256[])",
       "stmt_refs": [
@@ -7505,6 +8027,7 @@
         "i"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "i",
         "expression": "add(i, 1)"
       },
@@ -7524,18 +8047,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_49"
+        "fact_50"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n7"
       ]
     },
     {
-      "fact_id": "fact_51",
+      "fact_id": "fact_52",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -7553,6 +8077,7 @@
         "__sseir_eval_asm_s_1_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_1_1",
         "expression": "caller()",
         "call": "caller"
@@ -7578,11 +8103,12 @@
       ]
     },
     {
-      "fact_id": "fact_52",
+      "fact_id": "fact_53",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -7600,6 +8126,7 @@
         "who"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "who",
         "expression": "caller()"
       },
@@ -7619,18 +8146,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_51"
+        "fact_52"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n0"
       ]
     },
     {
-      "fact_id": "fact_53",
+      "fact_id": "fact_54",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -7648,6 +8176,7 @@
         "__sseir_eval_asm_s_2_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_2_1",
         "expression": "callvalue()",
         "call": "callvalue"
@@ -7668,18 +8197,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_52"
+        "fact_53"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n2"
       ]
     },
     {
-      "fact_id": "fact_54",
+      "fact_id": "fact_55",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -7697,6 +8227,7 @@
         "value"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "value",
         "expression": "callvalue()"
       },
@@ -7716,18 +8247,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_53"
+        "fact_54"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n2"
       ]
     },
     {
-      "fact_id": "fact_55",
+      "fact_id": "fact_56",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -7745,6 +8277,7 @@
         "__sseir_eval_asm_s_3_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_3_1",
         "expression": "calldatasize()",
         "call": "calldatasize"
@@ -7765,18 +8298,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_54"
+        "fact_55"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n3"
       ]
     },
     {
-      "fact_id": "fact_56",
+      "fact_id": "fact_57",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -7794,6 +8328,7 @@
         "size"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "size",
         "expression": "calldatasize()"
       },
@@ -7813,18 +8348,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_55"
+        "fact_56"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n3"
       ]
     },
     {
-      "fact_id": "fact_57",
+      "fact_id": "fact_58",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -7842,6 +8378,7 @@
         "__sseir_eval_asm_s_4_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_4_1",
         "expression": "gas()",
         "call": "gas"
@@ -7862,18 +8399,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_56"
+        "fact_57"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n4"
       ]
     },
     {
-      "fact_id": "fact_58",
+      "fact_id": "fact_59",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "rawContext",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "rawContext()",
       "stmt_refs": [
@@ -7891,6 +8429,7 @@
         "gasLeft"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "gasLeft",
         "expression": "gas()"
       },
@@ -7910,18 +8449,19 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_57"
+        "fact_58"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm4_n4"
       ]
     },
     {
-      "fact_id": "fact_59",
+      "fact_id": "fact_60",
       "operation_id": "sol_atom_1",
       "kind": "Return",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
       "function_id": "AssemblyERC20.rawContext()",
       "function": "rawContext",
       "contract": "AssemblyERC20",
@@ -7985,15 +8525,16 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_58"
+        "fact_59"
       ]
     },
     {
-      "fact_id": "fact_60",
+      "fact_id": "fact_61",
       "operation_id": "sol_atom_1",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -8039,7 +8580,8 @@
           "atom_id": "sol_atom_1",
           "source_span": "2972:840:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "from_1(address) := ϕ(['from_1', 'msg.sender'])"
+          "slithir_text": "from_1(address) := ϕ(['from_1', 'msg.sender'])",
+          "physical_reference": "from_1"
         }
       },
       "depends_on": [],
@@ -8047,11 +8589,12 @@
       "cfg_predecessor_blocks": []
     },
     {
-      "fact_id": "fact_61",
+      "fact_id": "fact_62",
       "operation_id": "sol_atom_2",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -8093,21 +8636,23 @@
           "atom_id": "sol_atom_2",
           "source_span": "2972:840:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "to_1(address) := ϕ(['to_1', 'to_1'])"
+          "slithir_text": "to_1(address) := ϕ(['to_1', 'to_1'])",
+          "physical_reference": "to_1"
         }
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_60"
+        "fact_61"
       ],
       "cfg_predecessor_blocks": []
     },
     {
-      "fact_id": "fact_62",
+      "fact_id": "fact_63",
       "operation_id": "sol_atom_3",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -8149,21 +8694,23 @@
           "atom_id": "sol_atom_3",
           "source_span": "2972:840:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "value_1(uint256) := ϕ(['value_1', 'value_1'])"
+          "slithir_text": "value_1(uint256) := ϕ(['value_1', 'value_1'])",
+          "physical_reference": "value_1"
         }
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_61"
+        "fact_62"
       ],
       "cfg_predecessor_blocks": []
     },
     {
-      "fact_id": "fact_63",
+      "fact_id": "fact_64",
       "operation_id": "sol_atom_4",
       "kind": "ValuePhi",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -8173,12 +8720,12 @@
       ],
       "lvalue": "balanceOf_2",
       "rvalue": [
-        "balanceOf_0",
-        "balanceOf_1"
+        "balanceOf_1",
+        "balanceOf_0"
       ],
       "reads": [
-        "balanceOf_0",
-        "balanceOf_1"
+        "balanceOf_1",
+        "balanceOf_0"
       ],
       "writes": [
         "balanceOf_2"
@@ -8194,8 +8741,8 @@
         "atomic_operation_count": 1,
         "result_ssa": "balanceOf_2",
         "operand_ssa": [
-          "balanceOf_0",
-          "balanceOf_1"
+          "balanceOf_1",
+          "balanceOf_0"
         ],
         "resolved_operands": [
           "balanceOf"
@@ -8208,21 +8755,23 @@
           "atom_id": "sol_atom_4",
           "source_span": "2972:840:slither",
           "slithir_kind": "Phi",
-          "slithir_text": "balanceOf_2(mapping(address => uint256)) := ϕ(['balanceOf_0', 'balanceOf_1'])"
+          "slithir_text": "balanceOf_2(mapping(address => uint256)) := ϕ(['balanceOf_1', 'balanceOf_0'])",
+          "physical_reference": "balanceOf_2"
         }
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_62"
+        "fact_63"
       ],
       "cfg_predecessor_blocks": []
     },
     {
-      "fact_id": "fact_64",
+      "fact_id": "fact_65",
       "operation_id": "sol_atom_5",
       "kind": "TypeConversion",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -8270,20 +8819,22 @@
           "source_span": "2982:33:slither",
           "source_expression": "address(0)",
           "slithir_kind": "TypeConversion",
-          "slithir_text": "TMP_31 = CONVERT 0 to address"
+          "slithir_text": "TMP_31 = CONVERT 0 to address",
+          "physical_reference": "TMP_31"
         }
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_63"
+        "fact_64"
       ]
     },
     {
-      "fact_id": "fact_65",
+      "fact_id": "fact_66",
       "operation_id": "sol_atom_6",
       "kind": "ValueCompute",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "support",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -8304,8 +8855,8 @@
         "TMP_32"
       ],
       "depends_on": [
-        "fact_61",
-        "fact_64"
+        "fact_62",
+        "fact_65"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -8338,19 +8889,21 @@
           "source_span": "2982:33:slither",
           "source_expression": "to != address(0)",
           "slithir_kind": "Binary",
-          "slithir_text": "TMP_32(bool) = to_1 != TMP_31"
+          "slithir_text": "TMP_32(bool) = to_1 != TMP_31",
+          "physical_reference": "TMP_32"
         }
       },
       "control_predecessors": [
-        "fact_64"
+        "fact_65"
       ]
     },
     {
-      "fact_id": "fact_66",
+      "fact_id": "fact_67",
       "operation_id": "sol_atom_7",
       "kind": "Require",
       "source_lang": "solidity",
       "origin": "solidity_atomic_operation",
+      "fact_role": "control",
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "function": "_assemblyMove",
       "contract": "AssemblyERC20",
@@ -8371,7 +8924,7 @@
         "TMP_33"
       ],
       "depends_on": [
-        "fact_65"
+        "fact_66"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -8409,19 +8962,21 @@
           "source_span": "2982:33:slither",
           "source_expression": "require(bool,string)(to != address(0),zero)",
           "slithir_kind": "SolidityCall",
-          "slithir_text": "TMP_33(None) = SOLIDITY_CALL require(bool,string)(TMP_32,zero)"
+          "slithir_text": "TMP_33(None) = SOLIDITY_CALL require(bool,string)(TMP_32,zero)",
+          "physical_reference": "TMP_33"
         }
       },
       "control_predecessors": [
-        "fact_65"
+        "fact_66"
       ]
     },
     {
-      "fact_id": "fact_67",
+      "fact_id": "fact_68",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8436,6 +8991,7 @@
         "fromSlot"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "fromSlot",
         "expression": "keccak256(0x00, 0x40)"
       },
@@ -8455,7 +9011,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_66"
+        "fact_67"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n3"
@@ -8466,11 +9022,90 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_68",
+      "fact_id": "fact_69",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "_assemblyMove",
+      "fact_role": "support",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n4"
+      ],
+      "lvalue": "fromSlot",
+      "rvalue": "balanceOf[from]",
+      "reads": [
+        "from",
+        "balanceOf.slot"
+      ],
+      "writes": [
+        "fromSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[from]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "from"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_8"
+        ],
+        "physical_reference": "fromSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "from"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "balanceOf.slot"
+          }
+        ]
+      },
+      "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 7
+      },
+      "depends_on": [],
+      "control_predecessors": [
+        "fact_68"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n3"
+      ],
+      "guard_conditions": [
+        "(to != address(0))"
+      ],
+      "condition": "((to != address(0)))"
+    },
+    {
+      "fact_id": "fact_70",
       "kind": "StateRead",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8487,17 +9122,21 @@
         "balanceOf[from]"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "state_read",
         "access": "balanceOf[from]",
         "state_variable": "balanceOf",
         "keys": [
           "from"
         ],
-        "slot": "fromSlot",
-        "slot_key": "fromSlot__ssa1",
-        "slot_versions": [
-          "fromSlot__ssa1"
-        ]
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[from]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "from"
+          ]
+        }
       },
       "evidence": {
         "overlay": "ov_6",
@@ -8505,18 +9144,28 @@
         "effects": [
           "eff_8",
           "eff_10"
-        ]
+        ],
+        "storage_resolution": {
+          "slot": "fromSlot",
+          "slot_key": "fromSlot__ssa1",
+          "slot_versions": [
+            "fromSlot__ssa1"
+          ],
+          "slot_effect": "eff_8"
+        }
       },
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "operation_id": "yul_overlay:ov_6",
+      "depends_on": [
+        "fact_69"
+      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 5,
-        "operation_order": 7
+        "operation_order": 9
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_67"
+        "fact_69"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n3"
@@ -8527,11 +9176,12 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_69",
+      "fact_id": "fact_71",
       "kind": "StateWrite",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8553,17 +9203,22 @@
         "balanceOf[from]"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "state_write",
         "access": "balanceOf[from]",
         "state_variable": "balanceOf",
         "keys": [
           "from"
         ],
-        "slot": "fromSlot",
-        "slot_key": "fromSlot__ssa1",
-        "slot_versions": [
-          "fromSlot__ssa1"
-        ]
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[from]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "from"
+          ]
+        },
+        "value": "(fromBalance - value)"
       },
       "evidence": {
         "overlay": "ov_7",
@@ -8571,18 +9226,29 @@
         "effects": [
           "eff_8",
           "eff_16"
-        ]
+        ],
+        "storage_resolution": {
+          "slot": "fromSlot",
+          "slot_key": "fromSlot__ssa1",
+          "slot_versions": [
+            "fromSlot__ssa1"
+          ],
+          "slot_effect": "eff_8"
+        }
       },
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "operation_id": "yul_overlay:ov_7",
+      "depends_on": [
+        "fact_69",
+        "fact_70"
+      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 5,
-        "operation_order": 7
+        "operation_order": 15
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_68"
+        "fact_70"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n3"
@@ -8592,11 +9258,12 @@
       ]
     },
     {
-      "fact_id": "fact_70",
+      "fact_id": "fact_72",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8615,6 +9282,7 @@
         "fromBalance"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "fromBalance",
         "expression": "sload(fromSlot)"
       },
@@ -8634,7 +9302,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_69"
+        "fact_71"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n4"
@@ -8645,11 +9313,12 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_71",
+      "fact_id": "fact_73",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8670,6 +9339,7 @@
         "__sseir_eval_asm_s_5_1"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "temp": "__sseir_eval_asm_s_5_1",
         "expression": "lt(fromBalance, value)",
         "call": "lt",
@@ -8698,7 +9368,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_70"
+        "fact_72"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n5"
@@ -8709,11 +9379,12 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_72",
+      "fact_id": "fact_74",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8730,6 +9401,7 @@
         "value"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "expression": "lt(fromBalance, value)"
       },
       "evidence": {
@@ -8748,7 +9420,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_71"
+        "fact_73"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n5"
@@ -8759,11 +9431,12 @@
       "condition": "((to != address(0)))"
     },
     {
-      "fact_id": "fact_73",
+      "fact_id": "fact_75",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "support",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8779,6 +9452,7 @@
         "toSlot"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "target": "toSlot",
         "expression": "keccak256(0x00, 0x40)"
       },
@@ -8798,7 +9472,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_72"
+        "fact_74"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n11"
@@ -8808,11 +9482,90 @@
       ]
     },
     {
-      "fact_id": "fact_74",
+      "fact_id": "fact_76",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "_assemblyMove",
+      "fact_role": "support",
+      "contract": "AssemblyERC20",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n12"
+      ],
+      "condition": "(!(lt(fromBalance, value))) && ((to != address(0)))",
+      "lvalue": "toSlot",
+      "rvalue": "balanceOf[to]",
+      "reads": [
+        "to",
+        "balanceOf.slot"
+      ],
+      "writes": [
+        "toSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[to]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "to"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_15"
+        ],
+        "physical_reference": "toSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "to"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "balanceOf.slot"
+          }
+        ]
+      },
+      "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 11,
+        "operation_order": 14
+      },
+      "depends_on": [],
+      "control_predecessors": [
+        "fact_75"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n11"
+      ],
+      "guard_conditions": [
+        "(to != address(0))"
+      ]
+    },
+    {
+      "fact_id": "fact_77",
       "kind": "StateRead",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8829,17 +9582,21 @@
         "balanceOf[to]"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "state_read",
         "access": "balanceOf[to]",
         "state_variable": "balanceOf",
         "keys": [
           "to"
         ],
-        "slot": "toSlot",
-        "slot_key": "toSlot__ssa3",
-        "slot_versions": [
-          "toSlot__ssa3"
-        ]
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[to]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "to"
+          ]
+        }
       },
       "evidence": {
         "overlay": "ov_8",
@@ -8847,18 +9604,28 @@
         "effects": [
           "eff_15",
           "eff_17"
-        ]
+        ],
+        "storage_resolution": {
+          "slot": "toSlot",
+          "slot_key": "toSlot__ssa3",
+          "slot_versions": [
+            "toSlot__ssa3"
+          ],
+          "slot_effect": "eff_15"
+        }
       },
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "operation_id": "yul_overlay:ov_8",
+      "depends_on": [
+        "fact_76"
+      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 11,
-        "operation_order": 14
+        "operation_order": 16
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_73"
+        "fact_76"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n11"
@@ -8868,11 +9635,12 @@
       ]
     },
     {
-      "fact_id": "fact_75",
+      "fact_id": "fact_78",
       "kind": "StateWrite",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8894,17 +9662,22 @@
         "balanceOf[to]"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "state_write",
         "access": "balanceOf[to]",
         "state_variable": "balanceOf",
         "keys": [
           "to"
         ],
-        "slot": "toSlot",
-        "slot_key": "toSlot__ssa3",
-        "slot_versions": [
-          "toSlot__ssa3"
-        ]
+        "location": {
+          "kind": "mapping",
+          "access": "balanceOf[to]",
+          "state_variable": "balanceOf",
+          "keys": [
+            "to"
+          ]
+        },
+        "value": "(balanceOf[to] + value)"
       },
       "evidence": {
         "overlay": "ov_9",
@@ -8912,18 +9685,29 @@
         "effects": [
           "eff_15",
           "eff_18"
-        ]
+        ],
+        "storage_resolution": {
+          "slot": "toSlot",
+          "slot_key": "toSlot__ssa3",
+          "slot_versions": [
+            "toSlot__ssa3"
+          ],
+          "slot_effect": "eff_15"
+        }
       },
       "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
       "operation_id": "yul_overlay:ov_9",
+      "depends_on": [
+        "fact_76",
+        "fact_77"
+      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 11,
-        "operation_order": 14
+        "operation_order": 17
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_74"
+        "fact_77"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n11"
@@ -8933,11 +9717,12 @@
       ]
     },
     {
-      "fact_id": "fact_76",
+      "fact_id": "fact_79",
       "kind": "EventEmit",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -8953,6 +9738,7 @@
         "value"
       ],
       "semantic": {
+        "atomic_operation_count": 1,
         "event": "Transfer",
         "args": [
           "from",
@@ -8993,7 +9779,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_75"
+        "fact_78"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n15"
@@ -9003,11 +9789,12 @@
       ]
     },
     {
-      "fact_id": "fact_77",
+      "fact_id": "fact_80",
       "kind": "Revert",
       "source_lang": "yul",
       "origin": "yul_sseir",
       "function": "_assemblyMove",
+      "fact_role": "effect",
       "contract": "AssemblyERC20",
       "signature": "_assemblyMove(address, address, uint256)",
       "stmt_refs": [
@@ -9018,6 +9805,7 @@
       ],
       "condition": "(lt(fromBalance, value)) && ((to != address(0)))",
       "semantic": {
+        "atomic_operation_count": 1,
         "operation": "revert"
       },
       "evidence": {
@@ -9058,7 +9846,7 @@
       },
       "depends_on": [],
       "control_predecessors": [
-        "fact_72"
+        "fact_74"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm5_n8"

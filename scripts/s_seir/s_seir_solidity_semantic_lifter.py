@@ -24,6 +24,7 @@ class SoliditySemanticLifter:
         "TypeConversion": "TypeConversion",
         "Index": "IndexAccess",
         "Member": "MemberAccess",
+        "StorageRead": "StateRead",
         "Length": "LengthRead",
         "Unpack": "TupleUnpack",
         "InitArray": "ArrayConstruct",
@@ -67,7 +68,7 @@ class SoliditySemanticLifter:
                 continue
             atom_id = str(atom.get("atom_id") or "")
             kind = self.atomic_fact_kind(atom)
-            reads = self.atomic_operands(atom)
+            reads = self.atomic_operands(atom, kind)
             lvalue, rvalue, writes = self.atomic_assignment(atom, kind, reads)
             out.append(_clean({
                 "fact_id": f"solidity:{function_id}:{atom_id}",
@@ -75,6 +76,7 @@ class SoliditySemanticLifter:
                 "kind": kind,
                 "source_lang": "solidity",
                 "origin": "solidity_atomic_operation",
+                "fact_role": self.fact_role(kind),
                 "function_id": function_id,
                 "function": fn_dict.get("function") or atomic_table.get("function"),
                 "contract": fn_dict.get("contract") or atomic_table.get("contract"),
@@ -102,14 +104,21 @@ class SoliditySemanticLifter:
                         "source_expression": atom.get("source_expression"),
                         "slithir_kind": atom.get("kind"),
                         "slithir_text": atom.get("text"),
+                        "implicit_slithir_operation": atom.get("implicit_slithir_operation"),
+                        "physical_reference": atom.get("result_ssa"),
                     },
                 },
             }))
         return out
 
     def atomic_fact_kind(self, atom: Json) -> str:
+        if atom.get("atomic_kind") == "StateRead":
+            return "StateRead"
         if atom.get("atomic_kind") == "StateWrite":
             return "StateWrite"
+        reference = atom.get("reference_definition") or {}
+        if reference.get("state_variable"):
+            return "StorageLocationResolve"
         kind = str(atom.get("kind") or "")
         if kind == "SolidityCall":
             function_name = self.atomic_function_name(atom)
@@ -120,7 +129,10 @@ class SoliditySemanticLifter:
         return self.ATOMIC_KIND_MAP.get(kind, "AtomicOperation")
 
     @classmethod
-    def atomic_operands(cls, atom: Json) -> list[str]:
+    def atomic_operands(cls, atom: Json, fact_kind: str | None = None) -> list[str]:
+        if fact_kind == "StateRead":
+            access = (atom.get("storage_access") or {}).get("access")
+            return [str(access)] if access else []
         values = atom.get("read") or atom.get("arguments") or atom.get("values") or []
         return cls.unique_text(cls.ssa_value(value) for value in values)
 
@@ -131,7 +143,18 @@ class SoliditySemanticLifter:
         lvalue: Any = result_ssa or None
         writes = [result_ssa] if result_ssa else []
         rvalue: Any = cls.atomic_rvalue(atom, reads)
-        if fact_kind == "StateWrite":
+        if fact_kind == "StateRead":
+            storage = atom.get("storage_access") or {}
+            access = storage.get("access")
+            lvalue = result_ssa or None
+            rvalue = access
+            writes = [result_ssa] if result_ssa else []
+        elif fact_kind == "StorageLocationResolve":
+            reference = atom.get("reference_definition") or {}
+            lvalue = result_ssa or None
+            rvalue = reference.get("access")
+            writes = [result_ssa] if result_ssa else []
+        elif fact_kind == "StateWrite":
             storage = atom.get("storage_access") or {}
             access = storage.get("access") or cls.source_value(atom.get("lvalue"))
             lvalue = access
@@ -184,24 +207,47 @@ class SoliditySemanticLifter:
 
     @classmethod
     def atomic_semantic(cls, atom: Json, fact_kind: str, reads: list[str]) -> Json:
-        semantic: Json = {
-            "operation": cls.atomic_operation_name(fact_kind),
-            "atomic_operation": atom.get("kind"),
-            "atomic_operation_count": 1,
-            "operator": atom.get("operator"),
-            "result_ssa": atom.get("result_ssa"),
-            "operand_ssa": reads,
-            "resolved_operands": list(atom.get("resolved_reads") or []),
-            "checked": atom.get("checked"),
-            "runtime_operation": atom.get("runtime_operation"),
-        }
-        if fact_kind == "StateWrite":
+        if fact_kind in {"StorageLocationResolve", "StateRead", "StateWrite"}:
+            semantic: Json = {
+                "operation": cls.atomic_operation_name(fact_kind),
+                "atomic_operation_count": 1,
+            }
+        else:
+            semantic = {
+                "operation": cls.atomic_operation_name(fact_kind),
+                "atomic_operation": atom.get("kind"),
+                "atomic_operation_count": 1,
+                "operator": atom.get("operator"),
+                "result_ssa": atom.get("result_ssa"),
+                "operand_ssa": reads,
+                "resolved_operands": list(atom.get("resolved_reads") or []),
+                "checked": atom.get("checked"),
+                "runtime_operation": atom.get("runtime_operation"),
+            }
+        if fact_kind == "StorageLocationResolve":
+            reference = atom.get("reference_definition") or {}
+            semantic.update({
+                "operation": "storage_location_resolve",
+                "location": cls.storage_location(reference),
+            })
+        elif fact_kind == "StateRead":
+            storage = atom.get("storage_access") or {}
+            semantic.update({
+                "operation": "state_read",
+                "access": storage.get("access"),
+                "state_variable": storage.get("state_variable"),
+                "keys": storage.get("keys"),
+                "location": cls.storage_location(storage),
+            })
+        elif fact_kind == "StateWrite":
             storage = atom.get("storage_access") or {}
             semantic.update({
                 "operation": "state_write",
                 "access": storage.get("access"),
                 "state_variable": storage.get("state_variable"),
                 "keys": storage.get("keys"),
+                "location": cls.storage_location(storage),
+                "value": atom.get("expression") or cls.atomic_rvalue(atom, reads),
             })
         elif fact_kind in {
             "InternalCall", "InternalDynamicCall", "ExternalCall", "LibraryCall",
@@ -229,6 +275,39 @@ class SoliditySemanticLifter:
                 "runtime_operation": False,
             })
         return _clean(semantic)
+
+    @staticmethod
+    def storage_location(storage: Json) -> Json:
+        keys = list(storage.get("keys") or [])
+        reference_kind = str(storage.get("reference_kind") or "")
+        if reference_kind == "index" or keys:
+            container_type = str(storage.get("container_type") or "")
+            kind = "mapping" if "mapping" in container_type else "indexed_storage"
+        elif reference_kind == "member":
+            kind = "storage_member"
+        else:
+            kind = "state_variable"
+        return _clean({
+            "kind": kind,
+            "access": storage.get("access"),
+            "state_variable": storage.get("state_variable"),
+            "keys": keys,
+            "member": storage.get("member"),
+        })
+
+    @staticmethod
+    def fact_role(kind: str) -> str:
+        if kind in {
+            "StateRead", "StateWrite", "EventEmit", "InternalCall",
+            "InternalDynamicCall", "ExternalCall", "LibraryCall", "BuiltinCall",
+            "LowLevelCall", "ValueTransferCall", "Revert", "Return",
+        }:
+            return "effect"
+        if kind in {"Require", "BranchCondition"}:
+            return "control"
+        if kind == "ValuePhi":
+            return "analysis_support"
+        return "support"
 
     @staticmethod
     def ssa_value(value: Any) -> str:
