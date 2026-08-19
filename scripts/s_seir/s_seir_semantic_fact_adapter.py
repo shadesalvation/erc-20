@@ -140,6 +140,12 @@ class SSeirFactAdapter:
                     "physical_reference": target,
                     "slot_kind": attrs.get("slot_kind"),
                     "resolved_inputs": attrs.get("resolved_inputs"),
+                    "slot_relation": clean_dict({
+                        "target_key": attrs.get("target_key"),
+                        "target_keys": attrs.get("target_keys"),
+                        "parent_target_key": attrs.get("parent_target_key"),
+                        "base_key": attrs.get("base_key"),
+                    }),
                 },
             )
         if kind in {"StateVariableRead", "MappingRead"}:
@@ -173,6 +179,26 @@ class SSeirFactAdapter:
                     "value": value,
                 },
                 extra_evidence={"storage_resolution": self.storage_resolution_evidence(attrs)},
+            )
+        if kind in {"AddressHasCode", "AddressCodeSize"}:
+            is_check = kind == "AddressHasCode"
+            value = attrs.get("condition") if is_check else attrs.get("code_size")
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "ValueCompute",
+                lvalue=attrs.get("target"),
+                rvalue=value,
+                reads=clean_list([attrs.get("address")]),
+                writes=clean_list([attrs.get("target")]),
+                semantic={
+                    "operation": "address_has_code" if is_check else "address_code_size",
+                    "address": attrs.get("address_normalized") or attrs.get("address"),
+                    "code_size": attrs.get("code_size"),
+                    "predicate": attrs.get("condition") if is_check else None,
+                    "check_kind": attrs.get("check_kind"),
+                },
             )
         if kind == "EventEmit":
             return self.fact(fn, overlay, stmt_lang, "EventEmit", reads=flat_list(attrs.get("args")), semantic={
@@ -292,11 +318,19 @@ class SSeirFactAdapter:
 
     def call_fact(self, fn: dict[str, Any], overlay: dict[str, Any], stmt_lang: dict[str, str], fact_kind: str) -> SemanticFact:
         attrs = overlay.get("attrs") or {}
-        return self.fact(fn, overlay, stmt_lang, fact_kind, reads=flat_list(attrs.get("arguments") or attrs.get("args")), semantic={
+        arguments = attrs.get("arguments") or attrs.get("args")
+        return self.fact(fn, overlay, stmt_lang, fact_kind, reads=clean_list([
+            attrs.get("target_solidity") or attrs.get("target"),
+            attrs.get("value"),
+            *flat_list(arguments),
+        ]), semantic={
             "target": attrs.get("target_solidity") or attrs.get("target"),
             "call_kind": attrs.get("call_kind") or attrs.get("op") or overlay.get("kind"),
             "selector": attrs.get("selector"),
-            "arguments": attrs.get("arguments") or attrs.get("args"),
+            "selector_signature": attrs.get("selector_signature"),
+            "arguments": arguments,
+            "decoded_input": attrs.get("decoded_input"),
+            "semantic_inputs": attrs.get("semantic_inputs"),
             "value": attrs.get("value"),
             "precompile": attrs.get("precompile"),
             "solidity_like": attrs.get("solidity_like"),
@@ -305,23 +339,68 @@ class SSeirFactAdapter:
     @staticmethod
     def overlay_with_effect_refs(overlay: dict[str, Any], effect_by_id: dict[str, dict[str, Any]]) -> dict[str, Any]:
         refs: list[str] = []
-        path_states: list[str] = []
+        referenced_effects: list[dict[str, Any]] = []
         for effect_id in overlay.get("effects") or []:
             effect = effect_by_id.get(effect_id)
             if not isinstance(effect, dict):
                 continue
+            referenced_effects.append(effect)
             refs.extend(str(ref) for ref in effect.get("stmt_refs") or [] if ref)
-            attrs = effect.get("attrs") or {}
-            path_states.extend(str(item) for item in attrs.get("path_states") or [] if item and item != "entry")
-        if not refs and not path_states:
+        if not refs and not referenced_effects:
             return overlay
         out = dict(overlay)
         if not overlay.get("stmt_refs") and refs:
             out["stmt_refs"] = list(dict.fromkeys(refs))
+
+        # Supporting definitions can execute under a weaker condition than
+        # the semantic sink. A MappingWrite, for example, cites both its slot
+        # hash and the later StorageWrite; only the write controls mutation.
+        sink_kinds = SSeirFactAdapter.sink_effect_kinds(str(overlay.get("kind") or ""))
+        condition_effects = [
+            effect for effect in referenced_effects
+            if str(effect.get("kind") or "") in sink_kinds
+        ] or referenced_effects
+        path_states: list[str] = []
+        for effect in condition_effects:
+            attrs = effect.get("attrs") or {}
+            path_states.extend(str(item) for item in attrs.get("path_states") or [] if item and item != "entry")
         unique_paths = list(dict.fromkeys(path_states))
         if len(unique_paths) == 1:
             out["_sseir_effect_condition"] = unique_paths[0]
+        elif len(unique_paths) > 1:
+            common = SSeirFactAdapter.common_path_condition(unique_paths)
+            if common:
+                out["_sseir_effect_condition"] = common
         return out
+
+    @staticmethod
+    def sink_effect_kinds(overlay_kind: str) -> set[str]:
+        if overlay_kind in {"StateVariableWrite", "MappingWrite"}:
+            return {"StorageWrite"}
+        if overlay_kind in {"StateVariableRead", "MappingRead"}:
+            return {"StorageRead"}
+        if overlay_kind in {"EventEmit", "PathConditionedEventEmit"}:
+            return {"EventLog"}
+        if overlay_kind in {"RequireOverlay", "CustomErrorRevert", "RawRevertBytes", "RevertOverlay"}:
+            return {"Revert"}
+        if overlay_kind in {"ExternalCall", "LowLevelCall", "StaticCallOverlay", "DelegateCallOverlay", "PrecompileCall"}:
+            return {"Call", "StaticCall", "DelegateCall", "CallCode", "ExternalCall", "InternalCall"}
+        if overlay_kind == "ReturnValue":
+            return {"Return"}
+        return set()
+
+    @staticmethod
+    def common_path_condition(path_states: list[str]) -> str | None:
+        """Keep the ordered conjunction shared by every reaching sink path."""
+        paths = [
+            [part.strip() for part in str(path).split(" && ") if part.strip() and part.strip() != "entry"]
+            for path in path_states
+            if path
+        ]
+        if not paths:
+            return None
+        common = [part for part in paths[0] if all(part in path for path in paths[1:])]
+        return " && ".join(common) if common else None
 
     def fact(
         self,
@@ -395,12 +474,14 @@ class SSeirFactAdapter:
             "slot_key": attrs.get("slot_key"),
             "slot_versions": attrs.get("slot_versions") or attrs.get("slot_keys"),
             "slot_effect": attrs.get("slot_effect"),
+            "parent_target_key": attrs.get("parent_target_key"),
+            "keys": attrs.get("keys"),
         })
 
     @staticmethod
     def storage_location(attrs: dict[str, Any]) -> dict[str, Any]:
         access = attrs.get("access") or attrs.get("expression") or attrs.get("slot")
-        keys = attrs.get("keys") or clean_list([attrs.get("key")]) or bracket_keys(str(access or ""))
+        keys = attrs.get("keys") or bracket_keys(str(access or "")) or clean_list([attrs.get("key")])
         slot_kind = str(attrs.get("slot_kind") or "")
         if slot_kind == "dynamic_array_slot":
             kind = "dynamic_array"
@@ -903,7 +984,7 @@ def build_function_level_semantic_fact_payload(
     solidity_facts = [fact for fact in facts if fact.get("source_lang") == "solidity"]
     yul_facts = [fact for fact in facts if fact.get("source_lang") == "yul"]
     return {
-        "schema": "s-seir-function-semantic-facts/v2",
+        "schema": "s-seir-function-semantic-facts/v3",
         "source": source,
         "result_dir": result_dir,
         "model_boundary": {
@@ -912,7 +993,7 @@ def build_function_level_semantic_fact_payload(
             "ordering": "function-level CFG partial order plus block-local operation order",
             "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter only projects each atom to the common schema.",
             "yul": "S-SEIR alone analyzes Yul; YulSemanticLifter only projects completed S-SEIR results to the common schema.",
-            "bridge": "SemanticFactBridge restores function-level CFG order and dependencies after both sources already share one schema.",
+            "bridge": "SemanticFactBridge restores function-level CFG order and control predecessors after both sources already share one schema.",
         },
         "function_count": len(functions),
         "solidity_fact_count": len(solidity_facts),
@@ -941,7 +1022,8 @@ def semantic_fact_public_view(fact: dict[str, Any]) -> dict[str, Any]:
     semantic_facts.json so downstream consumers do not treat it as exact source
     semantics.
     """
-    return strip_key_recursive(fact, "solidity_like")
+    public = strip_key_recursive(fact, "solidity_like")
+    return strip_key_recursive(public, "depends_on")
 
 
 def strip_key_recursive(value: Any, key_to_strip: str) -> Any:

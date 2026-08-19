@@ -1,5 +1,5 @@
 {
-  "schema": "s-seir-function-semantic-facts/v2",
+  "schema": "s-seir-function-semantic-facts/v3",
   "source": "人工构造样例/09_多维Mapping_SemanticFact/contracts/MultiMappingParity.sol",
   "result_dir": "outputs/semantic_fact_multimapping_demo",
   "model_boundary": {
@@ -8,80 +8,15 @@
     "ordering": "function-level CFG partial order plus block-local operation order",
     "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter only projects each atom to the common schema.",
     "yul": "S-SEIR alone analyzes Yul; YulSemanticLifter only projects completed S-SEIR results to the common schema.",
-    "bridge": "SemanticFactBridge restores function-level CFG order and dependencies after both sources already share one schema."
+    "bridge": "SemanticFactBridge restores function-level CFG order and control predecessors after both sources already share one schema."
   },
   "function_count": 6,
-  "solidity_fact_count": 27,
+  "solidity_fact_count": 20,
   "yul_fact_count": 21,
-  "fact_count": 48,
+  "fact_count": 41,
   "solidity_facts": [
     {
       "fact_id": "fact_1",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
-      "function": "solidityRead",
-      "contract": "MultiMappingParity",
-      "signature": "solidityRead(address, bytes32, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_1",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_1"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_1",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "314:53:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_1(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_1"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
-    },
-    {
-      "fact_id": "fact_2",
       "operation_id": "sol_atom_2",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -105,9 +40,6 @@
       ],
       "writes": [
         "REF_0"
-      ],
-      "depends_on": [
-        "fact_1"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -139,12 +71,10 @@
           "physical_reference": "REF_0"
         }
       },
-      "control_predecessors": [
-        "fact_1"
-      ]
+      "control_predecessors": []
     },
     {
-      "fact_id": "fact_3",
+      "fact_id": "fact_2",
       "operation_id": "sol_atom_3",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -168,9 +98,6 @@
       ],
       "writes": [
         "REF_1"
-      ],
-      "depends_on": [
-        "fact_2"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -204,11 +131,11 @@
         }
       },
       "control_predecessors": [
-        "fact_2"
+        "fact_1"
       ]
     },
     {
-      "fact_id": "fact_4",
+      "fact_id": "fact_3",
       "operation_id": "sol_atom_4",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -232,9 +159,6 @@
       ],
       "writes": [
         "REF_2"
-      ],
-      "depends_on": [
-        "fact_3"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -269,11 +193,11 @@
         }
       },
       "control_predecessors": [
-        "fact_3"
+        "fact_2"
       ]
     },
     {
-      "fact_id": "fact_5",
+      "fact_id": "fact_4",
       "operation_id": "sol_atom_5:state_read:1",
       "kind": "StateRead",
       "source_lang": "solidity",
@@ -296,12 +220,6 @@
       ],
       "writes": [
         "REF_2"
-      ],
-      "depends_on": [
-        "fact_4"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n0"
       ],
       "order": {
         "kind": "cfg_partial_order",
@@ -340,11 +258,14 @@
         }
       },
       "control_predecessors": [
-        "fact_4"
+        "fact_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
       ]
     },
     {
-      "fact_id": "fact_6",
+      "fact_id": "fact_5",
       "operation_id": "sol_atom_5",
       "kind": "ValueAssign",
       "source_lang": "solidity",
@@ -367,9 +288,6 @@
       ],
       "writes": [
         "value_1"
-      ],
-      "depends_on": [
-        "fact_5"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -404,11 +322,11 @@
         }
       },
       "control_predecessors": [
-        "fact_5"
+        "fact_4"
       ]
     },
     {
-      "fact_id": "fact_7",
+      "fact_id": "fact_6",
       "operation_id": "sol_atom_6",
       "kind": "Return",
       "source_lang": "solidity",
@@ -424,9 +342,6 @@
       "rvalue": "value_1",
       "reads": [
         "value_1"
-      ],
-      "depends_on": [
-        "fact_6"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n1"
@@ -462,11 +377,11 @@
         }
       },
       "control_predecessors": [
-        "fact_6"
+        "fact_5"
       ]
     },
     {
-      "fact_id": "fact_8",
+      "fact_id": "fact_7",
       "operation_id": "sol_atom_1",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -521,11 +436,10 @@
           "physical_reference": "REF_3"
         }
       },
-      "depends_on": [],
       "control_predecessors": []
     },
     {
-      "fact_id": "fact_9",
+      "fact_id": "fact_8",
       "operation_id": "sol_atom_2",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -549,9 +463,6 @@
       ],
       "writes": [
         "REF_4"
-      ],
-      "depends_on": [
-        "fact_8"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -585,11 +496,11 @@
         }
       },
       "control_predecessors": [
-        "fact_8"
+        "fact_7"
       ]
     },
     {
-      "fact_id": "fact_10",
+      "fact_id": "fact_9",
       "operation_id": "sol_atom_3",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -613,9 +524,6 @@
       ],
       "writes": [
         "REF_5"
-      ],
-      "depends_on": [
-        "fact_9"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -650,74 +558,11 @@
         }
       },
       "control_predecessors": [
-        "fact_9"
+        "fact_8"
       ]
     },
     {
-      "fact_id": "fact_11",
-      "operation_id": "sol_atom_4",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
-      "function": "solidityWrite",
-      "contract": "MultiMappingParity",
-      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
-      "stmt_refs": [
-        "sol_s_1"
-      ],
-      "cfg_nodes": [
-        "bb_sol_slither_n1"
-      ],
-      "lvalue": "ledger_2",
-      "rvalue": [
-        "ledger_1"
-      ],
-      "reads": [
-        "ledger_1"
-      ],
-      "writes": [
-        "ledger_2"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n0"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 1,
-        "operation_order": 3
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_2",
-        "operand_ssa": [
-          "ledger_1"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_4",
-          "source_span": "476:36:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_2(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_1'])",
-          "physical_reference": "ledger_2"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [
-        "fact_10"
-      ]
-    },
-    {
-      "fact_id": "fact_12",
+      "fact_id": "fact_10",
       "operation_id": "sol_atom_5",
       "kind": "StateWrite",
       "source_lang": "solidity",
@@ -740,9 +585,6 @@
       ],
       "writes": [
         "ledger[owner][bucket][index]"
-      ],
-      "depends_on": [
-        "fact_10"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -785,78 +627,11 @@
         }
       },
       "control_predecessors": [
-        "fact_11"
+        "fact_9"
       ]
     },
     {
-      "fact_id": "fact_13",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
-      "function": "solidityUpdate",
-      "contract": "MultiMappingParity",
-      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_3",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_3"
-      ],
-      "depends_on": [
-        "fact_22"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_3",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "619:84:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_3(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_3"
-        }
-      },
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
-    },
-    {
-      "fact_id": "fact_14",
+      "fact_id": "fact_11",
       "operation_id": "sol_atom_2",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -880,9 +655,6 @@
       ],
       "writes": [
         "REF_6"
-      ],
-      "depends_on": [
-        "fact_13"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -914,12 +686,10 @@
           "physical_reference": "REF_6"
         }
       },
-      "control_predecessors": [
-        "fact_13"
-      ]
+      "control_predecessors": []
     },
     {
-      "fact_id": "fact_15",
+      "fact_id": "fact_12",
       "operation_id": "sol_atom_3",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -943,9 +713,6 @@
       ],
       "writes": [
         "REF_7"
-      ],
-      "depends_on": [
-        "fact_14"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -979,11 +746,11 @@
         }
       },
       "control_predecessors": [
-        "fact_14"
+        "fact_11"
       ]
     },
     {
-      "fact_id": "fact_16",
+      "fact_id": "fact_13",
       "operation_id": "sol_atom_4",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -1007,9 +774,6 @@
       ],
       "writes": [
         "REF_8"
-      ],
-      "depends_on": [
-        "fact_15"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -1044,11 +808,11 @@
         }
       },
       "control_predecessors": [
-        "fact_15"
+        "fact_12"
       ]
     },
     {
-      "fact_id": "fact_17",
+      "fact_id": "fact_14",
       "operation_id": "sol_atom_5",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -1072,9 +836,6 @@
       ],
       "writes": [
         "REF_9"
-      ],
-      "depends_on": [
-        "fact_13"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -1107,11 +868,11 @@
         }
       },
       "control_predecessors": [
-        "fact_16"
+        "fact_13"
       ]
     },
     {
-      "fact_id": "fact_18",
+      "fact_id": "fact_15",
       "operation_id": "sol_atom_6",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -1135,9 +896,6 @@
       ],
       "writes": [
         "REF_10"
-      ],
-      "depends_on": [
-        "fact_17"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -1171,11 +929,11 @@
         }
       },
       "control_predecessors": [
-        "fact_17"
+        "fact_14"
       ]
     },
     {
-      "fact_id": "fact_19",
+      "fact_id": "fact_16",
       "operation_id": "sol_atom_7",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -1199,9 +957,6 @@
       ],
       "writes": [
         "REF_11"
-      ],
-      "depends_on": [
-        "fact_18"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -1236,11 +991,11 @@
         }
       },
       "control_predecessors": [
-        "fact_18"
+        "fact_15"
       ]
     },
     {
-      "fact_id": "fact_20",
+      "fact_id": "fact_17",
       "operation_id": "sol_atom_8:state_read:1",
       "kind": "StateRead",
       "source_lang": "solidity",
@@ -1263,12 +1018,6 @@
       ],
       "writes": [
         "REF_11"
-      ],
-      "depends_on": [
-        "fact_19"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n0"
       ],
       "order": {
         "kind": "cfg_partial_order",
@@ -1307,11 +1056,14 @@
         }
       },
       "control_predecessors": [
-        "fact_19"
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
       ]
     },
     {
-      "fact_id": "fact_21",
+      "fact_id": "fact_18",
       "operation_id": "sol_atom_8",
       "kind": "ValueCompute",
       "source_lang": "solidity",
@@ -1335,9 +1087,6 @@
       ],
       "writes": [
         "TMP_0"
-      ],
-      "depends_on": [
-        "fact_20"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -1375,76 +1124,11 @@
         }
       },
       "control_predecessors": [
-        "fact_20"
+        "fact_17"
       ]
     },
     {
-      "fact_id": "fact_22",
-      "operation_id": "sol_atom_9",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
-      "function": "solidityUpdate",
-      "contract": "MultiMappingParity",
-      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
-      "stmt_refs": [
-        "sol_s_1"
-      ],
-      "cfg_nodes": [
-        "bb_sol_slither_n1"
-      ],
-      "lvalue": "ledger_4",
-      "rvalue": [
-        "ledger_3"
-      ],
-      "reads": [
-        "ledger_3"
-      ],
-      "writes": [
-        "ledger_4"
-      ],
-      "depends_on": [
-        "fact_13"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n0"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 1,
-        "operation_order": 8
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_4",
-        "operand_ssa": [
-          "ledger_3"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_9",
-          "source_span": "629:67:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_4(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_3'])",
-          "physical_reference": "ledger_4"
-        }
-      },
-      "control_predecessors": [
-        "fact_21"
-      ]
-    },
-    {
-      "fact_id": "fact_23",
+      "fact_id": "fact_19",
       "operation_id": "sol_atom_10",
       "kind": "StateWrite",
       "source_lang": "solidity",
@@ -1467,10 +1151,6 @@
       ],
       "writes": [
         "ledger[owner][bucket][index]"
-      ],
-      "depends_on": [
-        "fact_21",
-        "fact_16"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -1513,76 +1193,11 @@
         }
       },
       "control_predecessors": [
-        "fact_22"
+        "fact_18"
       ]
     },
     {
-      "fact_id": "fact_24",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
-      "function": "yulRead",
-      "contract": "MultiMappingParity",
-      "signature": "yulRead(address, bytes32, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_5",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_5"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_5",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "838:399:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_5(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_5"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
-    },
-    {
-      "fact_id": "fact_32",
+      "fact_id": "fact_27",
       "operation_id": "sol_atom_2",
       "kind": "Return",
       "source_lang": "solidity",
@@ -1632,145 +1247,14 @@
           "slithir_text": "RETURN value_1"
         }
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_31"
+        "fact_26"
       ]
-    },
-    {
-      "fact_id": "fact_33",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
-      "function": "yulWrite",
-      "contract": "MultiMappingParity",
-      "signature": "yulWrite(address, bytes32, uint256, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_6",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_6"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_6",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "1331:398:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_6(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_6"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
-    },
-    {
-      "fact_id": "fact_40",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
-      "function": "yulUpdate",
-      "contract": "MultiMappingParity",
-      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_7",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_7"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_7",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "1824:460:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_7(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_7"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
     }
   ],
   "yul_facts": [
     {
-      "fact_id": "fact_25",
+      "fact_id": "fact_20",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -1808,16 +1292,13 @@
         "cfg_block_order": 4,
         "operation_order": 6
       },
-      "depends_on": [],
-      "control_predecessors": [
-        "fact_24"
-      ],
+      "control_predecessors": [],
       "cfg_predecessor_blocks": [
         "bb_asm1_n3"
       ]
     },
     {
-      "fact_id": "fact_26",
+      "fact_id": "fact_21",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -1873,7 +1354,14 @@
             "size": 32,
             "value": "ledger.slot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
       },
       "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
       "operation_id": "yul_overlay:ov_1",
@@ -1882,16 +1370,15 @@
         "cfg_block_order": 4,
         "operation_order": 7
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_25"
+        "fact_20"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n3"
       ]
     },
     {
-      "fact_id": "fact_27",
+      "fact_id": "fact_22",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -1929,16 +1416,15 @@
         "cfg_block_order": 7,
         "operation_order": 8
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_26"
+        "fact_21"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n6"
       ]
     },
     {
-      "fact_id": "fact_28",
+      "fact_id": "fact_23",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -1969,6 +1455,7 @@
           "access": "ledger[owner][bucket]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
             "bucket"
           ]
         }
@@ -1994,7 +1481,15 @@
             "size": 32,
             "value": "ownerSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
       },
       "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
       "operation_id": "yul_overlay:ov_2",
@@ -2003,16 +1498,15 @@
         "cfg_block_order": 7,
         "operation_order": 9
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_27"
+        "fact_22"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n6"
       ]
     },
     {
-      "fact_id": "fact_29",
+      "fact_id": "fact_24",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2053,16 +1547,15 @@
         "cfg_block_order": 10,
         "operation_order": 10
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_28"
+        "fact_23"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n9"
       ]
     },
     {
-      "fact_id": "fact_30",
+      "fact_id": "fact_25",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2093,6 +1586,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -2118,7 +1613,15 @@
             "size": 32,
             "value": "bucketSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10",
+          "target_keys": [
+            "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
       },
       "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
       "operation_id": "yul_overlay:ov_3",
@@ -2127,16 +1630,15 @@
         "cfg_block_order": 10,
         "operation_order": 11
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_29"
+        "fact_24"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n9"
       ]
     },
     {
-      "fact_id": "fact_31",
+      "fact_id": "fact_26",
       "kind": "StateRead",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2170,6 +1672,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -2187,28 +1691,31 @@
           "slot_versions": [
             "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10"
           ],
-          "slot_effect": "eff_12"
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
         }
       },
       "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
       "operation_id": "yul_overlay:ov_4",
-      "depends_on": [
-        "fact_30"
-      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 10,
         "operation_order": 12
       },
       "control_predecessors": [
-        "fact_30"
+        "fact_25"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n9"
       ]
     },
     {
-      "fact_id": "fact_34",
+      "fact_id": "fact_28",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2246,16 +1753,13 @@
         "cfg_block_order": 4,
         "operation_order": 6
       },
-      "depends_on": [],
-      "control_predecessors": [
-        "fact_33"
-      ],
+      "control_predecessors": [],
       "cfg_predecessor_blocks": [
         "bb_asm2_n3"
       ]
     },
     {
-      "fact_id": "fact_35",
+      "fact_id": "fact_29",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2311,7 +1815,14 @@
             "size": 32,
             "value": "ledger.slot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
       },
       "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_1",
@@ -2320,16 +1831,15 @@
         "cfg_block_order": 4,
         "operation_order": 7
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_34"
+        "fact_28"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n3"
       ]
     },
     {
-      "fact_id": "fact_36",
+      "fact_id": "fact_30",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2367,16 +1877,15 @@
         "cfg_block_order": 7,
         "operation_order": 8
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_35"
+        "fact_29"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n6"
       ]
     },
     {
-      "fact_id": "fact_37",
+      "fact_id": "fact_31",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2407,6 +1916,7 @@
           "access": "ledger[owner][bucket]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
             "bucket"
           ]
         }
@@ -2432,7 +1942,15 @@
             "size": 32,
             "value": "ownerSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
       },
       "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_2",
@@ -2441,16 +1959,15 @@
         "cfg_block_order": 7,
         "operation_order": 9
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_36"
+        "fact_30"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n6"
       ]
     },
     {
-      "fact_id": "fact_38",
+      "fact_id": "fact_32",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2481,6 +1998,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -2506,7 +2025,15 @@
             "size": 32,
             "value": "bucketSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10",
+          "target_keys": [
+            "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
       },
       "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_3",
@@ -2515,16 +2042,15 @@
         "cfg_block_order": 10,
         "operation_order": 10
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_37"
+        "fact_31"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n9"
       ]
     },
     {
-      "fact_id": "fact_39",
+      "fact_id": "fact_33",
       "kind": "StateWrite",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2561,6 +2087,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         },
@@ -2579,28 +2107,31 @@
           "slot_versions": [
             "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10"
           ],
-          "slot_effect": "eff_11"
+          "slot_effect": "eff_11",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
         }
       },
       "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_4",
-      "depends_on": [
-        "fact_38"
-      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 10,
         "operation_order": 11
       },
       "control_predecessors": [
-        "fact_38"
+        "fact_32"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n9"
       ]
     },
     {
-      "fact_id": "fact_41",
+      "fact_id": "fact_34",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2638,16 +2169,13 @@
         "cfg_block_order": 4,
         "operation_order": 6
       },
-      "depends_on": [],
-      "control_predecessors": [
-        "fact_40"
-      ],
+      "control_predecessors": [],
       "cfg_predecessor_blocks": [
         "bb_asm3_n3"
       ]
     },
     {
-      "fact_id": "fact_42",
+      "fact_id": "fact_35",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2703,7 +2231,14 @@
             "size": 32,
             "value": "ledger.slot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_1",
@@ -2712,16 +2247,15 @@
         "cfg_block_order": 4,
         "operation_order": 7
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_41"
+        "fact_34"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n3"
       ]
     },
     {
-      "fact_id": "fact_43",
+      "fact_id": "fact_36",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2759,16 +2293,15 @@
         "cfg_block_order": 7,
         "operation_order": 8
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_42"
+        "fact_35"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n6"
       ]
     },
     {
-      "fact_id": "fact_44",
+      "fact_id": "fact_37",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2799,6 +2332,7 @@
           "access": "ledger[owner][bucket]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
             "bucket"
           ]
         }
@@ -2824,7 +2358,15 @@
             "size": 32,
             "value": "ownerSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_2",
@@ -2833,16 +2375,15 @@
         "cfg_block_order": 7,
         "operation_order": 9
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_43"
+        "fact_36"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n6"
       ]
     },
     {
-      "fact_id": "fact_45",
+      "fact_id": "fact_38",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2880,16 +2421,15 @@
         "cfg_block_order": 10,
         "operation_order": 10
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_44"
+        "fact_37"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n9"
       ]
     },
     {
-      "fact_id": "fact_46",
+      "fact_id": "fact_39",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2920,6 +2460,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -2945,7 +2487,15 @@
             "size": 32,
             "value": "bucketSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "valueSlot__ssa3",
+          "target_keys": [
+            "valueSlot__ssa3"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_3",
@@ -2954,16 +2504,15 @@
         "cfg_block_order": 10,
         "operation_order": 11
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_45"
+        "fact_38"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n9"
       ]
     },
     {
-      "fact_id": "fact_47",
+      "fact_id": "fact_40",
       "kind": "StateRead",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -2998,6 +2547,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -3015,28 +2566,31 @@
           "slot_versions": [
             "valueSlot__ssa3"
           ],
-          "slot_effect": "eff_12"
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
         }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_5",
-      "depends_on": [
-        "fact_46"
-      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 10,
         "operation_order": 12
       },
       "control_predecessors": [
-        "fact_46"
+        "fact_39"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n9"
       ]
     },
     {
-      "fact_id": "fact_48",
+      "fact_id": "fact_41",
       "kind": "StateWrite",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -3079,6 +2633,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         },
@@ -3097,22 +2653,24 @@
           "slot_versions": [
             "valueSlot__ssa3"
           ],
-          "slot_effect": "eff_12"
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
         }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_6",
-      "depends_on": [
-        "fact_46",
-        "fact_47"
-      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 10,
         "operation_order": 13
       },
       "control_predecessors": [
-        "fact_47"
+        "fact_40"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n9"
@@ -3122,71 +2680,6 @@
   "facts": [
     {
       "fact_id": "fact_1",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
-      "function": "solidityRead",
-      "contract": "MultiMappingParity",
-      "signature": "solidityRead(address, bytes32, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_1",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_1"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_1",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "314:53:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_1(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_1"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
-    },
-    {
-      "fact_id": "fact_2",
       "operation_id": "sol_atom_2",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -3210,9 +2703,6 @@
       ],
       "writes": [
         "REF_0"
-      ],
-      "depends_on": [
-        "fact_1"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -3244,12 +2734,10 @@
           "physical_reference": "REF_0"
         }
       },
-      "control_predecessors": [
-        "fact_1"
-      ]
+      "control_predecessors": []
     },
     {
-      "fact_id": "fact_3",
+      "fact_id": "fact_2",
       "operation_id": "sol_atom_3",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -3273,9 +2761,6 @@
       ],
       "writes": [
         "REF_1"
-      ],
-      "depends_on": [
-        "fact_2"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -3309,11 +2794,11 @@
         }
       },
       "control_predecessors": [
-        "fact_2"
+        "fact_1"
       ]
     },
     {
-      "fact_id": "fact_4",
+      "fact_id": "fact_3",
       "operation_id": "sol_atom_4",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -3337,9 +2822,6 @@
       ],
       "writes": [
         "REF_2"
-      ],
-      "depends_on": [
-        "fact_3"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -3374,11 +2856,11 @@
         }
       },
       "control_predecessors": [
-        "fact_3"
+        "fact_2"
       ]
     },
     {
-      "fact_id": "fact_5",
+      "fact_id": "fact_4",
       "operation_id": "sol_atom_5:state_read:1",
       "kind": "StateRead",
       "source_lang": "solidity",
@@ -3401,12 +2883,6 @@
       ],
       "writes": [
         "REF_2"
-      ],
-      "depends_on": [
-        "fact_4"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n0"
       ],
       "order": {
         "kind": "cfg_partial_order",
@@ -3445,11 +2921,14 @@
         }
       },
       "control_predecessors": [
-        "fact_4"
+        "fact_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
       ]
     },
     {
-      "fact_id": "fact_6",
+      "fact_id": "fact_5",
       "operation_id": "sol_atom_5",
       "kind": "ValueAssign",
       "source_lang": "solidity",
@@ -3472,9 +2951,6 @@
       ],
       "writes": [
         "value_1"
-      ],
-      "depends_on": [
-        "fact_5"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -3509,11 +2985,11 @@
         }
       },
       "control_predecessors": [
-        "fact_5"
+        "fact_4"
       ]
     },
     {
-      "fact_id": "fact_7",
+      "fact_id": "fact_6",
       "operation_id": "sol_atom_6",
       "kind": "Return",
       "source_lang": "solidity",
@@ -3529,9 +3005,6 @@
       "rvalue": "value_1",
       "reads": [
         "value_1"
-      ],
-      "depends_on": [
-        "fact_6"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n1"
@@ -3567,11 +3040,11 @@
         }
       },
       "control_predecessors": [
-        "fact_6"
+        "fact_5"
       ]
     },
     {
-      "fact_id": "fact_8",
+      "fact_id": "fact_7",
       "operation_id": "sol_atom_1",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -3626,11 +3099,10 @@
           "physical_reference": "REF_3"
         }
       },
-      "depends_on": [],
       "control_predecessors": []
     },
     {
-      "fact_id": "fact_9",
+      "fact_id": "fact_8",
       "operation_id": "sol_atom_2",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -3654,9 +3126,6 @@
       ],
       "writes": [
         "REF_4"
-      ],
-      "depends_on": [
-        "fact_8"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -3690,11 +3159,11 @@
         }
       },
       "control_predecessors": [
-        "fact_8"
+        "fact_7"
       ]
     },
     {
-      "fact_id": "fact_10",
+      "fact_id": "fact_9",
       "operation_id": "sol_atom_3",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -3718,9 +3187,6 @@
       ],
       "writes": [
         "REF_5"
-      ],
-      "depends_on": [
-        "fact_9"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -3755,74 +3221,11 @@
         }
       },
       "control_predecessors": [
-        "fact_9"
+        "fact_8"
       ]
     },
     {
-      "fact_id": "fact_11",
-      "operation_id": "sol_atom_4",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
-      "function": "solidityWrite",
-      "contract": "MultiMappingParity",
-      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
-      "stmt_refs": [
-        "sol_s_1"
-      ],
-      "cfg_nodes": [
-        "bb_sol_slither_n1"
-      ],
-      "lvalue": "ledger_2",
-      "rvalue": [
-        "ledger_1"
-      ],
-      "reads": [
-        "ledger_1"
-      ],
-      "writes": [
-        "ledger_2"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n0"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 1,
-        "operation_order": 3
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_2",
-        "operand_ssa": [
-          "ledger_1"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_4",
-          "source_span": "476:36:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_2(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_1'])",
-          "physical_reference": "ledger_2"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [
-        "fact_10"
-      ]
-    },
-    {
-      "fact_id": "fact_12",
+      "fact_id": "fact_10",
       "operation_id": "sol_atom_5",
       "kind": "StateWrite",
       "source_lang": "solidity",
@@ -3845,9 +3248,6 @@
       ],
       "writes": [
         "ledger[owner][bucket][index]"
-      ],
-      "depends_on": [
-        "fact_10"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -3890,78 +3290,11 @@
         }
       },
       "control_predecessors": [
-        "fact_11"
+        "fact_9"
       ]
     },
     {
-      "fact_id": "fact_13",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
-      "function": "solidityUpdate",
-      "contract": "MultiMappingParity",
-      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_3",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_3"
-      ],
-      "depends_on": [
-        "fact_22"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_3",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "619:84:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_3(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_3"
-        }
-      },
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
-    },
-    {
-      "fact_id": "fact_14",
+      "fact_id": "fact_11",
       "operation_id": "sol_atom_2",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -3985,9 +3318,6 @@
       ],
       "writes": [
         "REF_6"
-      ],
-      "depends_on": [
-        "fact_13"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -4019,12 +3349,10 @@
           "physical_reference": "REF_6"
         }
       },
-      "control_predecessors": [
-        "fact_13"
-      ]
+      "control_predecessors": []
     },
     {
-      "fact_id": "fact_15",
+      "fact_id": "fact_12",
       "operation_id": "sol_atom_3",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -4048,9 +3376,6 @@
       ],
       "writes": [
         "REF_7"
-      ],
-      "depends_on": [
-        "fact_14"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -4084,11 +3409,11 @@
         }
       },
       "control_predecessors": [
-        "fact_14"
+        "fact_11"
       ]
     },
     {
-      "fact_id": "fact_16",
+      "fact_id": "fact_13",
       "operation_id": "sol_atom_4",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -4112,9 +3437,6 @@
       ],
       "writes": [
         "REF_8"
-      ],
-      "depends_on": [
-        "fact_15"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -4149,11 +3471,11 @@
         }
       },
       "control_predecessors": [
-        "fact_15"
+        "fact_12"
       ]
     },
     {
-      "fact_id": "fact_17",
+      "fact_id": "fact_14",
       "operation_id": "sol_atom_5",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -4177,9 +3499,6 @@
       ],
       "writes": [
         "REF_9"
-      ],
-      "depends_on": [
-        "fact_13"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -4212,11 +3531,11 @@
         }
       },
       "control_predecessors": [
-        "fact_16"
+        "fact_13"
       ]
     },
     {
-      "fact_id": "fact_18",
+      "fact_id": "fact_15",
       "operation_id": "sol_atom_6",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -4240,9 +3559,6 @@
       ],
       "writes": [
         "REF_10"
-      ],
-      "depends_on": [
-        "fact_17"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -4276,11 +3592,11 @@
         }
       },
       "control_predecessors": [
-        "fact_17"
+        "fact_14"
       ]
     },
     {
-      "fact_id": "fact_19",
+      "fact_id": "fact_16",
       "operation_id": "sol_atom_7",
       "kind": "StorageLocationResolve",
       "source_lang": "solidity",
@@ -4304,9 +3620,6 @@
       ],
       "writes": [
         "REF_11"
-      ],
-      "depends_on": [
-        "fact_18"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -4341,11 +3654,11 @@
         }
       },
       "control_predecessors": [
-        "fact_18"
+        "fact_15"
       ]
     },
     {
-      "fact_id": "fact_20",
+      "fact_id": "fact_17",
       "operation_id": "sol_atom_8:state_read:1",
       "kind": "StateRead",
       "source_lang": "solidity",
@@ -4368,12 +3681,6 @@
       ],
       "writes": [
         "REF_11"
-      ],
-      "depends_on": [
-        "fact_19"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n0"
       ],
       "order": {
         "kind": "cfg_partial_order",
@@ -4412,11 +3719,14 @@
         }
       },
       "control_predecessors": [
-        "fact_19"
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
       ]
     },
     {
-      "fact_id": "fact_21",
+      "fact_id": "fact_18",
       "operation_id": "sol_atom_8",
       "kind": "ValueCompute",
       "source_lang": "solidity",
@@ -4440,9 +3750,6 @@
       ],
       "writes": [
         "TMP_0"
-      ],
-      "depends_on": [
-        "fact_20"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -4480,76 +3787,11 @@
         }
       },
       "control_predecessors": [
-        "fact_20"
+        "fact_17"
       ]
     },
     {
-      "fact_id": "fact_22",
-      "operation_id": "sol_atom_9",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
-      "function": "solidityUpdate",
-      "contract": "MultiMappingParity",
-      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
-      "stmt_refs": [
-        "sol_s_1"
-      ],
-      "cfg_nodes": [
-        "bb_sol_slither_n1"
-      ],
-      "lvalue": "ledger_4",
-      "rvalue": [
-        "ledger_3"
-      ],
-      "reads": [
-        "ledger_3"
-      ],
-      "writes": [
-        "ledger_4"
-      ],
-      "depends_on": [
-        "fact_13"
-      ],
-      "cfg_predecessor_blocks": [
-        "bb_sol_slither_n0"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 1,
-        "operation_order": 8
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_4",
-        "operand_ssa": [
-          "ledger_3"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_9",
-          "source_span": "629:67:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_4(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_3'])",
-          "physical_reference": "ledger_4"
-        }
-      },
-      "control_predecessors": [
-        "fact_21"
-      ]
-    },
-    {
-      "fact_id": "fact_23",
+      "fact_id": "fact_19",
       "operation_id": "sol_atom_10",
       "kind": "StateWrite",
       "source_lang": "solidity",
@@ -4572,10 +3814,6 @@
       ],
       "writes": [
         "ledger[owner][bucket][index]"
-      ],
-      "depends_on": [
-        "fact_21",
-        "fact_16"
       ],
       "cfg_predecessor_blocks": [
         "bb_sol_slither_n0"
@@ -4618,76 +3856,11 @@
         }
       },
       "control_predecessors": [
-        "fact_22"
+        "fact_18"
       ]
     },
     {
-      "fact_id": "fact_24",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
-      "function": "yulRead",
-      "contract": "MultiMappingParity",
-      "signature": "yulRead(address, bytes32, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_5",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_5"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_5",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "838:399:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_5(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_5"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
-    },
-    {
-      "fact_id": "fact_25",
+      "fact_id": "fact_20",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -4725,16 +3898,13 @@
         "cfg_block_order": 4,
         "operation_order": 6
       },
-      "depends_on": [],
-      "control_predecessors": [
-        "fact_24"
-      ],
+      "control_predecessors": [],
       "cfg_predecessor_blocks": [
         "bb_asm1_n3"
       ]
     },
     {
-      "fact_id": "fact_26",
+      "fact_id": "fact_21",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -4790,7 +3960,14 @@
             "size": 32,
             "value": "ledger.slot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
       },
       "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
       "operation_id": "yul_overlay:ov_1",
@@ -4799,16 +3976,15 @@
         "cfg_block_order": 4,
         "operation_order": 7
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_25"
+        "fact_20"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n3"
       ]
     },
     {
-      "fact_id": "fact_27",
+      "fact_id": "fact_22",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -4846,16 +4022,15 @@
         "cfg_block_order": 7,
         "operation_order": 8
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_26"
+        "fact_21"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n6"
       ]
     },
     {
-      "fact_id": "fact_28",
+      "fact_id": "fact_23",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -4886,6 +4061,7 @@
           "access": "ledger[owner][bucket]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
             "bucket"
           ]
         }
@@ -4911,7 +4087,15 @@
             "size": 32,
             "value": "ownerSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
       },
       "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
       "operation_id": "yul_overlay:ov_2",
@@ -4920,16 +4104,15 @@
         "cfg_block_order": 7,
         "operation_order": 9
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_27"
+        "fact_22"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n6"
       ]
     },
     {
-      "fact_id": "fact_29",
+      "fact_id": "fact_24",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -4970,16 +4153,15 @@
         "cfg_block_order": 10,
         "operation_order": 10
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_28"
+        "fact_23"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n9"
       ]
     },
     {
-      "fact_id": "fact_30",
+      "fact_id": "fact_25",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5010,6 +4192,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -5035,7 +4219,15 @@
             "size": 32,
             "value": "bucketSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10",
+          "target_keys": [
+            "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
       },
       "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
       "operation_id": "yul_overlay:ov_3",
@@ -5044,16 +4236,15 @@
         "cfg_block_order": 10,
         "operation_order": 11
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_29"
+        "fact_24"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n9"
       ]
     },
     {
-      "fact_id": "fact_31",
+      "fact_id": "fact_26",
       "kind": "StateRead",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5087,6 +4278,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -5104,28 +4297,31 @@
           "slot_versions": [
             "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10"
           ],
-          "slot_effect": "eff_12"
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
         }
       },
       "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
       "operation_id": "yul_overlay:ov_4",
-      "depends_on": [
-        "fact_30"
-      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 10,
         "operation_order": 12
       },
       "control_predecessors": [
-        "fact_30"
+        "fact_25"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm1_n9"
       ]
     },
     {
-      "fact_id": "fact_32",
+      "fact_id": "fact_27",
       "operation_id": "sol_atom_2",
       "kind": "Return",
       "source_lang": "solidity",
@@ -5175,78 +4371,12 @@
           "slithir_text": "RETURN value_1"
         }
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_31"
+        "fact_26"
       ]
     },
     {
-      "fact_id": "fact_33",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
-      "function": "yulWrite",
-      "contract": "MultiMappingParity",
-      "signature": "yulWrite(address, bytes32, uint256, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_6",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_6"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_6",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "1331:398:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_6(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_6"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
-    },
-    {
-      "fact_id": "fact_34",
+      "fact_id": "fact_28",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5284,16 +4414,13 @@
         "cfg_block_order": 4,
         "operation_order": 6
       },
-      "depends_on": [],
-      "control_predecessors": [
-        "fact_33"
-      ],
+      "control_predecessors": [],
       "cfg_predecessor_blocks": [
         "bb_asm2_n3"
       ]
     },
     {
-      "fact_id": "fact_35",
+      "fact_id": "fact_29",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5349,7 +4476,14 @@
             "size": 32,
             "value": "ledger.slot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
       },
       "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_1",
@@ -5358,16 +4492,15 @@
         "cfg_block_order": 4,
         "operation_order": 7
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_34"
+        "fact_28"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n3"
       ]
     },
     {
-      "fact_id": "fact_36",
+      "fact_id": "fact_30",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5405,16 +4538,15 @@
         "cfg_block_order": 7,
         "operation_order": 8
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_35"
+        "fact_29"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n6"
       ]
     },
     {
-      "fact_id": "fact_37",
+      "fact_id": "fact_31",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5445,6 +4577,7 @@
           "access": "ledger[owner][bucket]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
             "bucket"
           ]
         }
@@ -5470,7 +4603,15 @@
             "size": 32,
             "value": "ownerSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
       },
       "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_2",
@@ -5479,16 +4620,15 @@
         "cfg_block_order": 7,
         "operation_order": 9
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_36"
+        "fact_30"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n6"
       ]
     },
     {
-      "fact_id": "fact_38",
+      "fact_id": "fact_32",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5519,6 +4659,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -5544,7 +4686,15 @@
             "size": 32,
             "value": "bucketSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10",
+          "target_keys": [
+            "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
       },
       "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_3",
@@ -5553,16 +4703,15 @@
         "cfg_block_order": 10,
         "operation_order": 10
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_37"
+        "fact_31"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n9"
       ]
     },
     {
-      "fact_id": "fact_39",
+      "fact_id": "fact_33",
       "kind": "StateWrite",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5599,6 +4748,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         },
@@ -5617,93 +4768,31 @@
           "slot_versions": [
             "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10"
           ],
-          "slot_effect": "eff_11"
+          "slot_effect": "eff_11",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
         }
       },
       "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_4",
-      "depends_on": [
-        "fact_38"
-      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 10,
         "operation_order": 11
       },
       "control_predecessors": [
-        "fact_38"
+        "fact_32"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm2_n9"
       ]
     },
     {
-      "fact_id": "fact_40",
-      "operation_id": "sol_atom_1",
-      "kind": "ValuePhi",
-      "source_lang": "solidity",
-      "origin": "solidity_atomic_operation",
-      "fact_role": "analysis_support",
-      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
-      "function": "yulUpdate",
-      "contract": "MultiMappingParity",
-      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
-      "cfg_nodes": [
-        "bb_sol_slither_n0"
-      ],
-      "lvalue": "ledger_7",
-      "rvalue": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "reads": [
-        "ledger_2",
-        "ledger_0",
-        "ledger_1",
-        "ledger_4"
-      ],
-      "writes": [
-        "ledger_7"
-      ],
-      "order": {
-        "kind": "cfg_partial_order",
-        "cfg_block_order": 0,
-        "operation_order": 0
-      },
-      "semantic": {
-        "operation": "phi",
-        "atomic_operation": "Phi",
-        "atomic_operation_count": 1,
-        "result_ssa": "ledger_7",
-        "operand_ssa": [
-          "ledger_2",
-          "ledger_0",
-          "ledger_1",
-          "ledger_4"
-        ],
-        "resolved_operands": [
-          "ledger"
-        ],
-        "checked": true,
-        "runtime_operation": false
-      },
-      "evidence": {
-        "atomic_operation": {
-          "atom_id": "sol_atom_1",
-          "source_span": "1824:460:slither",
-          "slithir_kind": "Phi",
-          "slithir_text": "ledger_7(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
-          "physical_reference": "ledger_7"
-        }
-      },
-      "depends_on": [],
-      "control_predecessors": [],
-      "cfg_predecessor_blocks": []
-    },
-    {
-      "fact_id": "fact_41",
+      "fact_id": "fact_34",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5741,16 +4830,13 @@
         "cfg_block_order": 4,
         "operation_order": 6
       },
-      "depends_on": [],
-      "control_predecessors": [
-        "fact_40"
-      ],
+      "control_predecessors": [],
       "cfg_predecessor_blocks": [
         "bb_asm3_n3"
       ]
     },
     {
-      "fact_id": "fact_42",
+      "fact_id": "fact_35",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5806,7 +4892,14 @@
             "size": 32,
             "value": "ledger.slot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_1",
@@ -5815,16 +4908,15 @@
         "cfg_block_order": 4,
         "operation_order": 7
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_41"
+        "fact_34"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n3"
       ]
     },
     {
-      "fact_id": "fact_43",
+      "fact_id": "fact_36",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5862,16 +4954,15 @@
         "cfg_block_order": 7,
         "operation_order": 8
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_42"
+        "fact_35"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n6"
       ]
     },
     {
-      "fact_id": "fact_44",
+      "fact_id": "fact_37",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5902,6 +4993,7 @@
           "access": "ledger[owner][bucket]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
             "bucket"
           ]
         }
@@ -5927,7 +5019,15 @@
             "size": 32,
             "value": "ownerSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_2",
@@ -5936,16 +5036,15 @@
         "cfg_block_order": 7,
         "operation_order": 9
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_43"
+        "fact_36"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n6"
       ]
     },
     {
-      "fact_id": "fact_45",
+      "fact_id": "fact_38",
       "kind": "ValueCompute",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -5983,16 +5082,15 @@
         "cfg_block_order": 10,
         "operation_order": 10
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_44"
+        "fact_37"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n9"
       ]
     },
     {
-      "fact_id": "fact_46",
+      "fact_id": "fact_39",
       "kind": "StorageLocationResolve",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -6023,6 +5121,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -6048,7 +5148,15 @@
             "size": 32,
             "value": "bucketSlot"
           }
-        ]
+        ],
+        "slot_relation": {
+          "target_key": "valueSlot__ssa3",
+          "target_keys": [
+            "valueSlot__ssa3"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_3",
@@ -6057,16 +5165,15 @@
         "cfg_block_order": 10,
         "operation_order": 11
       },
-      "depends_on": [],
       "control_predecessors": [
-        "fact_45"
+        "fact_38"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n9"
       ]
     },
     {
-      "fact_id": "fact_47",
+      "fact_id": "fact_40",
       "kind": "StateRead",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -6101,6 +5208,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         }
@@ -6118,28 +5227,31 @@
           "slot_versions": [
             "valueSlot__ssa3"
           ],
-          "slot_effect": "eff_12"
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
         }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_5",
-      "depends_on": [
-        "fact_46"
-      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 10,
         "operation_order": 12
       },
       "control_predecessors": [
-        "fact_46"
+        "fact_39"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n9"
       ]
     },
     {
-      "fact_id": "fact_48",
+      "fact_id": "fact_41",
       "kind": "StateWrite",
       "source_lang": "yul",
       "origin": "yul_sseir",
@@ -6182,6 +5294,8 @@
           "access": "ledger[owner][bucket][index]",
           "state_variable": "ledger",
           "keys": [
+            "owner",
+            "bucket",
             "index"
           ]
         },
@@ -6200,22 +5314,24 @@
           "slot_versions": [
             "valueSlot__ssa3"
           ],
-          "slot_effect": "eff_12"
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
         }
       },
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "operation_id": "yul_overlay:ov_6",
-      "depends_on": [
-        "fact_46",
-        "fact_47"
-      ],
       "order": {
         "kind": "cfg_partial_order",
         "cfg_block_order": 10,
         "operation_order": 13
       },
       "control_predecessors": [
-        "fact_47"
+        "fact_40"
       ],
       "cfg_predecessor_blocks": [
         "bb_asm3_n9"

@@ -314,6 +314,7 @@ def test_high_bytes_literal_is_normalized_as_call_selector() -> None:
     literal = "0x0902f1ac00000000000000000000000000000000000000000000000000000000"
     extraction = f"high_bytes({literal}, 4)"
     assert normalize_selector_value(extraction) == "0x0902f1ac"
+    assert normalize_selector_value("high_bytes((0x70a08231 << 224), 4)") == "0x70a08231"
     call = effect("StaticCall", {
         "op": "staticcall",
         "gas": "gas()",
@@ -339,6 +340,75 @@ def test_high_bytes_literal_is_normalized_as_call_selector() -> None:
     assert overlay.attrs["selector"] == "0x0902f1ac", overlay.attrs
     assert overlay.attrs["selector_signature"] == "getReserves()", overlay.attrs
     assert "abi.encodeWithSelector" in overlay.attrs["solidity_like"], overlay.attrs
+
+
+def test_nested_extcodesize_bool_is_lifted_to_address_has_code() -> None:
+    class BoolEnv:
+        @staticmethod
+        def lookup(name: str):
+            return StateVar(name, "bool") if name == "result" else None
+
+        @staticmethod
+        def is_bool(name: str) -> bool:
+            return name == "result"
+
+    value = effect("ValueDef", {
+        "targets": ["result"],
+        "value": "iszero(iszero(extcodesize(account)))",
+        "path_states": ["entry"],
+    }, "eff_value")
+    overlays = SemanticOverlayBuilder().address_code_overlays(BoolEnv(), [value])
+    assert len(overlays) == 1, overlays
+    assert overlays[0].kind == "AddressHasCode"
+    assert overlays[0].attrs["condition"] == "(account.code.length != 0)"
+    assert overlays[0].attrs["check_kind"] == "has_code"
+    assert overlays[0].attrs["iszero_depth"] == 2
+
+
+def test_single_path_call_uses_sink_resolved_calldata() -> None:
+    call = effect("StaticCall", {
+        "op": "staticcall",
+        "gas": "gas()",
+        "target": "token",
+        "input_ptr": "ptr",
+        "input_size": "0x24",
+        "output_ptr": "ptr",
+        "output_size": "0x20",
+        "path_states": ["entry"],
+        "sink_resolution": {
+            "sink_kind": "StaticCall",
+            "path_sensitive": False,
+            "path_resolutions": [{
+                "condition": None,
+                "status": "resolved",
+                "arg_resolutions": {
+                    "input": {
+                        "normalized": "MemorySlice(high_bytes((0x70a08231 << 224), 4), account)",
+                        "memory_slice": {
+                            "slices": [
+                                {"extraction": "high_bytes((0x70a08231 << 224), 4)"},
+                                {"extraction": "account"},
+                            ]
+                        },
+                    }
+                },
+            }],
+        },
+    }, "eff_call")
+    builder = SemanticOverlayBuilder(selector_registry={
+        "0x70a08231": [{
+            "selector": "0x70a08231",
+            "signature": "balanceOf(address)",
+            "name": "balanceOf",
+            "kind": "function",
+        }],
+    })
+    overlay = builder.call_overlays([call])[0]
+    assert overlay.kind == "StaticCallOverlay"
+    assert overlay.attrs["selector"] == "0x70a08231"
+    assert overlay.attrs["selector_signature"] == "balanceOf(address)"
+    assert overlay.attrs["arguments"] == ["account"]
+    assert overlay.attrs["decoded_input"] == "MemorySlice(high_bytes((0x70a08231 << 224), 4), account)"
 
 
 def test_struct_dynamic_array_field_becomes_memory_array_alias() -> None:
@@ -764,6 +834,8 @@ if __name__ == "__main__":
         test_returndatasize_unknown_call_shape_stays_unresolved,
         test_returndatasize_uses_nearest_compatible_precompile_call,
         test_high_bytes_literal_is_normalized_as_call_selector,
+        test_nested_extcodesize_bool_is_lifted_to_address_has_code,
+        test_single_path_call_uses_sink_resolved_calldata,
         test_struct_dynamic_array_field_becomes_memory_array_alias,
         test_solidity_guard_prefix_reaches_assembly_revert,
         test_assembly_entry_uses_real_cfg_paths_after_early_return,

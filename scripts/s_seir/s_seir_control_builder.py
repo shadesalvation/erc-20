@@ -524,9 +524,10 @@ class ControlBuilder:
         return [self._serialize_slithir_operation(op, index, ssa) for index, op in enumerate(operations)]
 
     def _serialize_slithir_operation(self, op: Any, order: int, ssa: bool) -> dict[str, Any]:
+        operation_kind = type(op).__name__
         item: dict[str, Any] = {
             "order": order,
-            "kind": type(op).__name__,
+            "kind": operation_kind,
             "text": str(op),
             "ssa": ssa,
         }
@@ -566,7 +567,40 @@ class ControlBuilder:
         function_name = getattr(op, "function_name", None)
         if function_name is not None:
             item["function_name"] = str(function_name)
+        if operation_kind in {"Phi", "PhiCallback"}:
+            item["phi_origin_nodes"] = sorted(
+                (
+                    self._serialize_phi_origin_node(origin)
+                    for origin in (getattr(op, "nodes", set()) or set())
+                ),
+                key=lambda origin: (
+                    str(origin.get("function") or ""),
+                    int(origin["node_id"]) if origin.get("node_id") is not None else -1,
+                ),
+            )
+            item["phi_callback"] = operation_kind == "PhiCallback"
+            callback_ir = getattr(op, "callee_ir", None) if operation_kind == "PhiCallback" else None
+            if callback_ir is not None:
+                callback_function = getattr(callback_ir, "function", None)
+                item["phi_callback_call"] = {
+                    "kind": type(callback_ir).__name__,
+                    "text": str(callback_ir),
+                    "function": (
+                        self._serialize_slithir_callable(callback_function)
+                        if callback_function is not None
+                        else None
+                    ),
+                }
         return item
+
+    @staticmethod
+    def _serialize_phi_origin_node(node: Any) -> dict[str, Any]:
+        function = getattr(node, "function", None)
+        return {
+            "node_id": int(getattr(node, "node_id", -1)),
+            "node_type": str(getattr(node, "type", "")),
+            "function": str(getattr(function, "canonical_name", function) or ""),
+        }
 
     @staticmethod
     def _enum_text(value: Any) -> str:

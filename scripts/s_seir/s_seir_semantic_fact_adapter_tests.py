@@ -276,6 +276,103 @@ def test_plain_yul_fact_inherits_single_effect_path_condition() -> None:
     assert fact["source_lang"] == "yul"
 
 
+def test_mapping_write_condition_comes_from_storage_sink() -> None:
+    fn = function([{
+        "overlay_id": "ov_write",
+        "kind": "MappingWrite",
+        "effects": ["eff_hash", "eff_write"],
+        "stmt_refs": ["asm_s_1", "asm_s_2"],
+        "attrs": {
+            "access": "balances[msg.sender]",
+            "state_variable": "balances",
+            "keys": ["msg.sender"],
+            "value": "nextBalance",
+        },
+    }])
+    fn["source_statements"].append({"stmt_id": "asm_s_2", "lang": "yul", "text": "sstore(slot, nextBalance)"})
+    fn["effects"] = [
+        {
+            "effect_id": "eff_hash",
+            "kind": "MemoryHash",
+            "stmt_refs": ["asm_s_1"],
+            "attrs": {"path_states": ["addressReady"]},
+        },
+        {
+            "effect_id": "eff_write",
+            "kind": "StorageWrite",
+            "stmt_refs": ["asm_s_2"],
+            "attrs": {"path_states": ["addressReady && balanceReady"]},
+        },
+    ]
+    fact = SSeirFactAdapter().function_facts(fn)[0].to_dict()
+    assert fact["condition"] == "addressReady && balanceReady"
+
+
+def test_mapping_write_condition_keeps_common_join_prefix() -> None:
+    fn = function([{
+        "overlay_id": "ov_write",
+        "kind": "MappingWrite",
+        "effects": ["eff_hash", "eff_write"],
+        "stmt_refs": ["asm_s_1", "asm_s_2"],
+        "attrs": {
+            "access": "balances[from]",
+            "state_variable": "balances",
+            "keys": ["from"],
+            "value": "nextBalance",
+        },
+    }])
+    fn["source_statements"].append({"stmt_id": "asm_s_2", "lang": "yul", "text": "sstore(slot, nextBalance)"})
+    fn["effects"] = [
+        {
+            "effect_id": "eff_hash",
+            "kind": "MemoryHash",
+            "stmt_refs": ["asm_s_1"],
+            "attrs": {"path_states": ["recipientReady"]},
+        },
+        {
+            "effect_id": "eff_write",
+            "kind": "StorageWrite",
+            "stmt_refs": ["asm_s_2"],
+            "attrs": {"path_states": [
+                "recipientReady && allowanceReady && infiniteAllowance && balanceReady",
+                "recipientReady && allowanceReady && !(infiniteAllowance) && balanceReady",
+            ]},
+        },
+    ]
+    fact = SSeirFactAdapter().function_facts(fn)[0].to_dict()
+    assert fact["condition"] == "recipientReady && allowanceReady && balanceReady"
+
+
+def test_address_and_decoded_call_overlays_project_to_facts() -> None:
+    fn = function([
+        overlay("AddressHasCode", {
+            "target": "result",
+            "address": "account",
+            "address_normalized": "account",
+            "code_size": "account.code.length",
+            "condition": "(account.code.length != 0)",
+            "check_kind": "has_code",
+        }, "ov_code"),
+        overlay("StaticCallOverlay", {
+            "op": "staticcall",
+            "target": "token",
+            "target_solidity": "token",
+            "selector": "0x70a08231",
+            "selector_signature": "balanceOf(address)",
+            "arguments": ["account"],
+            "decoded_input": "MemorySlice(selector, account)",
+        }, "ov_call"),
+    ])
+    facts = [item.to_dict() for item in SSeirFactAdapter().function_facts(fn)]
+    assert facts[0]["kind"] == "ValueCompute"
+    assert facts[0]["semantic"]["operation"] == "address_has_code"
+    assert facts[0]["semantic"]["predicate"] == "(account.code.length != 0)"
+    assert facts[1]["semantic"]["selector"] == "0x70a08231"
+    assert facts[1]["semantic"]["selector_signature"] == "balanceOf(address)"
+    assert facts[1]["semantic"]["arguments"] == ["account"]
+    assert facts[1]["semantic"]["decoded_input"] == "MemorySlice(selector, account)"
+
+
 def test_sseir_event_and_revert_become_behavior_facts() -> None:
     fn = function([
         overlay("EventEmit", {
@@ -385,7 +482,7 @@ def test_real_slither_operations_project_to_semantic_facts() -> None:
 
 def test_function_level_payload_splits_solidity_and_yul_facts() -> None:
     payload = build_function_level_semantic_fact_payload([FakeFunction()], source="Token.sol", result_dir="outputs/test")
-    assert payload["schema"] == "s-seir-function-semantic-facts/v2"
+    assert payload["schema"] == "s-seir-function-semantic-facts/v3"
     assert payload["solidity_fact_count"] == 1
     assert payload["yul_fact_count"] == 1
     assert [item["kind"] for item in payload["solidity_facts"]] == ["ValueCompute"]
@@ -397,6 +494,7 @@ def test_function_level_payload_splits_solidity_and_yul_facts() -> None:
     assert [item["kind"] for item in payload["yul_facts"]] == ["StateWrite"]
     assert not any(item["kind"] == "BinaryOperation" for item in payload["facts"])
     assert "solidity_like" not in json.dumps(payload["facts"], ensure_ascii=False)
+    assert "depends_on" not in json.dumps(payload["facts"], ensure_ascii=False)
     assert [item["fact_id"] for item in payload["facts"]] == ["fact_1", "fact_2"]
 
 
@@ -415,6 +513,9 @@ if __name__ == "__main__":
         test_sseir_mapping_write_becomes_state_write_fact,
         test_path_conditioned_storage_write_expands_to_multiple_facts,
         test_plain_yul_fact_inherits_single_effect_path_condition,
+        test_mapping_write_condition_comes_from_storage_sink,
+        test_mapping_write_condition_keeps_common_join_prefix,
+        test_address_and_decoded_call_overlays_project_to_facts,
         test_sseir_event_and_revert_become_behavior_facts,
         test_slither_like_operations_map_to_semantic_facts,
         test_slither_defined_operation_dicts_are_covered,

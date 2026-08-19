@@ -1,11 +1,11 @@
 {
-  "schema": "s-seir-solidity-atomic-operations/v1",
+  "schema": "s-seir-solidity-atomic-operations/v2",
   "source": "人工构造样例/09_多维Mapping_SemanticFact/contracts/MultiMappingParity.sol",
   "function_count": 6,
   "operation_count": 27,
   "functions": [
     {
-      "schema": "s-seir-solidity-atomic-operations/v1",
+      "schema": "s-seir-solidity-atomic-operations/v2",
       "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
       "contract": "MultiMappingParity",
       "function": "solidityRead",
@@ -15,7 +15,7 @@
         {
           "order": 0,
           "kind": "Phi",
-          "text": "ledger_1(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
+          "text": "ledger_1(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_0', 'ledger_2', 'ledger_1', 'ledger_4'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -31,7 +31,7 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "ledger_2",
+              "text": "ledger_0",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -42,7 +42,7 @@
             },
             {
               "kind": "StateIRVariable",
-              "text": "ledger_0",
+              "text": "ledger_2",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -75,12 +75,15 @@
             }
           ],
           "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
           "atom_id": "sol_atom_1",
           "sequence": 1,
           "block_order": 0,
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n0",
           "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
           "source_span": "314:53:slither",
           "stmt_refs": [],
           "path_conditions": [],
@@ -98,8 +101,11 @@
           ],
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [],
-          "cfg_predecessor_blocks": []
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": []
         },
         {
           "order": 0,
@@ -171,6 +177,7 @@
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "324:36:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -201,12 +208,11 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [
-            "sol_atom_1"
-          ],
+          "fact_eligible": true,
           "cfg_predecessor_blocks": [
             "bb_sol_slither_n0"
-          ]
+          ],
+          "depends_on_atoms": []
         },
         {
           "order": 1,
@@ -278,6 +284,7 @@
           "operation_order": 1,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "324:36:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -309,13 +316,14 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_2"
           ],
-          "previous_atom_id": "sol_atom_2",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_2"
         },
         {
           "order": 2,
@@ -387,6 +395,7 @@
           "operation_order": 2,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "324:36:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -419,13 +428,14 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_3"
           ],
-          "previous_atom_id": "sol_atom_3",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_3"
         },
         {
           "atom_id": "sol_atom_5:state_read:1",
@@ -470,10 +480,7 @@
           "implicit_slithir_operation": true,
           "consumer_atom_id": "sol_atom_5",
           "sequence": 5,
-          "operation_order": 3,
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "operation_order": 3
         },
         {
           "order": 3,
@@ -523,6 +530,7 @@
           "operation_order": 4,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "324:36:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -567,13 +575,14 @@
             }
           ],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_5:state_read:1"
           ],
-          "previous_atom_id": "sol_atom_4",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_4"
         },
         {
           "order": 0,
@@ -614,6 +623,7 @@
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n2",
           "cfg_node_id": 2,
+          "cfg_node_type": "NodeType.RETURN",
           "source_span": "294:15:slither",
           "stmt_refs": [],
           "path_conditions": [],
@@ -628,17 +638,18 @@
           "writes": [],
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [
-            "sol_atom_5"
-          ],
+          "fact_eligible": true,
           "cfg_predecessor_blocks": [
             "bb_sol_slither_n1"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_5"
           ]
         }
       ]
     },
     {
-      "schema": "s-seir-solidity-atomic-operations/v1",
+      "schema": "s-seir-solidity-atomic-operations/v2",
       "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
       "contract": "MultiMappingParity",
       "function": "solidityWrite",
@@ -715,6 +726,7 @@
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "476:36:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -745,10 +757,11 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [],
+          "fact_eligible": true,
           "cfg_predecessor_blocks": [
             "bb_sol_slither_n0"
-          ]
+          ],
+          "depends_on_atoms": []
         },
         {
           "order": 1,
@@ -820,6 +833,7 @@
           "operation_order": 1,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "476:36:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -851,13 +865,14 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_1"
           ],
-          "previous_atom_id": "sol_atom_1",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_1"
         },
         {
           "order": 2,
@@ -929,6 +944,7 @@
           "operation_order": 2,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "476:36:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -961,13 +977,14 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_2"
           ],
-          "previous_atom_id": "sol_atom_2",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_2"
         },
         {
           "order": 3,
@@ -999,12 +1016,21 @@
             }
           ],
           "checked": true,
+          "phi_origin_nodes": [
+            {
+              "node_id": 1,
+              "node_type": "NodeType.EXPRESSION",
+              "function": "MultiMappingParity.solidityWrite(address,bytes32,uint256,uint256)"
+            }
+          ],
+          "phi_callback": false,
           "atom_id": "sol_atom_4",
           "sequence": 4,
           "block_order": 1,
           "operation_order": 3,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "476:36:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -1024,11 +1050,14 @@
           ],
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [],
-          "previous_atom_id": "sol_atom_3",
+          "fact_eligible": false,
           "cfg_predecessor_blocks": [
             "bb_sol_slither_n0"
-          ]
+          ],
+          "phi_scope": "function",
+          "phi_role": "mutation_version",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_3"
         },
         {
           "order": 4,
@@ -1078,6 +1107,7 @@
           "operation_order": 4,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "476:36:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -1109,18 +1139,19 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_3"
           ],
-          "previous_atom_id": "sol_atom_4",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_4"
         }
       ]
     },
     {
-      "schema": "s-seir-solidity-atomic-operations/v1",
+      "schema": "s-seir-solidity-atomic-operations/v2",
       "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
       "contract": "MultiMappingParity",
       "function": "solidityUpdate",
@@ -1130,7 +1161,7 @@
         {
           "order": 0,
           "kind": "Phi",
-          "text": "ledger_3(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
+          "text": "ledger_3(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_0', 'ledger_2', 'ledger_1', 'ledger_4'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -1146,7 +1177,7 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "ledger_2",
+              "text": "ledger_0",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -1157,7 +1188,7 @@
             },
             {
               "kind": "StateIRVariable",
-              "text": "ledger_0",
+              "text": "ledger_2",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -1190,12 +1221,15 @@
             }
           ],
           "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
           "atom_id": "sol_atom_1",
           "sequence": 1,
           "block_order": 0,
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n0",
           "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
           "source_span": "619:84:slither",
           "stmt_refs": [],
           "path_conditions": [],
@@ -1213,10 +1247,11 @@
           ],
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [
-            "sol_atom_9"
-          ],
-          "cfg_predecessor_blocks": []
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": []
         },
         {
           "order": 0,
@@ -1288,6 +1323,7 @@
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "629:67:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -1318,12 +1354,11 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [
-            "sol_atom_1"
-          ],
+          "fact_eligible": true,
           "cfg_predecessor_blocks": [
             "bb_sol_slither_n0"
-          ]
+          ],
+          "depends_on_atoms": []
         },
         {
           "order": 1,
@@ -1395,6 +1430,7 @@
           "operation_order": 1,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "629:67:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -1426,13 +1462,14 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_2"
           ],
-          "previous_atom_id": "sol_atom_2",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_2"
         },
         {
           "order": 2,
@@ -1504,6 +1541,7 @@
           "operation_order": 2,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "629:67:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -1536,13 +1574,14 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_3"
           ],
-          "previous_atom_id": "sol_atom_3",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_3"
         },
         {
           "order": 3,
@@ -1614,6 +1653,7 @@
           "operation_order": 3,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "629:67:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -1644,13 +1684,12 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [
-            "sol_atom_1"
-          ],
-          "previous_atom_id": "sol_atom_4",
+          "fact_eligible": true,
           "cfg_predecessor_blocks": [
             "bb_sol_slither_n0"
-          ]
+          ],
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_4"
         },
         {
           "order": 4,
@@ -1722,6 +1761,7 @@
           "operation_order": 4,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "629:67:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -1753,13 +1793,14 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_5"
           ],
-          "previous_atom_id": "sol_atom_5",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_5"
         },
         {
           "order": 5,
@@ -1831,6 +1872,7 @@
           "operation_order": 5,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "629:67:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -1863,13 +1905,14 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_6"
           ],
-          "previous_atom_id": "sol_atom_6",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_6"
         },
         {
           "atom_id": "sol_atom_8:state_read:1",
@@ -1914,10 +1957,7 @@
           "implicit_slithir_operation": true,
           "consumer_atom_id": "sol_atom_8",
           "sequence": 8,
-          "operation_order": 6,
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "operation_order": 6
         },
         {
           "order": 6,
@@ -1990,6 +2030,7 @@
           "operation_order": 7,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "629:67:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -2035,13 +2076,14 @@
             }
           ],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_8:state_read:1"
           ],
-          "previous_atom_id": "sol_atom_7",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_7"
         },
         {
           "order": 7,
@@ -2073,12 +2115,21 @@
             }
           ],
           "checked": true,
+          "phi_origin_nodes": [
+            {
+              "node_id": 1,
+              "node_type": "NodeType.EXPRESSION",
+              "function": "MultiMappingParity.solidityUpdate(address,bytes32,uint256,uint256)"
+            }
+          ],
+          "phi_callback": false,
           "atom_id": "sol_atom_9",
           "sequence": 10,
           "block_order": 1,
           "operation_order": 8,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "629:67:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -2098,13 +2149,14 @@
           ],
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [
-            "sol_atom_1"
-          ],
-          "previous_atom_id": "sol_atom_8",
+          "fact_eligible": false,
           "cfg_predecessor_blocks": [
             "bb_sol_slither_n0"
-          ]
+          ],
+          "phi_scope": "function",
+          "phi_role": "mutation_version",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_8"
         },
         {
           "order": 8,
@@ -2154,6 +2206,7 @@
           "operation_order": 9,
           "cfg_block_id": "bb_sol_slither_n1",
           "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
           "source_span": "629:67:slither",
           "stmt_refs": [
             "sol_s_1"
@@ -2185,19 +2238,20 @@
           },
           "storage_reads": [],
           "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
           "depends_on_atoms": [
             "sol_atom_8",
             "sol_atom_4"
           ],
-          "previous_atom_id": "sol_atom_9",
-          "cfg_predecessor_blocks": [
-            "bb_sol_slither_n0"
-          ]
+          "previous_atom_id": "sol_atom_9"
         }
       ]
     },
     {
-      "schema": "s-seir-solidity-atomic-operations/v1",
+      "schema": "s-seir-solidity-atomic-operations/v2",
       "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
       "contract": "MultiMappingParity",
       "function": "yulRead",
@@ -2207,7 +2261,7 @@
         {
           "order": 0,
           "kind": "Phi",
-          "text": "ledger_5(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
+          "text": "ledger_5(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_0', 'ledger_2', 'ledger_1', 'ledger_4'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -2223,7 +2277,7 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "ledger_2",
+              "text": "ledger_0",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -2234,7 +2288,7 @@
             },
             {
               "kind": "StateIRVariable",
-              "text": "ledger_0",
+              "text": "ledger_2",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -2267,12 +2321,15 @@
             }
           ],
           "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
           "atom_id": "sol_atom_1",
           "sequence": 1,
           "block_order": 0,
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n0",
           "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
           "source_span": "838:399:slither",
           "stmt_refs": [],
           "path_conditions": [],
@@ -2290,8 +2347,11 @@
           ],
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [],
-          "cfg_predecessor_blocks": []
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": []
         },
         {
           "order": 0,
@@ -2332,6 +2392,7 @@
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n14",
           "cfg_node_id": 14,
+          "cfg_node_type": "NodeType.RETURN",
           "source_span": "818:15:slither",
           "stmt_refs": [],
           "path_conditions": [],
@@ -2346,15 +2407,16 @@
           "writes": [],
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [],
+          "fact_eligible": true,
           "cfg_predecessor_blocks": [
             "bb_asm1_n1"
-          ]
+          ],
+          "depends_on_atoms": []
         }
       ]
     },
     {
-      "schema": "s-seir-solidity-atomic-operations/v1",
+      "schema": "s-seir-solidity-atomic-operations/v2",
       "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
       "contract": "MultiMappingParity",
       "function": "yulWrite",
@@ -2364,7 +2426,7 @@
         {
           "order": 0,
           "kind": "Phi",
-          "text": "ledger_6(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
+          "text": "ledger_6(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_0', 'ledger_2', 'ledger_1', 'ledger_4'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -2380,7 +2442,7 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "ledger_2",
+              "text": "ledger_0",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -2391,7 +2453,7 @@
             },
             {
               "kind": "StateIRVariable",
-              "text": "ledger_0",
+              "text": "ledger_2",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -2424,12 +2486,15 @@
             }
           ],
           "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
           "atom_id": "sol_atom_1",
           "sequence": 1,
           "block_order": 0,
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n0",
           "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
           "source_span": "1331:398:slither",
           "stmt_refs": [],
           "path_conditions": [],
@@ -2447,13 +2512,16 @@
           ],
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [],
-          "cfg_predecessor_blocks": []
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": []
         }
       ]
     },
     {
-      "schema": "s-seir-solidity-atomic-operations/v1",
+      "schema": "s-seir-solidity-atomic-operations/v2",
       "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
       "contract": "MultiMappingParity",
       "function": "yulUpdate",
@@ -2463,7 +2531,7 @@
         {
           "order": 0,
           "kind": "Phi",
-          "text": "ledger_7(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_2', 'ledger_0', 'ledger_1', 'ledger_4'])",
+          "text": "ledger_7(mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))) := ϕ(['ledger_0', 'ledger_2', 'ledger_1', 'ledger_4'])",
           "ssa": true,
           "lvalue": {
             "kind": "StateIRVariable",
@@ -2479,7 +2547,7 @@
           "read": [
             {
               "kind": "StateIRVariable",
-              "text": "ledger_2",
+              "text": "ledger_0",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -2490,7 +2558,7 @@
             },
             {
               "kind": "StateIRVariable",
-              "text": "ledger_0",
+              "text": "ledger_2",
               "name": "ledger",
               "base_name": "ledger",
               "type": "mapping(address => mapping(bytes32 => mapping(uint256 => uint256)))",
@@ -2523,12 +2591,15 @@
             }
           ],
           "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
           "atom_id": "sol_atom_1",
           "sequence": 1,
           "block_order": 0,
           "operation_order": 0,
           "cfg_block_id": "bb_sol_slither_n0",
           "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
           "source_span": "1824:460:slither",
           "stmt_refs": [],
           "path_conditions": [],
@@ -2546,8 +2617,11 @@
           ],
           "storage_reads": [],
           "source": "slithir_ssa",
-          "depends_on_atoms": [],
-          "cfg_predecessor_blocks": []
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": []
         }
       ]
     }

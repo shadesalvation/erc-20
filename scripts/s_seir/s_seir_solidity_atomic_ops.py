@@ -99,6 +99,7 @@ class SolidityAtomicOperationExtractor:
                     operation_order=operation_order,
                     block_id=block_id,
                     node_id=attrs.get("slither_node_id"),
+                    node_type=attrs.get("slither_node_type"),
                     source_span=attrs.get("src"),
                     block_refs=block_refs,
                     stmt_text=stmt_text,
@@ -110,9 +111,14 @@ class SolidityAtomicOperationExtractor:
                 operations.append(atom)
             self._mark_control_dependencies(block_atoms)
 
+        self._attach_cfg_predecessors(operations, control)
+        self._classify_phi_operations(
+            operations,
+            control,
+            function_id=str(getattr(unit, "function_id", "")),
+        )
         self._link_atomic_dependencies(operations)
         operations = self._materialize_storage_reads(operations)
-        self._attach_cfg_predecessors(operations, control)
         atoms_by_block: dict[str, list[Json]] = {}
         for atom in operations:
             atoms_by_block.setdefault(str(atom.get("cfg_block_id") or ""), []).append(atom)
@@ -121,7 +127,7 @@ class SolidityAtomicOperationExtractor:
             block.setdefault("attrs", {})["solidity_atomic_ops"] = atoms_by_block.get(block_id, [])
 
         return {
-            "schema": "s-seir-solidity-atomic-operations/v1",
+            "schema": "s-seir-solidity-atomic-operations/v2",
             "function_id": str(getattr(unit, "function_id", "")),
             "contract": str(getattr(unit, "contract", "")),
             "function": str(getattr(unit, "function", "")),
@@ -140,6 +146,7 @@ class SolidityAtomicOperationExtractor:
         operation_order: int,
         block_id: str,
         node_id: Any,
+        node_type: Any,
         source_span: Any,
         block_refs: list[str],
         stmt_text: dict[str, str],
@@ -161,6 +168,8 @@ class SolidityAtomicOperationExtractor:
         expression = self._expression(raw, value_defs, reference_defs)
         reference_definition: Json | None = None
         storage_access: Json | None = None
+        semantic_result = lvalue
+        semantic_result_key = lvalue_key
 
         if kind == "Index":
             left_value = raw.get("variable_left")
@@ -207,7 +216,15 @@ class SolidityAtomicOperationExtractor:
             value_defs[lvalue_key] = expression
 
         if kind in self.LVALUE_WRITE_KINDS:
-            target = lvalue or raw.get("variable")
+            # SlithIR serializes ``delete nested[key]`` as
+            # ``outer_ref = delete leaf_ref``.  The variable is the location
+            # being cleared; lvalue is only Slither's enclosing reference.
+            if kind == "Delete":
+                target = raw.get("variable") or lvalue
+                semantic_result = target
+                semantic_result_key = self._value_key(target)
+            else:
+                target = lvalue or raw.get("variable")
             target_info = self._reference_info(target, reference_defs)
             if target_info and target_info.get("state_variable"):
                 storage_access = dict(target_info)
@@ -223,7 +240,12 @@ class SolidityAtomicOperationExtractor:
                 atomic_kind = "StateWrite"
                 writes = [str(storage_access.get("access"))]
 
-        if lvalue_key and expression and kind not in self.REFERENCE_KINDS:
+        if (
+            lvalue_key
+            and expression
+            and kind not in self.REFERENCE_KINDS
+            and kind != "Delete"
+        ):
             value_defs[lvalue_key] = expression
 
         storage_reads = self._storage_reads(raw, kind, reference_defs)
@@ -235,6 +257,7 @@ class SolidityAtomicOperationExtractor:
             "operation_order": operation_order,
             "cfg_block_id": block_id,
             "cfg_node_id": node_id,
+            "cfg_node_type": node_type,
             "source_span": source_span,
             "stmt_refs": stmt_refs,
             "path_conditions": list(path_conditions),
@@ -242,8 +265,8 @@ class SolidityAtomicOperationExtractor:
             "atomic_kind": atomic_kind,
             "semantic_atom": kind not in {"Condition", "Phi", "PhiCallback"},
             "runtime_operation": kind not in {"Condition", "Phi", "PhiCallback"},
-            "result": self._source_name(lvalue) if lvalue else None,
-            "result_ssa": lvalue_key,
+            "result": self._source_name(semantic_result) if semantic_result else None,
+            "result_ssa": semantic_result_key,
             "expression": expression,
             "resolved_reads": resolved_reads,
             "writes": writes,
@@ -251,6 +274,7 @@ class SolidityAtomicOperationExtractor:
             "storage_access": storage_access,
             "storage_reads": storage_reads,
             "source": "slithir_ssa" if raw.get("ssa") else "slithir",
+            "fact_eligible": True,
         })
         return self._clean(atom)
 
@@ -268,7 +292,7 @@ class SolidityAtomicOperationExtractor:
         that implicit read keeps location resolution, state read, and the
         consuming computation as separate atomic operations.
         """
-        if kind in cls.REFERENCE_KINDS | {"Phi", "PhiCallback"}:
+        if kind in cls.REFERENCE_KINDS | {"Phi", "PhiCallback", "Delete"}:
             return []
         out: list[Json] = []
         seen: set[tuple[str, str]] = set()
@@ -490,8 +514,13 @@ class SolidityAtomicOperationExtractor:
                 matched.append(ref)
         return matched or list(refs)
 
-    @staticmethod
-    def _block_conditions(control: Json) -> dict[str, list[str]]:
+    @classmethod
+    def _block_conditions(cls, control: Json) -> dict[str, list[str]]:
+        closure = control.get("control_dependency_closure") or {}
+        dominators = (control.get("dominance") or {}).get("dominators") or {}
+        if isinstance(closure, dict) and closure:
+            return cls._closed_block_conditions(control, closure, dominators)
+
         out: dict[str, list[str]] = {}
         for dependency in control.get("control_dependencies") or []:
             if not isinstance(dependency, dict):
@@ -504,6 +533,119 @@ class SolidityAtomicOperationExtractor:
             if predicate not in bucket:
                 bucket.append(predicate)
         return out
+
+    @classmethod
+    def _closed_block_conditions(
+        cls,
+        control: Json,
+        closure: dict[str, list[Json]],
+        dominators: dict[str, list[str]],
+    ) -> dict[str, list[str]]:
+        """Return predicates that are necessary to reach each CFG block.
+
+        The raw dependency closure supplies nested controllers, but loop
+        backedges can also make a later branch appear to control an earlier
+        loop header.  A predicate is therefore retained only when its
+        controller strictly dominates the target and the target cannot be
+        reached from another branch of that controller without revisiting it.
+        """
+        edges = [edge for edge in control.get("edges") or [] if isinstance(edge, dict)]
+        successors: dict[str, list[tuple[str, str]]] = {}
+        for edge in edges:
+            source = str(edge.get("from") or "")
+            target = str(edge.get("to") or "")
+            if source and target:
+                successors.setdefault(source, []).append(
+                    (target, str(edge.get("kind") or "fallthrough"))
+                )
+
+        out: dict[str, list[str]] = {}
+        for block_id, dependencies in closure.items():
+            block_id = str(block_id)
+            strict_dominators = {
+                str(value) for value in dominators.get(block_id, [])
+                if str(value) != block_id
+            }
+            for dependency in dependencies or []:
+                if not isinstance(dependency, dict):
+                    continue
+                controller = str(dependency.get("controller") or "")
+                predicate = str(dependency.get("predicate") or dependency.get("condition") or "")
+                edge_kind = str(dependency.get("edge_kind") or "")
+                if (
+                    not controller
+                    or controller not in strict_dominators
+                    or not predicate
+                    or predicate == "entry"
+                ):
+                    continue
+                if not cls._branch_predicate_is_necessary(
+                    controller,
+                    block_id,
+                    edge_kind,
+                    successors,
+                ):
+                    continue
+                bucket = out.setdefault(block_id, [])
+                if predicate not in bucket:
+                    bucket.append(predicate)
+        return out
+
+    @classmethod
+    def _branch_predicate_is_necessary(
+        cls,
+        controller: str,
+        target: str,
+        selected_edge_kind: str,
+        successors: dict[str, list[tuple[str, str]]],
+    ) -> bool:
+        branches = successors.get(controller) or []
+        if len(branches) < 2:
+            return True
+        selected_polarity = cls._edge_polarity(selected_edge_kind)
+        selected = [
+            node for node, kind in branches
+            if cls._edge_polarity(kind) == selected_polarity
+        ]
+        alternatives = [
+            node for node, kind in branches
+            if cls._edge_polarity(kind) != selected_polarity
+        ]
+        if not selected or not alternatives:
+            return True
+        if not any(cls._reachable_without(node, target, controller, successors) for node in selected):
+            return False
+        return not any(
+            cls._reachable_without(node, target, controller, successors)
+            for node in alternatives
+        )
+
+    @staticmethod
+    def _edge_polarity(edge_kind: str) -> str:
+        if edge_kind in {"false", "exit", "zero"} or edge_kind.startswith("false:"):
+            return "false"
+        if edge_kind in {"true", "loop", "nonzero"} or edge_kind.startswith(("true:", "case:")):
+            return "true"
+        return edge_kind
+
+    @staticmethod
+    def _reachable_without(
+        start: str,
+        target: str,
+        blocked: str,
+        successors: dict[str, list[tuple[str, str]]],
+    ) -> bool:
+        work = [start]
+        seen: set[str] = set()
+        while work:
+            current = work.pop()
+            if current == target:
+                return True
+            if current == blocked or current in seen:
+                continue
+            seen.add(current)
+            work.extend(node for node, _ in successors.get(current, []))
+        return False
 
     @classmethod
     def _mark_control_dependencies(cls, atoms: list[Json]) -> None:
@@ -538,7 +680,7 @@ class SolidityAtomicOperationExtractor:
         for atom in atoms:
             result = str(atom.get("result_ssa") or "")
             atom_id = str(atom.get("atom_id") or "")
-            if result and atom_id:
+            if result and atom_id and atom.get("fact_eligible", True):
                 # Reference assignments reuse the REF produced by Index/Member.
                 # Keep the defining access atom instead of replacing it with the
                 # later write that consumes the same REF.
@@ -563,6 +705,84 @@ class SolidityAtomicOperationExtractor:
                 atom["previous_atom_id"] = previous
             if atom.get("atom_id"):
                 previous_by_block[block_id] = str(atom["atom_id"])
+
+    @classmethod
+    def _classify_phi_operations(
+        cls,
+        atoms: list[Json],
+        control: Json,
+        *,
+        function_id: str,
+    ) -> None:
+        """Keep only Phi nodes that represent a merge inside this function CFG."""
+        loop_headers = cls._loop_headers(control)
+        current_function = cls._normalized_function_id(function_id)
+        for atom in atoms:
+            if atom.get("kind") not in {"Phi", "PhiCallback"}:
+                continue
+
+            node_type = str(atom.get("cfg_node_type") or "")
+            origins = [
+                origin for origin in atom.get("phi_origin_nodes") or []
+                if isinstance(origin, dict)
+            ]
+            origin_functions = {
+                cls._normalized_function_id(str(origin.get("function") or ""))
+                for origin in origins
+                if origin.get("function")
+            }
+            foreign_origin = bool(
+                current_function
+                and any(origin != current_function for origin in origin_functions)
+            )
+            origin_node_ids = {
+                (
+                    str(origin.get("function") or ""),
+                    int(origin["node_id"]) if origin.get("node_id") is not None else -1,
+                )
+                for origin in origins
+            }
+            block_id = str(atom.get("cfg_block_id") or "")
+
+            if node_type.endswith("ENTRYPOINT"):
+                role = "function_entry_input"
+            elif atom.get("kind") == "PhiCallback" or atom.get("phi_callback"):
+                role = "call_boundary"
+            elif foreign_origin:
+                role = "interprocedural"
+            elif len(origin_node_ids) >= 2:
+                role = "loop_carried" if (
+                    block_id in loop_headers
+                    or any(token in node_type for token in ("IFLOOP", "STARTLOOP", "ENDLOOP"))
+                ) else "function_cfg_merge"
+            elif len(origin_node_ids) == 1:
+                role = "mutation_version"
+            else:
+                role = "unresolved"
+
+            atom["phi_scope"] = "function" if role in {
+                "function_cfg_merge", "loop_carried", "mutation_version"
+            } else "analysis_boundary"
+            atom["phi_role"] = role
+            atom["fact_eligible"] = role in {"function_cfg_merge", "loop_carried"}
+            atom["semantic_atom"] = atom["fact_eligible"]
+
+    @classmethod
+    def _loop_headers(cls, control: Json) -> set[str]:
+        dominators = ((control.get("dominance") or {}).get("dominators") or {})
+        headers: set[str] = set()
+        for edge in control.get("edges") or []:
+            if not isinstance(edge, dict):
+                continue
+            source = str(edge.get("from") or "")
+            target = str(edge.get("to") or "")
+            if source and target and target in set(dominators.get(source) or []):
+                headers.add(target)
+        return headers
+
+    @staticmethod
+    def _normalized_function_id(value: str) -> str:
+        return "".join(str(value or "").split())
 
     @staticmethod
     def _attach_cfg_predecessors(atoms: list[Json], control: Json) -> None:
@@ -611,7 +831,7 @@ def build_solidity_atomic_operation_payload(
     ]
     tables = [table for table in tables if isinstance(table, dict)]
     return {
-        "schema": "s-seir-solidity-atomic-operations/v1",
+        "schema": "s-seir-solidity-atomic-operations/v2",
         "source": source,
         "function_count": len(tables),
         "operation_count": sum(int(table.get("operation_count") or 0) for table in tables),

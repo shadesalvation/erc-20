@@ -23,6 +23,7 @@ SAMPLES = {
     "control": ROOT / "人工构造样例/05_表达式_运算符_控制流_checked_unchecked/contracts/ControlFlowERC20.sol",
     "abi": ROOT / "人工构造样例/06_ABI_低级调用_trycatch_new_合约类型/contracts/AbiFactoryAndProbe.sol",
     "assembly": ROOT / "人工构造样例/07_内联Assembly_memorysafe_Yul操作/contracts/AssemblyERC20.sol",
+    "multimapping": ROOT / "人工构造样例/09_多维Mapping_SemanticFact/contracts/MultiMappingParity.sol",
 }
 
 
@@ -63,12 +64,17 @@ def run() -> None:
         fact.get("semantic", {}).get("atomic_operation_count") == 1
         for fact in facts
     )
-    assert len(facts) == sum(table(fn)["operation_count"] for fn in analyzed["guarded"])
+    assert len(facts) == sum(
+        1
+        for fn in analyzed["guarded"]
+        for atom in table(fn)["operations"]
+        if atom.get("fact_eligible") is not False
+    )
+    assert all("depends_on" not in fact for fact in facts)
     assert any(
         fact.get("kind") == "StateWrite"
         and fact.get("lvalue") == "allowance[msg.sender][spender]"
         and fact.get("rvalue") == "value_1"
-        and fact.get("depends_on")
         and fact.get("condition") == "!(spender == address(0))"
         for fact in facts
     )
@@ -84,7 +90,7 @@ def run() -> None:
         if fact.get("kind") == "StateWrite"
         and fact.get("lvalue") == "allowance[msg.sender][spender]"
     )
-    assert allowance_write["depends_on"] == [allowance_location["fact_id"]]
+    assert "depends_on" not in allowance_write
     assert allowance_write["semantic"]["location"] == allowance_location["semantic"]["location"]
     assert allowance_location["fact_role"] == "support"
     assert allowance_write["fact_role"] == "effect"
@@ -99,7 +105,9 @@ def run() -> None:
     )
     read_location = next(
         fact for fact in transfer_from_facts
-        if fact.get("fact_id") in allowance_read.get("depends_on", [])
+        if fact.get("kind") == "StorageLocationResolve"
+        and (fact.get("semantic") or {}).get("location")
+        == allowance_read["semantic"]["location"]
     )
     assert read_location["kind"] == "StorageLocationResolve"
     assert allowance_read["semantic"]["location"] == read_location["semantic"]["location"]
@@ -151,7 +159,41 @@ def run() -> None:
     ]
     assert predicates and all(item.get("control_only") for item in predicates)
     assert any(item.get("path_conditions") for item in predicates)
+    distribute_call = operation(
+        distribute,
+        lambda item: item.get("kind") == "InternalCall"
+        and "_move" in str(item.get("source_expression") or item.get("text") or ""),
+    )
+    assert distribute_call["path_conditions"] == [
+        "i < receivers.length",
+        "!(receivers[i] == address(0))",
+        "!(sent >= 10)",
+    ]
+    loop_header_phi = next(
+        item for item in table(distribute)["operations"]
+        if item.get("kind") == "Phi" and item.get("result_ssa") == "i_2"
+    )
+    assert not loop_header_phi.get("path_conditions")
     print("PASS control metadata: branch expressions are marked control-only with CFG conditions")
+
+    reset_allowance = next(fn for fn in analyzed["control"] if fn.function == "resetAllowance")
+    delete_atom = operation(reset_allowance, lambda item: item.get("kind") == "Delete")
+    assert delete_atom["storage_access"]["access"] == "allowance[msg.sender][spender]"
+    assert delete_atom["storage_access"]["keys"] == ["msg.sender", "spender"]
+    assert delete_atom["expression"] == "0"
+    assert delete_atom["result_ssa"] == "REF_11"
+    assert not delete_atom.get("storage_reads")
+
+    reset_facts = [
+        fact for fact in build_function_level_semantic_fact_payload(analyzed["control"])["facts"]
+        if fact.get("function") == "resetAllowance"
+    ]
+    reset_write = next(fact for fact in reset_facts if fact.get("kind") == "StateWrite")
+    assert reset_write["lvalue"] == "allowance[msg.sender][spender]"
+    assert reset_write["rvalue"] == "0"
+    assert reset_write["reads"] == ["msg.sender", "spender"]
+    assert not any(fact.get("kind") == "StateRead" for fact in reset_facts)
+    print("PASS delete: nested mapping delete is one leaf StateWrite without an old-value StateRead")
 
     constructor_facts = [fact for fact in facts if fact.get("function") == "constructor"]
     multiply = next(
@@ -163,9 +205,10 @@ def run() -> None:
         if fact.get("kind") == "StateWrite" and fact.get("lvalue") == "maxOwnerMint"
     )
     assert max_write["rvalue"] == "TMP_0"
-    assert max_write["depends_on"] == [multiply["fact_id"]]
+    assert "depends_on" not in max_write
+    assert max_write["order"]["operation_order"] > multiply["order"]["operation_order"]
     assert "initialSupply * 2" not in max_write["rvalue"]
-    print("PASS final facts: complex Solidity statements remain split into dependent atomic facts")
+    print("PASS final facts: complex Solidity statements remain split into ordered atomic facts")
 
     abi_payload = build_function_level_semantic_fact_payload(analyzed["abi"])
     assert abi_payload["solidity_facts"]
@@ -206,13 +249,122 @@ def run() -> None:
         fact for fact in assembly_move_facts
         if fact.get("kind") == "StateWrite" and fact.get("lvalue") == "balanceOf[to]"
     )
-    assert yul_location["fact_id"] in yul_read["depends_on"]
-    assert yul_location["fact_id"] in yul_write["depends_on"]
-    assert yul_read["fact_id"] in yul_write["depends_on"]
+    assert all("depends_on" not in fact for fact in assembly_move_facts)
     assert yul_location["semantic"]["location"] == yul_write["semantic"]["location"]
     assert yul_location["fact_role"] == "support"
     assert yul_read["fact_role"] == yul_write["fact_role"] == "effect"
-    print("PASS Yul parity: MappingSlot, StateRead, and StateWrite form one dependency chain")
+    print("PASS Yul parity: MappingSlot, StateRead, and StateWrite retain one ordered semantic chain")
+
+    from_read = next(
+        fact for fact in assembly_move_facts
+        if fact.get("kind") == "StateRead" and fact.get("rvalue") == "balanceOf[from]"
+    )
+    from_write = next(
+        fact for fact in assembly_move_facts
+        if fact.get("kind") == "StateWrite" and fact.get("lvalue") == "balanceOf[from]"
+    )
+    event_emit = next(fact for fact in assembly_move_facts if fact.get("kind") == "EventEmit")
+    revert = next(fact for fact in assembly_move_facts if fact.get("kind") == "Revert")
+    assert from_read["anchor_cfg_node"].endswith("_n5")
+    assert from_write["anchor_cfg_node"].endswith("_n13")
+    assert yul_read["anchor_cfg_node"].endswith("_n14")
+    assert yul_write["anchor_cfg_node"].endswith("_n14")
+    assert event_emit["anchor_cfg_node"].endswith("_n16")
+    assert revert["anchor_cfg_node"].endswith("_n9")
+    assert (
+        from_read["order"]["cfg_block_order"]
+        < from_write["order"]["cfg_block_order"]
+        <= yul_read["order"]["cfg_block_order"]
+        <= yul_write["order"]["cfg_block_order"]
+        < event_emit["order"]["cfg_block_order"]
+    )
+    assert from_write["cfg_nodes"][0].endswith("_n4")
+    print("PASS Bridge sink anchors: evidence CFG nodes remain intact while execution order uses endpoint effects")
+
+    multi_payload = build_function_level_semantic_fact_payload(analyzed["multimapping"])
+
+    def yul_storage_facts(function_name):
+        return [
+            fact for fact in multi_payload["facts"]
+            if fact.get("function") == function_name
+            and fact.get("source_lang") == "yul"
+            and fact.get("kind") in {"StorageLocationResolve", "StateRead", "StateWrite"}
+        ]
+
+    def assert_location_chain(function_name, terminal_kind):
+        storage_facts = yul_storage_facts(function_name)
+        locations = [fact for fact in storage_facts if fact.get("kind") == "StorageLocationResolve"]
+        assert [
+            fact["semantic"]["location"]["keys"] for fact in locations
+        ] == [
+            ["owner"],
+            ["owner", "bucket"],
+            ["owner", "bucket", "index"],
+        ]
+        terminal = next(fact for fact in storage_facts if fact.get("kind") == terminal_kind)
+        assert all("depends_on" not in fact for fact in storage_facts)
+        assert [
+            fact["order"]["operation_order"] for fact in locations
+        ] == sorted(fact["order"]["operation_order"] for fact in locations)
+        assert terminal["semantic"]["location"]["keys"] == ["owner", "bucket", "index"]
+        return storage_facts, locations, terminal
+
+    assert_location_chain("yulRead", "StateRead")
+    assert_location_chain("yulWrite", "StateWrite")
+    update_facts, update_locations, update_write = assert_location_chain("yulUpdate", "StateWrite")
+    update_read = next(fact for fact in update_facts if fact.get("kind") == "StateRead")
+    print("PASS Yul multidimensional mapping: cumulative keys and ordered intermediate locations are preserved")
+
+    solidity_read = next(fn for fn in analyzed["multimapping"] if fn.function == "solidityRead")
+    entry_phi = next(atom for atom in table(solidity_read)["operations"] if atom.get("kind") == "Phi")
+    assert entry_phi["phi_role"] == "function_entry_input"
+    assert entry_phi["fact_eligible"] is False
+
+    solidity_write = next(fn for fn in analyzed["multimapping"] if fn.function == "solidityWrite")
+    mutation_phi = next(atom for atom in table(solidity_write)["operations"] if atom.get("kind") == "Phi")
+    assert mutation_phi["phi_role"] == "mutation_version"
+    assert mutation_phi["fact_eligible"] is False
+
+    transfer_fn = next(fn for fn in analyzed["control"] if fn.function == "transfer")
+    merge_phi = next(
+        atom for atom in table(transfer_fn)["operations"]
+        if atom.get("kind") == "Phi" and atom.get("result_ssa") == "fee_3"
+    )
+    assert merge_phi["phi_role"] == "function_cfg_merge"
+    assert merge_phi["fact_eligible"] is True
+
+    distribute_fn = next(fn for fn in analyzed["control"] if fn.function == "distribute")
+    loop_phi = next(
+        atom for atom in table(distribute_fn)["operations"]
+        if atom.get("kind") == "Phi" and atom.get("result_ssa") == "i_2"
+    )
+    assert loop_phi["phi_role"] == "loop_carried"
+    assert loop_phi["fact_eligible"] is True
+
+    burn_fn = next(fn for fn in analyzed["control"] if fn.function == "burnUntilBelow")
+    callback_phi = next(atom for atom in table(burn_fn)["operations"] if atom.get("kind") == "PhiCallback")
+    assert callback_phi["phi_role"] == "call_boundary"
+    assert callback_phi["fact_eligible"] is False
+
+    control_facts = build_function_level_semantic_fact_payload(analyzed["control"])["facts"]
+    assert any(
+        fact.get("kind") == "ValuePhi"
+        and (fact.get("semantic") or {}).get("phi_role") == "function_cfg_merge"
+        for fact in control_facts
+    )
+    assert any(
+        fact.get("kind") == "ValuePhi"
+        and (fact.get("semantic") or {}).get("phi_role") == "loop_carried"
+        for fact in control_facts
+    )
+    assert all(
+        (fact.get("semantic") or {}).get("phi_role")
+        not in {"function_entry_input", "mutation_version", "call_boundary", "interprocedural"}
+        for fact in control_facts
+        if fact.get("kind") == "ValuePhi"
+    )
+    assert all("depends_on" not in fact for fact in control_facts)
+    print("PASS Phi scope: only function CFG and loop-carried Phi facts are retained")
 
 
 if __name__ == "__main__":

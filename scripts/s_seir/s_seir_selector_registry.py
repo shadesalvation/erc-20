@@ -160,6 +160,12 @@ def selector_comment_hints(source_text: str) -> Iterable[SelectorInfo]:
 
 def normalize_selector_value(value: Any) -> str | None:
     text = str(value or "").strip()
+    shifted = re.match(
+        r"^high_bytes\(\(?\s*(0x[0-9a-fA-F]+)\s*<<\s*(?:224|0xe0)\s*\)?,\s*4\)$",
+        text,
+    )
+    if shifted:
+        return selector_from_literal(shifted.group(1))
     high = re.match(r"^high_bytes\((0x[0-9a-fA-F]+),\s*4\)$", text)
     if high:
         try:

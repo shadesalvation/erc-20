@@ -770,8 +770,10 @@ class SemanticOverlayBuilder:
                 'storage_reference_kind': slot_expr.get('storage_reference_kind'),
                 'storage_field': slot_expr.get('storage_field'),
                 'key': slot_expr.get('key'),
+                'keys': slot_expr.get('keys'),
                 'base': slot_expr.get('base'),
                 'base_key': slot_expr.get('base_key'),
+                'parent_target_key': base_key if base_key in hash_candidates else None,
                 'slot_kind': slot_expr.get('slot_kind') or ('mapping_slot' if base_key not in slot_expr_by_var else 'nested_mapping_slot'),
                 'result_type': slot_expr.get('result_type'),
                 'terminal_storage_value': slot_expr.get('terminal_storage_value'),
@@ -910,6 +912,8 @@ class SemanticOverlayBuilder:
                     'storage_reference_kind': slot_expr.get('storage_reference_kind'),
                     'storage_field': slot_expr.get('storage_field'),
                     'key': slot_expr.get('key'),
+                    'keys': slot_expr.get('keys'),
+                    'parent_target_key': slot_expr.get('base_key') if slot_expr.get('base_key') in slot_expr_by_var else None,
                     'slot': slot,
                     'slot_key': slot_key,
                     'slot_versions': e.attrs.get('slot_versions'),
@@ -1399,6 +1403,7 @@ class SemanticOverlayBuilder:
                     'storage_reference_kind': slot_expr.get('storage_reference_kind'),
                     'storage_field': slot_expr.get('storage_field'),
                     'key': slot_expr.get('key'),
+                    'keys': slot_expr.get('keys'),
                     'slot_effect': slot_effect.effect_id if slot_effect else None,
                     'slot_derivation': self.manual_packed_slot_derivation(slot_expr, key, slot_effect) if manual_packed else None,
                     'result_type': slot_expr.get('result_type'),
@@ -1585,6 +1590,7 @@ class SemanticOverlayBuilder:
             return {
                 'access': access,
                 'key': key_norm,
+                'keys': [*(prev.get('keys') or []), key_norm],
                 'base': base_text,
                 'base_key': base_key,
                 'state_variable': state_var,
@@ -1607,6 +1613,7 @@ class SemanticOverlayBuilder:
             return {
                 'access': access,
                 'key': key_norm,
+                'keys': [key_norm],
                 'base': base_text,
                 'base_key': base_key,
                 'state_variable': state_var,
@@ -1622,6 +1629,7 @@ class SemanticOverlayBuilder:
             return {
                 'access': storage_ref['access'],
                 'key': key_norm,
+                'keys': [key_norm],
                 'base': base_text,
                 'base_key': base_text,
                 'state_variable': None,
@@ -1698,7 +1706,7 @@ class SemanticOverlayBuilder:
             return self.clean({
                 key: only.get(key)
                 for key in (
-                    'access', 'key', 'base', 'base_key', 'state_variable',
+                    'access', 'key', 'keys', 'base', 'base_key', 'state_variable',
                     'storage_reference', 'storage_reference_type',
                     'storage_reference_kind', 'storage_field', 'slot_kind',
                     'resolved_inputs', 'notes',
@@ -1743,6 +1751,7 @@ class SemanticOverlayBuilder:
                 'condition': merged_condition,
                 'access': access,
                 'key': key_norm,
+                'keys': [*(base_candidate.get('keys') or []), key_norm],
                 'base': base_text,
                 'base_key': base_key,
                 'state_variable': base_candidate.get('state_variable'),
@@ -1874,6 +1883,7 @@ class SemanticOverlayBuilder:
                     return self.clean({
                         'access': only.get('access'),
                         'key': only.get('key'),
+                        'keys': only.get('keys'),
                         'base': only.get('base'),
                         'base_key': only.get('base_key'),
                         'state_variable': only.get('state_variable'),
@@ -2041,6 +2051,7 @@ class SemanticOverlayBuilder:
             return self.clean({
                 'access': only.get('access'),
                 'key': only.get('key'),
+                'keys': only.get('keys'),
                 'base': only.get('base'),
                 'base_key': only.get('base_key'),
                 'slot_kind': only.get('slot_kind'),
@@ -2161,6 +2172,7 @@ class SemanticOverlayBuilder:
             return self.clean({
                 'access': access,
                 'key': key_norm,
+                'keys': [*(prev.get('keys') or []), key_norm],
                 'base': base,
                 'base_key': base_key,
                 'state_variable': prev.get('state_variable'),
@@ -2202,6 +2214,7 @@ class SemanticOverlayBuilder:
         return self.clean({
             'access': access,
             'key': key_norm,
+            'keys': [key_norm],
             'base': base,
             'base_key': base,
             'state_variable': state.name,
@@ -2869,9 +2882,9 @@ class SemanticOverlayBuilder:
             'notes': notes,
         }))
 
-    def sink_path_values(self, effect: EffectNode, role: str) -> list[dict[str, Any]]:
+    def sink_path_values(self, effect: EffectNode, role: str, *, path_sensitive_only: bool = True) -> list[dict[str, Any]]:
         sink_resolution = effect.attrs.get('sink_resolution') or {}
-        if not sink_resolution.get('path_sensitive'):
+        if path_sensitive_only and not sink_resolution.get('path_sensitive'):
             return []
         out = []
         for path in sink_resolution.get('path_resolutions') or []:
@@ -3224,6 +3237,20 @@ class SemanticOverlayBuilder:
             if path_overlay:
                 out.append(path_overlay)
                 continue
+            resolved_paths = [
+                item for item in self.sink_path_values(e, 'input', path_sensitive_only=False)
+                if item.get('status') == 'resolved'
+            ]
+            if len(resolved_paths) == 1:
+                resolved = resolved_paths[0]
+                values = list(resolved.get('values') or [])
+                selector_source = values[0] if values else None
+                selector_info = self.selector_match_from_extraction(selector_source, preferred_kind='function')
+                attrs['selector'] = selector_info.get('selector') if selector_info else normalize_selector_value(selector_source)
+                attrs['selector_match'] = selector_info
+                attrs['selector_signature'] = (selector_info.get('best_match') or {}).get('signature') if selector_info else None
+                attrs['arguments'] = [normalize_expr(value) for value in values[1:]]
+                attrs['decoded_input'] = resolved.get('normalized')
             attrs['gas'] = normalize_expr(attrs.get('gas')) if attrs.get('gas') else attrs.get('gas')
             attrs['target_solidity'] = self.target_solidity(attrs.get('target'))
             selector_info = self.selector_info_from_partial(attrs.get('input_memory_partial'), preferred_kind='function')
@@ -4885,16 +4912,17 @@ class SemanticOverlayBuilder:
                 continue
             targets = effect.attrs.get('targets') or []
             target = targets[0] if targets else None
-            call, args = call_parts(str(effect.attrs.get('value') or ''))
-            if call != 'extcodesize' or len(args) != 1 or not target:
+            parsed = self.extcodesize_expression(effect.attrs.get('value'))
+            if not parsed or not target:
                 continue
-            address = args[0]
+            address, iszero_depth = parsed
             address_expr = normalize_expr(address)
             code_size = f'{address_expr}.code.length'
             target_info = getattr(type_env, 'lookup', lambda _name: None)(target)
             target_type = getattr(target_info, 'type_string', None)
             if getattr(type_env, 'is_bool', lambda _name: False)(target):
-                condition = f'({code_size} != 0)'
+                has_code = iszero_depth % 2 == 0
+                condition = f'({code_size} {"!=" if has_code else "=="} 0)'
                 out.append(self.ov('AddressHasCode', effect.effect_id, effect.stmt_refs, {
                     'target': target,
                     'target_type': target_type,
@@ -4902,11 +4930,13 @@ class SemanticOverlayBuilder:
                     'address_normalized': address_expr,
                     'code_size': code_size,
                     'condition': condition,
+                    'check_kind': 'has_code' if has_code else 'has_no_code',
+                    'iszero_depth': iszero_depth,
                     'source_expression': effect.attrs.get('value'),
                     'solidity_like': f'{target} = {condition};',
                     'solidity_equivalent': True,
                 }))
-            else:
+            elif iszero_depth == 0:
                 out.append(self.ov('AddressCodeSize', effect.effect_id, effect.stmt_refs, {
                     'target': target,
                     'target_type': target_type,
@@ -4918,6 +4948,22 @@ class SemanticOverlayBuilder:
                     'solidity_equivalent': True,
                 }))
         return out
+
+    @staticmethod
+    def extcodesize_expression(value: Any) -> tuple[str, int] | None:
+        """Return the extcodesize address and surrounding iszero depth."""
+        expression = str(value or '').strip()
+        iszero_depth = 0
+        while True:
+            call, args = call_parts(expression)
+            if call != 'iszero' or len(args) != 1:
+                break
+            iszero_depth += 1
+            expression = str(args[0]).strip()
+        call, args = call_parts(expression)
+        if call != 'extcodesize' or len(args) != 1:
+            return None
+        return str(args[0]).strip(), iszero_depth
 
     def calldata_word_read_overlays(self, type_env: Any, effects: list[EffectNode]) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []

@@ -23,8 +23,9 @@ scripts/s_seir/s_seir_overlay_builder.py
 ```text
 Solidity 源码
   -> Slither / SlithIR SSA
-  -> S-SEIR Solidity overlay
-  -> Solidity 高级 SemanticFact
+  -> SolidityAtomicOperationExtractor
+  -> SoliditySemanticLifter
+  -> Solidity SemanticFact
 
 Yul inline assembly
   -> S-SEIR effects / semantic_overlays
@@ -49,13 +50,14 @@ Yul 部分仍在 sseir.json 中保留底层 effect / overlay，同时投影为 s
 
 ```json
 {
-  "schema": "s-seir-function-semantic-facts/v1",
+  "schema": "s-seir-function-semantic-facts/v3",
   "source": "Token.sol",
   "result_dir": "outputs/Token",
   "model_boundary": {
     "processing_unit": "function",
-    "solidity": "Solidity source is lifted to high-level SemanticFact rows from S-SEIR Solidity overlays; SlithIR SSA is retained as evidence/debug input.",
-    "yul": "S-SEIR keeps low-level roles/effects/overlays in sseir.json and projects overlays to SemanticFact here."
+    "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter projects eligible atoms to the common schema.",
+    "yul": "S-SEIR analyzes Yul; YulSemanticLifter projects completed Yul semantics to the common schema.",
+    "bridge": "SemanticFactBridge restores function-level CFG order and control predecessors."
   },
   "function_count": 9,
   "solidity_fact_count": 38,
@@ -69,7 +71,7 @@ Yul 部分仍在 sseir.json 中保留底层 effect / overlay，同时投影为 s
 
 | 字段 | 含义 | 生成方式 |
 | --- | --- | --- |
-| `schema` | 文件格式版本 | 固定为 `s-seir-function-semantic-facts/v1` |
+| `schema` | 文件格式版本 | 固定为 `s-seir-function-semantic-facts/v3` |
 | `source` | 分析入口源码 | pipeline / batch 传入 |
 | `result_dir` | 当前结果目录 | pipeline / batch 传入 |
 | `model_boundary` | 当前模型边界说明 | `build_function_level_semantic_fact_payload` 固定写入 |
@@ -77,7 +79,7 @@ Yul 部分仍在 sseir.json 中保留底层 effect / overlay，同时投影为 s
 | `solidity_fact_count` | Solidity fact 数量 | Slither / SlithIR 投影结果 |
 | `yul_fact_count` | Yul fact 数量 | S-SEIR overlay 投影结果 |
 | `fact_count` | 总 fact 数量 | `solidity_fact_count + yul_fact_count` |
-| `solidity_facts` | Solidity 部分高级行为事实 | 来自 S-SEIR Solidity overlay，SlithIR 作为证据 |
+| `solidity_facts` | Solidity 部分原子行为事实 | 来自 Solidity 原子操作提取器和 SoliditySemanticLifter |
 | `yul_facts` | Yul inline assembly 行为事实 | 来自 S-SEIR overlay |
 | `facts` | 合并后的完整 fact 列表 | 先 Solidity 后 Yul，最终重新编号 |
 
@@ -90,19 +92,27 @@ Yul 部分仍在 sseir.json 中保留底层 effect / overlay，同时投影为 s
 ```json
 {
   "fact_id": "fact_12",
+  "operation_id": "yul_overlay:ov_12",
   "kind": "StateWrite",
   "source_lang": "yul",
   "origin": "sseir_overlay",
   "function": "_assemblyMove",
   "contract": "AssemblyERC20",
   "signature": "_assemblyMove(address, address, uint256)",
-  "stmt_refs": ["asm_s_12"],
-  "cfg_nodes": ["bb_asm5_n14"],
+  "stmt_refs": ["asm_s_10", "asm_s_12"],
+  "cfg_nodes": ["bb_asm5_n12", "bb_asm5_n14"],
+  "anchor_cfg_node": "bb_asm5_n14",
   "condition": "!(lt(fromBalance, value))",
   "lvalue": "balanceOf[to]",
   "rvalue": "(balanceOf[to] + value)",
   "reads": ["balanceOf[to]", "value"],
   "writes": ["balanceOf[to]"],
+  "order": {
+    "kind": "cfg_partial_order",
+    "cfg_block_order": 8,
+    "operation_order": 3
+  },
+  "control_predecessors": ["fact_11"],
   "semantic": {},
   "evidence": {}
 }
@@ -111,6 +121,7 @@ Yul 部分仍在 sseir.json 中保留底层 effect / overlay，同时投影为 s
 | 字段 | 类型 | 含义 | 生成方式 |
 | --- | --- | --- | --- |
 | `fact_id` | string | 当前文件内唯一 fact 编号 | 最终合并后由 `renumber_facts` 重新编号 |
+| `operation_id` | string | Lifter 输入操作的稳定标识 | Solidity `sol_atom` 或 Yul overlay/effect id |
 | `kind` | string | 行为事实类型 | SlithIR operation kind 或 S-SEIR overlay kind 映射得到 |
 | `source_lang` | string | 来源语言 | `solidity`、`yul` 或极少数 `mixed` |
 | `origin` | string | 来源分析器 | `slither_lifted` 或 `sseir_overlay`；低级 debug 适配器可使用 `slither_ir` |
@@ -118,12 +129,15 @@ Yul 部分仍在 sseir.json 中保留底层 effect / overlay，同时投影为 s
 | `contract` | string | 所属合约名 | FunctionSSEIR / Slither function |
 | `signature` | string | 函数签名 | FunctionSSEIR / Slither function |
 | `stmt_refs` | array | 对应原始 SourceStatement id | Slither CFG block 或 S-SEIR overlay/effect 回填 |
-| `cfg_nodes` | array | 对应 CFG block/node | Slither block id 或 S-SEIR `stmt_refs` 反查 |
+| `cfg_nodes` | array | 当前 fact 的完整 CFG 证据节点集合，可同时包含 slot/hash 来源和最终 sink | Slither block id 或 S-SEIR `stmt_refs` 反查 |
+| `anchor_cfg_node` | string | 当前 fact 实际发生的 CFG 节点；用于排序、guard 传播和控制前驱 | Bridge 按 fact 类型选择对应的 endpoint effect，例如 `StateWrite -> StorageWrite` |
 | `condition` | string/null | 该 fact 成立的路径条件 | CFG control dependency 或 path-conditioned candidate |
 | `lvalue` | any | 被赋值、写入或构造的对象 | operation lvalue / overlay attrs |
 | `rvalue` | any | 写入值、表达式或调用结果 | operation rvalue / overlay attrs |
 | `reads` | array | 该 fact 读取的数据 | SlithIR read 集合或 overlay 值粗略提取 |
 | `writes` | array | 该 fact 写入的数据 | SlithIR lvalue/write 或 overlay access |
+| `order` | object | 当前函数 CFG 偏序及块内操作顺序 | SemanticFactBridge 根据统一 CFG 回填 |
+| `control_predecessors` | array | CFG 上紧邻该 fact 的前序 fact | SemanticFactBridge 沿块内顺序和前驱块回填 |
 | `semantic` | object | 结构化行为含义 | 按 `kind` 写入不同字段 |
 | `evidence` | object | 证据来源 | Slither operation 或 S-SEIR overlay/effect/candidate |
 
@@ -136,6 +150,8 @@ Yul 部分仍在 sseir.json 中保留底层 effect / overlay，同时投影为 s
 2. 字段不适用时可以缺省；
 3. `semantic` 和 `evidence` 应尽量保留非空结构；
 4. 最终消费者不应假设每个 fact 都有 lvalue/rvalue/condition。
+5. `depends_on` 不属于 v3 正式输出；数据流仍可在临时 `sol_atom.depends_on_atoms` 中调试，正式模型使用原子顺序、读写集合、条件和 CFG 前驱。
+6. `cfg_nodes` 不表示线性执行顺序；它是证据集合。当存在 `anchor_cfg_node` 时，`order`、`cfg_predecessor_blocks` 和 `control_predecessors` 一律以该节点为准。
 ```
 
 例如纯 `Return` 或 raw `Revert` 可能没有 `lvalue/rvalue`，但会保留：
@@ -165,12 +181,12 @@ Solidity fact 固定为：
 生成规则：
 
 ```text
-1. ControlBuilder 将 Slither CFG block 和 slithir_ssa 归档到 FunctionSSEIR.control.blocks。
-2. EffectLifter / SemanticOverlayBuilder 基于 SlithIR SSA 生成 Solidity effects 和 semantic_overlays。
-3. SoliditySemanticLifter 只挑选高级 overlay，例如 StateWrite、StateRead、EventEmit、Require、Call、Return。
-4. 最终不再默认把 IndexAccess、Phi、ValueAssign 等拆分后的低级 SlithIR operation 输出为 fact。
-5. SlithIR 低级操作仍保留在 sseir.json 的 effect/control 证据中，必要时也可通过 debug 输出查看。
-6. 对 NewContract、NewArray、NewStructure、Delete、send/transfer 这类本身已是语义终点但暂未形成 overlay 的 SlithIR sink，使用 slithir_sink_fallback 补充高级 fact。
+1. ControlBuilder 将 Slither CFG block 和 `slithir_ssa` 归档到函数级 control。
+2. SolidityAtomicOperationExtractor 将嵌套表达式整理为按 CFG 排序的 `sol_atom`。
+3. 提取器根据 Slither `Phi.nodes` 区分函数入口、写版本、跨调用、函数内分支合流和循环携带 Phi。
+4. SoliditySemanticLifter 只将 `fact_eligible` 的原子操作投影到统一 schema，不调用 Yul S-SEIR 组件。
+5. 函数入口 Phi、单来源写版本 Phi、PhiCallback 和跨函数 Phi只留在原子操作审计表；函数内 CFG 合流和循环携带 Phi可以记录为 `ValuePhi`。
+6. StateRead、StateWrite、EventEmit、Require、Call、Return 等运行时行为按一项操作一个 fact 记录。
 ```
 
 ### 4.2 Yul fact
@@ -299,7 +315,7 @@ Solidity 最终 fact 优先使用和 Yul 一致的高级语义结构。
 
 ```text
 Solidity 源码中的高级状态写入语义被直接记录为 StateWrite；
-SlithIR 拆分出的 IndexAccess/Phi/Assignment 不再作为最终 fact 出现。
+函数入口及状态版本 Phi 不作为最终 fact 出现；真正由当前函数 CFG 分支或循环产生的 Phi 可以作为 `ValuePhi` 分析事实保留。
 ```
 
 ### 6.2 Slither operation semantic

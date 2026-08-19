@@ -50,7 +50,7 @@ class YulSemanticLifter:
             item["origin"] = "yul_sseir"
             item["function_id"] = function_id
             item["operation_id"] = self._operation_id(item)
-            item.setdefault("depends_on", [])
+            item.pop("depends_on", None)
             item.setdefault("control_predecessors", [])
             item["order"] = {
                 "kind": "cfg_partial_order",
@@ -58,7 +58,6 @@ class YulSemanticLifter:
             }
             out.append(item)
         out = self._dedupe_location_facts(out)
-        self._link_storage_dependencies(out)
         return out
 
     @staticmethod
@@ -80,60 +79,6 @@ class YulSemanticLifter:
             seen.add(key)
             out.append(fact)
         return out
-
-    @staticmethod
-    def _link_storage_dependencies(facts: list[Json]) -> None:
-        locations_by_effect: dict[str, str] = {}
-        reads_by_access: dict[str, list[Json]] = {}
-        reads_by_value: dict[str, list[Json]] = {}
-        for fact in facts:
-            if fact.get("kind") == "StorageLocationResolve":
-                operation_id = str(fact.get("operation_id") or "")
-                for effect in (fact.get("evidence") or {}).get("effects") or []:
-                    locations_by_effect[str(effect)] = operation_id
-            elif fact.get("kind") == "StateRead":
-                access = str((fact.get("semantic") or {}).get("access") or "")
-                if access:
-                    reads_by_access.setdefault(access, []).append(fact)
-                result = str(fact.get("lvalue") or (fact.get("semantic") or {}).get("value") or "")
-                if result:
-                    reads_by_value.setdefault(result, []).append(fact)
-
-        for fact in facts:
-            if fact.get("kind") not in {"StateRead", "StateWrite"}:
-                continue
-            dependencies = list(fact.get("depends_on") or [])
-            for effect in (fact.get("evidence") or {}).get("effects") or []:
-                location = locations_by_effect.get(str(effect))
-                if location:
-                    dependencies.append(location)
-                    break
-            if fact.get("kind") == "StateWrite":
-                access = str((fact.get("semantic") or {}).get("access") or "")
-                fact_reads = set(str(value) for value in fact.get("reads") or [])
-                candidates: list[Json] = []
-                if access in set(str(value) for value in fact.get("reads") or []):
-                    candidates.extend(reads_by_access.get(access, []))
-                for value in fact_reads:
-                    candidates.extend(reads_by_value.get(value, []))
-                compatible = [
-                    read for read in candidates
-                    if YulSemanticLifter._condition_implies(
-                        str(fact.get("condition") or ""),
-                        str(read.get("condition") or ""),
-                    )
-                ]
-                if compatible:
-                    dependencies.append(str(compatible[-1].get("operation_id") or ""))
-            fact["depends_on"] = list(dict.fromkeys(item for item in dependencies if item))
-
-    @staticmethod
-    def _condition_implies(consumer: str, producer: str) -> bool:
-        if not producer or consumer == producer:
-            return True
-        normalized_consumer = "".join(consumer.split())
-        normalized_producer = "".join(producer.split())
-        return normalized_producer in normalized_consumer
 
     @staticmethod
     def _is_yul_fact(item: Json, effect_language: dict[str, str]) -> bool:

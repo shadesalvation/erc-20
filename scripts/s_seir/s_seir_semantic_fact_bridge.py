@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 
@@ -14,19 +14,56 @@ class FunctionSemanticInput:
 
     function_id: str
     control: Json
+    effects: list[Json] = field(default_factory=list)
 
     @classmethod
     def from_function(cls, function: Any) -> "FunctionSemanticInput":
         function_id = str(getattr(function, "function_id", "") or "")
         control = getattr(function, "control", {}) or {}
+        effects = getattr(function, "effects", []) or []
         if isinstance(function, dict):
             function_id = str(function.get("function_id") or function_id)
             control = function.get("control") or control
-        return cls(function_id, control)
+            effects = function.get("effects") or effects
+        return cls(
+            function_id,
+            control,
+            [cls._effect_dict(effect) for effect in effects],
+        )
+
+    @staticmethod
+    def _effect_dict(effect: Any) -> Json:
+        if isinstance(effect, dict):
+            return dict(effect)
+        to_dict = getattr(effect, "to_dict", None)
+        if callable(to_dict):
+            value = to_dict()
+            return dict(value) if isinstance(value, dict) else {}
+        return {
+            "effect_id": getattr(effect, "effect_id", None),
+            "kind": getattr(effect, "kind", None),
+            "stmt_refs": list(getattr(effect, "stmt_refs", []) or []),
+            "attrs": dict(getattr(effect, "attrs", {}) or {}),
+        }
 
 
 class SemanticFactBridge:
     """Place Solidity and Yul facts on one function-level CFG partial order."""
+
+    _SINK_EFFECT_KINDS: dict[str, tuple[str, ...]] = {
+        "StorageLocationResolve": ("MemoryHash",),
+        "StateRead": ("StorageRead",),
+        "StateWrite": ("StorageWrite",),
+        "EventEmit": ("EventLog",),
+        "Revert": ("Revert",),
+        "Return": ("Return",),
+        "Require": ("Require", "Revert"),
+        "ExternalCall": ("Call", "StaticCall", "DelegateCall", "CallCode"),
+        "LowLevelCall": ("Call", "StaticCall", "DelegateCall", "CallCode"),
+        "PrecompileCall": ("Call", "StaticCall", "DelegateCall", "CallCode"),
+        "StaticCall": ("StaticCall",),
+        "DelegateCall": ("DelegateCall",),
+    }
 
     def merge_function_facts(
         self,
@@ -40,8 +77,20 @@ class SemanticFactBridge:
 
         block_order = self._cfg_reverse_postorder(semantic_input.control)
         block_predecessors = self._block_predecessors(semantic_input.control)
+        effect_by_id = {
+            str(effect.get("effect_id")): effect
+            for effect in semantic_input.effects
+            if effect.get("effect_id")
+        }
+        effect_cfg_nodes = self._effect_cfg_nodes(
+            semantic_input.control,
+            semantic_input.effects,
+        )
         for fact in facts:
             fact["function_id"] = semantic_input.function_id
+            anchor = self._sink_cfg_node(fact, effect_by_id, effect_cfg_nodes)
+            if anchor:
+                fact["anchor_cfg_node"] = anchor
             cfg_node = self._primary_cfg_node(fact)
             local_order = self._local_order(fact)
             fact["order"] = {
@@ -49,12 +98,11 @@ class SemanticFactBridge:
                 "cfg_block_order": block_order.get(cfg_node, len(block_order)),
                 "operation_order": local_order,
             }
-            fact.setdefault("depends_on", [])
+            fact.pop("depends_on", None)
             fact.setdefault("control_predecessors", [])
-            fact.setdefault("cfg_predecessor_blocks", block_predecessors.get(cfg_node, []))
+            fact["cfg_predecessor_blocks"] = block_predecessors.get(cfg_node, [])
 
         facts.sort(key=self._sort_key)
-        self._link_operation_dependencies(facts)
         self._propagate_dominating_guards(facts, semantic_input.control)
         self._propagate_terminal_branch_guards(facts, semantic_input.control)
         self._link_control_predecessors(facts, block_predecessors)
@@ -131,8 +179,81 @@ class SemanticFactBridge:
 
     @staticmethod
     def _primary_cfg_node(fact: Json) -> str:
+        anchor = fact.get("anchor_cfg_node")
+        if anchor:
+            return str(anchor)
         nodes = fact.get("cfg_nodes") or []
         return str(nodes[0]) if nodes else ""
+
+    @classmethod
+    def _sink_cfg_node(
+        cls,
+        fact: Json,
+        effect_by_id: dict[str, Json],
+        effect_cfg_nodes: dict[str, str],
+    ) -> str:
+        """Return the execution node of a fact's semantic endpoint.
+
+        ``cfg_nodes`` is an evidence set and may begin with a slot/hash
+        definition.  Ordering must instead use the effect that performs the
+        fact itself, such as StorageWrite for StateWrite.  The mapping is
+        deliberately closed: unsupported fact kinds keep their existing CFG
+        node instead of inferring an endpoint.
+        """
+        expected = cls._SINK_EFFECT_KINDS.get(str(fact.get("kind") or ""))
+        if not expected:
+            return ""
+        evidence = fact.get("evidence") or {}
+        effect_ids = [str(value) for value in evidence.get("effects") or []]
+        for effect_id in reversed(effect_ids):
+            effect = effect_by_id.get(effect_id) or {}
+            if str(effect.get("kind") or "") not in expected:
+                continue
+            node = effect_cfg_nodes.get(effect_id)
+            if node:
+                return node
+        return ""
+
+    @staticmethod
+    def _effect_cfg_nodes(control: Json, effects: list[Json]) -> dict[str, str]:
+        """Map effects to unified CFG blocks using node id plus stmt refs."""
+        blocks = [
+            block for block in control.get("blocks") or []
+            if isinstance(block, dict) and block.get("block_id")
+        ]
+        out: dict[str, str] = {}
+        for effect in effects:
+            effect_id = str(effect.get("effect_id") or "")
+            if not effect_id:
+                continue
+            attrs = effect.get("attrs") or {}
+            node_id = attrs.get("cfg_node_id")
+            refs = {str(ref) for ref in effect.get("stmt_refs") or [] if ref}
+            exact: list[str] = []
+            node_matches: list[str] = []
+            ref_matches: list[str] = []
+            for block in blocks:
+                block_id = str(block.get("block_id"))
+                block_attrs = block.get("attrs") or {}
+                block_refs = {str(ref) for ref in block.get("stmts") or [] if ref}
+                node_matches_id = (
+                    node_id is not None
+                    and (
+                        block_attrs.get("node_id") == node_id
+                        or block_id.endswith(f"_n{node_id}")
+                    )
+                )
+                refs_overlap = bool(refs and refs.intersection(block_refs))
+                if node_matches_id and refs_overlap:
+                    exact.append(block_id)
+                elif node_matches_id:
+                    node_matches.append(block_id)
+                elif refs_overlap:
+                    ref_matches.append(block_id)
+            candidates = exact or node_matches or ref_matches
+            if len(candidates) == 1:
+                out[effect_id] = candidates[0]
+        return out
 
     @staticmethod
     def _local_order(
@@ -152,20 +273,6 @@ class SemanticFactBridge:
             0 if fact.get("source_lang") == "solidity" else 1,
             str(fact.get("operation_id") or fact.get("fact_id") or ""),
         )
-
-    @staticmethod
-    def _link_operation_dependencies(facts: list[Json]) -> None:
-        operation_to_fact = {
-            str(fact.get("operation_id")): str(fact.get("fact_id"))
-            for fact in facts
-            if fact.get("operation_id") and fact.get("fact_id")
-        }
-        for fact in facts:
-            dependencies = list(fact.get("depends_on") or [])
-            fact["depends_on"] = list(dict.fromkeys(
-                operation_to_fact.get(str(dependency), str(dependency))
-                for dependency in dependencies
-            ))
 
     @classmethod
     def _link_control_predecessors(
@@ -391,7 +498,7 @@ def renumber_and_relink_facts(facts: list[Json], prefix: str = "fact") -> list[J
     for index, fact in enumerate(facts, start=1):
         item = dict(fact)
         item["fact_id"] = f"{prefix}_{index}"
-        for field in ("depends_on", "control_predecessors"):
+        for field in ("control_predecessors",):
             item[field] = [
                 id_map.get(str(value), str(value))
                 for value in item.get(field) or []

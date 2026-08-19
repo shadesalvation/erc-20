@@ -66,6 +66,8 @@ class SoliditySemanticLifter:
         for atom in atomic_table.get("operations") or []:
             if not isinstance(atom, dict):
                 continue
+            if atom.get("fact_eligible") is False:
+                continue
             atom_id = str(atom.get("atom_id") or "")
             kind = self.atomic_fact_kind(atom)
             reads = self.atomic_operands(atom, kind)
@@ -88,7 +90,6 @@ class SoliditySemanticLifter:
                 "rvalue": rvalue,
                 "reads": reads,
                 "writes": writes,
-                "depends_on": list(atom.get("depends_on_atoms") or []),
                 "cfg_predecessor_blocks": list(atom.get("cfg_predecessor_blocks") or []),
                 "order": {
                     "kind": "cfg_partial_order",
@@ -133,6 +134,9 @@ class SoliditySemanticLifter:
         if fact_kind == "StateRead":
             access = (atom.get("storage_access") or {}).get("access")
             return [str(access)] if access else []
+        if fact_kind == "StateWrite" and atom.get("kind") == "Delete":
+            storage = atom.get("storage_access") or {}
+            return [str(value) for value in storage.get("keys") or []]
         values = atom.get("read") or atom.get("arguments") or atom.get("values") or []
         return cls.unique_text(cls.ssa_value(value) for value in values)
 
@@ -159,7 +163,9 @@ class SoliditySemanticLifter:
             access = storage.get("access") or cls.source_value(atom.get("lvalue"))
             lvalue = access
             writes = [access] if access else []
-            if operation not in {"Binary", "Unary"}:
+            if operation == "Delete":
+                rvalue = "0"
+            elif operation not in {"Binary", "Unary"}:
                 value = atom.get("rvalue") or ((atom.get("read") or [None])[0])
                 rvalue = cls.ssa_value(value)
         elif operation == "Delete":
@@ -266,7 +272,13 @@ class SoliditySemanticLifter:
         elif fact_kind == "Return":
             semantic.update({"operation": "return", "values": reads})
         elif fact_kind == "ValuePhi":
-            semantic.update({"operation": "phi", "runtime_operation": False})
+            semantic.update({
+                "operation": "phi",
+                "phi_role": atom.get("phi_role"),
+                "inputs": reads,
+                "origin_nodes": list(atom.get("phi_origin_nodes") or []),
+                "runtime_operation": False,
+            })
         elif fact_kind == "BranchCondition":
             resolved = list(atom.get("resolved_reads") or [])
             semantic.update({
