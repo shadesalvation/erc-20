@@ -1,0 +1,42 @@
+Function SimpleSemanticIR.deposit(uint256)
+  function_id: SimpleSemanticIR.deposit(uint256)
+  SourceStatements:
+    sol_s_1 [solidity] total = total + amount
+    asm_s_1 [yul] mstore(0x00, caller())
+    asm_s_2 [yul] mstore(0x20, balances.slot)
+    asm_s_3 [yul] let balanceSlot := keccak256(0x00, 0x40)
+    asm_s_4 [yul] sstore(balanceSlot, add(sload(balanceSlot), amount))
+  Control:
+    blocks: 8
+    edges: 7
+  ExpressionRoles:
+    expr_1 memory_slice_start: 0x00 -> 0x00 @ asm_s_3
+    expr_2 memory_slice_size: 0x40 -> 0x40 @ asm_s_3
+    expr_3 storage_slot_expr: balanceSlot -> balanceSlot @ asm_s_4
+    expr_4 storage_write_value: add(sload(balanceSlot), amount) -> (sload(balanceSlot) + amount) @ asm_s_4
+    expr_5 mapping_slot_expr: balances[msg.sender] -> balances[msg.sender] @ asm_s_3
+    expr_6 mapping_key_material: msg.sender -> msg.sender @ asm_s_3
+    expr_7 mapping_slot_expr: balanceSlot -> balances[msg.sender] @ asm_s_3
+    expr_8 state_access_expr: balances[msg.sender] -> balances[msg.sender] @ asm_s_3
+  Effects:
+    eff_1 MemoryWrite refs=['asm_s_1'] attrs={"address": "0x00", "value": "caller()", "origin_node": "N2", "write_kind": "mstore", "aliases": [{"key": "0x00", "base": "0x00", "offset": 0, "expression": "0x00", "source": "literal"}], "cfg_node_id": 2, "path_states": ["entry"]}
+    eff_2 MemoryWrite refs=['asm_s_2'] attrs={"address": "32", "value": "balances.slot", "origin_node": "N3", "write_kind": "mstore", "aliases": [{"key": "32", "base": "0x20", "offset": 0, "expression": "0x20", "source": "literal"}, {"key": "add(0x00,32)", "base": "0x00", "offset": 32, "expression": "add(0x00, 32)", "source": "literal-zero-base"}], "cfg_node_id": 3, "path_states": ["entry"]}
+    eff_3 ValueDef refs=['asm_s_3'] attrs={"targets": ["balanceSlot"], "value": "keccak256(0x00, 0x40)", "value_normalized": "keccak256(0x00, 0x40)", "cfg_node_id": 4, "language": "yul", "path_states": ["entry"], "target_versions": {"balanceSlot": ["balanceSlot__ssa1"]}}
+    eff_4 MemoryHash refs=['asm_s_3'] attrs={"op": "keccak256", "ptr": "0x00", "size": "0x40", "value": "balanceSlot", "value_versions": {"balanceSlot": ["balanceSlot__ssa1"]}, "ptr_versions": [], "size_versions": [], "cfg_node_id": 4, "path_states": ["entry"], "semantic_inputs": {"sink_kind": "MemoryHash", "paths": [{"arguments": {"slot": "keccak256(abi.encode(msg.sender, balances.slot))"}}]}}
+    eff_5 StorageRead refs=['asm_s_4'] attrs={"slot": "balanceSlot", "slot_versions": ["balanceSlot__ssa1"], "value": "__sseir_eval_asm_s_4_1", "value_versions": {}, "cfg_node_id": 5, "path_states": ["entry"], "expression": "sload(balanceSlot)", "nested_in_storage_value": true, "parent_call": "sstore", "parent_slot": "balanceSlot", "parent_value": "add(sload(balanceSlot), amount)"}
+    eff_6 StorageWrite refs=['asm_s_4'] attrs={"slot": "balanceSlot", "slot_versions": ["balanceSlot__ssa1"], "value": "add(sload(balanceSlot), amount)", "value_versions": [], "cfg_node_id": 5, "path_states": ["entry"]}
+  SemanticOverlays:
+    ov_1 MappingSlot effects=['eff_4'] attrs={"target": "balanceSlot", "target_key": "balanceSlot__ssa1", "target_keys": ["balanceSlot__ssa1"], "expression": "balances[msg.sender]", "state_variable": "balances", "storage_reference": null, "storage_reference_type": null, "storage_reference_kind": null, "storage_field": null, "key": "msg.sender", "keys": ["msg.sender"], "base": "balances.slot", "base_key": "balances.slot", "parent_target_key": null, "slot_kind": "mapping_slot", "result_type": "uint256", "terminal_storage_value": true, "activation": "storage_consumer", "resolved_inputs": [{"offset": 0, "offset_expr": "0", "size": 32, "value": "msg.sender"}, {"offset": 32, "offset_expr": "32", "size": 32, "value": "balances.slot"}], "packed_semantics": null}
+    ov_2 MappingSlot effects=['eff_4'] attrs={"target": "balanceSlot", "target_key": "balanceSlot", "target_keys": ["balanceSlot__ssa1"], "expression": "balances[msg.sender]", "state_variable": "balances", "storage_reference": null, "storage_reference_type": null, "storage_reference_kind": null, "storage_field": null, "key": "msg.sender", "keys": ["msg.sender"], "base": "balances.slot", "base_key": "balances.slot", "parent_target_key": null, "slot_kind": "mapping_slot", "result_type": "uint256", "terminal_storage_value": true, "activation": "storage_consumer", "resolved_inputs": [{"offset": 0, "offset_expr": "0", "size": 32, "value": "msg.sender"}, {"offset": 32, "offset_expr": "32", "size": 32, "value": "balances.slot"}], "packed_semantics": null}
+    ov_3 MappingRead effects=['eff_4', 'eff_5'] attrs={"access": "balances[msg.sender]", "target": "__sseir_eval_asm_s_4_1", "state_variable": "balances", "key": "msg.sender", "keys": ["msg.sender"], "slot": "balanceSlot", "slot_key": "balanceSlot__ssa1", "slot_versions": ["balanceSlot__ssa1"], "slot_effect": "eff_4", "result_type": "uint256", "terminal_storage_value": true, "solidity_like": "__sseir_eval_asm_s_4_1 = balances[msg.sender];", "read_expression": "balances[msg.sender]", "source_expression": "sload(balanceSlot)", "nested_in_storage_value": true, "consumed_by": {"kind": "sstore", "slot": "balanceSlot", "value": "add(sload(balanceSlot), amount)"}}
+    ov_4 MappingWrite effects=['eff_4', 'eff_6'] attrs={"access": "balances[msg.sender]", "value": "(balances[msg.sender] + amount)", "value_yul": "add(sload(balanceSlot), amount)", "value_state_read": {"original": "sload(balanceSlot)", "access": "balances[msg.sender]", "state_access": true, "state_mutation": false, "solidity_like": "balances[msg.sender]", "notes": ["nested_storage_read", "reads_contract_state"]}, "state_variable": "balances", "key": "msg.sender", "keys": ["msg.sender"], "slot": "balanceSlot", "slot_key": "balanceSlot__ssa1", "slot_versions": ["balanceSlot__ssa1"], "slot_effect": "eff_4", "result_type": "uint256", "terminal_storage_value": true, "solidity_like": "balances[msg.sender] = (balances[msg.sender] + amount);"}
+    ov_5 ExpressionNormalization effects=['eff_3'] attrs={"target": "balanceSlot", "expression": "keccak256(0x00, 0x40)", "expression_normalized": "keccak256(abi.encode(msg.sender, balances.slot))", "solidity_like": "balanceSlot = keccak256(abi.encode(msg.sender, balances.slot));", "context": "value", "division_guards": [], "memory_hash": {"expression": "keccak256(abi.encode(msg.sender, balances.slot))", "encoding": "abi.encode", "notes": ["memory_hash_from_byte_axis"]}, "atomized_value": null}
+  SecurityFacts:
+    sf_1 BalanceRead overlays=['ov_3'] effects=['eff_4', 'eff_5'] attrs={"state_var": "balances", "account": "msg.sender"}
+    sf_2 BalanceUpdate overlays=['ov_4'] effects=['eff_4', 'eff_6'] attrs={"state_var": "balances", "account": "msg.sender", "delta": "+amount", "value": "(balances[msg.sender] + amount)"}
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "SimpleSemanticIR.deposit(uint256)", "state_variables": [{"name": "total", "kind": "state", "type_string": "uint256", "data_location": "default", "src": "90:20:0", "storage_slot": 0}, {"name": "balances", "kind": "state", "type_string": "mapping(address => uint256)", "data_location": "default", "src": "116:43:0", "storage_slot": 1}]}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 1, "selectors": {"0xb6b55f25": [{"selector": "0xb6b55f25", "signature": "deposit(uint256)", "name": "deposit", "kind": "function", "contract": "SimpleSemanticIR", "source": "ast", "src": "166:304:0"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "tests/fixtures/simple_semantic_ir.sol", "analysis_source": "tests/fixtures/simple_semantic_ir.sol", "rewrite_count": 0, "enabled": false, "flattened_imports": false, "imported_files": [], "preprocessed_files": []}

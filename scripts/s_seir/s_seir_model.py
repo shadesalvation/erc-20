@@ -34,6 +34,7 @@ _QUERY_DETAIL_FIELDS = {
     "memory_version",
     "memory_versions",
     "atomic_operation_id",
+    "atomic_operation_ids",
     "atomic_kind",
     "atomic_sequence",
 }
@@ -179,6 +180,11 @@ def _semantic_value(value: Any) -> Any:
 
 def _semantic_attrs(attrs: dict[str, Any]) -> dict[str, Any]:
     out: dict[str, Any] = {}
+    # Completeness is a semantic property of a lifted payload, not a dump of
+    # the underlying query engine.  Preserve the compact boolean while still
+    # removing MemorySSA/SinkResolver internals below.
+    if "payload_memory_complete" in attrs:
+        out["payload_memory_complete"] = bool(attrs.get("payload_memory_complete"))
     sink_inputs = _semantic_sink_inputs(attrs.get("sink_resolution"))
     memory_accesses: list[dict[str, Any]] = []
     for field_name in _MEMORY_QUERY_FIELDS:

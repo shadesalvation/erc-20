@@ -1,0 +1,1823 @@
+{
+  "schema": "s-seir-yul-atomic-operation-program/v1",
+  "source": "tests/fixtures/yul_atomicization_cases.sol",
+  "functions": [
+    {
+      "schema": "s-seir-yul-atomic-operations/v1",
+      "function_id": "YulAtomicizationCases.update(uint256)",
+      "contract": "YulAtomicizationCases",
+      "signature": "update(uint256)",
+      "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+      "assembly_blocks": [
+        {
+          "assembly_block_id": 1,
+          "operations": [
+            {
+              "atom_id": "yul_atom_b1_asm_s_1_2_1",
+              "function_id": "YulAtomicizationCases.update(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm1_n2",
+              "yul_function": null,
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "197:22:0",
+              "source_statement": "let slot := total.slot",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "declare_assign",
+              "atomic_kind": "ValueDeclare",
+              "result": "slot",
+              "results": [
+                "slot"
+              ],
+              "arguments": [
+                "total.slot"
+              ],
+              "raw_arguments": [
+                "total.slot"
+              ],
+              "expression": "slot := total.slot",
+              "normalized_expression": "slot = total.slot",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 1
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_2_3_1",
+              "function_id": "YulAtomicizationCases.update(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm1_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "249:11:0",
+              "source_statement": "sstore(slot, add(sload(slot), amount))",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "sload",
+              "atomic_kind": "StorageRead",
+              "result": "__sseir_eval_asm_s_2_1",
+              "results": [
+                "__sseir_eval_asm_s_2_1"
+              ],
+              "arguments": [
+                "slot"
+              ],
+              "raw_arguments": [
+                "slot"
+              ],
+              "expression": "sload(slot)",
+              "normalized_expression": "sload(slot)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 2
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_2_3_2",
+              "function_id": "YulAtomicizationCases.update(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm1_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "245:24:0",
+              "source_statement": "sstore(slot, add(sload(slot), amount))",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "add",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_2_2",
+              "results": [
+                "__sseir_eval_asm_s_2_2"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_2_1",
+                "amount"
+              ],
+              "raw_arguments": [
+                "sload(slot)",
+                "amount"
+              ],
+              "expression": "add(__sseir_eval_asm_s_2_1, amount)",
+              "normalized_expression": "(__sseir_eval_asm_s_2_1 + amount)",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_2_3_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 3
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_2_3_3",
+              "function_id": "YulAtomicizationCases.update(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm1_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "232:38:0",
+              "source_statement": "sstore(slot, add(sload(slot), amount))",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "sstore",
+              "atomic_kind": "StorageWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "slot",
+                "__sseir_eval_asm_s_2_2"
+              ],
+              "raw_arguments": [
+                "slot",
+                "add(sload(slot), amount)"
+              ],
+              "expression": "sstore(slot, __sseir_eval_asm_s_2_2)",
+              "normalized_expression": "sstore(slot, __sseir_eval_asm_s_2_2)",
+              "operation_order": 3,
+              "dependencies": [
+                "yul_atom_b1_asm_s_2_3_2"
+              ],
+              "side_effect": true,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 4
+            }
+          ],
+          "node_evaluations": [
+            {
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm1_n2",
+              "stmt_ref": "asm_s_1",
+              "context": "value",
+              "final": "total.slot",
+              "final_normalized": "total.slot",
+              "steps": [],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_1_2_1"
+              ]
+            },
+            {
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm1_n3",
+              "stmt_ref": "asm_s_2",
+              "context": "statement",
+              "final": "sstore(slot, add(sload(slot), amount))",
+              "final_normalized": "sstore(slot, (sload(slot) + amount))",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_2_3_1",
+                  "temp": "__sseir_eval_asm_s_2_1",
+                  "expression": "sload(slot)",
+                  "expression_normalized": "sload(slot)",
+                  "call": "sload",
+                  "raw_args": [
+                    "slot"
+                  ],
+                  "evaluated_args": [
+                    "slot"
+                  ],
+                  "dependencies": []
+                },
+                {
+                  "order": 2,
+                  "atom_id": "yul_atom_b1_asm_s_2_3_2",
+                  "temp": "__sseir_eval_asm_s_2_2",
+                  "expression": "add(__sseir_eval_asm_s_2_1, amount)",
+                  "expression_normalized": "(__sseir_eval_asm_s_2_1 + amount)",
+                  "call": "add",
+                  "raw_args": [
+                    "sload(slot)",
+                    "amount"
+                  ],
+                  "evaluated_args": [
+                    "__sseir_eval_asm_s_2_1",
+                    "amount"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b1_asm_s_2_3_1"
+                  ]
+                },
+                {
+                  "order": 3,
+                  "atom_id": "yul_atom_b1_asm_s_2_3_3",
+                  "temp": null,
+                  "expression": "sstore(slot, __sseir_eval_asm_s_2_2)",
+                  "expression_normalized": "sstore(slot, __sseir_eval_asm_s_2_2)",
+                  "call": "sstore",
+                  "raw_args": [
+                    "slot",
+                    "add(sload(slot), amount)"
+                  ],
+                  "evaluated_args": [
+                    "slot",
+                    "__sseir_eval_asm_s_2_2"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b1_asm_s_2_3_2"
+                  ]
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_2_3_1",
+                "yul_atom_b1_asm_s_2_3_2",
+                "yul_atom_b1_asm_s_2_3_3"
+              ]
+            }
+          ],
+          "local_functions": []
+        }
+      ],
+      "operations": [
+        {
+          "atom_id": "yul_atom_b1_asm_s_1_2_1",
+          "function_id": "YulAtomicizationCases.update(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm1_n2",
+          "yul_function": null,
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "197:22:0",
+          "source_statement": "let slot := total.slot",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "declare_assign",
+          "atomic_kind": "ValueDeclare",
+          "result": "slot",
+          "results": [
+            "slot"
+          ],
+          "arguments": [
+            "total.slot"
+          ],
+          "raw_arguments": [
+            "total.slot"
+          ],
+          "expression": "slot := total.slot",
+          "normalized_expression": "slot = total.slot",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 1
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_2_3_1",
+          "function_id": "YulAtomicizationCases.update(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm1_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "249:11:0",
+          "source_statement": "sstore(slot, add(sload(slot), amount))",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "sload",
+          "atomic_kind": "StorageRead",
+          "result": "__sseir_eval_asm_s_2_1",
+          "results": [
+            "__sseir_eval_asm_s_2_1"
+          ],
+          "arguments": [
+            "slot"
+          ],
+          "raw_arguments": [
+            "slot"
+          ],
+          "expression": "sload(slot)",
+          "normalized_expression": "sload(slot)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 2
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_2_3_2",
+          "function_id": "YulAtomicizationCases.update(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm1_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "245:24:0",
+          "source_statement": "sstore(slot, add(sload(slot), amount))",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "add",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_2_2",
+          "results": [
+            "__sseir_eval_asm_s_2_2"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_2_1",
+            "amount"
+          ],
+          "raw_arguments": [
+            "sload(slot)",
+            "amount"
+          ],
+          "expression": "add(__sseir_eval_asm_s_2_1, amount)",
+          "normalized_expression": "(__sseir_eval_asm_s_2_1 + amount)",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_2_3_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 3
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_2_3_3",
+          "function_id": "YulAtomicizationCases.update(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm1_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "232:38:0",
+          "source_statement": "sstore(slot, add(sload(slot), amount))",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "sstore",
+          "atomic_kind": "StorageWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "slot",
+            "__sseir_eval_asm_s_2_2"
+          ],
+          "raw_arguments": [
+            "slot",
+            "add(sload(slot), amount)"
+          ],
+          "expression": "sstore(slot, __sseir_eval_asm_s_2_2)",
+          "normalized_expression": "sstore(slot, __sseir_eval_asm_s_2_2)",
+          "operation_order": 3,
+          "dependencies": [
+            "yul_atom_b1_asm_s_2_3_2"
+          ],
+          "side_effect": true,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 4
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-yul-atomic-operations/v1",
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+      "assembly_blocks": [
+        {
+          "assembly_block_id": 2,
+          "operations": [
+            {
+              "atom_id": "yul_atom_b2_asm_s_1_2_1",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm2_n2",
+              "yul_function": null,
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "403:18:0",
+              "source_statement": "mstore(0x00, word)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "mstore",
+              "atomic_kind": "MemoryWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "0x00",
+                "word"
+              ],
+              "raw_arguments": [
+                "0x00",
+                "word"
+              ],
+              "expression": "mstore(0x00, word)",
+              "normalized_expression": "mstore(0x00, word)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": true,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 1
+            },
+            {
+              "atom_id": "yul_atom_b2_asm_s_2_3_1",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm2_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "473:5:0",
+              "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+              "source_node_type": "YulIf",
+              "context": "condition",
+              "operation": "gas",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_2_1",
+              "results": [
+                "__sseir_eval_asm_s_2_1"
+              ],
+              "arguments": [],
+              "raw_arguments": [],
+              "expression": "gas()",
+              "normalized_expression": "(gasleft() != 0)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 2
+            },
+            {
+              "atom_id": "yul_atom_b2_asm_s_2_3_2",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm2_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "468:46:0",
+              "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+              "source_node_type": "YulIf",
+              "context": "condition",
+              "operation": "call",
+              "atomic_kind": "Call",
+              "result": "__sseir_eval_asm_s_2_2",
+              "results": [
+                "__sseir_eval_asm_s_2_2"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_2_1",
+                "target",
+                "0",
+                "0x00",
+                "0x20",
+                "0x00",
+                "0x20"
+              ],
+              "raw_arguments": [
+                "gas()",
+                "target",
+                "0",
+                "0x00",
+                "0x20",
+                "0x00",
+                "0x20"
+              ],
+              "expression": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+              "normalized_expression": "(call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20) != 0)",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b2_asm_s_2_3_1"
+              ],
+              "side_effect": true,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 3
+            },
+            {
+              "atom_id": "yul_atom_b2_asm_s_2_3_3",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm2_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "451:11:0",
+              "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+              "source_node_type": "YulIf",
+              "context": "condition",
+              "operation": "mload",
+              "atomic_kind": "MemoryRead",
+              "result": "__sseir_eval_asm_s_2_3",
+              "results": [
+                "__sseir_eval_asm_s_2_3"
+              ],
+              "arguments": [
+                "0x00"
+              ],
+              "raw_arguments": [
+                "0x00"
+              ],
+              "expression": "mload(0x00)",
+              "normalized_expression": "(mload(0x00) != 0)",
+              "operation_order": 3,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 4
+            },
+            {
+              "atom_id": "yul_atom_b2_asm_s_2_3_4",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm2_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "448:18:0",
+              "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+              "source_node_type": "YulIf",
+              "context": "condition",
+              "operation": "eq",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_2_4",
+              "results": [
+                "__sseir_eval_asm_s_2_4"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_2_3",
+                "1"
+              ],
+              "raw_arguments": [
+                "mload(0x00)",
+                "1"
+              ],
+              "expression": "eq(__sseir_eval_asm_s_2_3, 1)",
+              "normalized_expression": "(__sseir_eval_asm_s_2_3 == 1)",
+              "operation_order": 4,
+              "dependencies": [
+                "yul_atom_b2_asm_s_2_3_3"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 5
+            },
+            {
+              "atom_id": "yul_atom_b2_asm_s_2_3_5",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm2_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "444:71:0",
+              "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+              "source_node_type": "YulIf",
+              "context": "condition",
+              "operation": "and",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_2_5",
+              "results": [
+                "__sseir_eval_asm_s_2_5"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_2_4",
+                "__sseir_eval_asm_s_2_2"
+              ],
+              "raw_arguments": [
+                "eq(mload(0x00), 1)",
+                "call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)"
+              ],
+              "expression": "and(__sseir_eval_asm_s_2_4, __sseir_eval_asm_s_2_2)",
+              "normalized_expression": "((__sseir_eval_asm_s_2_4 & __sseir_eval_asm_s_2_2) != 0)",
+              "operation_order": 5,
+              "dependencies": [
+                "yul_atom_b2_asm_s_2_3_4",
+                "yul_atom_b2_asm_s_2_3_2"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 6
+            },
+            {
+              "atom_id": "yul_atom_b2_asm_s_2_3_6",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm2_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "437:79:0",
+              "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+              "source_node_type": "YulIf",
+              "context": "condition",
+              "operation": "iszero",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_2_6",
+              "results": [
+                "__sseir_eval_asm_s_2_6"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_2_5"
+              ],
+              "raw_arguments": [
+                "and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))"
+              ],
+              "expression": "iszero(__sseir_eval_asm_s_2_5)",
+              "normalized_expression": "(__sseir_eval_asm_s_2_5 == 0)",
+              "operation_order": 6,
+              "dependencies": [
+                "yul_atom_b2_asm_s_2_3_5"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 7
+            },
+            {
+              "atom_id": "yul_atom_b2_asm_s_2_3_7",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm2_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "434:127:0",
+              "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+              "source_node_type": "YulIf",
+              "context": "condition",
+              "operation": "branch",
+              "atomic_kind": "BranchCondition",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "__sseir_eval_asm_s_2_6"
+              ],
+              "raw_arguments": [
+                "__sseir_eval_asm_s_2_6"
+              ],
+              "expression": "branch(__sseir_eval_asm_s_2_6)",
+              "normalized_expression": "(__sseir_eval_asm_s_2_6 != 0)",
+              "operation_order": 7,
+              "dependencies": [
+                "yul_atom_b2_asm_s_2_3_6"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": true,
+              "root_operation": true,
+              "sequence": 8
+            },
+            {
+              "atom_id": "yul_atom_b2_asm_s_3_5_1",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 5,
+              "cfg_block_id": "bb_asm2_n5",
+              "yul_function": null,
+              "stmt_ref": "asm_s_3",
+              "stmt_refs": [
+                "asm_s_3"
+              ],
+              "source_span": "535:12:0",
+              "source_statement": "revert(0, 0)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "revert",
+              "atomic_kind": "Revert",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "0",
+                "0"
+              ],
+              "raw_arguments": [
+                "0",
+                "0"
+              ],
+              "expression": "revert(0, 0)",
+              "normalized_expression": "revert(0, 0)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": true,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 9
+            },
+            {
+              "atom_id": "yul_atom_b2_asm_s_4_6_1",
+              "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+              "assembly_block_id": 2,
+              "cfg_node_id": 6,
+              "cfg_block_id": "bb_asm2_n6",
+              "yul_function": null,
+              "stmt_ref": "asm_s_4",
+              "stmt_refs": [
+                "asm_s_4"
+              ],
+              "source_span": "574:7:0",
+              "source_statement": "ok := 1",
+              "source_node_type": "YulAssignment",
+              "context": "value",
+              "operation": "assign",
+              "atomic_kind": "ValueAssign",
+              "result": "ok",
+              "results": [
+                "ok"
+              ],
+              "arguments": [
+                "1"
+              ],
+              "raw_arguments": [
+                "1"
+              ],
+              "expression": "ok := 1",
+              "normalized_expression": "ok = 1",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 10
+            }
+          ],
+          "node_evaluations": [
+            {
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm2_n2",
+              "stmt_ref": "asm_s_1",
+              "context": "statement",
+              "final": "mstore(0x00, word)",
+              "final_normalized": "mstore(0x00, word)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b2_asm_s_1_2_1",
+                  "temp": null,
+                  "expression": "mstore(0x00, word)",
+                  "expression_normalized": "mstore(0x00, word)",
+                  "call": "mstore",
+                  "raw_args": [
+                    "0x00",
+                    "word"
+                  ],
+                  "evaluated_args": [
+                    "0x00",
+                    "word"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b2_asm_s_1_2_1"
+              ]
+            },
+            {
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm2_n3",
+              "stmt_ref": "asm_s_2",
+              "context": "condition",
+              "final": "__sseir_eval_asm_s_2_6",
+              "final_normalized": "(__sseir_eval_asm_s_2_6 != 0)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b2_asm_s_2_3_1",
+                  "temp": "__sseir_eval_asm_s_2_1",
+                  "expression": "gas()",
+                  "expression_normalized": "(gasleft() != 0)",
+                  "call": "gas",
+                  "raw_args": [],
+                  "evaluated_args": [],
+                  "dependencies": []
+                },
+                {
+                  "order": 2,
+                  "atom_id": "yul_atom_b2_asm_s_2_3_2",
+                  "temp": "__sseir_eval_asm_s_2_2",
+                  "expression": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+                  "expression_normalized": "(call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20) != 0)",
+                  "call": "call",
+                  "raw_args": [
+                    "gas()",
+                    "target",
+                    "0",
+                    "0x00",
+                    "0x20",
+                    "0x00",
+                    "0x20"
+                  ],
+                  "evaluated_args": [
+                    "__sseir_eval_asm_s_2_1",
+                    "target",
+                    "0",
+                    "0x00",
+                    "0x20",
+                    "0x00",
+                    "0x20"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b2_asm_s_2_3_1"
+                  ]
+                },
+                {
+                  "order": 3,
+                  "atom_id": "yul_atom_b2_asm_s_2_3_3",
+                  "temp": "__sseir_eval_asm_s_2_3",
+                  "expression": "mload(0x00)",
+                  "expression_normalized": "(mload(0x00) != 0)",
+                  "call": "mload",
+                  "raw_args": [
+                    "0x00"
+                  ],
+                  "evaluated_args": [
+                    "0x00"
+                  ],
+                  "dependencies": []
+                },
+                {
+                  "order": 4,
+                  "atom_id": "yul_atom_b2_asm_s_2_3_4",
+                  "temp": "__sseir_eval_asm_s_2_4",
+                  "expression": "eq(__sseir_eval_asm_s_2_3, 1)",
+                  "expression_normalized": "(__sseir_eval_asm_s_2_3 == 1)",
+                  "call": "eq",
+                  "raw_args": [
+                    "mload(0x00)",
+                    "1"
+                  ],
+                  "evaluated_args": [
+                    "__sseir_eval_asm_s_2_3",
+                    "1"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b2_asm_s_2_3_3"
+                  ]
+                },
+                {
+                  "order": 5,
+                  "atom_id": "yul_atom_b2_asm_s_2_3_5",
+                  "temp": "__sseir_eval_asm_s_2_5",
+                  "expression": "and(__sseir_eval_asm_s_2_4, __sseir_eval_asm_s_2_2)",
+                  "expression_normalized": "((__sseir_eval_asm_s_2_4 & __sseir_eval_asm_s_2_2) != 0)",
+                  "call": "and",
+                  "raw_args": [
+                    "eq(mload(0x00), 1)",
+                    "call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)"
+                  ],
+                  "evaluated_args": [
+                    "__sseir_eval_asm_s_2_4",
+                    "__sseir_eval_asm_s_2_2"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b2_asm_s_2_3_4",
+                    "yul_atom_b2_asm_s_2_3_2"
+                  ]
+                },
+                {
+                  "order": 6,
+                  "atom_id": "yul_atom_b2_asm_s_2_3_6",
+                  "temp": "__sseir_eval_asm_s_2_6",
+                  "expression": "iszero(__sseir_eval_asm_s_2_5)",
+                  "expression_normalized": "(__sseir_eval_asm_s_2_5 == 0)",
+                  "call": "iszero",
+                  "raw_args": [
+                    "and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))"
+                  ],
+                  "evaluated_args": [
+                    "__sseir_eval_asm_s_2_5"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b2_asm_s_2_3_5"
+                  ]
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b2_asm_s_2_3_1",
+                "yul_atom_b2_asm_s_2_3_2",
+                "yul_atom_b2_asm_s_2_3_3",
+                "yul_atom_b2_asm_s_2_3_4",
+                "yul_atom_b2_asm_s_2_3_5",
+                "yul_atom_b2_asm_s_2_3_6",
+                "yul_atom_b2_asm_s_2_3_7"
+              ]
+            },
+            {
+              "cfg_node_id": 5,
+              "cfg_block_id": "bb_asm2_n5",
+              "stmt_ref": "asm_s_3",
+              "context": "statement",
+              "final": "revert(0, 0)",
+              "final_normalized": "revert(0, 0)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b2_asm_s_3_5_1",
+                  "temp": null,
+                  "expression": "revert(0, 0)",
+                  "expression_normalized": "revert(0, 0)",
+                  "call": "revert",
+                  "raw_args": [
+                    "0",
+                    "0"
+                  ],
+                  "evaluated_args": [
+                    "0",
+                    "0"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b2_asm_s_3_5_1"
+              ]
+            },
+            {
+              "cfg_node_id": 6,
+              "cfg_block_id": "bb_asm2_n6",
+              "stmt_ref": "asm_s_4",
+              "context": "value",
+              "final": "1",
+              "final_normalized": "1",
+              "steps": [],
+              "atom_ids": [
+                "yul_atom_b2_asm_s_4_6_1"
+              ]
+            }
+          ],
+          "local_functions": []
+        }
+      ],
+      "operations": [
+        {
+          "atom_id": "yul_atom_b2_asm_s_1_2_1",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm2_n2",
+          "yul_function": null,
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "403:18:0",
+          "source_statement": "mstore(0x00, word)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "mstore",
+          "atomic_kind": "MemoryWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "0x00",
+            "word"
+          ],
+          "raw_arguments": [
+            "0x00",
+            "word"
+          ],
+          "expression": "mstore(0x00, word)",
+          "normalized_expression": "mstore(0x00, word)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": true,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 1
+        },
+        {
+          "atom_id": "yul_atom_b2_asm_s_2_3_1",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm2_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "473:5:0",
+          "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+          "source_node_type": "YulIf",
+          "context": "condition",
+          "operation": "gas",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_2_1",
+          "results": [
+            "__sseir_eval_asm_s_2_1"
+          ],
+          "arguments": [],
+          "raw_arguments": [],
+          "expression": "gas()",
+          "normalized_expression": "(gasleft() != 0)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 2
+        },
+        {
+          "atom_id": "yul_atom_b2_asm_s_2_3_2",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm2_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "468:46:0",
+          "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+          "source_node_type": "YulIf",
+          "context": "condition",
+          "operation": "call",
+          "atomic_kind": "Call",
+          "result": "__sseir_eval_asm_s_2_2",
+          "results": [
+            "__sseir_eval_asm_s_2_2"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_2_1",
+            "target",
+            "0",
+            "0x00",
+            "0x20",
+            "0x00",
+            "0x20"
+          ],
+          "raw_arguments": [
+            "gas()",
+            "target",
+            "0",
+            "0x00",
+            "0x20",
+            "0x00",
+            "0x20"
+          ],
+          "expression": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+          "normalized_expression": "(call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20) != 0)",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b2_asm_s_2_3_1"
+          ],
+          "side_effect": true,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 3
+        },
+        {
+          "atom_id": "yul_atom_b2_asm_s_2_3_3",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm2_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "451:11:0",
+          "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+          "source_node_type": "YulIf",
+          "context": "condition",
+          "operation": "mload",
+          "atomic_kind": "MemoryRead",
+          "result": "__sseir_eval_asm_s_2_3",
+          "results": [
+            "__sseir_eval_asm_s_2_3"
+          ],
+          "arguments": [
+            "0x00"
+          ],
+          "raw_arguments": [
+            "0x00"
+          ],
+          "expression": "mload(0x00)",
+          "normalized_expression": "(mload(0x00) != 0)",
+          "operation_order": 3,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 4
+        },
+        {
+          "atom_id": "yul_atom_b2_asm_s_2_3_4",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm2_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "448:18:0",
+          "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+          "source_node_type": "YulIf",
+          "context": "condition",
+          "operation": "eq",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_2_4",
+          "results": [
+            "__sseir_eval_asm_s_2_4"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_2_3",
+            "1"
+          ],
+          "raw_arguments": [
+            "mload(0x00)",
+            "1"
+          ],
+          "expression": "eq(__sseir_eval_asm_s_2_3, 1)",
+          "normalized_expression": "(__sseir_eval_asm_s_2_3 == 1)",
+          "operation_order": 4,
+          "dependencies": [
+            "yul_atom_b2_asm_s_2_3_3"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 5
+        },
+        {
+          "atom_id": "yul_atom_b2_asm_s_2_3_5",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm2_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "444:71:0",
+          "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+          "source_node_type": "YulIf",
+          "context": "condition",
+          "operation": "and",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_2_5",
+          "results": [
+            "__sseir_eval_asm_s_2_5"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_2_4",
+            "__sseir_eval_asm_s_2_2"
+          ],
+          "raw_arguments": [
+            "eq(mload(0x00), 1)",
+            "call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)"
+          ],
+          "expression": "and(__sseir_eval_asm_s_2_4, __sseir_eval_asm_s_2_2)",
+          "normalized_expression": "((__sseir_eval_asm_s_2_4 & __sseir_eval_asm_s_2_2) != 0)",
+          "operation_order": 5,
+          "dependencies": [
+            "yul_atom_b2_asm_s_2_3_4",
+            "yul_atom_b2_asm_s_2_3_2"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 6
+        },
+        {
+          "atom_id": "yul_atom_b2_asm_s_2_3_6",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm2_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "437:79:0",
+          "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+          "source_node_type": "YulIf",
+          "context": "condition",
+          "operation": "iszero",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_2_6",
+          "results": [
+            "__sseir_eval_asm_s_2_6"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_2_5"
+          ],
+          "raw_arguments": [
+            "and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))"
+          ],
+          "expression": "iszero(__sseir_eval_asm_s_2_5)",
+          "normalized_expression": "(__sseir_eval_asm_s_2_5 == 0)",
+          "operation_order": 6,
+          "dependencies": [
+            "yul_atom_b2_asm_s_2_3_5"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 7
+        },
+        {
+          "atom_id": "yul_atom_b2_asm_s_2_3_7",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm2_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "434:127:0",
+          "source_statement": "if iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+          "source_node_type": "YulIf",
+          "context": "condition",
+          "operation": "branch",
+          "atomic_kind": "BranchCondition",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "__sseir_eval_asm_s_2_6"
+          ],
+          "raw_arguments": [
+            "__sseir_eval_asm_s_2_6"
+          ],
+          "expression": "branch(__sseir_eval_asm_s_2_6)",
+          "normalized_expression": "(__sseir_eval_asm_s_2_6 != 0)",
+          "operation_order": 7,
+          "dependencies": [
+            "yul_atom_b2_asm_s_2_3_6"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": true,
+          "root_operation": true,
+          "sequence": 8
+        },
+        {
+          "atom_id": "yul_atom_b2_asm_s_3_5_1",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 5,
+          "cfg_block_id": "bb_asm2_n5",
+          "yul_function": null,
+          "stmt_ref": "asm_s_3",
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "source_span": "535:12:0",
+          "source_statement": "revert(0, 0)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "revert",
+          "atomic_kind": "Revert",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "0",
+            "0"
+          ],
+          "raw_arguments": [
+            "0",
+            "0"
+          ],
+          "expression": "revert(0, 0)",
+          "normalized_expression": "revert(0, 0)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": true,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 9
+        },
+        {
+          "atom_id": "yul_atom_b2_asm_s_4_6_1",
+          "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+          "assembly_block_id": 2,
+          "cfg_node_id": 6,
+          "cfg_block_id": "bb_asm2_n6",
+          "yul_function": null,
+          "stmt_ref": "asm_s_4",
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "source_span": "574:7:0",
+          "source_statement": "ok := 1",
+          "source_node_type": "YulAssignment",
+          "context": "value",
+          "operation": "assign",
+          "atomic_kind": "ValueAssign",
+          "result": "ok",
+          "results": [
+            "ok"
+          ],
+          "arguments": [
+            "1"
+          ],
+          "raw_arguments": [
+            "1"
+          ],
+          "expression": "ok := 1",
+          "normalized_expression": "ok = 1",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 10
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-yul-atomic-operations/v1",
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+      "assembly_blocks": [
+        {
+          "assembly_block_id": 3,
+          "operations": [
+            {
+              "atom_id": "yul_atom_b3_asm_s_1_2_1",
+              "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+              "assembly_block_id": 3,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm3_n2",
+              "yul_function": null,
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "761:9:0",
+              "source_statement": "result := add(mul(a, b), sub(c, d))",
+              "source_node_type": "YulAssignment",
+              "context": "value",
+              "operation": "sub",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_1_1",
+              "results": [
+                "__sseir_eval_asm_s_1_1"
+              ],
+              "arguments": [
+                "c",
+                "d"
+              ],
+              "raw_arguments": [
+                "c",
+                "d"
+              ],
+              "expression": "sub(c, d)",
+              "normalized_expression": "(c - d)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 1
+            },
+            {
+              "atom_id": "yul_atom_b3_asm_s_1_2_2",
+              "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+              "assembly_block_id": 3,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm3_n2",
+              "yul_function": null,
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "750:9:0",
+              "source_statement": "result := add(mul(a, b), sub(c, d))",
+              "source_node_type": "YulAssignment",
+              "context": "value",
+              "operation": "mul",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_1_2",
+              "results": [
+                "__sseir_eval_asm_s_1_2"
+              ],
+              "arguments": [
+                "a",
+                "b"
+              ],
+              "raw_arguments": [
+                "a",
+                "b"
+              ],
+              "expression": "mul(a, b)",
+              "normalized_expression": "(a * b)",
+              "operation_order": 2,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 2
+            },
+            {
+              "atom_id": "yul_atom_b3_asm_s_1_2_3",
+              "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+              "assembly_block_id": 3,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm3_n2",
+              "yul_function": null,
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "746:25:0",
+              "source_statement": "result := add(mul(a, b), sub(c, d))",
+              "source_node_type": "YulAssignment",
+              "context": "value",
+              "operation": "add",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_1_3",
+              "results": [
+                "__sseir_eval_asm_s_1_3"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_1_2",
+                "__sseir_eval_asm_s_1_1"
+              ],
+              "raw_arguments": [
+                "mul(a, b)",
+                "sub(c, d)"
+              ],
+              "expression": "add(__sseir_eval_asm_s_1_2, __sseir_eval_asm_s_1_1)",
+              "normalized_expression": "(__sseir_eval_asm_s_1_2 + __sseir_eval_asm_s_1_1)",
+              "operation_order": 3,
+              "dependencies": [
+                "yul_atom_b3_asm_s_1_2_2",
+                "yul_atom_b3_asm_s_1_2_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 3
+            },
+            {
+              "atom_id": "yul_atom_b3_asm_s_1_2_4",
+              "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+              "assembly_block_id": 3,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm3_n2",
+              "yul_function": null,
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "736:35:0",
+              "source_statement": "result := add(mul(a, b), sub(c, d))",
+              "source_node_type": "YulAssignment",
+              "context": "value",
+              "operation": "assign",
+              "atomic_kind": "ValueAssign",
+              "result": "result",
+              "results": [
+                "result"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_1_3"
+              ],
+              "raw_arguments": [
+                "add(mul(a, b), sub(c, d))"
+              ],
+              "expression": "result := __sseir_eval_asm_s_1_3",
+              "normalized_expression": "result = __sseir_eval_asm_s_1_3",
+              "operation_order": 4,
+              "dependencies": [
+                "yul_atom_b3_asm_s_1_2_3"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 4
+            }
+          ],
+          "node_evaluations": [
+            {
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm3_n2",
+              "stmt_ref": "asm_s_1",
+              "context": "value",
+              "final": "__sseir_eval_asm_s_1_3",
+              "final_normalized": "__sseir_eval_asm_s_1_3",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b3_asm_s_1_2_1",
+                  "temp": "__sseir_eval_asm_s_1_1",
+                  "expression": "sub(c, d)",
+                  "expression_normalized": "(c - d)",
+                  "call": "sub",
+                  "raw_args": [
+                    "c",
+                    "d"
+                  ],
+                  "evaluated_args": [
+                    "c",
+                    "d"
+                  ],
+                  "dependencies": []
+                },
+                {
+                  "order": 2,
+                  "atom_id": "yul_atom_b3_asm_s_1_2_2",
+                  "temp": "__sseir_eval_asm_s_1_2",
+                  "expression": "mul(a, b)",
+                  "expression_normalized": "(a * b)",
+                  "call": "mul",
+                  "raw_args": [
+                    "a",
+                    "b"
+                  ],
+                  "evaluated_args": [
+                    "a",
+                    "b"
+                  ],
+                  "dependencies": []
+                },
+                {
+                  "order": 3,
+                  "atom_id": "yul_atom_b3_asm_s_1_2_3",
+                  "temp": "__sseir_eval_asm_s_1_3",
+                  "expression": "add(__sseir_eval_asm_s_1_2, __sseir_eval_asm_s_1_1)",
+                  "expression_normalized": "(__sseir_eval_asm_s_1_2 + __sseir_eval_asm_s_1_1)",
+                  "call": "add",
+                  "raw_args": [
+                    "mul(a, b)",
+                    "sub(c, d)"
+                  ],
+                  "evaluated_args": [
+                    "__sseir_eval_asm_s_1_2",
+                    "__sseir_eval_asm_s_1_1"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b3_asm_s_1_2_2",
+                    "yul_atom_b3_asm_s_1_2_1"
+                  ]
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b3_asm_s_1_2_1",
+                "yul_atom_b3_asm_s_1_2_2",
+                "yul_atom_b3_asm_s_1_2_3",
+                "yul_atom_b3_asm_s_1_2_4"
+              ]
+            }
+          ],
+          "local_functions": []
+        }
+      ],
+      "operations": [
+        {
+          "atom_id": "yul_atom_b3_asm_s_1_2_1",
+          "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+          "assembly_block_id": 3,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm3_n2",
+          "yul_function": null,
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "761:9:0",
+          "source_statement": "result := add(mul(a, b), sub(c, d))",
+          "source_node_type": "YulAssignment",
+          "context": "value",
+          "operation": "sub",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_1_1",
+          "results": [
+            "__sseir_eval_asm_s_1_1"
+          ],
+          "arguments": [
+            "c",
+            "d"
+          ],
+          "raw_arguments": [
+            "c",
+            "d"
+          ],
+          "expression": "sub(c, d)",
+          "normalized_expression": "(c - d)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 1
+        },
+        {
+          "atom_id": "yul_atom_b3_asm_s_1_2_2",
+          "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+          "assembly_block_id": 3,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm3_n2",
+          "yul_function": null,
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "750:9:0",
+          "source_statement": "result := add(mul(a, b), sub(c, d))",
+          "source_node_type": "YulAssignment",
+          "context": "value",
+          "operation": "mul",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_1_2",
+          "results": [
+            "__sseir_eval_asm_s_1_2"
+          ],
+          "arguments": [
+            "a",
+            "b"
+          ],
+          "raw_arguments": [
+            "a",
+            "b"
+          ],
+          "expression": "mul(a, b)",
+          "normalized_expression": "(a * b)",
+          "operation_order": 2,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 2
+        },
+        {
+          "atom_id": "yul_atom_b3_asm_s_1_2_3",
+          "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+          "assembly_block_id": 3,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm3_n2",
+          "yul_function": null,
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "746:25:0",
+          "source_statement": "result := add(mul(a, b), sub(c, d))",
+          "source_node_type": "YulAssignment",
+          "context": "value",
+          "operation": "add",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_1_3",
+          "results": [
+            "__sseir_eval_asm_s_1_3"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_1_2",
+            "__sseir_eval_asm_s_1_1"
+          ],
+          "raw_arguments": [
+            "mul(a, b)",
+            "sub(c, d)"
+          ],
+          "expression": "add(__sseir_eval_asm_s_1_2, __sseir_eval_asm_s_1_1)",
+          "normalized_expression": "(__sseir_eval_asm_s_1_2 + __sseir_eval_asm_s_1_1)",
+          "operation_order": 3,
+          "dependencies": [
+            "yul_atom_b3_asm_s_1_2_2",
+            "yul_atom_b3_asm_s_1_2_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 3
+        },
+        {
+          "atom_id": "yul_atom_b3_asm_s_1_2_4",
+          "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+          "assembly_block_id": 3,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm3_n2",
+          "yul_function": null,
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "736:35:0",
+          "source_statement": "result := add(mul(a, b), sub(c, d))",
+          "source_node_type": "YulAssignment",
+          "context": "value",
+          "operation": "assign",
+          "atomic_kind": "ValueAssign",
+          "result": "result",
+          "results": [
+            "result"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_1_3"
+          ],
+          "raw_arguments": [
+            "add(mul(a, b), sub(c, d))"
+          ],
+          "expression": "result := __sseir_eval_asm_s_1_3",
+          "normalized_expression": "result = __sseir_eval_asm_s_1_3",
+          "operation_order": 4,
+          "dependencies": [
+            "yul_atom_b3_asm_s_1_2_3"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 4
+        }
+      ]
+    }
+  ]
+}

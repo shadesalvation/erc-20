@@ -1,0 +1,19 @@
+digraph "YulHeavyERC20.balanceOf_address" {
+  graph [rankdir=TB, bgcolor="#ffffff", labelloc=t, fontsize=14, fontname="Consolas", label="YulHeavyERC20.balanceOf(address)"];
+  node [fontname="Consolas"];
+  edge [fontname="Consolas"];
+  "__cfg_notes" [shape=note, style="filled", fillcolor="#f6f8fa", color="#d0d7de", fontsize="9", label="CFG notes:\nfunction_level_cfg_from_slither\nassembly_subgraph_embedded_from_assembly_ast_cfg\nslither_assembly_nodes_replaced_by_local_yul_cfg\nslither_compile_mode=normal\nfunction_match_method=source_range\nslither_nodes=7\nassembly_blocks=1\nassembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors\nslither_typed_use_def_archived_on_solidity_blocks\nunified_dominance_and_control_dependencies_computed_after_yul_subgraph_embedding\nsolidity_yul_boundary_contexts_attached"];
+  "bb_sol_slither_n0" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e8f2ff", label="bb_sol_slither_n0\nkind=solidity\nslither_node=0\nentrypoint\nterm=Fallthrough: entrypoint"];
+  "bb_sol_slither_n6" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3f8f42", fillcolor="#e9ffe8", peripheries="2", label="bb_sol_slither_n6\nkind=solidity\nslither_node=6\nresult\nterm=Return: result"];
+  "bb_asm3_n0" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm3_n0\nkind=yul\nassembly_block=3\nyul_node=0\nentry\nterm=YulNode: entry"];
+  "bb_asm3_n1" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm3_n1\nkind=yul\nassembly_block=3\nyul_node=1\nexit\nterm=YulNode: exit"];
+  "bb_asm3_n2" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm3_n2\nkind=yul\nassembly_block=3\nyul_node=2\nstmts=asm_s_1\nasm_s_1: mstore(0x00, account)\nterm=YulNode: mstore(0x00, account)"];
+  "bb_asm3_n3" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm3_n3\nkind=yul\nassembly_block=3\nyul_node=3\nstmts=asm_s_2\nasm_s_2: mstore(0x20, _balances.slot)\nterm=YulNode: mstore(0x20, _balances.slot)"];
+  "bb_asm3_n4" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm3_n4\nkind=yul\nassembly_block=3\nyul_node=4\nstmts=asm_s_3\nasm_s_3: result := sload(keccak256(0x00, 0x40))\nterm=YulNode: result := sload(keccak256(0x00, 0x40))"];
+  "bb_asm3_n0" -> "bb_asm3_n2" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm3_n2" -> "bb_asm3_n3" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm3_n3" -> "bb_asm3_n4" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm3_n4" -> "bb_asm3_n1" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_sol_slither_n0" -> "bb_asm3_n0" [fontname="Consolas", fontsize="9", label="fallthrough", color="#586069"];
+  "bb_asm3_n1" -> "bb_sol_slither_n6" [fontname="Consolas", fontsize="9", label="fallthrough", color="#586069"];
+}

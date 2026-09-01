@@ -1,0 +1,2117 @@
+{
+  "schema": "s-seir-function-semantic-facts/v3",
+  "source": "tests/fixtures/semantic_ir_expression_views.sol",
+  "result_dir": "outputs/_expression_views3",
+  "model_boundary": {
+    "processing_unit": "function",
+    "fact_granularity": "one_atomic_operation_per_fact",
+    "ordering": "function-level CFG partial order plus block-local operation order",
+    "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter only projects each atom to the common schema.",
+    "yul": "S-SEIR alone analyzes Yul; YulSemanticLifter only projects completed S-SEIR results to the common schema.",
+    "bridge": "SemanticFactBridge restores function-level CFG order and control predecessors after both sources already share one schema."
+  },
+  "function_count": 6,
+  "solidity_fact_count": 3,
+  "yul_fact_count": 16,
+  "fact_count": 19,
+  "solidity_facts": [
+    {
+      "fact_id": "fact_8",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "function": "environment",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "rvalue": [
+        "who_1",
+        "gasRemaining_1"
+      ],
+      "reads": [
+        "who_1",
+        "gasRemaining_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "who_1",
+          "gasRemaining_1"
+        ],
+        "resolved_operands": [
+          "who",
+          "gasRemaining"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "who_1",
+          "gasRemaining_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "341:35:slither",
+          "source_expression": "(who,gasRemaining)",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN who_1,gasRemaining_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_7"
+      ]
+    },
+    {
+      "fact_id": "fact_10",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SemanticIRExpressionViews.hashBytes(bytes)",
+      "function": "hashBytes",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "hashBytes(bytes)",
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "rvalue": "digest_1",
+      "reads": [
+        "digest_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "digest_1"
+        ],
+        "resolved_operands": [
+          "digest"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "digest_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "541:16:slither",
+          "source_expression": "digest",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN digest_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_9"
+      ]
+    },
+    {
+      "fact_id": "fact_18",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "function": "guardedCall",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "rvalue": "ok_1",
+      "reads": [
+        "ok_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "ok_1"
+        ],
+        "resolved_operands": [
+          "ok"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "ok_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "891:9:slither",
+          "source_expression": "ok",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN ok_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_17"
+      ]
+    }
+  ],
+  "yul_facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "slot",
+      "rvalue": "total.slot",
+      "reads": [
+        "total",
+        "slot"
+      ],
+      "writes": [
+        "slot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "slot",
+        "expression": "total.slot",
+        "expression_normalized": "total.slot"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.update(uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "total",
+      "reads": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_2"
+        ],
+        "storage_resolution": {
+          "slot": "slot",
+          "slot_versions": [
+            "slot__ssa1"
+          ]
+        }
+      },
+      "function_id": "SemanticIRExpressionViews.update(uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "anchor_cfg_node": "bb_asm1_n3",
+      "control_predecessors": [
+        "fact_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "total",
+      "rvalue": "(total + amount)",
+      "reads": [
+        "total",
+        "amount"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        },
+        "value": "(total + amount)"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_3"
+        ],
+        "storage_resolution": {
+          "slot": "slot",
+          "slot_versions": [
+            "slot__ssa1"
+          ]
+        }
+      },
+      "function_id": "SemanticIRExpressionViews.update(uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "anchor_cfg_node": "bb_asm1_n3",
+      "control_predecessors": [
+        "fact_2"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "environment",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_1",
+      "rvalue": "caller()",
+      "reads": [
+        "caller"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_1_1",
+        "expression": "caller()",
+        "expression_normalized": "msg.sender",
+        "call": "caller"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_2"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "environment",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n2"
+      ],
+      "lvalue": "who",
+      "rvalue": "caller()",
+      "reads": [
+        "caller"
+      ],
+      "writes": [
+        "who"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "who",
+        "expression": "caller()",
+        "expression_normalized": "__sseir_eval_asm_s_1_1"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 1
+      },
+      "control_predecessors": [
+        "fact_4"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "environment",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "gas()",
+        "expression_normalized": "gasleft()",
+        "call": "gas"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_4"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "control_predecessors": [
+        "fact_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "environment",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3"
+      ],
+      "lvalue": "gasRemaining",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "gasRemaining"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "gasRemaining",
+        "expression": "gas()",
+        "expression_normalized": "__sseir_eval_asm_s_2_1"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 3
+      },
+      "control_predecessors": [
+        "fact_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "hashBytes",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "hashBytes(bytes)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "digest",
+      "rvalue": "keccak256(add(data, 0x20), mload(data))",
+      "reads": [
+        "add",
+        "data",
+        "mload"
+      ],
+      "writes": [
+        "digest"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "digest",
+        "expression": "keccak256(add(data, 0x20), mload(data))",
+        "expression_normalized": "keccak256(data)"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.hashBytes(bytes)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "storeHash",
+      "fact_role": "effect",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "storeHash(bytes)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n2"
+      ],
+      "lvalue": "total",
+      "rvalue": "keccak256((data + 0x20), mload(data))",
+      "reads": [
+        "data",
+        "mload"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        },
+        "value": "keccak256((data + 0x20), mload(data))"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_1"
+        ],
+        "storage_resolution": {
+          "slot": "total.slot"
+        }
+      },
+      "function_id": "SemanticIRExpressionViews.storeHash(bytes)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "anchor_cfg_node": "bb_asm4_n2",
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm4_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "gas()",
+        "expression_normalized": "gasleft()",
+        "call": "gas"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "ExternalCall",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "effect",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "reads": [
+        "target",
+        "0",
+        "gas()",
+        "0x00",
+        "0x20"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "target",
+        "call_kind": "call",
+        "arguments": [
+          "gas()",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ],
+        "decoded_input": "MemorySlice(word)",
+        "semantic_inputs": {
+          "sink_kind": "Call",
+          "paths": [
+            {
+              "arguments": {
+                "input": "MemorySlice(word)"
+              }
+            }
+          ]
+        },
+        "value": "0"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "LowLevelCall",
+        "effects": [
+          "eff_4"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "anchor_cfg_node": "bb_asm5_n3",
+      "control_predecessors": [
+        "fact_12"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_2",
+      "rvalue": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+      "reads": [
+        "call",
+        "__sseir_eval_asm_s_2_1",
+        "target"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_2"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_2",
+        "expression": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+        "expression_normalized": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+        "call": "call",
+        "raw_args": [
+          "gas()",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_1",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_5"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 3
+      },
+      "control_predecessors": [
+        "fact_13"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_3",
+      "rvalue": "iszero(__sseir_eval_asm_s_2_2)",
+      "reads": [
+        "iszero",
+        "__sseir_eval_asm_s_2_2"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_3"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_3",
+        "expression": "iszero(__sseir_eval_asm_s_2_2)",
+        "expression_normalized": "(__sseir_eval_asm_s_2_2 == 0)",
+        "call": "iszero",
+        "raw_args": [
+          "call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_2"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_6"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 4
+      },
+      "control_predecessors": [
+        "fact_14"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "rvalue": "iszero(call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))",
+      "reads": [
+        "iszero",
+        "call",
+        "gas",
+        "target"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "expression": "iszero(call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_2"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 5
+      },
+      "control_predecessors": [
+        "fact_15"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n6"
+      ],
+      "condition": "!(iszero(call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+      "lvalue": "ok",
+      "rvalue": "1",
+      "writes": [
+        "ok"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ok",
+        "expression": "1",
+        "expression_normalized": "1"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_8"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 7
+      },
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n4"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "Require",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "control",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n5"
+      ],
+      "condition": "!((__sseir_eval_asm_s_2_3 != 0))",
+      "reads": [
+        "!((__sseir_eval_asm_s_2_3 != 0))"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "condition": "!((__sseir_eval_asm_s_2_3 != 0))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 8,
+        "operation_order": 6
+      },
+      "anchor_cfg_node": "bb_asm5_n5",
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n3"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "slot",
+      "rvalue": "total.slot",
+      "reads": [
+        "total",
+        "slot"
+      ],
+      "writes": [
+        "slot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "slot",
+        "expression": "total.slot",
+        "expression_normalized": "total.slot"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.update(uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "total",
+      "reads": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_2"
+        ],
+        "storage_resolution": {
+          "slot": "slot",
+          "slot_versions": [
+            "slot__ssa1"
+          ]
+        }
+      },
+      "function_id": "SemanticIRExpressionViews.update(uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "anchor_cfg_node": "bb_asm1_n3",
+      "control_predecessors": [
+        "fact_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "total",
+      "rvalue": "(total + amount)",
+      "reads": [
+        "total",
+        "amount"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        },
+        "value": "(total + amount)"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_3"
+        ],
+        "storage_resolution": {
+          "slot": "slot",
+          "slot_versions": [
+            "slot__ssa1"
+          ]
+        }
+      },
+      "function_id": "SemanticIRExpressionViews.update(uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "anchor_cfg_node": "bb_asm1_n3",
+      "control_predecessors": [
+        "fact_2"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "environment",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_1",
+      "rvalue": "caller()",
+      "reads": [
+        "caller"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_1_1",
+        "expression": "caller()",
+        "expression_normalized": "msg.sender",
+        "call": "caller"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_2"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "environment",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n2"
+      ],
+      "lvalue": "who",
+      "rvalue": "caller()",
+      "reads": [
+        "caller"
+      ],
+      "writes": [
+        "who"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "who",
+        "expression": "caller()",
+        "expression_normalized": "__sseir_eval_asm_s_1_1"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 1
+      },
+      "control_predecessors": [
+        "fact_4"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "environment",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "gas()",
+        "expression_normalized": "gasleft()",
+        "call": "gas"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_4"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "control_predecessors": [
+        "fact_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "environment",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3"
+      ],
+      "lvalue": "gasRemaining",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "gasRemaining"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "gasRemaining",
+        "expression": "gas()",
+        "expression_normalized": "__sseir_eval_asm_s_2_1"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 3
+      },
+      "control_predecessors": [
+        "fact_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_8",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SemanticIRExpressionViews.environment()",
+      "function": "environment",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "environment()",
+      "cfg_nodes": [
+        "bb_sol_slither_n5"
+      ],
+      "rvalue": [
+        "who_1",
+        "gasRemaining_1"
+      ],
+      "reads": [
+        "who_1",
+        "gasRemaining_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "who_1",
+          "gasRemaining_1"
+        ],
+        "resolved_operands": [
+          "who",
+          "gasRemaining"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "who_1",
+          "gasRemaining_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "341:35:slither",
+          "source_expression": "(who,gasRemaining)",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN who_1,gasRemaining_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_7"
+      ]
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "hashBytes",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "hashBytes(bytes)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "digest",
+      "rvalue": "keccak256(add(data, 0x20), mload(data))",
+      "reads": [
+        "add",
+        "data",
+        "mload"
+      ],
+      "writes": [
+        "digest"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "digest",
+        "expression": "keccak256(add(data, 0x20), mload(data))",
+        "expression_normalized": "keccak256(data)"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.hashBytes(bytes)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_10",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SemanticIRExpressionViews.hashBytes(bytes)",
+      "function": "hashBytes",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "hashBytes(bytes)",
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "rvalue": "digest_1",
+      "reads": [
+        "digest_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "digest_1"
+        ],
+        "resolved_operands": [
+          "digest"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "digest_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "541:16:slither",
+          "source_expression": "digest",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN digest_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_9"
+      ]
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "storeHash",
+      "fact_role": "effect",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "storeHash(bytes)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm4_n2"
+      ],
+      "lvalue": "total",
+      "rvalue": "keccak256((data + 0x20), mload(data))",
+      "reads": [
+        "data",
+        "mload"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        },
+        "value": "keccak256((data + 0x20), mload(data))"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_1"
+        ],
+        "storage_resolution": {
+          "slot": "total.slot"
+        }
+      },
+      "function_id": "SemanticIRExpressionViews.storeHash(bytes)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "anchor_cfg_node": "bb_asm4_n2",
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm4_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "gas()",
+        "expression_normalized": "gasleft()",
+        "call": "gas"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "ExternalCall",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "effect",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "reads": [
+        "target",
+        "0",
+        "gas()",
+        "0x00",
+        "0x20"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "target",
+        "call_kind": "call",
+        "arguments": [
+          "gas()",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ],
+        "decoded_input": "MemorySlice(word)",
+        "semantic_inputs": {
+          "sink_kind": "Call",
+          "paths": [
+            {
+              "arguments": {
+                "input": "MemorySlice(word)"
+              }
+            }
+          ]
+        },
+        "value": "0"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "LowLevelCall",
+        "effects": [
+          "eff_4"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "anchor_cfg_node": "bb_asm5_n3",
+      "control_predecessors": [
+        "fact_12"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_2",
+      "rvalue": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+      "reads": [
+        "call",
+        "__sseir_eval_asm_s_2_1",
+        "target"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_2"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_2",
+        "expression": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+        "expression_normalized": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+        "call": "call",
+        "raw_args": [
+          "gas()",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_1",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_5"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 3
+      },
+      "control_predecessors": [
+        "fact_13"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_3",
+      "rvalue": "iszero(__sseir_eval_asm_s_2_2)",
+      "reads": [
+        "iszero",
+        "__sseir_eval_asm_s_2_2"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_3"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_3",
+        "expression": "iszero(__sseir_eval_asm_s_2_2)",
+        "expression_normalized": "(__sseir_eval_asm_s_2_2 == 0)",
+        "call": "iszero",
+        "raw_args": [
+          "call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_2"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_6"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 4
+      },
+      "control_predecessors": [
+        "fact_14"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n3",
+        "bb_asm5_n4"
+      ],
+      "rvalue": "iszero(call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))",
+      "reads": [
+        "iszero",
+        "call",
+        "gas",
+        "target"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "expression": "iszero(call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_2"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 5
+      },
+      "control_predecessors": [
+        "fact_15"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n6"
+      ],
+      "condition": "!(iszero(call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+      "lvalue": "ok",
+      "rvalue": "1",
+      "writes": [
+        "ok"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ok",
+        "expression": "1",
+        "expression_normalized": "1"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_8"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 7
+      },
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n4"
+      ]
+    },
+    {
+      "fact_id": "fact_18",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "function": "guardedCall",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "rvalue": "ok_1",
+      "reads": [
+        "ok_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "ok_1"
+        ],
+        "resolved_operands": [
+          "ok"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "ok_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "891:9:slither",
+          "source_expression": "ok",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN ok_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_17"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "Require",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "control",
+      "contract": "SemanticIRExpressionViews",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm5_n5"
+      ],
+      "condition": "!((__sseir_eval_asm_s_2_3 != 0))",
+      "reads": [
+        "!((__sseir_eval_asm_s_2_3 != 0))"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "condition": "!((__sseir_eval_asm_s_2_3 != 0))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "SemanticIRExpressionViews.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 8,
+        "operation_order": 6
+      },
+      "anchor_cfg_node": "bb_asm5_n5",
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm5_n3"
+      ]
+    }
+  ]
+}

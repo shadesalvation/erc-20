@@ -1,0 +1,2189 @@
+{
+  "schema": "s-seir-yul-atomic-operation-program/v1",
+  "source": "tests/fixtures/semantic_ir_memory_defuse_complex.sol",
+  "functions": [
+    {
+      "schema": "s-seir-yul-atomic-operations/v1",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+      "assembly_blocks": [
+        {
+          "assembly_block_id": 1,
+          "operations": [
+            {
+              "atom_id": "yul_atom_b1_asm_s_1_2_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm1_n2",
+              "yul_function": null,
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "494:11:0",
+              "source_statement": "let free := mload(0x40)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "mload",
+              "atomic_kind": "MemoryRead",
+              "result": "__sseir_eval_asm_s_1_1",
+              "results": [
+                "__sseir_eval_asm_s_1_1"
+              ],
+              "arguments": [
+                "0x40"
+              ],
+              "raw_arguments": [
+                "0x40"
+              ],
+              "expression": "mload(0x40)",
+              "execution_expression": "mload(0x40)",
+              "normalized_expression": "mload(0x40)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 1
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_1_2_2",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm1_n2",
+              "yul_function": null,
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "482:23:0",
+              "source_statement": "let free := mload(0x40)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "declare_assign",
+              "atomic_kind": "ValueDeclare",
+              "result": "free",
+              "results": [
+                "free"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_1_1"
+              ],
+              "raw_arguments": [
+                "mload(0x40)"
+              ],
+              "expression": "free := __sseir_eval_asm_s_1_1",
+              "execution_expression": "free := __sseir_eval_asm_s_1_1",
+              "normalized_expression": "free = __sseir_eval_asm_s_1_1",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_1_2_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 2
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_2_3_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm1_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "529:15:0",
+              "source_statement": "let ptr := add(free, 0x20)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "add",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_2_1",
+              "results": [
+                "__sseir_eval_asm_s_2_1"
+              ],
+              "arguments": [
+                "free",
+                "0x20"
+              ],
+              "raw_arguments": [
+                "free",
+                "0x20"
+              ],
+              "expression": "add(free, 0x20)",
+              "execution_expression": "add(free, 0x20)",
+              "normalized_expression": "(free + 0x20)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 3
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_2_3_2",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm1_n3",
+              "yul_function": null,
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "518:26:0",
+              "source_statement": "let ptr := add(free, 0x20)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "declare_assign",
+              "atomic_kind": "ValueDeclare",
+              "result": "ptr",
+              "results": [
+                "ptr"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_2_1"
+              ],
+              "raw_arguments": [
+                "add(free, 0x20)"
+              ],
+              "expression": "ptr := __sseir_eval_asm_s_2_1",
+              "execution_expression": "ptr := __sseir_eval_asm_s_2_1",
+              "normalized_expression": "ptr = __sseir_eval_asm_s_2_1",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_2_3_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 4
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_3_4_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 4,
+              "cfg_block_id": "bb_asm1_n4",
+              "yul_function": null,
+              "stmt_ref": "asm_s_3",
+              "stmt_refs": [
+                "asm_s_3"
+              ],
+              "source_span": "595:17:0",
+              "source_statement": "mstore(ptr, user)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "mstore",
+              "atomic_kind": "MemoryWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "ptr",
+                "user"
+              ],
+              "raw_arguments": [
+                "ptr",
+                "user"
+              ],
+              "expression": "mstore(ptr, user)",
+              "execution_expression": "mstore(ptr, user)",
+              "normalized_expression": "mstore(ptr, user)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": true,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 5
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_4_5_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 5,
+              "cfg_block_id": "bb_asm1_n5",
+              "yul_function": null,
+              "stmt_ref": "asm_s_4",
+              "stmt_refs": [
+                "asm_s_4"
+              ],
+              "source_span": "632:14:0",
+              "source_statement": "mstore(add(ptr, 0x20), ledger.slot)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "add",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_4_1",
+              "results": [
+                "__sseir_eval_asm_s_4_1"
+              ],
+              "arguments": [
+                "ptr",
+                "0x20"
+              ],
+              "raw_arguments": [
+                "ptr",
+                "0x20"
+              ],
+              "expression": "add(ptr, 0x20)",
+              "execution_expression": "add(ptr, 0x20)",
+              "normalized_expression": "(ptr + 0x20)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 6
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_4_5_2",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 5,
+              "cfg_block_id": "bb_asm1_n5",
+              "yul_function": null,
+              "stmt_ref": "asm_s_4",
+              "stmt_refs": [
+                "asm_s_4"
+              ],
+              "source_span": "625:35:0",
+              "source_statement": "mstore(add(ptr, 0x20), ledger.slot)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "mstore",
+              "atomic_kind": "MemoryWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "__sseir_eval_asm_s_4_1",
+                "ledger.slot"
+              ],
+              "raw_arguments": [
+                "add(ptr, 0x20)",
+                "ledger.slot"
+              ],
+              "expression": "mstore(__sseir_eval_asm_s_4_1, ledger.slot)",
+              "execution_expression": "mstore(__sseir_eval_asm_s_4_1, ledger.slot)",
+              "normalized_expression": "mstore(__sseir_eval_asm_s_4_1, ledger.slot)",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_4_5_1"
+              ],
+              "side_effect": true,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 7
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_5_6_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 6,
+              "cfg_block_id": "bb_asm1_n6",
+              "yul_function": null,
+              "stmt_ref": "asm_s_5",
+              "stmt_refs": [
+                "asm_s_5"
+              ],
+              "source_span": "690:20:0",
+              "source_statement": "let outerSlot := keccak256(ptr, 0x40)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "keccak256",
+              "atomic_kind": "MemoryHash",
+              "result": "__sseir_eval_asm_s_5_1",
+              "results": [
+                "__sseir_eval_asm_s_5_1"
+              ],
+              "arguments": [
+                "ptr",
+                "0x40"
+              ],
+              "raw_arguments": [
+                "ptr",
+                "0x40"
+              ],
+              "expression": "keccak256(ptr, 0x40)",
+              "execution_expression": "keccak256(ptr, 0x40)",
+              "normalized_expression": "keccak256(ptr, 0x40)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 8
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_5_6_2",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 6,
+              "cfg_block_id": "bb_asm1_n6",
+              "yul_function": null,
+              "stmt_ref": "asm_s_5",
+              "stmt_refs": [
+                "asm_s_5"
+              ],
+              "source_span": "673:37:0",
+              "source_statement": "let outerSlot := keccak256(ptr, 0x40)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "declare_assign",
+              "atomic_kind": "ValueDeclare",
+              "result": "outerSlot",
+              "results": [
+                "outerSlot"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_5_1"
+              ],
+              "raw_arguments": [
+                "keccak256(ptr, 0x40)"
+              ],
+              "expression": "outerSlot := __sseir_eval_asm_s_5_1",
+              "execution_expression": "outerSlot := __sseir_eval_asm_s_5_1",
+              "normalized_expression": "outerSlot = __sseir_eval_asm_s_5_1",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_5_6_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 9
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_6_7_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 7,
+              "cfg_block_id": "bb_asm1_n7",
+              "yul_function": null,
+              "stmt_ref": "asm_s_6",
+              "stmt_refs": [
+                "asm_s_6"
+              ],
+              "source_span": "802:19:0",
+              "source_statement": "mstore(ptr, bucket)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "mstore",
+              "atomic_kind": "MemoryWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "ptr",
+                "bucket"
+              ],
+              "raw_arguments": [
+                "ptr",
+                "bucket"
+              ],
+              "expression": "mstore(ptr, bucket)",
+              "execution_expression": "mstore(ptr, bucket)",
+              "normalized_expression": "mstore(ptr, bucket)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": true,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 10
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_7_8_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 8,
+              "cfg_block_id": "bb_asm1_n8",
+              "yul_function": null,
+              "stmt_ref": "asm_s_7",
+              "stmt_refs": [
+                "asm_s_7"
+              ],
+              "source_span": "834:65:0",
+              "source_statement": "if normalizeBucket",
+              "source_node_type": "YulIf",
+              "context": "condition",
+              "operation": "branch",
+              "atomic_kind": "BranchCondition",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "normalizeBucket"
+              ],
+              "raw_arguments": [
+                "normalizeBucket"
+              ],
+              "expression": "branch(normalizeBucket)",
+              "execution_expression": "branch(normalizeBucket)",
+              "normalized_expression": "(normalizeBucket != 0)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": true,
+              "root_operation": true,
+              "sequence": 11
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_8_10_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 10,
+              "cfg_block_id": "bb_asm1_n10",
+              "yul_function": null,
+              "stmt_ref": "asm_s_8",
+              "stmt_refs": [
+                "asm_s_8"
+              ],
+              "source_span": "871:14:0",
+              "source_statement": "mstore(ptr, 1)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "mstore",
+              "atomic_kind": "MemoryWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "ptr",
+                "1"
+              ],
+              "raw_arguments": [
+                "ptr",
+                "1"
+              ],
+              "expression": "mstore(ptr, 1)",
+              "execution_expression": "mstore(ptr, 1)",
+              "normalized_expression": "mstore(ptr, 1)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": true,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 12
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_9_11_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 11,
+              "cfg_block_id": "bb_asm1_n11",
+              "yul_function": null,
+              "stmt_ref": "asm_s_9",
+              "stmt_refs": [
+                "asm_s_9"
+              ],
+              "source_span": "919:14:0",
+              "source_statement": "mstore(add(ptr, 0x20), outerSlot)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "add",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_9_1",
+              "results": [
+                "__sseir_eval_asm_s_9_1"
+              ],
+              "arguments": [
+                "ptr",
+                "0x20"
+              ],
+              "raw_arguments": [
+                "ptr",
+                "0x20"
+              ],
+              "expression": "add(ptr, 0x20)",
+              "execution_expression": "add(ptr, 0x20)",
+              "normalized_expression": "(ptr + 0x20)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 13
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_9_11_2",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 11,
+              "cfg_block_id": "bb_asm1_n11",
+              "yul_function": null,
+              "stmt_ref": "asm_s_9",
+              "stmt_refs": [
+                "asm_s_9"
+              ],
+              "source_span": "912:33:0",
+              "source_statement": "mstore(add(ptr, 0x20), outerSlot)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "mstore",
+              "atomic_kind": "MemoryWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "__sseir_eval_asm_s_9_1",
+                "outerSlot"
+              ],
+              "raw_arguments": [
+                "add(ptr, 0x20)",
+                "outerSlot"
+              ],
+              "expression": "mstore(__sseir_eval_asm_s_9_1, outerSlot)",
+              "execution_expression": "mstore(__sseir_eval_asm_s_9_1, outerSlot)",
+              "normalized_expression": "mstore(__sseir_eval_asm_s_9_1, outerSlot)",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_9_11_1"
+              ],
+              "side_effect": true,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 14
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_10_12_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 12,
+              "cfg_block_id": "bb_asm1_n12",
+              "yul_function": null,
+              "stmt_ref": "asm_s_10",
+              "stmt_refs": [
+                "asm_s_10"
+              ],
+              "source_span": "974:20:0",
+              "source_statement": "let leafSlot := keccak256(ptr, 0x40)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "keccak256",
+              "atomic_kind": "MemoryHash",
+              "result": "__sseir_eval_asm_s_10_1",
+              "results": [
+                "__sseir_eval_asm_s_10_1"
+              ],
+              "arguments": [
+                "ptr",
+                "0x40"
+              ],
+              "raw_arguments": [
+                "ptr",
+                "0x40"
+              ],
+              "expression": "keccak256(ptr, 0x40)",
+              "execution_expression": "keccak256(ptr, 0x40)",
+              "normalized_expression": "keccak256(ptr, 0x40)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 15
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_10_12_2",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 12,
+              "cfg_block_id": "bb_asm1_n12",
+              "yul_function": null,
+              "stmt_ref": "asm_s_10",
+              "stmt_refs": [
+                "asm_s_10"
+              ],
+              "source_span": "958:36:0",
+              "source_statement": "let leafSlot := keccak256(ptr, 0x40)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "declare_assign",
+              "atomic_kind": "ValueDeclare",
+              "result": "leafSlot",
+              "results": [
+                "leafSlot"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_10_1"
+              ],
+              "raw_arguments": [
+                "keccak256(ptr, 0x40)"
+              ],
+              "expression": "leafSlot := __sseir_eval_asm_s_10_1",
+              "execution_expression": "leafSlot := __sseir_eval_asm_s_10_1",
+              "normalized_expression": "leafSlot = __sseir_eval_asm_s_10_1",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_10_12_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 16
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_11_13_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 13,
+              "cfg_block_id": "bb_asm1_n13",
+              "yul_function": null,
+              "stmt_ref": "asm_s_11",
+              "stmt_refs": [
+                "asm_s_11"
+              ],
+              "source_span": "1024:15:0",
+              "source_statement": "let oldValue := sload(leafSlot)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "sload",
+              "atomic_kind": "StorageRead",
+              "result": "__sseir_eval_asm_s_11_1",
+              "results": [
+                "__sseir_eval_asm_s_11_1"
+              ],
+              "arguments": [
+                "leafSlot"
+              ],
+              "raw_arguments": [
+                "leafSlot"
+              ],
+              "expression": "sload(leafSlot)",
+              "execution_expression": "sload(leafSlot)",
+              "normalized_expression": "sload(leafSlot)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 17
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_11_13_2",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 13,
+              "cfg_block_id": "bb_asm1_n13",
+              "yul_function": null,
+              "stmt_ref": "asm_s_11",
+              "stmt_refs": [
+                "asm_s_11"
+              ],
+              "source_span": "1008:31:0",
+              "source_statement": "let oldValue := sload(leafSlot)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "declare_assign",
+              "atomic_kind": "ValueDeclare",
+              "result": "oldValue",
+              "results": [
+                "oldValue"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_11_1"
+              ],
+              "raw_arguments": [
+                "sload(leafSlot)"
+              ],
+              "expression": "oldValue := __sseir_eval_asm_s_11_1",
+              "execution_expression": "oldValue := __sseir_eval_asm_s_11_1",
+              "normalized_expression": "oldValue = __sseir_eval_asm_s_11_1",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_11_13_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 18
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_12_14_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 14,
+              "cfg_block_id": "bb_asm1_n14",
+              "yul_function": null,
+              "stmt_ref": "asm_s_12",
+              "stmt_refs": [
+                "asm_s_12"
+              ],
+              "source_span": "1068:20:0",
+              "source_statement": "let newValue := add(oldValue, delta)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "add",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_12_1",
+              "results": [
+                "__sseir_eval_asm_s_12_1"
+              ],
+              "arguments": [
+                "oldValue",
+                "delta"
+              ],
+              "raw_arguments": [
+                "oldValue",
+                "delta"
+              ],
+              "expression": "add(oldValue, delta)",
+              "execution_expression": "add(oldValue, delta)",
+              "normalized_expression": "(oldValue + delta)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 19
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_12_14_2",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 14,
+              "cfg_block_id": "bb_asm1_n14",
+              "yul_function": null,
+              "stmt_ref": "asm_s_12",
+              "stmt_refs": [
+                "asm_s_12"
+              ],
+              "source_span": "1052:36:0",
+              "source_statement": "let newValue := add(oldValue, delta)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "declare_assign",
+              "atomic_kind": "ValueDeclare",
+              "result": "newValue",
+              "results": [
+                "newValue"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_12_1"
+              ],
+              "raw_arguments": [
+                "add(oldValue, delta)"
+              ],
+              "expression": "newValue := __sseir_eval_asm_s_12_1",
+              "execution_expression": "newValue := __sseir_eval_asm_s_12_1",
+              "normalized_expression": "newValue = __sseir_eval_asm_s_12_1",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_12_14_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 20
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_13_15_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 15,
+              "cfg_block_id": "bb_asm1_n15",
+              "yul_function": null,
+              "stmt_ref": "asm_s_13",
+              "stmt_refs": [
+                "asm_s_13"
+              ],
+              "source_span": "1101:26:0",
+              "source_statement": "sstore(leafSlot, newValue)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "sstore",
+              "atomic_kind": "StorageWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "leafSlot",
+                "newValue"
+              ],
+              "raw_arguments": [
+                "leafSlot",
+                "newValue"
+              ],
+              "expression": "sstore(leafSlot, newValue)",
+              "execution_expression": "sstore(leafSlot, newValue)",
+              "normalized_expression": "sstore(leafSlot, newValue)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": true,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 21
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_14_16_1",
+              "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 16,
+              "cfg_block_id": "bb_asm1_n16",
+              "yul_function": null,
+              "stmt_ref": "asm_s_14",
+              "stmt_refs": [
+                "asm_s_14"
+              ],
+              "source_span": "1140:18:0",
+              "source_statement": "result := newValue",
+              "source_node_type": "YulAssignment",
+              "context": "value",
+              "operation": "assign",
+              "atomic_kind": "ValueAssign",
+              "result": "result",
+              "results": [
+                "result"
+              ],
+              "arguments": [
+                "newValue"
+              ],
+              "raw_arguments": [
+                "newValue"
+              ],
+              "expression": "result := newValue",
+              "execution_expression": "result := newValue",
+              "normalized_expression": "result = newValue",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 22
+            }
+          ],
+          "node_evaluations": [
+            {
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm1_n2",
+              "stmt_ref": "asm_s_1",
+              "context": "value",
+              "final": "__sseir_eval_asm_s_1_1",
+              "final_normalized": "__sseir_eval_asm_s_1_1",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_1_2_1",
+                  "temp": "__sseir_eval_asm_s_1_1",
+                  "expression": "mload(0x40)",
+                  "execution_expression": "mload(0x40)",
+                  "expression_normalized": "mload(0x40)",
+                  "call": "mload",
+                  "raw_args": [
+                    "0x40"
+                  ],
+                  "evaluated_args": [
+                    "0x40"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_1_2_1",
+                "yul_atom_b1_asm_s_1_2_2"
+              ]
+            },
+            {
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm1_n3",
+              "stmt_ref": "asm_s_2",
+              "context": "value",
+              "final": "__sseir_eval_asm_s_2_1",
+              "final_normalized": "__sseir_eval_asm_s_2_1",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_2_3_1",
+                  "temp": "__sseir_eval_asm_s_2_1",
+                  "expression": "add(free, 0x20)",
+                  "execution_expression": "add(free, 0x20)",
+                  "expression_normalized": "(free + 0x20)",
+                  "call": "add",
+                  "raw_args": [
+                    "free",
+                    "0x20"
+                  ],
+                  "evaluated_args": [
+                    "free",
+                    "0x20"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_2_3_1",
+                "yul_atom_b1_asm_s_2_3_2"
+              ]
+            },
+            {
+              "cfg_node_id": 4,
+              "cfg_block_id": "bb_asm1_n4",
+              "stmt_ref": "asm_s_3",
+              "context": "statement",
+              "final": "mstore(ptr, user)",
+              "final_normalized": "mstore(ptr, user)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_3_4_1",
+                  "temp": null,
+                  "expression": "mstore(ptr, user)",
+                  "execution_expression": "mstore(ptr, user)",
+                  "expression_normalized": "mstore(ptr, user)",
+                  "call": "mstore",
+                  "raw_args": [
+                    "ptr",
+                    "user"
+                  ],
+                  "evaluated_args": [
+                    "ptr",
+                    "user"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_3_4_1"
+              ]
+            },
+            {
+              "cfg_node_id": 5,
+              "cfg_block_id": "bb_asm1_n5",
+              "stmt_ref": "asm_s_4",
+              "context": "statement",
+              "final": "mstore(add(ptr, 0x20), ledger.slot)",
+              "final_normalized": "mstore((ptr + 0x20), ledger.slot)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_4_5_1",
+                  "temp": "__sseir_eval_asm_s_4_1",
+                  "expression": "add(ptr, 0x20)",
+                  "execution_expression": "add(ptr, 0x20)",
+                  "expression_normalized": "(ptr + 0x20)",
+                  "call": "add",
+                  "raw_args": [
+                    "ptr",
+                    "0x20"
+                  ],
+                  "evaluated_args": [
+                    "ptr",
+                    "0x20"
+                  ],
+                  "dependencies": []
+                },
+                {
+                  "order": 2,
+                  "atom_id": "yul_atom_b1_asm_s_4_5_2",
+                  "temp": null,
+                  "expression": "mstore(__sseir_eval_asm_s_4_1, ledger.slot)",
+                  "execution_expression": "mstore(__sseir_eval_asm_s_4_1, ledger.slot)",
+                  "expression_normalized": "mstore(__sseir_eval_asm_s_4_1, ledger.slot)",
+                  "call": "mstore",
+                  "raw_args": [
+                    "add(ptr, 0x20)",
+                    "ledger.slot"
+                  ],
+                  "evaluated_args": [
+                    "__sseir_eval_asm_s_4_1",
+                    "ledger.slot"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b1_asm_s_4_5_1"
+                  ]
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_4_5_1",
+                "yul_atom_b1_asm_s_4_5_2"
+              ]
+            },
+            {
+              "cfg_node_id": 6,
+              "cfg_block_id": "bb_asm1_n6",
+              "stmt_ref": "asm_s_5",
+              "context": "value",
+              "final": "__sseir_eval_asm_s_5_1",
+              "final_normalized": "__sseir_eval_asm_s_5_1",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_5_6_1",
+                  "temp": "__sseir_eval_asm_s_5_1",
+                  "expression": "keccak256(ptr, 0x40)",
+                  "execution_expression": "keccak256(ptr, 0x40)",
+                  "expression_normalized": "keccak256(ptr, 0x40)",
+                  "call": "keccak256",
+                  "raw_args": [
+                    "ptr",
+                    "0x40"
+                  ],
+                  "evaluated_args": [
+                    "ptr",
+                    "0x40"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_5_6_1",
+                "yul_atom_b1_asm_s_5_6_2"
+              ]
+            },
+            {
+              "cfg_node_id": 7,
+              "cfg_block_id": "bb_asm1_n7",
+              "stmt_ref": "asm_s_6",
+              "context": "statement",
+              "final": "mstore(ptr, bucket)",
+              "final_normalized": "mstore(ptr, bucket)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_6_7_1",
+                  "temp": null,
+                  "expression": "mstore(ptr, bucket)",
+                  "execution_expression": "mstore(ptr, bucket)",
+                  "expression_normalized": "mstore(ptr, bucket)",
+                  "call": "mstore",
+                  "raw_args": [
+                    "ptr",
+                    "bucket"
+                  ],
+                  "evaluated_args": [
+                    "ptr",
+                    "bucket"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_6_7_1"
+              ]
+            },
+            {
+              "cfg_node_id": 8,
+              "cfg_block_id": "bb_asm1_n8",
+              "stmt_ref": "asm_s_7",
+              "context": "condition",
+              "final": "normalizeBucket",
+              "final_normalized": "(normalizeBucket != 0)",
+              "steps": [],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_7_8_1"
+              ]
+            },
+            {
+              "cfg_node_id": 10,
+              "cfg_block_id": "bb_asm1_n10",
+              "stmt_ref": "asm_s_8",
+              "context": "statement",
+              "final": "mstore(ptr, 1)",
+              "final_normalized": "mstore(ptr, 1)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_8_10_1",
+                  "temp": null,
+                  "expression": "mstore(ptr, 1)",
+                  "execution_expression": "mstore(ptr, 1)",
+                  "expression_normalized": "mstore(ptr, 1)",
+                  "call": "mstore",
+                  "raw_args": [
+                    "ptr",
+                    "1"
+                  ],
+                  "evaluated_args": [
+                    "ptr",
+                    "1"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_8_10_1"
+              ]
+            },
+            {
+              "cfg_node_id": 11,
+              "cfg_block_id": "bb_asm1_n11",
+              "stmt_ref": "asm_s_9",
+              "context": "statement",
+              "final": "mstore(add(ptr, 0x20), outerSlot)",
+              "final_normalized": "mstore((ptr + 0x20), outerSlot)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_9_11_1",
+                  "temp": "__sseir_eval_asm_s_9_1",
+                  "expression": "add(ptr, 0x20)",
+                  "execution_expression": "add(ptr, 0x20)",
+                  "expression_normalized": "(ptr + 0x20)",
+                  "call": "add",
+                  "raw_args": [
+                    "ptr",
+                    "0x20"
+                  ],
+                  "evaluated_args": [
+                    "ptr",
+                    "0x20"
+                  ],
+                  "dependencies": []
+                },
+                {
+                  "order": 2,
+                  "atom_id": "yul_atom_b1_asm_s_9_11_2",
+                  "temp": null,
+                  "expression": "mstore(__sseir_eval_asm_s_9_1, outerSlot)",
+                  "execution_expression": "mstore(__sseir_eval_asm_s_9_1, outerSlot)",
+                  "expression_normalized": "mstore(__sseir_eval_asm_s_9_1, outerSlot)",
+                  "call": "mstore",
+                  "raw_args": [
+                    "add(ptr, 0x20)",
+                    "outerSlot"
+                  ],
+                  "evaluated_args": [
+                    "__sseir_eval_asm_s_9_1",
+                    "outerSlot"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b1_asm_s_9_11_1"
+                  ]
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_9_11_1",
+                "yul_atom_b1_asm_s_9_11_2"
+              ]
+            },
+            {
+              "cfg_node_id": 12,
+              "cfg_block_id": "bb_asm1_n12",
+              "stmt_ref": "asm_s_10",
+              "context": "value",
+              "final": "__sseir_eval_asm_s_10_1",
+              "final_normalized": "__sseir_eval_asm_s_10_1",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_10_12_1",
+                  "temp": "__sseir_eval_asm_s_10_1",
+                  "expression": "keccak256(ptr, 0x40)",
+                  "execution_expression": "keccak256(ptr, 0x40)",
+                  "expression_normalized": "keccak256(ptr, 0x40)",
+                  "call": "keccak256",
+                  "raw_args": [
+                    "ptr",
+                    "0x40"
+                  ],
+                  "evaluated_args": [
+                    "ptr",
+                    "0x40"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_10_12_1",
+                "yul_atom_b1_asm_s_10_12_2"
+              ]
+            },
+            {
+              "cfg_node_id": 13,
+              "cfg_block_id": "bb_asm1_n13",
+              "stmt_ref": "asm_s_11",
+              "context": "value",
+              "final": "__sseir_eval_asm_s_11_1",
+              "final_normalized": "__sseir_eval_asm_s_11_1",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_11_13_1",
+                  "temp": "__sseir_eval_asm_s_11_1",
+                  "expression": "sload(leafSlot)",
+                  "execution_expression": "sload(leafSlot)",
+                  "expression_normalized": "sload(leafSlot)",
+                  "call": "sload",
+                  "raw_args": [
+                    "leafSlot"
+                  ],
+                  "evaluated_args": [
+                    "leafSlot"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_11_13_1",
+                "yul_atom_b1_asm_s_11_13_2"
+              ]
+            },
+            {
+              "cfg_node_id": 14,
+              "cfg_block_id": "bb_asm1_n14",
+              "stmt_ref": "asm_s_12",
+              "context": "value",
+              "final": "__sseir_eval_asm_s_12_1",
+              "final_normalized": "__sseir_eval_asm_s_12_1",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_12_14_1",
+                  "temp": "__sseir_eval_asm_s_12_1",
+                  "expression": "add(oldValue, delta)",
+                  "execution_expression": "add(oldValue, delta)",
+                  "expression_normalized": "(oldValue + delta)",
+                  "call": "add",
+                  "raw_args": [
+                    "oldValue",
+                    "delta"
+                  ],
+                  "evaluated_args": [
+                    "oldValue",
+                    "delta"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_12_14_1",
+                "yul_atom_b1_asm_s_12_14_2"
+              ]
+            },
+            {
+              "cfg_node_id": 15,
+              "cfg_block_id": "bb_asm1_n15",
+              "stmt_ref": "asm_s_13",
+              "context": "statement",
+              "final": "sstore(leafSlot, newValue)",
+              "final_normalized": "sstore(leafSlot, newValue)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_13_15_1",
+                  "temp": null,
+                  "expression": "sstore(leafSlot, newValue)",
+                  "execution_expression": "sstore(leafSlot, newValue)",
+                  "expression_normalized": "sstore(leafSlot, newValue)",
+                  "call": "sstore",
+                  "raw_args": [
+                    "leafSlot",
+                    "newValue"
+                  ],
+                  "evaluated_args": [
+                    "leafSlot",
+                    "newValue"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_13_15_1"
+              ]
+            },
+            {
+              "cfg_node_id": 16,
+              "cfg_block_id": "bb_asm1_n16",
+              "stmt_ref": "asm_s_14",
+              "context": "value",
+              "final": "newValue",
+              "final_normalized": "newValue",
+              "steps": [],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_14_16_1"
+              ]
+            }
+          ],
+          "local_functions": []
+        }
+      ],
+      "operations": [
+        {
+          "atom_id": "yul_atom_b1_asm_s_1_2_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm1_n2",
+          "yul_function": null,
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "494:11:0",
+          "source_statement": "let free := mload(0x40)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "mload",
+          "atomic_kind": "MemoryRead",
+          "result": "__sseir_eval_asm_s_1_1",
+          "results": [
+            "__sseir_eval_asm_s_1_1"
+          ],
+          "arguments": [
+            "0x40"
+          ],
+          "raw_arguments": [
+            "0x40"
+          ],
+          "expression": "mload(0x40)",
+          "execution_expression": "mload(0x40)",
+          "normalized_expression": "mload(0x40)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 1
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_1_2_2",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm1_n2",
+          "yul_function": null,
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "482:23:0",
+          "source_statement": "let free := mload(0x40)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "declare_assign",
+          "atomic_kind": "ValueDeclare",
+          "result": "free",
+          "results": [
+            "free"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_1_1"
+          ],
+          "raw_arguments": [
+            "mload(0x40)"
+          ],
+          "expression": "free := __sseir_eval_asm_s_1_1",
+          "execution_expression": "free := __sseir_eval_asm_s_1_1",
+          "normalized_expression": "free = __sseir_eval_asm_s_1_1",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_1_2_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 2
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_2_3_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm1_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "529:15:0",
+          "source_statement": "let ptr := add(free, 0x20)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "add",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_2_1",
+          "results": [
+            "__sseir_eval_asm_s_2_1"
+          ],
+          "arguments": [
+            "free",
+            "0x20"
+          ],
+          "raw_arguments": [
+            "free",
+            "0x20"
+          ],
+          "expression": "add(free, 0x20)",
+          "execution_expression": "add(free, 0x20)",
+          "normalized_expression": "(free + 0x20)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 3
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_2_3_2",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm1_n3",
+          "yul_function": null,
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "518:26:0",
+          "source_statement": "let ptr := add(free, 0x20)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "declare_assign",
+          "atomic_kind": "ValueDeclare",
+          "result": "ptr",
+          "results": [
+            "ptr"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_2_1"
+          ],
+          "raw_arguments": [
+            "add(free, 0x20)"
+          ],
+          "expression": "ptr := __sseir_eval_asm_s_2_1",
+          "execution_expression": "ptr := __sseir_eval_asm_s_2_1",
+          "normalized_expression": "ptr = __sseir_eval_asm_s_2_1",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_2_3_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 4
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_3_4_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 4,
+          "cfg_block_id": "bb_asm1_n4",
+          "yul_function": null,
+          "stmt_ref": "asm_s_3",
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "source_span": "595:17:0",
+          "source_statement": "mstore(ptr, user)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "mstore",
+          "atomic_kind": "MemoryWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "ptr",
+            "user"
+          ],
+          "raw_arguments": [
+            "ptr",
+            "user"
+          ],
+          "expression": "mstore(ptr, user)",
+          "execution_expression": "mstore(ptr, user)",
+          "normalized_expression": "mstore(ptr, user)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": true,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 5
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_4_5_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 5,
+          "cfg_block_id": "bb_asm1_n5",
+          "yul_function": null,
+          "stmt_ref": "asm_s_4",
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "source_span": "632:14:0",
+          "source_statement": "mstore(add(ptr, 0x20), ledger.slot)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "add",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_4_1",
+          "results": [
+            "__sseir_eval_asm_s_4_1"
+          ],
+          "arguments": [
+            "ptr",
+            "0x20"
+          ],
+          "raw_arguments": [
+            "ptr",
+            "0x20"
+          ],
+          "expression": "add(ptr, 0x20)",
+          "execution_expression": "add(ptr, 0x20)",
+          "normalized_expression": "(ptr + 0x20)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 6
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_4_5_2",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 5,
+          "cfg_block_id": "bb_asm1_n5",
+          "yul_function": null,
+          "stmt_ref": "asm_s_4",
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "source_span": "625:35:0",
+          "source_statement": "mstore(add(ptr, 0x20), ledger.slot)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "mstore",
+          "atomic_kind": "MemoryWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "__sseir_eval_asm_s_4_1",
+            "ledger.slot"
+          ],
+          "raw_arguments": [
+            "add(ptr, 0x20)",
+            "ledger.slot"
+          ],
+          "expression": "mstore(__sseir_eval_asm_s_4_1, ledger.slot)",
+          "execution_expression": "mstore(__sseir_eval_asm_s_4_1, ledger.slot)",
+          "normalized_expression": "mstore(__sseir_eval_asm_s_4_1, ledger.slot)",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_4_5_1"
+          ],
+          "side_effect": true,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 7
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_5_6_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 6,
+          "cfg_block_id": "bb_asm1_n6",
+          "yul_function": null,
+          "stmt_ref": "asm_s_5",
+          "stmt_refs": [
+            "asm_s_5"
+          ],
+          "source_span": "690:20:0",
+          "source_statement": "let outerSlot := keccak256(ptr, 0x40)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "keccak256",
+          "atomic_kind": "MemoryHash",
+          "result": "__sseir_eval_asm_s_5_1",
+          "results": [
+            "__sseir_eval_asm_s_5_1"
+          ],
+          "arguments": [
+            "ptr",
+            "0x40"
+          ],
+          "raw_arguments": [
+            "ptr",
+            "0x40"
+          ],
+          "expression": "keccak256(ptr, 0x40)",
+          "execution_expression": "keccak256(ptr, 0x40)",
+          "normalized_expression": "keccak256(ptr, 0x40)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 8
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_5_6_2",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 6,
+          "cfg_block_id": "bb_asm1_n6",
+          "yul_function": null,
+          "stmt_ref": "asm_s_5",
+          "stmt_refs": [
+            "asm_s_5"
+          ],
+          "source_span": "673:37:0",
+          "source_statement": "let outerSlot := keccak256(ptr, 0x40)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "declare_assign",
+          "atomic_kind": "ValueDeclare",
+          "result": "outerSlot",
+          "results": [
+            "outerSlot"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_5_1"
+          ],
+          "raw_arguments": [
+            "keccak256(ptr, 0x40)"
+          ],
+          "expression": "outerSlot := __sseir_eval_asm_s_5_1",
+          "execution_expression": "outerSlot := __sseir_eval_asm_s_5_1",
+          "normalized_expression": "outerSlot = __sseir_eval_asm_s_5_1",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_5_6_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 9
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_6_7_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 7,
+          "cfg_block_id": "bb_asm1_n7",
+          "yul_function": null,
+          "stmt_ref": "asm_s_6",
+          "stmt_refs": [
+            "asm_s_6"
+          ],
+          "source_span": "802:19:0",
+          "source_statement": "mstore(ptr, bucket)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "mstore",
+          "atomic_kind": "MemoryWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "ptr",
+            "bucket"
+          ],
+          "raw_arguments": [
+            "ptr",
+            "bucket"
+          ],
+          "expression": "mstore(ptr, bucket)",
+          "execution_expression": "mstore(ptr, bucket)",
+          "normalized_expression": "mstore(ptr, bucket)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": true,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 10
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_7_8_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 8,
+          "cfg_block_id": "bb_asm1_n8",
+          "yul_function": null,
+          "stmt_ref": "asm_s_7",
+          "stmt_refs": [
+            "asm_s_7"
+          ],
+          "source_span": "834:65:0",
+          "source_statement": "if normalizeBucket",
+          "source_node_type": "YulIf",
+          "context": "condition",
+          "operation": "branch",
+          "atomic_kind": "BranchCondition",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "normalizeBucket"
+          ],
+          "raw_arguments": [
+            "normalizeBucket"
+          ],
+          "expression": "branch(normalizeBucket)",
+          "execution_expression": "branch(normalizeBucket)",
+          "normalized_expression": "(normalizeBucket != 0)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": true,
+          "root_operation": true,
+          "sequence": 11
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_8_10_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 10,
+          "cfg_block_id": "bb_asm1_n10",
+          "yul_function": null,
+          "stmt_ref": "asm_s_8",
+          "stmt_refs": [
+            "asm_s_8"
+          ],
+          "source_span": "871:14:0",
+          "source_statement": "mstore(ptr, 1)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "mstore",
+          "atomic_kind": "MemoryWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "ptr",
+            "1"
+          ],
+          "raw_arguments": [
+            "ptr",
+            "1"
+          ],
+          "expression": "mstore(ptr, 1)",
+          "execution_expression": "mstore(ptr, 1)",
+          "normalized_expression": "mstore(ptr, 1)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": true,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 12
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_9_11_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 11,
+          "cfg_block_id": "bb_asm1_n11",
+          "yul_function": null,
+          "stmt_ref": "asm_s_9",
+          "stmt_refs": [
+            "asm_s_9"
+          ],
+          "source_span": "919:14:0",
+          "source_statement": "mstore(add(ptr, 0x20), outerSlot)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "add",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_9_1",
+          "results": [
+            "__sseir_eval_asm_s_9_1"
+          ],
+          "arguments": [
+            "ptr",
+            "0x20"
+          ],
+          "raw_arguments": [
+            "ptr",
+            "0x20"
+          ],
+          "expression": "add(ptr, 0x20)",
+          "execution_expression": "add(ptr, 0x20)",
+          "normalized_expression": "(ptr + 0x20)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 13
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_9_11_2",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 11,
+          "cfg_block_id": "bb_asm1_n11",
+          "yul_function": null,
+          "stmt_ref": "asm_s_9",
+          "stmt_refs": [
+            "asm_s_9"
+          ],
+          "source_span": "912:33:0",
+          "source_statement": "mstore(add(ptr, 0x20), outerSlot)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "mstore",
+          "atomic_kind": "MemoryWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "__sseir_eval_asm_s_9_1",
+            "outerSlot"
+          ],
+          "raw_arguments": [
+            "add(ptr, 0x20)",
+            "outerSlot"
+          ],
+          "expression": "mstore(__sseir_eval_asm_s_9_1, outerSlot)",
+          "execution_expression": "mstore(__sseir_eval_asm_s_9_1, outerSlot)",
+          "normalized_expression": "mstore(__sseir_eval_asm_s_9_1, outerSlot)",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_9_11_1"
+          ],
+          "side_effect": true,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 14
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_10_12_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 12,
+          "cfg_block_id": "bb_asm1_n12",
+          "yul_function": null,
+          "stmt_ref": "asm_s_10",
+          "stmt_refs": [
+            "asm_s_10"
+          ],
+          "source_span": "974:20:0",
+          "source_statement": "let leafSlot := keccak256(ptr, 0x40)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "keccak256",
+          "atomic_kind": "MemoryHash",
+          "result": "__sseir_eval_asm_s_10_1",
+          "results": [
+            "__sseir_eval_asm_s_10_1"
+          ],
+          "arguments": [
+            "ptr",
+            "0x40"
+          ],
+          "raw_arguments": [
+            "ptr",
+            "0x40"
+          ],
+          "expression": "keccak256(ptr, 0x40)",
+          "execution_expression": "keccak256(ptr, 0x40)",
+          "normalized_expression": "keccak256(ptr, 0x40)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 15
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_10_12_2",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 12,
+          "cfg_block_id": "bb_asm1_n12",
+          "yul_function": null,
+          "stmt_ref": "asm_s_10",
+          "stmt_refs": [
+            "asm_s_10"
+          ],
+          "source_span": "958:36:0",
+          "source_statement": "let leafSlot := keccak256(ptr, 0x40)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "declare_assign",
+          "atomic_kind": "ValueDeclare",
+          "result": "leafSlot",
+          "results": [
+            "leafSlot"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_10_1"
+          ],
+          "raw_arguments": [
+            "keccak256(ptr, 0x40)"
+          ],
+          "expression": "leafSlot := __sseir_eval_asm_s_10_1",
+          "execution_expression": "leafSlot := __sseir_eval_asm_s_10_1",
+          "normalized_expression": "leafSlot = __sseir_eval_asm_s_10_1",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_10_12_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 16
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_11_13_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 13,
+          "cfg_block_id": "bb_asm1_n13",
+          "yul_function": null,
+          "stmt_ref": "asm_s_11",
+          "stmt_refs": [
+            "asm_s_11"
+          ],
+          "source_span": "1024:15:0",
+          "source_statement": "let oldValue := sload(leafSlot)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "sload",
+          "atomic_kind": "StorageRead",
+          "result": "__sseir_eval_asm_s_11_1",
+          "results": [
+            "__sseir_eval_asm_s_11_1"
+          ],
+          "arguments": [
+            "leafSlot"
+          ],
+          "raw_arguments": [
+            "leafSlot"
+          ],
+          "expression": "sload(leafSlot)",
+          "execution_expression": "sload(leafSlot)",
+          "normalized_expression": "sload(leafSlot)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 17
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_11_13_2",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 13,
+          "cfg_block_id": "bb_asm1_n13",
+          "yul_function": null,
+          "stmt_ref": "asm_s_11",
+          "stmt_refs": [
+            "asm_s_11"
+          ],
+          "source_span": "1008:31:0",
+          "source_statement": "let oldValue := sload(leafSlot)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "declare_assign",
+          "atomic_kind": "ValueDeclare",
+          "result": "oldValue",
+          "results": [
+            "oldValue"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_11_1"
+          ],
+          "raw_arguments": [
+            "sload(leafSlot)"
+          ],
+          "expression": "oldValue := __sseir_eval_asm_s_11_1",
+          "execution_expression": "oldValue := __sseir_eval_asm_s_11_1",
+          "normalized_expression": "oldValue = __sseir_eval_asm_s_11_1",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_11_13_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 18
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_12_14_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 14,
+          "cfg_block_id": "bb_asm1_n14",
+          "yul_function": null,
+          "stmt_ref": "asm_s_12",
+          "stmt_refs": [
+            "asm_s_12"
+          ],
+          "source_span": "1068:20:0",
+          "source_statement": "let newValue := add(oldValue, delta)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "add",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_12_1",
+          "results": [
+            "__sseir_eval_asm_s_12_1"
+          ],
+          "arguments": [
+            "oldValue",
+            "delta"
+          ],
+          "raw_arguments": [
+            "oldValue",
+            "delta"
+          ],
+          "expression": "add(oldValue, delta)",
+          "execution_expression": "add(oldValue, delta)",
+          "normalized_expression": "(oldValue + delta)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 19
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_12_14_2",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 14,
+          "cfg_block_id": "bb_asm1_n14",
+          "yul_function": null,
+          "stmt_ref": "asm_s_12",
+          "stmt_refs": [
+            "asm_s_12"
+          ],
+          "source_span": "1052:36:0",
+          "source_statement": "let newValue := add(oldValue, delta)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "declare_assign",
+          "atomic_kind": "ValueDeclare",
+          "result": "newValue",
+          "results": [
+            "newValue"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_12_1"
+          ],
+          "raw_arguments": [
+            "add(oldValue, delta)"
+          ],
+          "expression": "newValue := __sseir_eval_asm_s_12_1",
+          "execution_expression": "newValue := __sseir_eval_asm_s_12_1",
+          "normalized_expression": "newValue = __sseir_eval_asm_s_12_1",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_12_14_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 20
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_13_15_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 15,
+          "cfg_block_id": "bb_asm1_n15",
+          "yul_function": null,
+          "stmt_ref": "asm_s_13",
+          "stmt_refs": [
+            "asm_s_13"
+          ],
+          "source_span": "1101:26:0",
+          "source_statement": "sstore(leafSlot, newValue)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "sstore",
+          "atomic_kind": "StorageWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "leafSlot",
+            "newValue"
+          ],
+          "raw_arguments": [
+            "leafSlot",
+            "newValue"
+          ],
+          "expression": "sstore(leafSlot, newValue)",
+          "execution_expression": "sstore(leafSlot, newValue)",
+          "normalized_expression": "sstore(leafSlot, newValue)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": true,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 21
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_14_16_1",
+          "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 16,
+          "cfg_block_id": "bb_asm1_n16",
+          "yul_function": null,
+          "stmt_ref": "asm_s_14",
+          "stmt_refs": [
+            "asm_s_14"
+          ],
+          "source_span": "1140:18:0",
+          "source_statement": "result := newValue",
+          "source_node_type": "YulAssignment",
+          "context": "value",
+          "operation": "assign",
+          "atomic_kind": "ValueAssign",
+          "result": "result",
+          "results": [
+            "result"
+          ],
+          "arguments": [
+            "newValue"
+          ],
+          "raw_arguments": [
+            "newValue"
+          ],
+          "expression": "result := newValue",
+          "execution_expression": "result := newValue",
+          "normalized_expression": "result = newValue",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 22
+        }
+      ]
+    }
+  ]
+}

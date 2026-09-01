@@ -1,0 +1,4594 @@
+[
+  {
+    "function_id": "GuardedERC20.onlyOwner()",
+    "contract": "GuardedERC20",
+    "function": "onlyOwner",
+    "signature": "onlyOwner()",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "if (msg.sender != owner) revert NotOwner(msg.sender)",
+        "src": "1086:52:0",
+        "function_id": "GuardedERC20.onlyOwner()",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "revert NotOwner(msg.sender)",
+        "src": "1111:27:0",
+        "function_id": "GuardedERC20.onlyOwner()",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "1076:80:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "msg.sender != owner"
+          },
+          "attrs": {
+            "src": "1090:19:slither",
+            "slither_node_type": "NodeType.IF",
+            "text": "msg.sender != owner"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert NotOwner(address)(msg.sender)"
+          },
+          "attrs": {
+            "src": "1111:27:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "revert NotOwner(address)(msg.sender)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "src": "1086:52:slither",
+            "slither_node_type": "NodeType.ENDIF",
+            "text": "endif"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "placeholder"
+          },
+          "attrs": {
+            "src": "1148:1:slither",
+            "slither_node_type": "NodeType.PLACEHOLDER",
+            "text": "placeholder"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n3",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "join"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n1",
+          "dependent": "bb_sol_slither_n2",
+          "edge_kind": "true",
+          "condition": "msg.sender != owner",
+          "predicate": "msg.sender != owner"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20.onlyOwner()",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "GuardedERC20.nonReentrant()",
+    "contract": "GuardedERC20",
+    "function": "nonReentrant",
+    "signature": "nonReentrant()",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "if (transferLock == 1) revert Reentered()",
+        "src": "1196:41:0",
+        "function_id": "GuardedERC20.nonReentrant()",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "revert Reentered()",
+        "src": "1219:18:0",
+        "function_id": "GuardedERC20.nonReentrant()",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "transferLock = 1",
+        "src": "1247:16:0",
+        "function_id": "GuardedERC20.nonReentrant()",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "transferLock = 0",
+        "src": "1284:16:0",
+        "function_id": "GuardedERC20.nonReentrant()",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "1186:121:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "transferLock == 1"
+          },
+          "attrs": {
+            "src": "1200:17:slither",
+            "slither_node_type": "NodeType.IF",
+            "text": "transferLock == 1"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert Reentered()()"
+          },
+          "attrs": {
+            "src": "1219:18:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "revert Reentered()()"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "src": "1196:41:slither",
+            "slither_node_type": "NodeType.ENDIF",
+            "text": "endif"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "transferLock = 1"
+          },
+          "attrs": {
+            "src": "1247:16:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "transferLock = 1"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "placeholder"
+          },
+          "attrs": {
+            "src": "1273:1:slither",
+            "slither_node_type": "NodeType.PLACEHOLDER",
+            "text": "placeholder"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "transferLock = 0"
+          },
+          "attrs": {
+            "src": "1284:16:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "transferLock = 0"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n3",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n1",
+          "dependent": "bb_sol_slither_n2",
+          "edge_kind": "true",
+          "condition": "transferLock == 1",
+          "predicate": "transferLock == 1"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20.nonReentrant()",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "GuardedERC20.constructor(string, string, uint256)",
+    "contract": "GuardedERC20",
+    "function": "constructor",
+    "signature": "constructor(string, string, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "owner = msg.sender",
+        "src": "1410:18:0",
+        "function_id": "GuardedERC20.constructor(string, string, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "name = tokenName",
+        "src": "1438:16:0",
+        "function_id": "GuardedERC20.constructor(string, string, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "symbol = tokenSymbol",
+        "src": "1464:20:0",
+        "function_id": "GuardedERC20.constructor(string, string, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "maxOwnerMint = initialSupply * 2",
+        "src": "1494:32:0",
+        "function_id": "GuardedERC20.constructor(string, string, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "deploymentSalt = keccak256(abi.encodePacked(block.chainid, address(this), tokenName))",
+        "src": "1536:85:0",
+        "function_id": "GuardedERC20.constructor(string, string, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_6",
+        "lang": "solidity",
+        "text": "_mint(msg.sender, initialSupply)",
+        "src": "1631:32:0",
+        "function_id": "GuardedERC20.constructor(string, string, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_7",
+        "lang": "solidity",
+        "text": "emit Audit(keccak256(\"DEPLOY\"), abi.encode(msg.sender, initialSupply))",
+        "src": "1673:70:0",
+        "function_id": "GuardedERC20.constructor(string, string, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "1400:350:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "owner = msg.sender"
+          },
+          "attrs": {
+            "src": "1410:18:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "owner = msg.sender"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "name = tokenName"
+          },
+          "attrs": {
+            "src": "1438:16:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "name = tokenName"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "symbol = tokenSymbol"
+          },
+          "attrs": {
+            "src": "1464:20:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "symbol = tokenSymbol"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "maxOwnerMint = initialSupply * 2"
+          },
+          "attrs": {
+            "src": "1494:32:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "maxOwnerMint = initialSupply * 2"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "deploymentSalt = keccak256(bytes)(abi.encodePacked(block.chainid,address(this),tokenName))"
+          },
+          "attrs": {
+            "src": "1536:85:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "deploymentSalt = keccak256(bytes)(abi.encodePacked(block.chainid,address(this),tokenName))"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_6"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_mint(msg.sender,initialSupply)"
+          },
+          "attrs": {
+            "src": "1631:32:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "_mint(msg.sender,initialSupply)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n7",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_7"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "Audit(keccak256(bytes)(DEPLOY),abi.encode(msg.sender,initialSupply))"
+          },
+          "attrs": {
+            "src": "1673:70:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "Audit(keccak256(bytes)(DEPLOY),abi.encode(msg.sender,initialSupply))"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n6",
+          "to": "bb_sol_slither_n7",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20.constructor(string, string, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "GuardedERC20.transfer(address, uint256)",
+    "contract": "GuardedERC20",
+    "function": "transfer",
+    "signature": "transfer(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "_transfer(msg.sender, to, value)",
+        "src": "1848:32:0",
+        "function_id": "GuardedERC20.transfer(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "return true",
+        "src": "1890:11:0",
+        "function_id": "GuardedERC20.transfer(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "1838:70:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_transfer(msg.sender,to,value)"
+          },
+          "attrs": {
+            "src": "1848:32:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "_transfer(msg.sender,to,value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "true"
+          },
+          "attrs": {
+            "src": "1890:11:slither",
+            "slither_node_type": "NodeType.RETURN",
+            "text": "true"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "nonReentrant()"
+          },
+          "attrs": {
+            "src": "1810:12:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "nonReentrant()"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20.transfer(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "GuardedERC20.approve(address, uint256)",
+    "contract": "GuardedERC20",
+    "function": "approve",
+    "signature": "approve(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "if (spender == address(0)) revert ERC20ZeroAddress()",
+        "src": "1997:52:0",
+        "function_id": "GuardedERC20.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "revert ERC20ZeroAddress()",
+        "src": "2024:25:0",
+        "function_id": "GuardedERC20.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "allowance[msg.sender][spender] = value",
+        "src": "2059:38:0",
+        "function_id": "GuardedERC20.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "emit Approval(msg.sender, spender, value)",
+        "src": "2107:41:0",
+        "function_id": "GuardedERC20.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "return true",
+        "src": "2158:11:0",
+        "function_id": "GuardedERC20.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "1987:189:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "spender == address(0)"
+          },
+          "attrs": {
+            "src": "2001:21:slither",
+            "slither_node_type": "NodeType.IF",
+            "text": "spender == address(0)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert ERC20ZeroAddress()()"
+          },
+          "attrs": {
+            "src": "2024:25:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "revert ERC20ZeroAddress()()"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "src": "1997:52:slither",
+            "slither_node_type": "NodeType.ENDIF",
+            "text": "endif"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "allowance[msg.sender][spender] = value"
+          },
+          "attrs": {
+            "src": "2059:38:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "allowance[msg.sender][spender] = value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "Approval(msg.sender,spender,value)"
+          },
+          "attrs": {
+            "src": "2107:41:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "Approval(msg.sender,spender,value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "true"
+          },
+          "attrs": {
+            "src": "2158:11:slither",
+            "slither_node_type": "NodeType.RETURN",
+            "text": "true"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n3",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n1",
+          "dependent": "bb_sol_slither_n2",
+          "edge_kind": "true",
+          "condition": "spender == address(0)",
+          "predicate": "spender == address(0)"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20.approve(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "GuardedERC20.transferFrom(address, address, uint256)",
+    "contract": "GuardedERC20",
+    "function": "transferFrom",
+    "signature": "transferFrom(address, address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "uint256 currentAllowance = allowance[from][msg.sender]",
+        "src": "2292:54:0",
+        "function_id": "GuardedERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "if (currentAllowance < value) { revert ERC20InsufficientAllowance(msg.sender, value, currentAllowance); }",
+        "src": "2356:125:0",
+        "function_id": "GuardedERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "revert ERC20InsufficientAllowance(msg.sender, value, currentAllowance)",
+        "src": "2400:70:0",
+        "function_id": "GuardedERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "allowance[from][msg.sender] = currentAllowance - value",
+        "src": "2490:54:0",
+        "function_id": "GuardedERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "emit Approval(from, msg.sender, allowance[from][msg.sender])",
+        "src": "2554:60:0",
+        "function_id": "GuardedERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_6",
+        "lang": "solidity",
+        "text": "_transfer(from, to, value)",
+        "src": "2624:26:0",
+        "function_id": "GuardedERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_7",
+        "lang": "solidity",
+        "text": "return true",
+        "src": "2660:11:0",
+        "function_id": "GuardedERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "2282:396:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "currentAllowance = allowance[from][msg.sender]"
+          },
+          "attrs": {
+            "src": "2292:54:slither",
+            "slither_node_type": "NodeType.VARIABLE",
+            "text": "currentAllowance = allowance[from][msg.sender]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "currentAllowance < value"
+          },
+          "attrs": {
+            "src": "2360:24:slither",
+            "slither_node_type": "NodeType.IF",
+            "text": "currentAllowance < value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert ERC20InsufficientAllowance(address,uint256,uint256)(msg.sender,value,currentAllowance)"
+          },
+          "attrs": {
+            "src": "2400:70:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "revert ERC20InsufficientAllowance(address,uint256,uint256)(msg.sender,value,currentAllowance)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "src": "2356:125:slither",
+            "slither_node_type": "NodeType.ENDIF",
+            "text": "endif"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "allowance[from][msg.sender] = currentAllowance - value"
+          },
+          "attrs": {
+            "src": "2490:54:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "allowance[from][msg.sender] = currentAllowance - value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "Approval(from,msg.sender,allowance[from][msg.sender])"
+          },
+          "attrs": {
+            "src": "2554:60:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "Approval(from,msg.sender,allowance[from][msg.sender])"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n7",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_6"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_transfer(from,to,value)"
+          },
+          "attrs": {
+            "src": "2624:26:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "_transfer(from,to,value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n8",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_7"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "true"
+          },
+          "attrs": {
+            "src": "2660:11:slither",
+            "slither_node_type": "NodeType.RETURN",
+            "text": "true"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n9",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "nonReentrant()"
+          },
+          "attrs": {
+            "src": "2254:12:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "nonReentrant()"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n9",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n4",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n6",
+          "to": "bb_sol_slither_n7",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n7",
+          "to": "bb_sol_slither_n8",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n9",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n2",
+          "dependent": "bb_sol_slither_n3",
+          "edge_kind": "true",
+          "condition": "currentAllowance < value",
+          "predicate": "currentAllowance < value"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20.transferFrom(address, address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "GuardedERC20.ownerMint(address, uint256)",
+    "contract": "GuardedERC20",
+    "function": "ownerMint",
+    "signature": "ownerMint(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "require(totalSupply + value <= maxOwnerMint, \"mint cap\")",
+        "src": "2765:56:0",
+        "function_id": "GuardedERC20.ownerMint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "_mint(receiver, value)",
+        "src": "2831:22:0",
+        "function_id": "GuardedERC20.ownerMint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "emit OwnerMint(receiver, value)",
+        "src": "2863:31:0",
+        "function_id": "GuardedERC20.ownerMint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "emit Audit(keccak256(\"OWNER_MINT\"), abi.encode(receiver, value))",
+        "src": "2904:64:0",
+        "function_id": "GuardedERC20.ownerMint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "2755:220:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(totalSupply + value <= maxOwnerMint,mint cap)"
+          },
+          "attrs": {
+            "src": "2765:56:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "require(bool,string)(totalSupply + value <= maxOwnerMint,mint cap)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_mint(receiver,value)"
+          },
+          "attrs": {
+            "src": "2831:22:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "_mint(receiver,value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "OwnerMint(receiver,value)"
+          },
+          "attrs": {
+            "src": "2863:31:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "OwnerMint(receiver,value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "Audit(keccak256(bytes)(OWNER_MINT),abi.encode(receiver,value))"
+          },
+          "attrs": {
+            "src": "2904:64:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "Audit(keccak256(bytes)(OWNER_MINT),abi.encode(receiver,value))"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "onlyOwner()"
+          },
+          "attrs": {
+            "src": "2745:9:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "onlyOwner()"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20.ownerMint(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "GuardedERC20.deploymentInfo()",
+    "contract": "GuardedERC20",
+    "function": "deploymentInfo",
+    "signature": "deploymentInfo()",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "return (owner, deploymentSalt)",
+        "src": "3058:30:0",
+        "function_id": "GuardedERC20.deploymentInfo()",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "3048:47:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "(owner,deploymentSalt)"
+          },
+          "attrs": {
+            "src": "3058:30:slither",
+            "slither_node_type": "NodeType.RETURN",
+            "text": "(owner,deploymentSalt)"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20.deploymentInfo()",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "GuardedERC20._mint(address, uint256)",
+    "contract": "GuardedERC20",
+    "function": "_mint",
+    "signature": "_mint(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "if (to == address(0)) revert ERC20ZeroAddress()",
+        "src": "3162:47:0",
+        "function_id": "GuardedERC20._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "revert ERC20ZeroAddress()",
+        "src": "3184:25:0",
+        "function_id": "GuardedERC20._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "totalSupply += value",
+        "src": "3219:20:0",
+        "function_id": "GuardedERC20._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "balanceOf[to] += value",
+        "src": "3249:22:0",
+        "function_id": "GuardedERC20._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "emit Transfer(address(0), to, value)",
+        "src": "3281:36:0",
+        "function_id": "GuardedERC20._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "3152:172:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "to == address(0)"
+          },
+          "attrs": {
+            "src": "3166:16:slither",
+            "slither_node_type": "NodeType.IF",
+            "text": "to == address(0)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert ERC20ZeroAddress()()"
+          },
+          "attrs": {
+            "src": "3184:25:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "revert ERC20ZeroAddress()()"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "src": "3162:47:slither",
+            "slither_node_type": "NodeType.ENDIF",
+            "text": "endif"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "totalSupply += value"
+          },
+          "attrs": {
+            "src": "3219:20:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "totalSupply += value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "balanceOf[to] += value"
+          },
+          "attrs": {
+            "src": "3249:22:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "balanceOf[to] += value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "Transfer(address(0),to,value)"
+          },
+          "attrs": {
+            "src": "3281:36:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "Transfer(address(0),to,value)"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n3",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n1",
+          "dependent": "bb_sol_slither_n2",
+          "edge_kind": "true",
+          "condition": "to == address(0)",
+          "predicate": "to == address(0)"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20._mint(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "GuardedERC20._transfer(address, address, uint256)",
+    "contract": "GuardedERC20",
+    "function": "_transfer",
+    "signature": "_transfer(address, address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "if (to == address(0)) revert ERC20ZeroAddress()",
+        "src": "3409:47:0",
+        "function_id": "GuardedERC20._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "revert ERC20ZeroAddress()",
+        "src": "3431:25:0",
+        "function_id": "GuardedERC20._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "uint256 bal = balanceOf[from]",
+        "src": "3466:29:0",
+        "function_id": "GuardedERC20._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "if (bal < value) revert ERC20InsufficientBalance(from, value, bal)",
+        "src": "3505:66:0",
+        "function_id": "GuardedERC20._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "revert ERC20InsufficientBalance(from, value, bal)",
+        "src": "3522:49:0",
+        "function_id": "GuardedERC20._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_6",
+        "lang": "solidity",
+        "text": "balanceOf[from] = bal - value",
+        "src": "3581:29:0",
+        "function_id": "GuardedERC20._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_7",
+        "lang": "solidity",
+        "text": "balanceOf[to] += value",
+        "src": "3620:22:0",
+        "function_id": "GuardedERC20._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_8",
+        "lang": "solidity",
+        "text": "emit Transfer(from, to, value)",
+        "src": "3652:30:0",
+        "function_id": "GuardedERC20._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "3399:290:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "to == address(0)"
+          },
+          "attrs": {
+            "src": "3413:16:slither",
+            "slither_node_type": "NodeType.IF",
+            "text": "to == address(0)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert ERC20ZeroAddress()()"
+          },
+          "attrs": {
+            "src": "3431:25:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "revert ERC20ZeroAddress()()"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "src": "3409:47:slither",
+            "slither_node_type": "NodeType.ENDIF",
+            "text": "endif"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "bal = balanceOf[from]"
+          },
+          "attrs": {
+            "src": "3466:29:slither",
+            "slither_node_type": "NodeType.VARIABLE",
+            "text": "bal = balanceOf[from]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "bal < value"
+          },
+          "attrs": {
+            "src": "3509:11:slither",
+            "slither_node_type": "NodeType.IF",
+            "text": "bal < value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert ERC20InsufficientBalance(address,uint256,uint256)(from,value,bal)"
+          },
+          "attrs": {
+            "src": "3522:49:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "revert ERC20InsufficientBalance(address,uint256,uint256)(from,value,bal)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n7",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "src": "3505:66:slither",
+            "slither_node_type": "NodeType.ENDIF",
+            "text": "endif"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n8",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_6"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "balanceOf[from] = bal - value"
+          },
+          "attrs": {
+            "src": "3581:29:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "balanceOf[from] = bal - value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n9",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_7"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "balanceOf[to] += value"
+          },
+          "attrs": {
+            "src": "3620:22:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "balanceOf[to] += value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n10",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_8"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "Transfer(from,to,value)"
+          },
+          "attrs": {
+            "src": "3652:30:slither",
+            "slither_node_type": "NodeType.EXPRESSION",
+            "text": "Transfer(from,to,value)"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n3",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n7",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n6",
+          "to": "bb_sol_slither_n7",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n7",
+          "to": "bb_sol_slither_n8",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n8",
+          "to": "bb_sol_slither_n9",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n9",
+          "to": "bb_sol_slither_n10",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n1",
+          "dependent": "bb_sol_slither_n2",
+          "edge_kind": "true",
+          "condition": "to == address(0)",
+          "predicate": "to == address(0)"
+        },
+        {
+          "controller": "bb_sol_slither_n5",
+          "dependent": "bb_sol_slither_n6",
+          "edge_kind": "true",
+          "condition": "bal < value",
+          "predicate": "bal < value"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "GuardedERC20._transfer(address, address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "622:18:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "646:20:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "713:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "owner",
+            "kind": "state",
+            "type_string": "address",
+            "data_location": "default",
+            "src": "745:30:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "transferLock",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "transient",
+            "src": "782:38:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "maxOwnerMint",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "826:29:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "deploymentSalt",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "861:30:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "898:60:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "964:84:0",
+            "storage_slot": 6
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "672:35:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 12,
+        "selectors": {
+          "0xdd1562f6": [
+            {
+              "selector": "0xdd1562f6",
+              "signature": "ERC20ZeroAddress()",
+              "name": "ERC20ZeroAddress",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "58:25:0"
+            }
+          ],
+          "0xe450d38c": [
+            {
+              "selector": "0xe450d38c",
+              "signature": "ERC20InsufficientBalance(address,uint256,uint256)",
+              "name": "ERC20InsufficientBalance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "84:83:0"
+            }
+          ],
+          "0xfb8f41b2": [
+            {
+              "selector": "0xfb8f41b2",
+              "signature": "ERC20InsufficientAllowance(address,uint256,uint256)",
+              "name": "ERC20InsufficientAllowance",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "168:88:0"
+            }
+          ],
+          "0x245aecd3": [
+            {
+              "selector": "0x245aecd3",
+              "signature": "NotOwner(address)",
+              "name": "NotOwner",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "257:31:0"
+            }
+          ],
+          "0xb5dfd9e5": [
+            {
+              "selector": "0xb5dfd9e5",
+              "signature": "Reentered()",
+              "name": "Reentered",
+              "kind": "error",
+              "contract": null,
+              "source": "ast",
+              "src": "289:18:0"
+            }
+          ],
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1756:152:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "1914:262:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2182:496:0"
+            }
+          ],
+          "0x484b973c": [
+            {
+              "selector": "0x484b973c",
+              "signature": "ownerMint(address,uint256)",
+              "name": "ownerMint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2684:291:0"
+            }
+          ],
+          "0xe4f52ce2": [
+            {
+              "selector": "0xe4f52ce2",
+              "signature": "deploymentInfo()",
+              "name": "deploymentInfo",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "2981:114:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3101:223:0"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "GuardedERC20",
+              "source": "ast",
+              "src": "3330:359:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_hc8mxit2/GuardedERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/02_基础ERC20_状态变量_构造函数_事件_错误_modifier/contracts/GuardedERC20.sol"
+        ]
+      }
+    ]
+  }
+]

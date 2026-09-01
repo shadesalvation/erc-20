@@ -16,7 +16,7 @@ from typing import Any
 import sys
 
 _SSEIR_ROOT = Path(__file__).resolve().parents[1]
-for _sseir_path in (_SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
+for _sseir_path in (_SSEIR_ROOT, _SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
     _sseir_text = str(_sseir_path)
     if _sseir_text not in sys.path:
         sys.path.insert(0, _sseir_text)
@@ -25,9 +25,10 @@ from assembly_ast_cfg import compile_source_ast, discover_solc
 from s_seir_selector_registry import abi_signature
 from s_seir_llm_assembly_export import function_has_assembly
 from s_seir_pipeline import build_sseir
-from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload
-from s_seir_solidity_atomic_ops import build_solidity_atomic_operation_payload
 from s_seir_solidity_like_export import render_solidity_like_text, write_solidity_like_text
+from s_seir_yul_atomic_ops import build_yul_atomic_operation_payload
+from semantic_fact import build_function_level_semantic_fact_payload, build_solidity_atomic_operation_payload
+from semantic_ir import build_semantic_ir_program, write_semantic_ir_text
 
 
 Json = dict[str, Any]
@@ -1119,7 +1120,10 @@ def write_result_dir(
     assembly_path = result_dir / "assembly_functions.json"
     solidity_like_path = result_dir / "solidity_like.txt"
     semantic_facts_path = result_dir / "semantic_facts.json"
+    semantic_ir_path = result_dir / "semantic_ir.json"
+    semantic_ir_text_path = result_dir / "semantic_ir.txt"
     solidity_atomic_path = result_dir / "solidity_atomic_operations.json"
+    yul_atomic_path = result_dir / "yul_atomic_operations.json"
     failure_path = result_dir / "failure.json"
     if failure_path.exists():
         failure_path.unlink()
@@ -1135,12 +1139,24 @@ def write_result_dir(
         "result_dir": str(result_dir),
         "source_entry": assembly_entry,
     })
-    write_json(semantic_facts_path, build_function_level_semantic_fact_payload(
+    semantic_facts = build_function_level_semantic_fact_payload(
         selected_functions,
         source=str(source),
         result_dir=str(result_dir),
-    ))
+    )
+    write_json(semantic_facts_path, semantic_facts)
+    semantic_ir = build_semantic_ir_program(
+        selected_functions,
+        semantic_facts,
+        source=str(source),
+    )
+    write_json(semantic_ir_path, semantic_ir.to_dict())
+    write_semantic_ir_text(semantic_ir_text_path, semantic_ir)
     write_json(solidity_atomic_path, build_solidity_atomic_operation_payload(
+        selected_functions,
+        source=str(source),
+    ))
+    write_json(yul_atomic_path, build_yul_atomic_operation_payload(
         selected_functions,
         source=str(source),
     ))
@@ -1156,7 +1172,10 @@ def write_result_dir(
         "sseir_output": str(sseir_path),
         "assembly_output": str(assembly_path),
         "semantic_facts_output": str(semantic_facts_path),
+        "semantic_ir_output": str(semantic_ir_path),
+        "semantic_ir_text_output": str(semantic_ir_text_path),
         "solidity_atomic_operations_output": str(solidity_atomic_path),
+        "yul_atomic_operations_output": str(yul_atomic_path),
         "solidity_like_output": str(solidity_like_path),
         "function_count": full_entry.get("function_count"),
         "assembly_function_count": full_entry.get("assembly_function_count"),
@@ -1279,6 +1298,8 @@ def main() -> None:
             "full_sseir": "sseir.json",
             "assembly_functions": "assembly_functions.json",
             "solidity_like": "solidity_like.txt",
+            "semantic_ir": "semantic_ir.json",
+            "semantic_ir_text": "semantic_ir.txt",
             "failure": "failure.json",
         },
         "selection_rule": {

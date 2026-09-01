@@ -1,0 +1,373 @@
+SemanticProgram semantic-ir/v2
+Source: 人工构造样例/09_多维Mapping_SemanticFact/contracts/MultiMappingParity.sol
+
+Function MultiMappingParity.solidityRead(address, bytes32, uint256)
+    contract = MultiMappingParity
+    signature = solidityRead(address, bytes32, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_1 | source=solidity | origin_facts=[fact_4, fact_1, fact_2, fact_3]
+    REF_2 = StateRead(MappingLocation(base = ledger, keys = [owner, bucket, index]))
+    // ir_2 | source=solidity | origin_facts=[fact_5]
+    value_1 = REF_2
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_6]
+    Return(value_1)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+
+DefUse:
+    value:REF_2#1: def=ir_1, uses=[ir_2]
+    input:ledger: def=input, uses=[ir_1]
+    input:owner: def=input, uses=[ir_1]
+    input:bucket: def=input, uses=[ir_1]
+    input:index: def=input, uses=[ir_1]
+    value:value_1#1: def=ir_2, uses=[terminator:bb_sol_slither_n2]
+
+
+Function MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)
+    contract = MultiMappingParity
+    signature = solidityWrite(address, bytes32, uint256, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_3 | source=solidity | origin_facts=[fact_10, fact_7, fact_8, fact_9]
+    @execution StateWrite(expr=value_1)
+    StateWrite(MappingLocation(base = ledger, keys = [owner, bucket, index]), value)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+DefUse:
+    input:value_1: def=input, uses=[ir_3]
+    input:owner: def=input, uses=[ir_3]
+    input:bucket: def=input, uses=[ir_3]
+    input:index: def=input, uses=[ir_3]
+
+
+Function MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)
+    contract = MultiMappingParity
+    signature = solidityUpdate(address, bytes32, uint256, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_4 | source=solidity | origin_facts=[fact_17, fact_11, fact_12, fact_13, fact_14, fact_15, fact_16]
+    REF_11 = StateRead(MappingLocation(base = ledger, keys = [owner, bucket, index]))
+    // ir_6 | source=solidity | origin_facts=[fact_19, fact_11, fact_12, fact_13, fact_14, fact_15, fact_16]
+    @execution StateWrite(expr=TMP_0)
+    StateWrite(
+        MappingLocation(base = ledger, keys = [owner, bucket, index]),
+        Add(Index(Index(Index(ledger, owner), bucket), index), delta)
+    )
+    // ir_5 | source=solidity | origin_facts=[fact_18]
+    TMP_0 = Add(REF_11, delta_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+DefUse:
+    value:REF_11#1: def=ir_4, uses=[ir_5]
+    input:ledger: def=input, uses=[ir_4]
+    input:owner: def=input, uses=[ir_4, ir_6]
+    input:bucket: def=input, uses=[ir_4, ir_6]
+    input:index: def=input, uses=[ir_4, ir_6]
+    input:TMP_0: def=input, uses=[ir_6]
+    value:TMP_0#1: def=ir_5, uses=[-]
+    input:delta_1: def=input, uses=[ir_5]
+
+
+Function MultiMappingParity.yulRead(address, bytes32, uint256)
+    contract = MultiMappingParity
+    signature = yulRead(address, bytes32, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm1_n0)
+
+bb_sol_slither_n14 [solidity]:
+    // predecessors: bb_asm1_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_27, fact_24]
+    Return(value_1)
+
+bb_asm1_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm1_n2)
+
+bb_asm1_n1 [yul]:
+    // predecessors: bb_asm1_n10
+    // no semantic instructions
+    Goto(bb_sol_slither_n14)
+
+bb_asm1_n2 [yul]:
+    // predecessors: bb_asm1_n0
+    // no semantic instructions
+    Goto(bb_asm1_n3)
+
+bb_asm1_n3 [yul]:
+    // predecessors: bb_asm1_n2
+    // no semantic instructions
+    Goto(bb_asm1_n4)
+
+bb_asm1_n4 [yul]:
+    // predecessors: bb_asm1_n3
+    // no semantic instructions
+    Goto(bb_asm1_n5)
+
+bb_asm1_n5 [yul]:
+    // predecessors: bb_asm1_n4
+    // no semantic instructions
+    Goto(bb_asm1_n6)
+
+bb_asm1_n6 [yul]:
+    // predecessors: bb_asm1_n5
+    // no semantic instructions
+    Goto(bb_asm1_n7)
+
+bb_asm1_n7 [yul]:
+    // predecessors: bb_asm1_n6
+    // no semantic instructions
+    Goto(bb_asm1_n8)
+
+bb_asm1_n8 [yul]:
+    // predecessors: bb_asm1_n7
+    // no semantic instructions
+    Goto(bb_asm1_n9)
+
+bb_asm1_n9 [yul]:
+    // predecessors: bb_asm1_n8
+    // no semantic instructions
+    Goto(bb_asm1_n10)
+
+bb_asm1_n10 [yul]:
+    // predecessors: bb_asm1_n9
+    // ir_7 | source=yul | origin_facts=[fact_26, fact_24, fact_25, fact_22, fact_23, fact_20, fact_21]
+    @execution StateRead(expr=sload(__sseir_eval_asm_s_9_1))
+    value = StateRead(MappingLocation(base = ledger, keys = [owner, bucket, index]))
+    Goto(bb_asm1_n1)
+
+CFGEdges:
+    bb_asm1_n0 -> bb_asm1_n2 [next]
+    bb_asm1_n2 -> bb_asm1_n3 [next]
+    bb_asm1_n3 -> bb_asm1_n4 [next]
+    bb_asm1_n4 -> bb_asm1_n5 [next]
+    bb_asm1_n5 -> bb_asm1_n6 [next]
+    bb_asm1_n6 -> bb_asm1_n7 [next]
+    bb_asm1_n7 -> bb_asm1_n8 [next]
+    bb_asm1_n8 -> bb_asm1_n9 [next]
+    bb_asm1_n9 -> bb_asm1_n10 [next]
+    bb_asm1_n10 -> bb_asm1_n1 [next]
+    bb_sol_slither_n0 -> bb_asm1_n0 [fallthrough]
+    bb_asm1_n1 -> bb_sol_slither_n14 [fallthrough]
+
+DefUse:
+    input:value_1: def=input, uses=[terminator:bb_sol_slither_n14]
+    value:value#1: def=ir_7, uses=[-]
+    input:__sseir_eval_asm_s_9_1: def=input, uses=[ir_7]
+    input:owner: def=input, uses=[ir_7]
+    input:bucket: def=input, uses=[ir_7]
+    input:index: def=input, uses=[ir_7]
+
+
+Function MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)
+    contract = MultiMappingParity
+    signature = yulWrite(address, bytes32, uint256, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm2_n0)
+
+bb_asm2_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm2_n2)
+
+bb_asm2_n1 [yul]:
+    // predecessors: bb_asm2_n10
+    // no semantic instructions
+    Fallthrough
+
+bb_asm2_n2 [yul]:
+    // predecessors: bb_asm2_n0
+    // no semantic instructions
+    Goto(bb_asm2_n3)
+
+bb_asm2_n3 [yul]:
+    // predecessors: bb_asm2_n2
+    // no semantic instructions
+    Goto(bb_asm2_n4)
+
+bb_asm2_n4 [yul]:
+    // predecessors: bb_asm2_n3
+    // no semantic instructions
+    Goto(bb_asm2_n5)
+
+bb_asm2_n5 [yul]:
+    // predecessors: bb_asm2_n4
+    // no semantic instructions
+    Goto(bb_asm2_n6)
+
+bb_asm2_n6 [yul]:
+    // predecessors: bb_asm2_n5
+    // no semantic instructions
+    Goto(bb_asm2_n7)
+
+bb_asm2_n7 [yul]:
+    // predecessors: bb_asm2_n6
+    // no semantic instructions
+    Goto(bb_asm2_n8)
+
+bb_asm2_n8 [yul]:
+    // predecessors: bb_asm2_n7
+    // no semantic instructions
+    Goto(bb_asm2_n9)
+
+bb_asm2_n9 [yul]:
+    // predecessors: bb_asm2_n8
+    // no semantic instructions
+    Goto(bb_asm2_n10)
+
+bb_asm2_n10 [yul]:
+    // predecessors: bb_asm2_n9
+    // ir_8 | source=yul | origin_facts=[fact_33, fact_32, fact_30, fact_31, fact_28, fact_29]
+    StateWrite(MappingLocation(base = ledger, keys = [owner, bucket, index]), value)
+    Goto(bb_asm2_n1)
+
+CFGEdges:
+    bb_asm2_n0 -> bb_asm2_n2 [next]
+    bb_asm2_n2 -> bb_asm2_n3 [next]
+    bb_asm2_n3 -> bb_asm2_n4 [next]
+    bb_asm2_n4 -> bb_asm2_n5 [next]
+    bb_asm2_n5 -> bb_asm2_n6 [next]
+    bb_asm2_n6 -> bb_asm2_n7 [next]
+    bb_asm2_n7 -> bb_asm2_n8 [next]
+    bb_asm2_n8 -> bb_asm2_n9 [next]
+    bb_asm2_n9 -> bb_asm2_n10 [next]
+    bb_asm2_n10 -> bb_asm2_n1 [next]
+    bb_sol_slither_n0 -> bb_asm2_n0 [fallthrough]
+
+DefUse:
+    input:value: def=input, uses=[ir_8]
+    input:owner: def=input, uses=[ir_8]
+    input:bucket: def=input, uses=[ir_8]
+    input:index: def=input, uses=[ir_8]
+
+
+Function MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)
+    contract = MultiMappingParity
+    signature = yulUpdate(address, bytes32, uint256, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm3_n0)
+
+bb_asm3_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm3_n2)
+
+bb_asm3_n1 [yul]:
+    // predecessors: bb_asm3_n11
+    // no semantic instructions
+    Fallthrough
+
+bb_asm3_n2 [yul]:
+    // predecessors: bb_asm3_n0
+    // no semantic instructions
+    Goto(bb_asm3_n3)
+
+bb_asm3_n3 [yul]:
+    // predecessors: bb_asm3_n2
+    // no semantic instructions
+    Goto(bb_asm3_n4)
+
+bb_asm3_n4 [yul]:
+    // predecessors: bb_asm3_n3
+    // no semantic instructions
+    Goto(bb_asm3_n5)
+
+bb_asm3_n5 [yul]:
+    // predecessors: bb_asm3_n4
+    // no semantic instructions
+    Goto(bb_asm3_n6)
+
+bb_asm3_n6 [yul]:
+    // predecessors: bb_asm3_n5
+    // no semantic instructions
+    Goto(bb_asm3_n7)
+
+bb_asm3_n7 [yul]:
+    // predecessors: bb_asm3_n6
+    // no semantic instructions
+    Goto(bb_asm3_n8)
+
+bb_asm3_n8 [yul]:
+    // predecessors: bb_asm3_n7
+    // no semantic instructions
+    Goto(bb_asm3_n9)
+
+bb_asm3_n9 [yul]:
+    // predecessors: bb_asm3_n8
+    // no semantic instructions
+    Goto(bb_asm3_n10)
+
+bb_asm3_n10 [yul]:
+    // predecessors: bb_asm3_n9
+    // no semantic instructions
+    Goto(bb_asm3_n11)
+
+bb_asm3_n11 [yul]:
+    // predecessors: bb_asm3_n10
+    // ir_9 | source=yul | origin_facts=[fact_40, fact_39, fact_36, fact_37, fact_38, fact_34, fact_35]
+    @execution StateRead(expr=sload(Keccak(0x00, 0x40)))
+    __sseir_eval_asm_s_10_1 = StateRead(MappingLocation(base = ledger, keys = [owner, bucket, index]))
+    // ir_10 | source=yul | origin_facts=[fact_41, fact_39, fact_36, fact_37, fact_38, fact_34, fact_35]
+    @execution StateWrite(expr=Add(__sseir_eval_asm_s_10_1, delta))
+    StateWrite(
+        MappingLocation(base = ledger, keys = [owner, bucket, index]),
+        Add(Index(Index(Index(ledger, owner), bucket), index), delta)
+    )
+    Goto(bb_asm3_n1)
+
+CFGEdges:
+    bb_asm3_n0 -> bb_asm3_n2 [next]
+    bb_asm3_n2 -> bb_asm3_n3 [next]
+    bb_asm3_n3 -> bb_asm3_n4 [next]
+    bb_asm3_n4 -> bb_asm3_n5 [next]
+    bb_asm3_n5 -> bb_asm3_n6 [next]
+    bb_asm3_n6 -> bb_asm3_n7 [next]
+    bb_asm3_n7 -> bb_asm3_n8 [next]
+    bb_asm3_n8 -> bb_asm3_n9 [next]
+    bb_asm3_n9 -> bb_asm3_n10 [next]
+    bb_asm3_n10 -> bb_asm3_n11 [next]
+    bb_asm3_n11 -> bb_asm3_n1 [next]
+    bb_sol_slither_n0 -> bb_asm3_n0 [fallthrough]
+
+DefUse:
+    value:__sseir_eval_asm_s_10_1#1: def=ir_9, uses=[ir_10]
+    input:owner: def=input, uses=[ir_9, ir_10]
+    input:bucket: def=input, uses=[ir_9, ir_10]
+    input:index: def=input, uses=[ir_9, ir_10]
+    input:delta: def=input, uses=[ir_10]

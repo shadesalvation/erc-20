@@ -1,0 +1,2716 @@
+[
+  {
+    "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+    "contract": "SemanticIRMemoryDefUseComplex",
+    "function": "update",
+    "signature": "update(address, uint256, uint256, bool, bool)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "uint256 delta = amount",
+        "src": "360:22:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "if (discount) { delta = amount - 1; }",
+        "src": "392:57:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "delta = amount - 1",
+        "src": "420:18:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "asm_s_1",
+        "lang": "yul",
+        "text": "let free := mload(0x40)",
+        "src": "482:23:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulVariableDeclaration",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_2",
+        "lang": "yul",
+        "text": "let ptr := add(free, 0x20)",
+        "src": "518:26:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulVariableDeclaration",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_3",
+        "lang": "yul",
+        "text": "mstore(ptr, user)",
+        "src": "595:17:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_4",
+        "lang": "yul",
+        "text": "mstore(add(ptr, 0x20), ledger.slot)",
+        "src": "625:35:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_5",
+        "lang": "yul",
+        "text": "let outerSlot := keccak256(ptr, 0x40)",
+        "src": "673:37:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulVariableDeclaration",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_6",
+        "lang": "yul",
+        "text": "mstore(ptr, bucket)",
+        "src": "802:19:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_7",
+        "lang": "yul",
+        "text": "if normalizeBucket",
+        "src": "834:65:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulIf",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_8",
+        "lang": "yul",
+        "text": "mstore(ptr, 1)",
+        "src": "871:14:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_9",
+        "lang": "yul",
+        "text": "mstore(add(ptr, 0x20), outerSlot)",
+        "src": "912:33:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_10",
+        "lang": "yul",
+        "text": "let leafSlot := keccak256(ptr, 0x40)",
+        "src": "958:36:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulVariableDeclaration",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_11",
+        "lang": "yul",
+        "text": "let oldValue := sload(leafSlot)",
+        "src": "1008:31:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulVariableDeclaration",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_12",
+        "lang": "yul",
+        "text": "let newValue := add(oldValue, delta)",
+        "src": "1052:36:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulVariableDeclaration",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_13",
+        "lang": "yul",
+        "text": "sstore(leafSlot, newValue)",
+        "src": "1101:26:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_14",
+        "lang": "yul",
+        "text": "result := newValue",
+        "src": "1140:18:0",
+        "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulAssignment",
+          "assembly_block": 1
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "src": "350:824:slither",
+            "text": "entrypoint",
+            "slither_node_type": "NodeType.ENTRYPOINT"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "delta = amount"
+          },
+          "attrs": {
+            "src": "360:22:slither",
+            "text": "delta = amount",
+            "slither_node_type": "NodeType.VARIABLE"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "discount"
+          },
+          "attrs": {
+            "src": "396:8:slither",
+            "text": "discount",
+            "slither_node_type": "NodeType.IF"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "delta = amount - 1"
+          },
+          "attrs": {
+            "src": "420:18:slither",
+            "text": "delta = amount - 1",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "src": "392:57:slither",
+            "text": "endif",
+            "slither_node_type": "NodeType.ENDIF"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n28",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Return",
+            "text": "result"
+          },
+          "attrs": {
+            "src": "333:16:slither",
+            "text": "result",
+            "slither_node_type": "NodeType.RETURN"
+          }
+        },
+        {
+          "block_id": "bb_asm1_n0",
+          "kind": "yul",
+          "stmts": [],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "entry",
+            "node_kind": "entry"
+          },
+          "attrs": {
+            "src": "",
+            "node_kind": "entry",
+            "text": "entry",
+            "node_id": 0,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n1",
+          "kind": "yul",
+          "stmts": [],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "exit",
+            "node_kind": "exit"
+          },
+          "attrs": {
+            "src": "",
+            "node_kind": "exit",
+            "text": "exit",
+            "node_id": 1,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n2",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_1"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "let free := mload(0x40)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "482:23:0",
+            "node_kind": "statement",
+            "text": "let free := mload(0x40)",
+            "node_id": 2,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n3",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_2"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "let ptr := add(free, 0x20)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "518:26:0",
+            "node_kind": "statement",
+            "text": "let ptr := add(free, 0x20)",
+            "node_id": 3,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n4",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_3"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "mstore(ptr, user)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "595:17:0",
+            "node_kind": "statement",
+            "text": "mstore(ptr, user)",
+            "node_id": 4,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n5",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_4"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "mstore(add(ptr, 0x20), ledger.slot)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "625:35:0",
+            "node_kind": "statement",
+            "text": "mstore(add(ptr, 0x20), ledger.slot)",
+            "node_id": 5,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n6",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_5"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "let outerSlot := keccak256(ptr, 0x40)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "673:37:0",
+            "node_kind": "statement",
+            "text": "let outerSlot := keccak256(ptr, 0x40)",
+            "node_id": 6,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n7",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_6"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "mstore(ptr, bucket)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "802:19:0",
+            "node_kind": "statement",
+            "text": "mstore(ptr, bucket)",
+            "node_id": 7,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n8",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_7"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "text": "if normalizeBucket",
+            "condition": "normalizeBucket",
+            "node_kind": "condition"
+          },
+          "attrs": {
+            "src": "834:65:0",
+            "node_kind": "condition",
+            "text": "if normalizeBucket",
+            "node_id": 8,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n9",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_7"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "if merge",
+            "node_kind": "merge"
+          },
+          "attrs": {
+            "src": "834:65:0",
+            "node_kind": "merge",
+            "text": "if merge",
+            "node_id": 9,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n10",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_8"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "mstore(ptr, 1)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "871:14:0",
+            "node_kind": "statement",
+            "text": "mstore(ptr, 1)",
+            "node_id": 10,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n11",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_9"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "mstore(add(ptr, 0x20), outerSlot)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "912:33:0",
+            "node_kind": "statement",
+            "text": "mstore(add(ptr, 0x20), outerSlot)",
+            "node_id": 11,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n12",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_10"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "let leafSlot := keccak256(ptr, 0x40)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "958:36:0",
+            "node_kind": "statement",
+            "text": "let leafSlot := keccak256(ptr, 0x40)",
+            "node_id": 12,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n13",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_11"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "let oldValue := sload(leafSlot)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "1008:31:0",
+            "node_kind": "statement",
+            "text": "let oldValue := sload(leafSlot)",
+            "node_id": 13,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n14",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_12"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "let newValue := add(oldValue, delta)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "1052:36:0",
+            "node_kind": "statement",
+            "text": "let newValue := add(oldValue, delta)",
+            "node_id": 14,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n15",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_13"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "sstore(leafSlot, newValue)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "1101:26:0",
+            "node_kind": "statement",
+            "text": "sstore(leafSlot, newValue)",
+            "node_id": 15,
+            "function_loop_context": []
+          }
+        },
+        {
+          "block_id": "bb_asm1_n16",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_14"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "result := newValue",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "src": "1140:18:0",
+            "node_kind": "statement",
+            "text": "result := newValue",
+            "node_id": 16,
+            "function_loop_context": []
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_asm1_n0",
+          "to": "bb_asm1_n2",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n2",
+          "to": "bb_asm1_n3",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n3",
+          "to": "bb_asm1_n4",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n4",
+          "to": "bb_asm1_n5",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n5",
+          "to": "bb_asm1_n6",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n6",
+          "to": "bb_asm1_n7",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n7",
+          "to": "bb_asm1_n8",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n8",
+          "to": "bb_asm1_n10",
+          "kind": "true: normalizeBucket"
+        },
+        {
+          "from": "bb_asm1_n10",
+          "to": "bb_asm1_n9",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n8",
+          "to": "bb_asm1_n9",
+          "kind": "false: !(normalizeBucket)"
+        },
+        {
+          "from": "bb_asm1_n9",
+          "to": "bb_asm1_n11",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n11",
+          "to": "bb_asm1_n12",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n12",
+          "to": "bb_asm1_n13",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n13",
+          "to": "bb_asm1_n14",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n14",
+          "to": "bb_asm1_n15",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n15",
+          "to": "bb_asm1_n16",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n16",
+          "to": "bb_asm1_n1",
+          "kind": "next"
+        },
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n4",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_asm1_n0",
+          "kind": "join"
+        },
+        {
+          "from": "bb_asm1_n1",
+          "to": "bb_sol_slither_n28",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {
+        "1": []
+      },
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n2",
+          "dependent": "bb_sol_slither_n3",
+          "edge_kind": "true",
+          "condition": "discount",
+          "predicate": "discount"
+        },
+        {
+          "controller": "bb_asm1_n8",
+          "dependent": "bb_asm1_n10",
+          "edge_kind": "true: normalizeBucket",
+          "condition": "normalizeBucket",
+          "predicate": "normalizeBucket"
+        }
+      ],
+      "assembly_boundaries": {
+        "1": {
+          "assembly_block": 1,
+          "entry_block": "bb_asm1_n0",
+          "exit_block": "bb_asm1_n1",
+          "solidity_predecessors": [
+            "bb_sol_slither_n4"
+          ],
+          "solidity_successors": [
+            "bb_sol_slither_n28"
+          ],
+          "external_reads": [
+            {
+              "name": "bucket",
+              "kind": "parameter",
+              "type_string": "uint256",
+              "data_location": "default",
+              "src": "218:14:0",
+              "storage_slot": null,
+              "expressions": [
+                "bucket"
+              ],
+              "reaching_ssa_versions": []
+            },
+            {
+              "name": "delta",
+              "kind": "local",
+              "type_string": "uint256",
+              "data_location": "default",
+              "src": "360:13:0",
+              "storage_slot": null,
+              "expressions": [
+                "delta"
+              ],
+              "reaching_ssa_versions": [
+                "delta_3"
+              ]
+            },
+            {
+              "name": "ledger",
+              "kind": "state",
+              "type_string": "mapping(address => mapping(uint256 => uint256))",
+              "data_location": "default",
+              "src": "103:61:0",
+              "storage_slot": 0,
+              "expressions": [
+                "ledger.slot"
+              ],
+              "reaching_ssa_versions": [
+                "ledger_1"
+              ]
+            },
+            {
+              "name": "normalizeBucket",
+              "kind": "parameter",
+              "type_string": "bool",
+              "data_location": "default",
+              "src": "289:20:0",
+              "storage_slot": null,
+              "expressions": [
+                "normalizeBucket"
+              ],
+              "reaching_ssa_versions": []
+            },
+            {
+              "name": "user",
+              "kind": "parameter",
+              "type_string": "address",
+              "data_location": "default",
+              "src": "196:12:0",
+              "storage_slot": null,
+              "expressions": [
+                "user"
+              ],
+              "reaching_ssa_versions": []
+            }
+          ],
+          "external_writes": [
+            {
+              "name": "result",
+              "kind": "return",
+              "type_string": "uint256",
+              "data_location": "default",
+              "src": "334:14:0",
+              "storage_slot": null,
+              "expressions": [
+                "result"
+              ]
+            }
+          ],
+          "control_dependencies": []
+        }
+      }
+    },
+    "expr_roles": [
+      {
+        "expr_id": "expr_1",
+        "text": "mload(0x40)",
+        "normalized": "free_memory_pointer",
+        "role": "free_memory_pointer",
+        "type_hint": "memory_ptr",
+        "stmt_ref": "asm_s_1",
+        "attrs": {
+          "memory_slot": "0x40",
+          "effect": "eff_8",
+          "value": "free"
+        }
+      },
+      {
+        "expr_id": "expr_2",
+        "text": "ptr",
+        "normalized": "ptr",
+        "role": "memory_slice_start",
+        "type_hint": "memory_ptr",
+        "stmt_ref": "asm_s_5",
+        "attrs": {
+          "effect": "eff_12"
+        }
+      },
+      {
+        "expr_id": "expr_3",
+        "text": "0x40",
+        "normalized": "0x40",
+        "role": "memory_slice_size",
+        "type_hint": "uint256",
+        "stmt_ref": "asm_s_5",
+        "attrs": {
+          "effect": "eff_12"
+        }
+      },
+      {
+        "expr_id": "expr_4",
+        "text": "ptr",
+        "normalized": "ptr",
+        "role": "memory_slice_start",
+        "type_hint": "memory_ptr",
+        "stmt_ref": "asm_s_10",
+        "attrs": {
+          "effect": "eff_15"
+        }
+      },
+      {
+        "expr_id": "expr_5",
+        "text": "0x40",
+        "normalized": "0x40",
+        "role": "memory_slice_size",
+        "type_hint": "uint256",
+        "stmt_ref": "asm_s_10",
+        "attrs": {
+          "effect": "eff_15"
+        }
+      },
+      {
+        "expr_id": "expr_6",
+        "text": "0x40",
+        "normalized": "0x40",
+        "role": "memory_slice_start",
+        "type_hint": "memory_ptr",
+        "stmt_ref": "asm_s_1",
+        "attrs": {
+          "effect": "eff_8",
+          "semantic": "memory_read"
+        }
+      },
+      {
+        "expr_id": "expr_7",
+        "text": "free",
+        "normalized": "free",
+        "role": "memory_read_value",
+        "type_hint": null,
+        "stmt_ref": "asm_s_1",
+        "attrs": {
+          "effect": "eff_8",
+          "value_versions": {
+            "free": [
+              "free__ssa1"
+            ]
+          }
+        }
+      },
+      {
+        "expr_id": "expr_8",
+        "text": "normalizeBucket",
+        "normalized": "normalizeBucket",
+        "role": "branch_condition",
+        "type_hint": "bool",
+        "stmt_ref": "asm_s_7",
+        "attrs": {
+          "effect": "eff_13"
+        }
+      },
+      {
+        "expr_id": "expr_9",
+        "text": "leafSlot",
+        "normalized": "leafSlot",
+        "role": "storage_slot_expr",
+        "type_hint": "storage_slot",
+        "stmt_ref": "asm_s_11",
+        "attrs": {
+          "effect": "eff_17",
+          "slot_versions": [
+            "leafSlot__ssa4",
+            "leafSlot__ssa5"
+          ]
+        }
+      },
+      {
+        "expr_id": "expr_10",
+        "text": "leafSlot",
+        "normalized": "leafSlot",
+        "role": "storage_slot_expr",
+        "type_hint": "storage_slot",
+        "stmt_ref": "asm_s_13",
+        "attrs": {
+          "effect": "eff_20",
+          "slot_versions": [
+            "leafSlot__ssa4",
+            "leafSlot__ssa5"
+          ]
+        }
+      },
+      {
+        "expr_id": "expr_11",
+        "text": "newValue",
+        "normalized": "newValue",
+        "role": "storage_write_value",
+        "type_hint": null,
+        "stmt_ref": "asm_s_13",
+        "attrs": {
+          "effect": "eff_20"
+        }
+      },
+      {
+        "expr_id": "expr_12",
+        "text": "leafSlot",
+        "normalized": "leafSlot",
+        "role": "storage_slot_expr",
+        "type_hint": "storage_slot",
+        "stmt_ref": "asm_s_10",
+        "attrs": {
+          "overlay": "ov_2",
+          "slot_versions": [
+            "leafSlot__ssa4",
+            "leafSlot__ssa5"
+          ]
+        }
+      },
+      {
+        "expr_id": "expr_13",
+        "text": "ledger[user][bucket]",
+        "normalized": "ledger[user][bucket]",
+        "role": "state_access_expr",
+        "type_hint": null,
+        "stmt_ref": "asm_s_10",
+        "attrs": {
+          "overlay": "ov_2",
+          "candidate_index": 1,
+          "overlay_kind": "MappingWrite"
+        }
+      },
+      {
+        "expr_id": "expr_14",
+        "text": "ledger[user][1]",
+        "normalized": "ledger[user][1]",
+        "role": "state_access_expr",
+        "type_hint": null,
+        "stmt_ref": "asm_s_10",
+        "attrs": {
+          "overlay": "ov_2",
+          "candidate_index": 3,
+          "overlay_kind": "MappingWrite"
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect_id": "eff_1",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "address": "ptr",
+          "value": "user",
+          "origin_node": "N4",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "ptr",
+              "base": "ptr",
+              "offset": 0,
+              "expression": "ptr",
+              "source": "identifier"
+            },
+            {
+              "key": "add(free,32)",
+              "base": "free",
+              "offset": 32,
+              "expression": "add(free, 32)",
+              "source": "value:ptr__ssa2"
+            }
+          ],
+          "cfg_node_id": 4,
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_2",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_4"
+        ],
+        "attrs": {
+          "address": "add(ptr,32)",
+          "value": "ledger.slot",
+          "origin_node": "N5",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "add(ptr,32)",
+              "base": "ptr",
+              "offset": 32,
+              "expression": "add(ptr, 32)",
+              "source": "identifier"
+            },
+            {
+              "key": "add(free,64)",
+              "base": "free",
+              "offset": 64,
+              "expression": "add(free, 64)",
+              "source": "value:ptr__ssa2"
+            }
+          ],
+          "cfg_node_id": 5,
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_3",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_6"
+        ],
+        "attrs": {
+          "address": "ptr",
+          "value": "bucket",
+          "origin_node": "N7",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "ptr",
+              "base": "ptr",
+              "offset": 0,
+              "expression": "ptr",
+              "source": "identifier"
+            },
+            {
+              "key": "add(free,32)",
+              "base": "free",
+              "offset": 32,
+              "expression": "add(free, 32)",
+              "source": "value:ptr__ssa2"
+            }
+          ],
+          "cfg_node_id": 7,
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_4",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_8"
+        ],
+        "attrs": {
+          "address": "ptr",
+          "value": "1",
+          "origin_node": "N10",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "ptr",
+              "base": "ptr",
+              "offset": 0,
+              "expression": "ptr",
+              "source": "identifier"
+            },
+            {
+              "key": "add(free,32)",
+              "base": "free",
+              "offset": 32,
+              "expression": "add(free, 32)",
+              "source": "value:ptr__ssa2"
+            }
+          ],
+          "cfg_node_id": 10,
+          "path_states": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_5",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_9"
+        ],
+        "attrs": {
+          "address": "add(ptr,32)",
+          "value": "outerSlot",
+          "origin_node": "N11",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "add(ptr,32)",
+              "base": "ptr",
+              "offset": 32,
+              "expression": "add(ptr, 32)",
+              "source": "identifier"
+            },
+            {
+              "key": "add(free,64)",
+              "base": "free",
+              "offset": 64,
+              "expression": "add(free, 64)",
+              "source": "value:ptr__ssa2"
+            }
+          ],
+          "cfg_node_id": 11,
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_6",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_9"
+        ],
+        "attrs": {
+          "address": "add(ptr,32)",
+          "value": "outerSlot",
+          "origin_node": "N11",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "add(ptr,32)",
+              "base": "ptr",
+              "offset": 32,
+              "expression": "add(ptr, 32)",
+              "source": "identifier"
+            },
+            {
+              "key": "add(free,64)",
+              "base": "free",
+              "offset": 64,
+              "expression": "add(free, 64)",
+              "source": "value:ptr__ssa2"
+            }
+          ],
+          "cfg_node_id": 11,
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_7",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "asm_s_1"
+        ],
+        "attrs": {
+          "targets": [
+            "free"
+          ],
+          "value": "mload(0x40)",
+          "value_normalized": "mload(0x40)",
+          "cfg_node_id": 2,
+          "language": "yul",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "target_versions": {
+            "free": [
+              "free__ssa1"
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_8",
+        "kind": "MemoryRead",
+        "stmt_refs": [
+          "asm_s_1"
+        ],
+        "attrs": {
+          "read_from": "0x40",
+          "value": "free",
+          "value_versions": {
+            "free": [
+              "free__ssa1"
+            ]
+          },
+          "cfg_node_id": 2,
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "semantic_value": "free_memory_pointer"
+        }
+      },
+      {
+        "effect_id": "eff_10",
+        "kind": "EvaluationStep",
+        "stmt_refs": [
+          "asm_s_2"
+        ],
+        "attrs": {
+          "order": 1,
+          "atom_id": "yul_atom_b1_asm_s_2_3_1",
+          "temp": "__sseir_eval_asm_s_2_1",
+          "expression": "add(free, 0x20)",
+          "execution_expression": "add(free, 0x20)",
+          "expression_normalized": "(free + 0x20)",
+          "call": "add",
+          "raw_args": [
+            "free",
+            "0x20"
+          ],
+          "evaluated_args": [
+            "free",
+            "0x20"
+          ],
+          "dependencies": [],
+          "cfg_node_id": 3,
+          "language": "yul",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "parent_effect": "eff_9",
+          "evaluation_context": "value"
+        }
+      },
+      {
+        "effect_id": "eff_9",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "asm_s_2"
+        ],
+        "attrs": {
+          "targets": [
+            "ptr"
+          ],
+          "value": "add(free, 0x20)",
+          "value_normalized": "(free + 0x20)",
+          "cfg_node_id": 3,
+          "language": "yul",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "target_versions": {
+            "ptr": [
+              "ptr__ssa2"
+            ]
+          },
+          "atomized_value": {
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+            "atomization_model": "yul_atomic_operation_table",
+            "final": "__sseir_eval_asm_s_2_1",
+            "final_normalized": "__sseir_eval_asm_s_2_1",
+            "steps": [
+              {
+                "order": 1,
+                "atom_id": "yul_atom_b1_asm_s_2_3_1",
+                "temp": "__sseir_eval_asm_s_2_1",
+                "expression": "add(free, 0x20)",
+                "execution_expression": "add(free, 0x20)",
+                "expression_normalized": "(free + 0x20)",
+                "call": "add",
+                "raw_args": [
+                  "free",
+                  "0x20"
+                ],
+                "evaluated_args": [
+                  "free",
+                  "0x20"
+                ],
+                "dependencies": []
+              }
+            ],
+            "atom_ids": [
+              "yul_atom_b1_asm_s_2_3_1",
+              "yul_atom_b1_asm_s_2_3_2"
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_11",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "asm_s_5"
+        ],
+        "attrs": {
+          "targets": [
+            "outerSlot"
+          ],
+          "value": "keccak256(ptr, 0x40)",
+          "value_normalized": "keccak256(ptr, 0x40)",
+          "cfg_node_id": 6,
+          "language": "yul",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "target_versions": {
+            "outerSlot": [
+              "outerSlot__ssa3"
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_12",
+        "kind": "MemoryHash",
+        "stmt_refs": [
+          "asm_s_5"
+        ],
+        "attrs": {
+          "op": "keccak256",
+          "ptr": "ptr",
+          "size": "0x40",
+          "value": "outerSlot",
+          "value_versions": {
+            "outerSlot": [
+              "outerSlot__ssa3"
+            ]
+          },
+          "ptr_versions": [
+            "ptr__ssa2"
+          ],
+          "size_versions": [],
+          "cfg_node_id": 6,
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "semantic_inputs": {
+            "sink_kind": "MemoryHash",
+            "paths": [
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(user, ledger.slot))"
+                },
+                "condition": "!(discount)"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(user, ledger.slot))"
+                },
+                "condition": "discount"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_13",
+        "kind": "Branch",
+        "stmt_refs": [
+          "asm_s_7"
+        ],
+        "attrs": {
+          "condition": "normalizeBucket",
+          "condition_normalized": "normalizeBucket",
+          "condition_evaluation": {
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+            "atomization_model": "yul_atomic_operation_table",
+            "final": "normalizeBucket",
+            "final_normalized": "(normalizeBucket != 0)",
+            "steps": [],
+            "atom_ids": [
+              "yul_atom_b1_asm_s_7_8_1"
+            ]
+          },
+          "condition_final_temp": "normalizeBucket",
+          "cfg_node_id": 8,
+          "language": "yul",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_14",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "asm_s_10"
+        ],
+        "attrs": {
+          "targets": [
+            "leafSlot"
+          ],
+          "value": "keccak256(ptr, 0x40)",
+          "value_normalized": "keccak256(ptr, 0x40)",
+          "cfg_node_id": 12,
+          "language": "yul",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "target_versions": {
+            "leafSlot": [
+              "leafSlot__ssa4",
+              "leafSlot__ssa5"
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_15",
+        "kind": "MemoryHash",
+        "stmt_refs": [
+          "asm_s_10"
+        ],
+        "attrs": {
+          "op": "keccak256",
+          "ptr": "ptr",
+          "size": "0x40",
+          "value": "leafSlot",
+          "value_versions": {
+            "leafSlot": [
+              "leafSlot__ssa4",
+              "leafSlot__ssa5"
+            ]
+          },
+          "ptr_versions": [
+            "ptr__ssa2"
+          ],
+          "size_versions": [],
+          "cfg_node_id": 12,
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "semantic_inputs": {
+            "sink_kind": "MemoryHash",
+            "paths": [
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(bucket, outerSlot))"
+                },
+                "condition": "!(discount) && !(normalizeBucket)"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(bucket, outerSlot))"
+                },
+                "condition": "discount && !(normalizeBucket)"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(1, outerSlot))"
+                },
+                "condition": "!(discount) && normalizeBucket"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(1, outerSlot))"
+                },
+                "condition": "discount && normalizeBucket"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_16",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "asm_s_11"
+        ],
+        "attrs": {
+          "targets": [
+            "oldValue"
+          ],
+          "value": "sload(leafSlot)",
+          "value_normalized": "sload(leafSlot)",
+          "cfg_node_id": 13,
+          "language": "yul",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "target_versions": {
+            "oldValue": [
+              "oldValue__ssa6",
+              "oldValue__ssa7"
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_17",
+        "kind": "StorageRead",
+        "stmt_refs": [
+          "asm_s_11"
+        ],
+        "attrs": {
+          "slot": "leafSlot",
+          "slot_versions": [
+            "leafSlot__ssa4",
+            "leafSlot__ssa5"
+          ],
+          "value": "oldValue",
+          "value_versions": {
+            "oldValue": [
+              "oldValue__ssa6",
+              "oldValue__ssa7"
+            ]
+          },
+          "cfg_node_id": 13,
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_19",
+        "kind": "EvaluationStep",
+        "stmt_refs": [
+          "asm_s_12"
+        ],
+        "attrs": {
+          "order": 1,
+          "atom_id": "yul_atom_b1_asm_s_12_14_1",
+          "temp": "__sseir_eval_asm_s_12_1",
+          "expression": "add(oldValue, delta)",
+          "execution_expression": "add(oldValue, delta)",
+          "expression_normalized": "(oldValue + delta)",
+          "call": "add",
+          "raw_args": [
+            "oldValue",
+            "delta"
+          ],
+          "evaluated_args": [
+            "oldValue",
+            "delta"
+          ],
+          "dependencies": [],
+          "cfg_node_id": 14,
+          "language": "yul",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "parent_effect": "eff_18",
+          "evaluation_context": "value"
+        }
+      },
+      {
+        "effect_id": "eff_18",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "asm_s_12"
+        ],
+        "attrs": {
+          "targets": [
+            "newValue"
+          ],
+          "value": "add(oldValue, delta)",
+          "value_normalized": "(oldValue + delta)",
+          "cfg_node_id": 14,
+          "language": "yul",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "target_versions": {
+            "newValue": [
+              "newValue__ssa8",
+              "newValue__ssa9"
+            ]
+          },
+          "atomized_value": {
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+            "atomization_model": "yul_atomic_operation_table",
+            "final": "__sseir_eval_asm_s_12_1",
+            "final_normalized": "__sseir_eval_asm_s_12_1",
+            "steps": [
+              {
+                "order": 1,
+                "atom_id": "yul_atom_b1_asm_s_12_14_1",
+                "temp": "__sseir_eval_asm_s_12_1",
+                "expression": "add(oldValue, delta)",
+                "execution_expression": "add(oldValue, delta)",
+                "expression_normalized": "(oldValue + delta)",
+                "call": "add",
+                "raw_args": [
+                  "oldValue",
+                  "delta"
+                ],
+                "evaluated_args": [
+                  "oldValue",
+                  "delta"
+                ],
+                "dependencies": []
+              }
+            ],
+            "atom_ids": [
+              "yul_atom_b1_asm_s_12_14_1",
+              "yul_atom_b1_asm_s_12_14_2"
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_20",
+        "kind": "StorageWrite",
+        "stmt_refs": [
+          "asm_s_13"
+        ],
+        "attrs": {
+          "slot": "leafSlot",
+          "slot_versions": [
+            "leafSlot__ssa4",
+            "leafSlot__ssa5"
+          ],
+          "value": "newValue",
+          "value_versions": [
+            "newValue__ssa8",
+            "newValue__ssa9"
+          ],
+          "cfg_node_id": 15,
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_21",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "asm_s_14"
+        ],
+        "attrs": {
+          "targets": [
+            "result"
+          ],
+          "value": "newValue",
+          "value_normalized": "newValue",
+          "cfg_node_id": 16,
+          "language": "yul",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "target_versions": {
+            "result": [
+              "result__ssa10",
+              "result__ssa11"
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_branch_1",
+        "kind": "BranchMaterialization",
+        "stmt_refs": [
+          "asm_s_11"
+        ],
+        "attrs": {
+          "assembly_block": 1,
+          "sink_node": 13,
+          "sink_target": "oldValue",
+          "sink_text": "let oldValue := sload(leafSlot)",
+          "mode": "branched",
+          "baseline": {
+            "predicates": [
+              "!(normalizeBucket)"
+            ],
+            "signature": "leafSlot=keccak256(ptr=bucket,add(ptr,32)=outerSlot)",
+            "node_ids": [
+              2,
+              3,
+              7,
+              11,
+              12
+            ],
+            "value_versions": [
+              "free__ssa1",
+              "leafSlot__ssa4",
+              "ptr__ssa2"
+            ],
+            "unknown": false
+          },
+          "branches": [
+            {
+              "predicates": [
+                "normalizeBucket"
+              ],
+              "slice": {
+                "predicates": [
+                  "normalizeBucket"
+                ],
+                "signature": "leafSlot=keccak256(ptr=1,add(ptr,32)=outerSlot)",
+                "node_ids": [
+                  2,
+                  3,
+                  10,
+                  11,
+                  12
+                ],
+                "value_versions": [
+                  "free__ssa1",
+                  "leafSlot__ssa5",
+                  "ptr__ssa2"
+                ],
+                "unknown": false
+              }
+            }
+          ],
+          "shared_node_ids": [
+            2,
+            3
+          ],
+          "forced_node_ids": [
+            7,
+            10,
+            11,
+            12,
+            13
+          ],
+          "discarded_unknown_paths": [],
+          "discarded_unknown_count": 0,
+          "policy": "discard_unknown_memory_paths_and_materialize_known_semantic_sink_paths"
+        }
+      }
+    ],
+    "semantic_overlays": [
+      {
+        "overlay_id": "ov_1",
+        "kind": "PathConditionedStorageRead",
+        "effects": [
+          "eff_15",
+          "eff_17"
+        ],
+        "stmt_refs": [
+          "asm_s_10",
+          "asm_s_11"
+        ],
+        "attrs": {
+          "slot": "leafSlot",
+          "slot_key": "leafSlot__ssa4",
+          "slot_versions": [
+            "leafSlot__ssa4",
+            "leafSlot__ssa5"
+          ],
+          "target": "oldValue",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "candidates": [
+            {
+              "condition": "!(discount) && !(normalizeBucket)",
+              "access": "ledger[user][bucket]",
+              "key": "bucket",
+              "keys": [
+                "user",
+                "bucket"
+              ],
+              "base": "outerSlot",
+              "base_key": "outerSlot",
+              "state_variable": "ledger",
+              "slot_kind": "nested_mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "packed_semantics": [
+                "bucket",
+                "outerSlot"
+              ],
+              "slot_derivation": {
+                "kind": "nested_mapping_slot",
+                "hash": "keccak256",
+                "encoding": "abi.encode",
+                "expression": "ledger[user][bucket]",
+                "key": "bucket",
+                "base": "outerSlot",
+                "base_key": "outerSlot",
+                "base_expression": "ledger[user]",
+                "state_variable": "ledger",
+                "notes": [
+                  "nested_mapping_slot_from_byte_axis"
+                ]
+              },
+              "notes": [
+                "nested_mapping_slot_from_byte_axis"
+              ],
+              "overlay_kind": "MappingRead",
+              "solidity_like": "oldValue = ledger[user][bucket];",
+              "target": "oldValue"
+            },
+            {
+              "condition": "discount && !(normalizeBucket)",
+              "access": "ledger[user][bucket]",
+              "key": "bucket",
+              "keys": [
+                "user",
+                "bucket"
+              ],
+              "base": "outerSlot",
+              "base_key": "outerSlot",
+              "state_variable": "ledger",
+              "slot_kind": "nested_mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "packed_semantics": [
+                "bucket",
+                "outerSlot"
+              ],
+              "slot_derivation": {
+                "kind": "nested_mapping_slot",
+                "hash": "keccak256",
+                "encoding": "abi.encode",
+                "expression": "ledger[user][bucket]",
+                "key": "bucket",
+                "base": "outerSlot",
+                "base_key": "outerSlot",
+                "base_expression": "ledger[user]",
+                "state_variable": "ledger",
+                "notes": [
+                  "nested_mapping_slot_from_byte_axis"
+                ]
+              },
+              "notes": [
+                "nested_mapping_slot_from_byte_axis"
+              ],
+              "overlay_kind": "MappingRead",
+              "solidity_like": "oldValue = ledger[user][bucket];",
+              "target": "oldValue"
+            },
+            {
+              "condition": "!(discount) && normalizeBucket",
+              "access": "ledger[user][1]",
+              "key": "1",
+              "keys": [
+                "user",
+                "1"
+              ],
+              "base": "outerSlot",
+              "base_key": "outerSlot",
+              "state_variable": "ledger",
+              "slot_kind": "nested_mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "packed_semantics": [
+                "1",
+                "outerSlot"
+              ],
+              "slot_derivation": {
+                "kind": "nested_mapping_slot",
+                "hash": "keccak256",
+                "encoding": "abi.encode",
+                "expression": "ledger[user][1]",
+                "key": "1",
+                "base": "outerSlot",
+                "base_key": "outerSlot",
+                "base_expression": "ledger[user]",
+                "state_variable": "ledger",
+                "notes": [
+                  "nested_mapping_slot_from_byte_axis"
+                ]
+              },
+              "notes": [
+                "nested_mapping_slot_from_byte_axis"
+              ],
+              "overlay_kind": "MappingRead",
+              "solidity_like": "oldValue = ledger[user][1];",
+              "target": "oldValue"
+            },
+            {
+              "condition": "discount && normalizeBucket",
+              "access": "ledger[user][1]",
+              "key": "1",
+              "keys": [
+                "user",
+                "1"
+              ],
+              "base": "outerSlot",
+              "base_key": "outerSlot",
+              "state_variable": "ledger",
+              "slot_kind": "nested_mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "packed_semantics": [
+                "1",
+                "outerSlot"
+              ],
+              "slot_derivation": {
+                "kind": "nested_mapping_slot",
+                "hash": "keccak256",
+                "encoding": "abi.encode",
+                "expression": "ledger[user][1]",
+                "key": "1",
+                "base": "outerSlot",
+                "base_key": "outerSlot",
+                "base_expression": "ledger[user]",
+                "state_variable": "ledger",
+                "notes": [
+                  "nested_mapping_slot_from_byte_axis"
+                ]
+              },
+              "notes": [
+                "nested_mapping_slot_from_byte_axis"
+              ],
+              "overlay_kind": "MappingRead",
+              "solidity_like": "oldValue = ledger[user][1];",
+              "target": "oldValue"
+            }
+          ],
+          "storage_model": "manual_packed_hash_slot",
+          "note": "storage_effect_has_path_sensitive_sink_resolution",
+          "semantic_inputs": {
+            "sink_kind": "MemoryHash",
+            "paths": [
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(bucket, outerSlot))"
+                },
+                "condition": "!(discount) && !(normalizeBucket)"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(bucket, outerSlot))"
+                },
+                "condition": "discount && !(normalizeBucket)"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(1, outerSlot))"
+                },
+                "condition": "!(discount) && normalizeBucket"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(1, outerSlot))"
+                },
+                "condition": "discount && normalizeBucket"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "overlay_id": "ov_2",
+        "kind": "PathConditionedStorageWrite",
+        "effects": [
+          "eff_15",
+          "eff_20"
+        ],
+        "stmt_refs": [
+          "asm_s_10",
+          "asm_s_13"
+        ],
+        "attrs": {
+          "slot": "leafSlot",
+          "slot_key": "leafSlot__ssa4",
+          "slot_versions": [
+            "leafSlot__ssa4",
+            "leafSlot__ssa5"
+          ],
+          "value": "newValue",
+          "value_yul": "newValue",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)",
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "candidates": [
+            {
+              "condition": "!(discount) && !(normalizeBucket)",
+              "access": "ledger[user][bucket]",
+              "key": "bucket",
+              "keys": [
+                "user",
+                "bucket"
+              ],
+              "base": "outerSlot",
+              "base_key": "outerSlot",
+              "state_variable": "ledger",
+              "slot_kind": "nested_mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "packed_semantics": [
+                "bucket",
+                "outerSlot"
+              ],
+              "slot_derivation": {
+                "kind": "nested_mapping_slot",
+                "hash": "keccak256",
+                "encoding": "abi.encode",
+                "expression": "ledger[user][bucket]",
+                "key": "bucket",
+                "base": "outerSlot",
+                "base_key": "outerSlot",
+                "base_expression": "ledger[user]",
+                "state_variable": "ledger",
+                "notes": [
+                  "nested_mapping_slot_from_byte_axis"
+                ]
+              },
+              "notes": [
+                "nested_mapping_slot_from_byte_axis"
+              ],
+              "overlay_kind": "MappingWrite",
+              "solidity_like": "ledger[user][bucket] = newValue;",
+              "value": "newValue",
+              "value_yul": "newValue"
+            },
+            {
+              "condition": "discount && !(normalizeBucket)",
+              "access": "ledger[user][bucket]",
+              "key": "bucket",
+              "keys": [
+                "user",
+                "bucket"
+              ],
+              "base": "outerSlot",
+              "base_key": "outerSlot",
+              "state_variable": "ledger",
+              "slot_kind": "nested_mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "packed_semantics": [
+                "bucket",
+                "outerSlot"
+              ],
+              "slot_derivation": {
+                "kind": "nested_mapping_slot",
+                "hash": "keccak256",
+                "encoding": "abi.encode",
+                "expression": "ledger[user][bucket]",
+                "key": "bucket",
+                "base": "outerSlot",
+                "base_key": "outerSlot",
+                "base_expression": "ledger[user]",
+                "state_variable": "ledger",
+                "notes": [
+                  "nested_mapping_slot_from_byte_axis"
+                ]
+              },
+              "notes": [
+                "nested_mapping_slot_from_byte_axis"
+              ],
+              "overlay_kind": "MappingWrite",
+              "solidity_like": "ledger[user][bucket] = newValue;",
+              "value": "newValue",
+              "value_yul": "newValue"
+            },
+            {
+              "condition": "!(discount) && normalizeBucket",
+              "access": "ledger[user][1]",
+              "key": "1",
+              "keys": [
+                "user",
+                "1"
+              ],
+              "base": "outerSlot",
+              "base_key": "outerSlot",
+              "state_variable": "ledger",
+              "slot_kind": "nested_mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "packed_semantics": [
+                "1",
+                "outerSlot"
+              ],
+              "slot_derivation": {
+                "kind": "nested_mapping_slot",
+                "hash": "keccak256",
+                "encoding": "abi.encode",
+                "expression": "ledger[user][1]",
+                "key": "1",
+                "base": "outerSlot",
+                "base_key": "outerSlot",
+                "base_expression": "ledger[user]",
+                "state_variable": "ledger",
+                "notes": [
+                  "nested_mapping_slot_from_byte_axis"
+                ]
+              },
+              "notes": [
+                "nested_mapping_slot_from_byte_axis"
+              ],
+              "overlay_kind": "MappingWrite",
+              "solidity_like": "ledger[user][1] = newValue;",
+              "value": "newValue",
+              "value_yul": "newValue"
+            },
+            {
+              "condition": "discount && normalizeBucket",
+              "access": "ledger[user][1]",
+              "key": "1",
+              "keys": [
+                "user",
+                "1"
+              ],
+              "base": "outerSlot",
+              "base_key": "outerSlot",
+              "state_variable": "ledger",
+              "slot_kind": "nested_mapping_slot",
+              "result_type": "uint256",
+              "terminal_storage_value": true,
+              "packed_semantics": [
+                "1",
+                "outerSlot"
+              ],
+              "slot_derivation": {
+                "kind": "nested_mapping_slot",
+                "hash": "keccak256",
+                "encoding": "abi.encode",
+                "expression": "ledger[user][1]",
+                "key": "1",
+                "base": "outerSlot",
+                "base_key": "outerSlot",
+                "base_expression": "ledger[user]",
+                "state_variable": "ledger",
+                "notes": [
+                  "nested_mapping_slot_from_byte_axis"
+                ]
+              },
+              "notes": [
+                "nested_mapping_slot_from_byte_axis"
+              ],
+              "overlay_kind": "MappingWrite",
+              "solidity_like": "ledger[user][1] = newValue;",
+              "value": "newValue",
+              "value_yul": "newValue"
+            }
+          ],
+          "storage_model": "manual_packed_hash_slot",
+          "note": "storage_effect_has_path_sensitive_sink_resolution",
+          "semantic_inputs": {
+            "sink_kind": "MemoryHash",
+            "paths": [
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(bucket, outerSlot))"
+                },
+                "condition": "!(discount) && !(normalizeBucket)"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(bucket, outerSlot))"
+                },
+                "condition": "discount && !(normalizeBucket)"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(1, outerSlot))"
+                },
+                "condition": "!(discount) && normalizeBucket"
+              },
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(1, outerSlot))"
+                },
+                "condition": "discount && normalizeBucket"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "overlay_id": "ov_3",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ],
+        "stmt_refs": [
+          "asm_s_1"
+        ],
+        "attrs": {
+          "target": "free",
+          "expression": "mload(0x40)",
+          "expression_normalized": "mload(0x40)",
+          "solidity_like": "free = mload(0x40);",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": null,
+          "atomized_value": null
+        }
+      },
+      {
+        "overlay_id": "ov_4",
+        "kind": "EvaluationStep",
+        "effects": [
+          "eff_10"
+        ],
+        "stmt_refs": [
+          "asm_s_2"
+        ],
+        "attrs": {
+          "temp": "__sseir_eval_asm_s_2_1",
+          "expression": "add(free, 0x20)",
+          "expression_normalized": "(free + 0x20)",
+          "solidity_like": "__sseir_eval_asm_s_2_1 = (free + 0x20);",
+          "order": 1,
+          "call": "add",
+          "raw_args": [
+            "free",
+            "0x20"
+          ],
+          "evaluated_args": [
+            "free",
+            "0x20"
+          ],
+          "parent_effect": "eff_9",
+          "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+          "evaluation_context": "value"
+        }
+      },
+      {
+        "overlay_id": "ov_5",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ],
+        "stmt_refs": [
+          "asm_s_2"
+        ],
+        "attrs": {
+          "target": "ptr",
+          "expression": "add(free, 0x20)",
+          "expression_normalized": "__sseir_eval_asm_s_2_1",
+          "solidity_like": "ptr = __sseir_eval_asm_s_2_1;",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": null,
+          "atomized_value": {
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+            "atomization_model": "yul_atomic_operation_table",
+            "final": "__sseir_eval_asm_s_2_1",
+            "final_normalized": "__sseir_eval_asm_s_2_1",
+            "steps": [
+              {
+                "order": 1,
+                "atom_id": "yul_atom_b1_asm_s_2_3_1",
+                "temp": "__sseir_eval_asm_s_2_1",
+                "expression": "add(free, 0x20)",
+                "execution_expression": "add(free, 0x20)",
+                "expression_normalized": "(free + 0x20)",
+                "call": "add",
+                "raw_args": [
+                  "free",
+                  "0x20"
+                ],
+                "evaluated_args": [
+                  "free",
+                  "0x20"
+                ],
+                "dependencies": []
+              }
+            ],
+            "atom_ids": [
+              "yul_atom_b1_asm_s_2_3_1",
+              "yul_atom_b1_asm_s_2_3_2"
+            ]
+          }
+        }
+      },
+      {
+        "overlay_id": "ov_6",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ],
+        "stmt_refs": [
+          "asm_s_5"
+        ],
+        "attrs": {
+          "target": "outerSlot",
+          "expression": "keccak256(ptr, 0x40)",
+          "expression_normalized": "keccak256(abi.encode(user, ledger.slot))",
+          "solidity_like": "outerSlot = keccak256(abi.encode(user, ledger.slot));",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": {
+            "expression": "keccak256(abi.encode(user, ledger.slot))",
+            "encoding": "abi.encode",
+            "notes": [
+              "memory_hash_from_byte_axis"
+            ]
+          },
+          "atomized_value": null
+        }
+      },
+      {
+        "overlay_id": "ov_7",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_13"
+        ],
+        "stmt_refs": [
+          "asm_s_7"
+        ],
+        "attrs": {
+          "expression": "normalizeBucket",
+          "solidity_like": "if (normalizeBucket)",
+          "context": "condition",
+          "condition_final_temp": "normalizeBucket",
+          "condition_evaluation": {
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+            "atomization_model": "yul_atomic_operation_table",
+            "final": "normalizeBucket",
+            "final_normalized": "(normalizeBucket != 0)",
+            "steps": [],
+            "atom_ids": [
+              "yul_atom_b1_asm_s_7_8_1"
+            ]
+          },
+          "division_guards": []
+        }
+      },
+      {
+        "overlay_id": "ov_8",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_14"
+        ],
+        "stmt_refs": [
+          "asm_s_10"
+        ],
+        "attrs": {
+          "target": "leafSlot",
+          "expression": "keccak256(ptr, 0x40)",
+          "expression_normalized": "keccak256(ptr, 0x40)",
+          "solidity_like": "leafSlot = keccak256(ptr, 0x40);",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": null,
+          "atomized_value": null
+        }
+      },
+      {
+        "overlay_id": "ov_9",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_16"
+        ],
+        "stmt_refs": [
+          "asm_s_11"
+        ],
+        "attrs": {
+          "target": "oldValue",
+          "expression": "sload(leafSlot)",
+          "expression_normalized": "sload(leafSlot)",
+          "solidity_like": "oldValue = sload(leafSlot);",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": null,
+          "atomized_value": null
+        }
+      },
+      {
+        "overlay_id": "ov_10",
+        "kind": "EvaluationStep",
+        "effects": [
+          "eff_19"
+        ],
+        "stmt_refs": [
+          "asm_s_12"
+        ],
+        "attrs": {
+          "temp": "__sseir_eval_asm_s_12_1",
+          "expression": "add(oldValue, delta)",
+          "expression_normalized": "(oldValue + delta)",
+          "solidity_like": "__sseir_eval_asm_s_12_1 = (oldValue + delta);",
+          "order": 1,
+          "call": "add",
+          "raw_args": [
+            "oldValue",
+            "delta"
+          ],
+          "evaluated_args": [
+            "oldValue",
+            "delta"
+          ],
+          "parent_effect": "eff_18",
+          "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+          "evaluation_context": "value"
+        }
+      },
+      {
+        "overlay_id": "ov_11",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_18"
+        ],
+        "stmt_refs": [
+          "asm_s_12"
+        ],
+        "attrs": {
+          "target": "newValue",
+          "expression": "add(oldValue, delta)",
+          "expression_normalized": "__sseir_eval_asm_s_12_1",
+          "solidity_like": "newValue = __sseir_eval_asm_s_12_1;",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": null,
+          "atomized_value": {
+            "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+            "atomization_model": "yul_atomic_operation_table",
+            "final": "__sseir_eval_asm_s_12_1",
+            "final_normalized": "__sseir_eval_asm_s_12_1",
+            "steps": [
+              {
+                "order": 1,
+                "atom_id": "yul_atom_b1_asm_s_12_14_1",
+                "temp": "__sseir_eval_asm_s_12_1",
+                "expression": "add(oldValue, delta)",
+                "execution_expression": "add(oldValue, delta)",
+                "expression_normalized": "(oldValue + delta)",
+                "call": "add",
+                "raw_args": [
+                  "oldValue",
+                  "delta"
+                ],
+                "evaluated_args": [
+                  "oldValue",
+                  "delta"
+                ],
+                "dependencies": []
+              }
+            ],
+            "atom_ids": [
+              "yul_atom_b1_asm_s_12_14_1",
+              "yul_atom_b1_asm_s_12_14_2"
+            ]
+          }
+        }
+      },
+      {
+        "overlay_id": "ov_12",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_21"
+        ],
+        "stmt_refs": [
+          "asm_s_14"
+        ],
+        "attrs": {
+          "target": "result",
+          "expression": "newValue",
+          "expression_normalized": "newValue",
+          "solidity_like": "result = newValue;",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": null,
+          "atomized_value": null
+        }
+      }
+    ],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "BranchMaterialization",
+        "assembly_block": 1,
+        "sink_node": 13,
+        "sink_target": "oldValue",
+        "sink_text": "let oldValue := sload(leafSlot)",
+        "mode": "branched",
+        "baseline": {
+          "predicates": [
+            "!(normalizeBucket)"
+          ],
+          "signature": "leafSlot=keccak256(ptr=bucket,add(ptr,32)=outerSlot)",
+          "node_ids": [
+            2,
+            3,
+            7,
+            11,
+            12
+          ],
+          "value_versions": [
+            "free__ssa1",
+            "leafSlot__ssa4",
+            "ptr__ssa2"
+          ],
+          "unknown": false
+        },
+        "branches": [
+          {
+            "predicates": [
+              "normalizeBucket"
+            ],
+            "slice": {
+              "predicates": [
+                "normalizeBucket"
+              ],
+              "signature": "leafSlot=keccak256(ptr=1,add(ptr,32)=outerSlot)",
+              "node_ids": [
+                2,
+                3,
+                10,
+                11,
+                12
+              ],
+              "value_versions": [
+                "free__ssa1",
+                "leafSlot__ssa5",
+                "ptr__ssa2"
+              ],
+              "unknown": false
+            }
+          }
+        ],
+        "shared_node_ids": [
+          2,
+          3
+        ],
+        "forced_node_ids": [
+          7,
+          10,
+          11,
+          12,
+          13
+        ],
+        "discarded_unknown_paths": [],
+        "discarded_unknown_count": 0,
+        "policy": "discard_unknown_memory_paths_and_materialize_known_semantic_sink_paths",
+        "text_ir": [
+          "ConditionalMaterialization: sink=N13 target=oldValue mode=conditional",
+          "  baseline path: !(normalizeBucket)",
+          "  baseline slot: leafSlot=keccak256(ptr=bucket,add(ptr,32)=outerSlot)",
+          "  DiscardedUnknownPaths: 0",
+          "  BranchExpandedYulIR:",
+          "    let free := mload(0x40); // origin: N2",
+          "    let ptr := add(free, 0x20); // origin: N3",
+          "    mstore(ptr, bucket); // origin: N7",
+          "    mstore(add(ptr, 0x20), outerSlot); // origin: N11",
+          "    let leafSlot := keccak256(ptr, 0x40); // origin: N12",
+          "    let oldValue := sload(leafSlot); // origin: N13",
+          "    // path: normalizeBucket",
+          "    if normalizeBucket {",
+          "        mstore(ptr, 1); // origin: N10",
+          "        mstore(add(ptr, 0x20), outerSlot); // origin: N11",
+          "        let leafSlot := keccak256(ptr, 0x40); // origin: N12",
+          "        let oldValue := sload(leafSlot); // origin: N13",
+          "    }",
+          "  OriginSummary: shared=[2, 3] cloned=[7, 10, 11, 12, 13]"
+        ]
+      },
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+        "state_variables": [
+          {
+            "name": "ledger",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(uint256 => uint256))",
+            "data_location": "default",
+            "src": "103:61:0",
+            "storage_slot": 0
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {}
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 1,
+        "selectors": {
+          "0xc28fdeef": [
+            {
+              "selector": "0xc28fdeef",
+              "signature": "update(address,uint256,uint256,bool,bool)",
+              "name": "update",
+              "kind": "function",
+              "contract": "SemanticIRMemoryDefUseComplex",
+              "source": "ast",
+              "src": "171:1003:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "tests/fixtures/semantic_ir_memory_defuse_complex.sol",
+        "analysis_source": "tests/fixtures/semantic_ir_memory_defuse_complex.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  }
+]

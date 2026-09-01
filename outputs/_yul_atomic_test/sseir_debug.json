@@ -1,0 +1,3464 @@
+[
+  {
+    "function_id": "SimpleSemanticIR.deposit(uint256)",
+    "contract": "SimpleSemanticIR",
+    "function": "deposit",
+    "signature": "deposit(uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "total = total + amount",
+        "src": "218:22:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "asm_s_1",
+        "lang": "yul",
+        "text": "mstore(0x00, caller())",
+        "src": "274:22:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_2",
+        "lang": "yul",
+        "text": "mstore(0x20, balances.slot)",
+        "src": "309:27:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_3",
+        "lang": "yul",
+        "text": "let balanceSlot := keccak256(0x00, 0x40)",
+        "src": "349:40:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulVariableDeclaration",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_4",
+        "lang": "yul",
+        "text": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+        "src": "402:52:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_id": 0,
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "208:262:slither",
+            "text": "entrypoint",
+            "slithir": [],
+            "slithir_ssa": [
+              {
+                "order": 0,
+                "kind": "Phi",
+                "text": "total_1(uint256) := ϕ(['total_2', 'total_0'])",
+                "ssa": true,
+                "lvalue": {
+                  "kind": "StateIRVariable",
+                  "text": "total_1",
+                  "name": "total",
+                  "base_name": "total",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "StateIRVariable",
+                    "text": "total_2",
+                    "name": "total",
+                    "base_name": "total",
+                    "type": "uint256",
+                    "is_state": true,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  },
+                  {
+                    "kind": "StateIRVariable",
+                    "text": "total_0",
+                    "name": "total",
+                    "base_name": "total",
+                    "type": "uint256",
+                    "is_state": true,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "checked": true,
+                "phi_origin_nodes": [],
+                "phi_callback": false
+              },
+              {
+                "order": 1,
+                "kind": "Phi",
+                "text": "balances_1(mapping(address => uint256)) := ϕ(['balances_0'])",
+                "ssa": true,
+                "lvalue": {
+                  "kind": "StateIRVariable",
+                  "text": "balances_1",
+                  "name": "balances",
+                  "base_name": "balances",
+                  "type": "mapping(address => uint256)",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "StateIRVariable",
+                    "text": "balances_0",
+                    "name": "balances",
+                    "base_name": "balances",
+                    "type": "mapping(address => uint256)",
+                    "is_state": true,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "checked": true,
+                "phi_origin_nodes": [],
+                "phi_callback": false
+              }
+            ],
+            "state_variables_read": [],
+            "state_variables_written": [],
+            "variables_read": [],
+            "variables_written": [],
+            "slither_dominators": [
+              0
+            ],
+            "slither_immediate_dominator": null,
+            "slither_dominance_frontier": [],
+            "slither_is_reachable": true,
+            "slither_calls": {
+              "internal": [],
+              "high_level": [],
+              "low_level": []
+            },
+            "unified_dominators": [
+              "bb_sol_slither_n0"
+            ],
+            "unified_immediate_dominator": null,
+            "unified_postdominators": [
+              "bb_asm1_n0",
+              "bb_asm1_n1",
+              "bb_asm1_n2",
+              "bb_asm1_n3",
+              "bb_asm1_n4",
+              "bb_asm1_n5",
+              "bb_sol_slither_n0",
+              "bb_sol_slither_n1"
+            ],
+            "unified_immediate_postdominator": "bb_sol_slither_n1",
+            "unified_dominance_frontier": [],
+            "control_dependencies": [],
+            "control_dependency_closure": [],
+            "typed_def_use": {
+              "definitions": [
+                {
+                  "name": "total",
+                  "version": "total_1",
+                  "kind": "StateIRVariable",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "operation_order": 0,
+                  "operation_kind": "Phi"
+                },
+                {
+                  "name": "balances",
+                  "version": "balances_1",
+                  "kind": "StateIRVariable",
+                  "type": "mapping(address => uint256)",
+                  "is_state": true,
+                  "is_reference": false,
+                  "operation_order": 1,
+                  "operation_kind": "Phi"
+                }
+              ],
+              "uses": [
+                {
+                  "name": "total",
+                  "version": "total_2",
+                  "kind": "StateIRVariable",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "operation_order": 0,
+                  "operation_kind": "Phi"
+                },
+                {
+                  "name": "total",
+                  "version": "total_0",
+                  "kind": "StateIRVariable",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "operation_order": 0,
+                  "operation_kind": "Phi"
+                },
+                {
+                  "name": "balances",
+                  "version": "balances_0",
+                  "kind": "StateIRVariable",
+                  "type": "mapping(address => uint256)",
+                  "is_state": true,
+                  "is_reference": false,
+                  "operation_order": 1,
+                  "operation_kind": "Phi"
+                }
+              ],
+              "reaching_definitions_in": {},
+              "reaching_definitions_out": {
+                "total": [
+                  "total_1"
+                ],
+                "balances": [
+                  "balances_1"
+                ]
+              }
+            },
+            "solidity_atomic_ops": [
+              {
+                "order": 0,
+                "kind": "Phi",
+                "text": "total_1(uint256) := ϕ(['total_2', 'total_0'])",
+                "ssa": true,
+                "lvalue": {
+                  "kind": "StateIRVariable",
+                  "text": "total_1",
+                  "name": "total",
+                  "base_name": "total",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "StateIRVariable",
+                    "text": "total_2",
+                    "name": "total",
+                    "base_name": "total",
+                    "type": "uint256",
+                    "is_state": true,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  },
+                  {
+                    "kind": "StateIRVariable",
+                    "text": "total_0",
+                    "name": "total",
+                    "base_name": "total",
+                    "type": "uint256",
+                    "is_state": true,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "checked": true,
+                "phi_origin_nodes": [],
+                "phi_callback": false,
+                "atom_id": "sol_atom_1",
+                "sequence": 1,
+                "block_order": 0,
+                "operation_order": 0,
+                "cfg_block_id": "bb_sol_slither_n0",
+                "cfg_node_id": 0,
+                "cfg_node_type": "NodeType.ENTRYPOINT",
+                "source_span": "208:262:slither",
+                "stmt_refs": [],
+                "path_conditions": [],
+                "atomic_kind": "PhiMerge",
+                "semantic_atom": false,
+                "runtime_operation": false,
+                "result": "total",
+                "result_ssa": "total_1",
+                "expression": "total",
+                "resolved_reads": [
+                  "total"
+                ],
+                "writes": [
+                  "total"
+                ],
+                "storage_reads": [],
+                "source": "slithir_ssa",
+                "fact_eligible": false,
+                "cfg_predecessor_blocks": [],
+                "phi_scope": "analysis_boundary",
+                "phi_role": "function_entry_input",
+                "depends_on_atoms": [
+                  "sol_atom_4"
+                ]
+              },
+              {
+                "order": 1,
+                "kind": "Phi",
+                "text": "balances_1(mapping(address => uint256)) := ϕ(['balances_0'])",
+                "ssa": true,
+                "lvalue": {
+                  "kind": "StateIRVariable",
+                  "text": "balances_1",
+                  "name": "balances",
+                  "base_name": "balances",
+                  "type": "mapping(address => uint256)",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "StateIRVariable",
+                    "text": "balances_0",
+                    "name": "balances",
+                    "base_name": "balances",
+                    "type": "mapping(address => uint256)",
+                    "is_state": true,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "checked": true,
+                "phi_origin_nodes": [],
+                "phi_callback": false,
+                "atom_id": "sol_atom_2",
+                "sequence": 2,
+                "block_order": 0,
+                "operation_order": 1,
+                "cfg_block_id": "bb_sol_slither_n0",
+                "cfg_node_id": 0,
+                "cfg_node_type": "NodeType.ENTRYPOINT",
+                "source_span": "208:262:slither",
+                "stmt_refs": [],
+                "path_conditions": [],
+                "atomic_kind": "PhiMerge",
+                "semantic_atom": false,
+                "runtime_operation": false,
+                "result": "balances",
+                "result_ssa": "balances_1",
+                "expression": "balances",
+                "resolved_reads": [
+                  "balances"
+                ],
+                "writes": [
+                  "balances"
+                ],
+                "storage_reads": [],
+                "source": "slithir_ssa",
+                "fact_eligible": false,
+                "cfg_predecessor_blocks": [],
+                "phi_scope": "analysis_boundary",
+                "phi_role": "function_entry_input",
+                "depends_on_atoms": [],
+                "previous_atom_id": "sol_atom_1"
+              }
+            ]
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "total = total + amount"
+          },
+          "attrs": {
+            "slither_node_id": 1,
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "218:22:slither",
+            "text": "total = total + amount",
+            "slithir": [
+              {
+                "order": 0,
+                "kind": "Binary",
+                "text": "TMP_0(uint256) = total (c)+ amount",
+                "ssa": false,
+                "source_expression": "total + amount",
+                "lvalue": {
+                  "kind": "TemporaryVariable",
+                  "text": "TMP_0",
+                  "name": "TMP_0",
+                  "base_name": "TMP_0",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "variable_left": {
+                  "kind": "StateVariable",
+                  "text": "total",
+                  "name": "total",
+                  "base_name": "total",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "variable_right": {
+                  "kind": "LocalVariable",
+                  "text": "amount",
+                  "name": "amount",
+                  "base_name": "amount",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "StateVariable",
+                    "text": "total",
+                    "name": "total",
+                    "base_name": "total",
+                    "type": "uint256",
+                    "is_state": true,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  },
+                  {
+                    "kind": "LocalVariable",
+                    "text": "amount",
+                    "name": "amount",
+                    "base_name": "amount",
+                    "type": "uint256",
+                    "is_state": false,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "operator": "+",
+                "checked": true
+              },
+              {
+                "order": 1,
+                "kind": "Assignment",
+                "text": "total(uint256) := TMP_0(uint256)",
+                "ssa": false,
+                "source_expression": "total = total + amount",
+                "lvalue": {
+                  "kind": "StateVariable",
+                  "text": "total",
+                  "name": "total",
+                  "base_name": "total",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "rvalue": {
+                  "kind": "TemporaryVariable",
+                  "text": "TMP_0",
+                  "name": "TMP_0",
+                  "base_name": "TMP_0",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "TemporaryVariable",
+                    "text": "TMP_0",
+                    "name": "TMP_0",
+                    "base_name": "TMP_0",
+                    "type": "uint256",
+                    "is_state": false,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "checked": true
+              }
+            ],
+            "slithir_ssa": [
+              {
+                "order": 0,
+                "kind": "Binary",
+                "text": "TMP_0(uint256) = total_1 (c)+ amount_1",
+                "ssa": true,
+                "source_expression": "total + amount",
+                "lvalue": {
+                  "kind": "TemporaryVariableSSA",
+                  "text": "TMP_0",
+                  "name": "TMP_0",
+                  "base_name": "TMP_0",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "variable_left": {
+                  "kind": "StateIRVariable",
+                  "text": "total_1",
+                  "name": "total",
+                  "base_name": "total",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "variable_right": {
+                  "kind": "LocalIRVariable",
+                  "text": "amount_1",
+                  "name": "amount",
+                  "base_name": "amount",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "StateIRVariable",
+                    "text": "total_1",
+                    "name": "total",
+                    "base_name": "total",
+                    "type": "uint256",
+                    "is_state": true,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  },
+                  {
+                    "kind": "LocalIRVariable",
+                    "text": "amount_1",
+                    "name": "amount",
+                    "base_name": "amount",
+                    "type": "uint256",
+                    "is_state": false,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "operator": "+",
+                "checked": true
+              },
+              {
+                "order": 1,
+                "kind": "Assignment",
+                "text": "total_2(uint256) := TMP_0(uint256)",
+                "ssa": true,
+                "source_expression": "total = total + amount",
+                "lvalue": {
+                  "kind": "StateIRVariable",
+                  "text": "total_2",
+                  "name": "total",
+                  "base_name": "total",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "rvalue": {
+                  "kind": "TemporaryVariableSSA",
+                  "text": "TMP_0",
+                  "name": "TMP_0",
+                  "base_name": "TMP_0",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "TemporaryVariableSSA",
+                    "text": "TMP_0",
+                    "name": "TMP_0",
+                    "base_name": "TMP_0",
+                    "type": "uint256",
+                    "is_state": false,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "checked": true
+              }
+            ],
+            "state_variables_read": [
+              {
+                "kind": "StateVariable",
+                "text": "total",
+                "name": "total",
+                "base_name": "total",
+                "type": "uint256",
+                "is_state": true,
+                "is_reference": false,
+                "is_constant": false,
+                "is_solidity_builtin": false
+              }
+            ],
+            "state_variables_written": [
+              {
+                "kind": "StateVariable",
+                "text": "total",
+                "name": "total",
+                "base_name": "total",
+                "type": "uint256",
+                "is_state": true,
+                "is_reference": false,
+                "is_constant": false,
+                "is_solidity_builtin": false
+              }
+            ],
+            "variables_read": [
+              {
+                "kind": "LocalVariable",
+                "text": "amount",
+                "name": "amount",
+                "base_name": "amount",
+                "type": "uint256",
+                "is_state": false,
+                "is_reference": false,
+                "is_constant": false,
+                "is_solidity_builtin": false
+              },
+              {
+                "kind": "StateVariable",
+                "text": "total",
+                "name": "total",
+                "base_name": "total",
+                "type": "uint256",
+                "is_state": true,
+                "is_reference": false,
+                "is_constant": false,
+                "is_solidity_builtin": false
+              }
+            ],
+            "variables_written": [
+              {
+                "kind": "StateVariable",
+                "text": "total",
+                "name": "total",
+                "base_name": "total",
+                "type": "uint256",
+                "is_state": true,
+                "is_reference": false,
+                "is_constant": false,
+                "is_solidity_builtin": false
+              }
+            ],
+            "slither_dominators": [
+              0,
+              1
+            ],
+            "slither_immediate_dominator": 0,
+            "slither_dominance_frontier": [],
+            "slither_is_reachable": true,
+            "slither_calls": {
+              "internal": [],
+              "high_level": [],
+              "low_level": []
+            },
+            "unified_dominators": [
+              "bb_sol_slither_n0",
+              "bb_sol_slither_n1"
+            ],
+            "unified_immediate_dominator": "bb_sol_slither_n0",
+            "unified_postdominators": [
+              "bb_asm1_n0",
+              "bb_asm1_n1",
+              "bb_asm1_n2",
+              "bb_asm1_n3",
+              "bb_asm1_n4",
+              "bb_asm1_n5",
+              "bb_sol_slither_n1"
+            ],
+            "unified_immediate_postdominator": "bb_asm1_n0",
+            "unified_dominance_frontier": [],
+            "control_dependencies": [],
+            "control_dependency_closure": [],
+            "typed_def_use": {
+              "definitions": [
+                {
+                  "name": "TMP_0",
+                  "version": "TMP_0",
+                  "kind": "TemporaryVariableSSA",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "operation_order": 0,
+                  "operation_kind": "Binary"
+                },
+                {
+                  "name": "total",
+                  "version": "total_2",
+                  "kind": "StateIRVariable",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "operation_order": 1,
+                  "operation_kind": "Assignment"
+                }
+              ],
+              "uses": [
+                {
+                  "name": "total",
+                  "version": "total_1",
+                  "kind": "StateIRVariable",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "operation_order": 0,
+                  "operation_kind": "Binary"
+                },
+                {
+                  "name": "amount",
+                  "version": "amount_1",
+                  "kind": "LocalIRVariable",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "operation_order": 0,
+                  "operation_kind": "Binary"
+                },
+                {
+                  "name": "TMP_0",
+                  "version": "TMP_0",
+                  "kind": "TemporaryVariableSSA",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "operation_order": 1,
+                  "operation_kind": "Assignment"
+                }
+              ],
+              "reaching_definitions_in": {
+                "total": [
+                  "total_1"
+                ],
+                "balances": [
+                  "balances_1"
+                ]
+              },
+              "reaching_definitions_out": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              }
+            },
+            "solidity_atomic_ops": [
+              {
+                "atom_id": "sol_atom_3:state_read:1",
+                "kind": "StorageRead",
+                "atomic_kind": "StateRead",
+                "semantic_atom": true,
+                "runtime_operation": true,
+                "cfg_block_id": "bb_sol_slither_n1",
+                "cfg_node_id": 1,
+                "block_order": 1,
+                "source_span": "218:22:slither",
+                "source_expression": "total",
+                "stmt_refs": [
+                  "sol_s_1"
+                ],
+                "path_conditions": [],
+                "result": "total_1",
+                "result_ssa": "total_1",
+                "expression": "total",
+                "resolved_reads": [
+                  "total"
+                ],
+                "writes": [
+                  "total_1"
+                ],
+                "storage_access": {
+                  "access": "total",
+                  "state_variable": "total",
+                  "keys": [],
+                  "reference_kind": "state_variable",
+                  "type": "uint256"
+                },
+                "depends_on_atoms": [
+                  "sol_atom_1"
+                ],
+                "source": "slithir_ssa",
+                "implicit_slithir_operation": true,
+                "consumer_atom_id": "sol_atom_3",
+                "sequence": 3,
+                "operation_order": 0
+              },
+              {
+                "order": 0,
+                "kind": "Binary",
+                "text": "TMP_0(uint256) = total_1 (c)+ amount_1",
+                "ssa": true,
+                "source_expression": "total + amount",
+                "lvalue": {
+                  "kind": "TemporaryVariableSSA",
+                  "text": "TMP_0",
+                  "name": "TMP_0",
+                  "base_name": "TMP_0",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "variable_left": {
+                  "kind": "StateIRVariable",
+                  "text": "total_1",
+                  "name": "total",
+                  "base_name": "total",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "variable_right": {
+                  "kind": "LocalIRVariable",
+                  "text": "amount_1",
+                  "name": "amount",
+                  "base_name": "amount",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "StateIRVariable",
+                    "text": "total_1",
+                    "name": "total",
+                    "base_name": "total",
+                    "type": "uint256",
+                    "is_state": true,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  },
+                  {
+                    "kind": "LocalIRVariable",
+                    "text": "amount_1",
+                    "name": "amount",
+                    "base_name": "amount",
+                    "type": "uint256",
+                    "is_state": false,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "operator": "+",
+                "checked": true,
+                "atom_id": "sol_atom_3",
+                "sequence": 4,
+                "block_order": 1,
+                "operation_order": 1,
+                "cfg_block_id": "bb_sol_slither_n1",
+                "cfg_node_id": 1,
+                "cfg_node_type": "NodeType.EXPRESSION",
+                "source_span": "218:22:slither",
+                "stmt_refs": [
+                  "sol_s_1"
+                ],
+                "path_conditions": [],
+                "atomic_kind": "ValueCompute",
+                "semantic_atom": true,
+                "runtime_operation": true,
+                "result": "TMP_0",
+                "result_ssa": "TMP_0",
+                "expression": "(total + amount)",
+                "resolved_reads": [
+                  "total",
+                  "amount"
+                ],
+                "writes": [
+                  "TMP_0"
+                ],
+                "storage_reads": [
+                  {
+                    "access": "total",
+                    "state_variable": "total",
+                    "keys": [],
+                    "reference_kind": "state_variable",
+                    "type": "uint256",
+                    "operand_ssa": "total_1",
+                    "operand": {
+                      "kind": "StateIRVariable",
+                      "text": "total_1",
+                      "name": "total",
+                      "base_name": "total",
+                      "type": "uint256",
+                      "is_state": true,
+                      "is_reference": false,
+                      "is_constant": false,
+                      "is_solidity_builtin": false
+                    }
+                  }
+                ],
+                "source": "slithir_ssa",
+                "fact_eligible": true,
+                "cfg_predecessor_blocks": [
+                  "bb_sol_slither_n0"
+                ],
+                "depends_on_atoms": [
+                  "sol_atom_3:state_read:1"
+                ]
+              },
+              {
+                "order": 1,
+                "kind": "Assignment",
+                "text": "total_2(uint256) := TMP_0(uint256)",
+                "ssa": true,
+                "source_expression": "total = total + amount",
+                "lvalue": {
+                  "kind": "StateIRVariable",
+                  "text": "total_2",
+                  "name": "total",
+                  "base_name": "total",
+                  "type": "uint256",
+                  "is_state": true,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "rvalue": {
+                  "kind": "TemporaryVariableSSA",
+                  "text": "TMP_0",
+                  "name": "TMP_0",
+                  "base_name": "TMP_0",
+                  "type": "uint256",
+                  "is_state": false,
+                  "is_reference": false,
+                  "is_constant": false,
+                  "is_solidity_builtin": false
+                },
+                "read": [
+                  {
+                    "kind": "TemporaryVariableSSA",
+                    "text": "TMP_0",
+                    "name": "TMP_0",
+                    "base_name": "TMP_0",
+                    "type": "uint256",
+                    "is_state": false,
+                    "is_reference": false,
+                    "is_constant": false,
+                    "is_solidity_builtin": false
+                  }
+                ],
+                "checked": true,
+                "atom_id": "sol_atom_4",
+                "sequence": 5,
+                "block_order": 1,
+                "operation_order": 2,
+                "cfg_block_id": "bb_sol_slither_n1",
+                "cfg_node_id": 1,
+                "cfg_node_type": "NodeType.EXPRESSION",
+                "source_span": "218:22:slither",
+                "stmt_refs": [
+                  "sol_s_1"
+                ],
+                "path_conditions": [],
+                "atomic_kind": "StateWrite",
+                "semantic_atom": true,
+                "runtime_operation": true,
+                "result": "total",
+                "result_ssa": "total_2",
+                "expression": "(total + amount)",
+                "resolved_reads": [
+                  "(total + amount)"
+                ],
+                "writes": [
+                  "total"
+                ],
+                "storage_access": {
+                  "access": "total",
+                  "state_variable": "total",
+                  "keys": [],
+                  "reference_kind": "state_variable",
+                  "type": "uint256"
+                },
+                "storage_reads": [],
+                "source": "slithir_ssa",
+                "fact_eligible": true,
+                "cfg_predecessor_blocks": [
+                  "bb_sol_slither_n0"
+                ],
+                "depends_on_atoms": [
+                  "sol_atom_3"
+                ],
+                "previous_atom_id": "sol_atom_3"
+              }
+            ]
+          }
+        },
+        {
+          "block_id": "bb_asm1_n0",
+          "kind": "yul",
+          "assembly_block": 1,
+          "stmts": [],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "entry",
+            "node_kind": "entry"
+          },
+          "attrs": {
+            "node_id": 0,
+            "node_kind": "entry",
+            "src": "",
+            "text": "entry",
+            "function_loop_context": [],
+            "unified_dominators": [
+              "bb_asm1_n0",
+              "bb_sol_slither_n0",
+              "bb_sol_slither_n1"
+            ],
+            "unified_immediate_dominator": "bb_sol_slither_n1",
+            "unified_postdominators": [
+              "bb_asm1_n0",
+              "bb_asm1_n1",
+              "bb_asm1_n2",
+              "bb_asm1_n3",
+              "bb_asm1_n4",
+              "bb_asm1_n5"
+            ],
+            "unified_immediate_postdominator": "bb_asm1_n2",
+            "unified_dominance_frontier": [],
+            "control_dependencies": [],
+            "control_dependency_closure": [],
+            "typed_def_use": {
+              "definitions": [],
+              "uses": [],
+              "reaching_definitions_in": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              },
+              "reaching_definitions_out": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "block_id": "bb_asm1_n1",
+          "kind": "yul",
+          "assembly_block": 1,
+          "stmts": [],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "exit",
+            "node_kind": "exit"
+          },
+          "attrs": {
+            "node_id": 1,
+            "node_kind": "exit",
+            "src": "",
+            "text": "exit",
+            "function_loop_context": [],
+            "unified_dominators": [
+              "bb_asm1_n0",
+              "bb_asm1_n1",
+              "bb_asm1_n2",
+              "bb_asm1_n3",
+              "bb_asm1_n4",
+              "bb_asm1_n5",
+              "bb_sol_slither_n0",
+              "bb_sol_slither_n1"
+            ],
+            "unified_immediate_dominator": "bb_asm1_n5",
+            "unified_postdominators": [
+              "bb_asm1_n1"
+            ],
+            "unified_immediate_postdominator": null,
+            "unified_dominance_frontier": [],
+            "control_dependencies": [],
+            "control_dependency_closure": [],
+            "typed_def_use": {
+              "definitions": [],
+              "uses": [],
+              "reaching_definitions_in": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              },
+              "reaching_definitions_out": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "block_id": "bb_asm1_n2",
+          "kind": "yul",
+          "assembly_block": 1,
+          "stmts": [
+            "asm_s_1"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "mstore(0x00, caller())",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "node_id": 2,
+            "node_kind": "statement",
+            "src": "274:22:0",
+            "text": "mstore(0x00, caller())",
+            "function_loop_context": [],
+            "unified_dominators": [
+              "bb_asm1_n0",
+              "bb_asm1_n2",
+              "bb_sol_slither_n0",
+              "bb_sol_slither_n1"
+            ],
+            "unified_immediate_dominator": "bb_asm1_n0",
+            "unified_postdominators": [
+              "bb_asm1_n1",
+              "bb_asm1_n2",
+              "bb_asm1_n3",
+              "bb_asm1_n4",
+              "bb_asm1_n5"
+            ],
+            "unified_immediate_postdominator": "bb_asm1_n3",
+            "unified_dominance_frontier": [],
+            "control_dependencies": [],
+            "control_dependency_closure": [],
+            "typed_def_use": {
+              "definitions": [],
+              "uses": [],
+              "reaching_definitions_in": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              },
+              "reaching_definitions_out": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              }
+            },
+            "yul_atomic_operations": [
+              {
+                "atom_id": "yul_atom_b1_asm_s_1_2_1",
+                "function_id": "SimpleSemanticIR.deposit(uint256)",
+                "assembly_block_id": 1,
+                "cfg_node_id": 2,
+                "cfg_block_id": "bb_asm1_n2",
+                "stmt_ref": "asm_s_1",
+                "stmt_refs": [
+                  "asm_s_1"
+                ],
+                "source_span": "287:8:0",
+                "source_statement": "mstore(0x00, caller())",
+                "source_node_type": "YulExpressionStatement",
+                "context": "statement",
+                "operation": "caller",
+                "atomic_kind": "ValueCompute",
+                "result": "__sseir_eval_asm_s_1_1",
+                "results": [
+                  "__sseir_eval_asm_s_1_1"
+                ],
+                "arguments": [],
+                "raw_arguments": [],
+                "expression": "caller()",
+                "normalized_expression": "msg.sender",
+                "operation_order": 1,
+                "dependencies": [],
+                "side_effect": false,
+                "semantic_sink": false,
+                "control_only": false,
+                "root_operation": false,
+                "sequence": 1
+              },
+              {
+                "atom_id": "yul_atom_b1_asm_s_1_2_2",
+                "function_id": "SimpleSemanticIR.deposit(uint256)",
+                "assembly_block_id": 1,
+                "cfg_node_id": 2,
+                "cfg_block_id": "bb_asm1_n2",
+                "stmt_ref": "asm_s_1",
+                "stmt_refs": [
+                  "asm_s_1"
+                ],
+                "source_span": "274:22:0",
+                "source_statement": "mstore(0x00, caller())",
+                "source_node_type": "YulExpressionStatement",
+                "context": "statement",
+                "operation": "mstore",
+                "atomic_kind": "MemoryWrite",
+                "result": null,
+                "results": [],
+                "arguments": [
+                  "0x00",
+                  "__sseir_eval_asm_s_1_1"
+                ],
+                "raw_arguments": [
+                  "0x00",
+                  "caller()"
+                ],
+                "expression": "mstore(0x00, __sseir_eval_asm_s_1_1)",
+                "normalized_expression": "mstore(0x00, __sseir_eval_asm_s_1_1)",
+                "operation_order": 2,
+                "dependencies": [
+                  "yul_atom_b1_asm_s_1_2_1"
+                ],
+                "side_effect": true,
+                "semantic_sink": false,
+                "control_only": false,
+                "root_operation": true,
+                "sequence": 2
+              }
+            ]
+          }
+        },
+        {
+          "block_id": "bb_asm1_n3",
+          "kind": "yul",
+          "assembly_block": 1,
+          "stmts": [
+            "asm_s_2"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "mstore(0x20, balances.slot)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "node_id": 3,
+            "node_kind": "statement",
+            "src": "309:27:0",
+            "text": "mstore(0x20, balances.slot)",
+            "function_loop_context": [],
+            "unified_dominators": [
+              "bb_asm1_n0",
+              "bb_asm1_n2",
+              "bb_asm1_n3",
+              "bb_sol_slither_n0",
+              "bb_sol_slither_n1"
+            ],
+            "unified_immediate_dominator": "bb_asm1_n2",
+            "unified_postdominators": [
+              "bb_asm1_n1",
+              "bb_asm1_n3",
+              "bb_asm1_n4",
+              "bb_asm1_n5"
+            ],
+            "unified_immediate_postdominator": "bb_asm1_n4",
+            "unified_dominance_frontier": [],
+            "control_dependencies": [],
+            "control_dependency_closure": [],
+            "typed_def_use": {
+              "definitions": [],
+              "uses": [],
+              "reaching_definitions_in": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              },
+              "reaching_definitions_out": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              }
+            },
+            "yul_atomic_operations": [
+              {
+                "atom_id": "yul_atom_b1_asm_s_2_3_1",
+                "function_id": "SimpleSemanticIR.deposit(uint256)",
+                "assembly_block_id": 1,
+                "cfg_node_id": 3,
+                "cfg_block_id": "bb_asm1_n3",
+                "stmt_ref": "asm_s_2",
+                "stmt_refs": [
+                  "asm_s_2"
+                ],
+                "source_span": "309:27:0",
+                "source_statement": "mstore(0x20, balances.slot)",
+                "source_node_type": "YulExpressionStatement",
+                "context": "statement",
+                "operation": "mstore",
+                "atomic_kind": "MemoryWrite",
+                "result": null,
+                "results": [],
+                "arguments": [
+                  "0x20",
+                  "balances.slot"
+                ],
+                "raw_arguments": [
+                  "0x20",
+                  "balances.slot"
+                ],
+                "expression": "mstore(0x20, balances.slot)",
+                "normalized_expression": "mstore(0x20, balances.slot)",
+                "operation_order": 1,
+                "dependencies": [],
+                "side_effect": true,
+                "semantic_sink": false,
+                "control_only": false,
+                "root_operation": true,
+                "sequence": 3
+              }
+            ]
+          }
+        },
+        {
+          "block_id": "bb_asm1_n4",
+          "kind": "yul",
+          "assembly_block": 1,
+          "stmts": [
+            "asm_s_3"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "let balanceSlot := keccak256(0x00, 0x40)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "node_id": 4,
+            "node_kind": "statement",
+            "src": "349:40:0",
+            "text": "let balanceSlot := keccak256(0x00, 0x40)",
+            "function_loop_context": [],
+            "unified_dominators": [
+              "bb_asm1_n0",
+              "bb_asm1_n2",
+              "bb_asm1_n3",
+              "bb_asm1_n4",
+              "bb_sol_slither_n0",
+              "bb_sol_slither_n1"
+            ],
+            "unified_immediate_dominator": "bb_asm1_n3",
+            "unified_postdominators": [
+              "bb_asm1_n1",
+              "bb_asm1_n4",
+              "bb_asm1_n5"
+            ],
+            "unified_immediate_postdominator": "bb_asm1_n5",
+            "unified_dominance_frontier": [],
+            "control_dependencies": [],
+            "control_dependency_closure": [],
+            "typed_def_use": {
+              "definitions": [],
+              "uses": [],
+              "reaching_definitions_in": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              },
+              "reaching_definitions_out": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              }
+            },
+            "yul_atomic_operations": [
+              {
+                "atom_id": "yul_atom_b1_asm_s_3_4_1",
+                "function_id": "SimpleSemanticIR.deposit(uint256)",
+                "assembly_block_id": 1,
+                "cfg_node_id": 4,
+                "cfg_block_id": "bb_asm1_n4",
+                "stmt_ref": "asm_s_3",
+                "stmt_refs": [
+                  "asm_s_3"
+                ],
+                "source_span": "368:21:0",
+                "source_statement": "let balanceSlot := keccak256(0x00, 0x40)",
+                "source_node_type": "YulVariableDeclaration",
+                "context": "value",
+                "operation": "keccak256",
+                "atomic_kind": "MemoryHash",
+                "result": "__sseir_eval_asm_s_3_1",
+                "results": [
+                  "__sseir_eval_asm_s_3_1"
+                ],
+                "arguments": [
+                  "0x00",
+                  "0x40"
+                ],
+                "raw_arguments": [
+                  "0x00",
+                  "0x40"
+                ],
+                "expression": "keccak256(0x00, 0x40)",
+                "normalized_expression": "keccak256(0x00, 0x40)",
+                "operation_order": 1,
+                "dependencies": [],
+                "side_effect": false,
+                "semantic_sink": true,
+                "control_only": false,
+                "root_operation": true,
+                "sequence": 4
+              },
+              {
+                "atom_id": "yul_atom_b1_asm_s_3_4_2",
+                "function_id": "SimpleSemanticIR.deposit(uint256)",
+                "assembly_block_id": 1,
+                "cfg_node_id": 4,
+                "cfg_block_id": "bb_asm1_n4",
+                "stmt_ref": "asm_s_3",
+                "stmt_refs": [
+                  "asm_s_3"
+                ],
+                "source_span": "349:40:0",
+                "source_statement": "let balanceSlot := keccak256(0x00, 0x40)",
+                "source_node_type": "YulVariableDeclaration",
+                "context": "value",
+                "operation": "declare_assign",
+                "atomic_kind": "ValueDeclare",
+                "result": "balanceSlot",
+                "results": [
+                  "balanceSlot"
+                ],
+                "arguments": [
+                  "__sseir_eval_asm_s_3_1"
+                ],
+                "raw_arguments": [
+                  "keccak256(0x00, 0x40)"
+                ],
+                "expression": "balanceSlot := __sseir_eval_asm_s_3_1",
+                "normalized_expression": "balanceSlot = __sseir_eval_asm_s_3_1",
+                "operation_order": 2,
+                "dependencies": [
+                  "yul_atom_b1_asm_s_3_4_1"
+                ],
+                "side_effect": false,
+                "semantic_sink": false,
+                "control_only": false,
+                "root_operation": true,
+                "sequence": 5
+              }
+            ]
+          }
+        },
+        {
+          "block_id": "bb_asm1_n5",
+          "kind": "yul",
+          "assembly_block": 1,
+          "stmts": [
+            "asm_s_4"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "node_id": 5,
+            "node_kind": "statement",
+            "src": "402:52:0",
+            "text": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+            "function_loop_context": [],
+            "unified_dominators": [
+              "bb_asm1_n0",
+              "bb_asm1_n2",
+              "bb_asm1_n3",
+              "bb_asm1_n4",
+              "bb_asm1_n5",
+              "bb_sol_slither_n0",
+              "bb_sol_slither_n1"
+            ],
+            "unified_immediate_dominator": "bb_asm1_n4",
+            "unified_postdominators": [
+              "bb_asm1_n1",
+              "bb_asm1_n5"
+            ],
+            "unified_immediate_postdominator": "bb_asm1_n1",
+            "unified_dominance_frontier": [],
+            "control_dependencies": [],
+            "control_dependency_closure": [],
+            "typed_def_use": {
+              "definitions": [],
+              "uses": [],
+              "reaching_definitions_in": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              },
+              "reaching_definitions_out": {
+                "total": [
+                  "total_2"
+                ],
+                "balances": [
+                  "balances_1"
+                ],
+                "TMP_0": [
+                  "TMP_0"
+                ]
+              }
+            },
+            "yul_atomic_operations": [
+              {
+                "atom_id": "yul_atom_b1_asm_s_4_5_1",
+                "function_id": "SimpleSemanticIR.deposit(uint256)",
+                "assembly_block_id": 1,
+                "cfg_node_id": 5,
+                "cfg_block_id": "bb_asm1_n5",
+                "stmt_ref": "asm_s_4",
+                "stmt_refs": [
+                  "asm_s_4"
+                ],
+                "source_span": "426:18:0",
+                "source_statement": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+                "source_node_type": "YulExpressionStatement",
+                "context": "statement",
+                "operation": "sload",
+                "atomic_kind": "StorageRead",
+                "result": "__sseir_eval_asm_s_4_1",
+                "results": [
+                  "__sseir_eval_asm_s_4_1"
+                ],
+                "arguments": [
+                  "balanceSlot"
+                ],
+                "raw_arguments": [
+                  "balanceSlot"
+                ],
+                "expression": "sload(balanceSlot)",
+                "normalized_expression": "sload(balanceSlot)",
+                "operation_order": 1,
+                "dependencies": [],
+                "side_effect": false,
+                "semantic_sink": true,
+                "control_only": false,
+                "root_operation": false,
+                "sequence": 6
+              },
+              {
+                "atom_id": "yul_atom_b1_asm_s_4_5_2",
+                "function_id": "SimpleSemanticIR.deposit(uint256)",
+                "assembly_block_id": 1,
+                "cfg_node_id": 5,
+                "cfg_block_id": "bb_asm1_n5",
+                "stmt_ref": "asm_s_4",
+                "stmt_refs": [
+                  "asm_s_4"
+                ],
+                "source_span": "422:31:0",
+                "source_statement": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+                "source_node_type": "YulExpressionStatement",
+                "context": "statement",
+                "operation": "add",
+                "atomic_kind": "ValueCompute",
+                "result": "__sseir_eval_asm_s_4_2",
+                "results": [
+                  "__sseir_eval_asm_s_4_2"
+                ],
+                "arguments": [
+                  "__sseir_eval_asm_s_4_1",
+                  "amount"
+                ],
+                "raw_arguments": [
+                  "sload(balanceSlot)",
+                  "amount"
+                ],
+                "expression": "add(__sseir_eval_asm_s_4_1, amount)",
+                "normalized_expression": "(__sseir_eval_asm_s_4_1 + amount)",
+                "operation_order": 2,
+                "dependencies": [
+                  "yul_atom_b1_asm_s_4_5_1"
+                ],
+                "side_effect": false,
+                "semantic_sink": false,
+                "control_only": false,
+                "root_operation": false,
+                "sequence": 7
+              },
+              {
+                "atom_id": "yul_atom_b1_asm_s_4_5_3",
+                "function_id": "SimpleSemanticIR.deposit(uint256)",
+                "assembly_block_id": 1,
+                "cfg_node_id": 5,
+                "cfg_block_id": "bb_asm1_n5",
+                "stmt_ref": "asm_s_4",
+                "stmt_refs": [
+                  "asm_s_4"
+                ],
+                "source_span": "402:52:0",
+                "source_statement": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+                "source_node_type": "YulExpressionStatement",
+                "context": "statement",
+                "operation": "sstore",
+                "atomic_kind": "StorageWrite",
+                "result": null,
+                "results": [],
+                "arguments": [
+                  "balanceSlot",
+                  "__sseir_eval_asm_s_4_2"
+                ],
+                "raw_arguments": [
+                  "balanceSlot",
+                  "add(sload(balanceSlot), amount)"
+                ],
+                "expression": "sstore(balanceSlot, __sseir_eval_asm_s_4_2)",
+                "normalized_expression": "sstore(balanceSlot, __sseir_eval_asm_s_4_2)",
+                "operation_order": 3,
+                "dependencies": [
+                  "yul_atom_b1_asm_s_4_5_2"
+                ],
+                "side_effect": true,
+                "semantic_sink": true,
+                "control_only": false,
+                "root_operation": true,
+                "sequence": 8
+              }
+            ]
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_asm1_n0",
+          "to": "bb_asm1_n2",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n2",
+          "to": "bb_asm1_n3",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n3",
+          "to": "bb_asm1_n4",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n4",
+          "to": "bb_asm1_n5",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n5",
+          "to": "bb_asm1_n1",
+          "kind": "next"
+        },
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_asm1_n0",
+          "kind": "fallthrough"
+        }
+      ],
+      "notes": [
+        "function_level_cfg_from_slither",
+        "assembly_subgraph_embedded_from_assembly_ast_cfg",
+        "slither_assembly_nodes_replaced_by_local_yul_cfg",
+        "slither_compile_mode=normal",
+        "function_match_method=source_range",
+        "slither_nodes=9",
+        "assembly_blocks=1",
+        "assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors",
+        "slither_typed_use_def_archived_on_solidity_blocks",
+        "unified_dominance_and_control_dependencies_computed_after_yul_subgraph_embedding",
+        "solidity_yul_boundary_contexts_attached"
+      ],
+      "loop_contexts": {
+        "1": []
+      },
+      "dominance": {
+        "roots": [
+          "bb_sol_slither_n0"
+        ],
+        "exits": [
+          "bb_asm1_n1"
+        ],
+        "dominators": {
+          "bb_sol_slither_n0": [
+            "bb_sol_slither_n0"
+          ],
+          "bb_sol_slither_n1": [
+            "bb_sol_slither_n0",
+            "bb_sol_slither_n1"
+          ],
+          "bb_asm1_n0": [
+            "bb_asm1_n0",
+            "bb_sol_slither_n0",
+            "bb_sol_slither_n1"
+          ],
+          "bb_asm1_n1": [
+            "bb_asm1_n0",
+            "bb_asm1_n1",
+            "bb_asm1_n2",
+            "bb_asm1_n3",
+            "bb_asm1_n4",
+            "bb_asm1_n5",
+            "bb_sol_slither_n0",
+            "bb_sol_slither_n1"
+          ],
+          "bb_asm1_n2": [
+            "bb_asm1_n0",
+            "bb_asm1_n2",
+            "bb_sol_slither_n0",
+            "bb_sol_slither_n1"
+          ],
+          "bb_asm1_n3": [
+            "bb_asm1_n0",
+            "bb_asm1_n2",
+            "bb_asm1_n3",
+            "bb_sol_slither_n0",
+            "bb_sol_slither_n1"
+          ],
+          "bb_asm1_n4": [
+            "bb_asm1_n0",
+            "bb_asm1_n2",
+            "bb_asm1_n3",
+            "bb_asm1_n4",
+            "bb_sol_slither_n0",
+            "bb_sol_slither_n1"
+          ],
+          "bb_asm1_n5": [
+            "bb_asm1_n0",
+            "bb_asm1_n2",
+            "bb_asm1_n3",
+            "bb_asm1_n4",
+            "bb_asm1_n5",
+            "bb_sol_slither_n0",
+            "bb_sol_slither_n1"
+          ]
+        },
+        "immediate_dominator": {
+          "bb_sol_slither_n0": null,
+          "bb_sol_slither_n1": "bb_sol_slither_n0",
+          "bb_asm1_n0": "bb_sol_slither_n1",
+          "bb_asm1_n1": "bb_asm1_n5",
+          "bb_asm1_n2": "bb_asm1_n0",
+          "bb_asm1_n3": "bb_asm1_n2",
+          "bb_asm1_n4": "bb_asm1_n3",
+          "bb_asm1_n5": "bb_asm1_n4"
+        },
+        "dominance_frontier": {
+          "bb_sol_slither_n0": [],
+          "bb_sol_slither_n1": [],
+          "bb_asm1_n0": [],
+          "bb_asm1_n1": [],
+          "bb_asm1_n2": [],
+          "bb_asm1_n3": [],
+          "bb_asm1_n4": [],
+          "bb_asm1_n5": []
+        },
+        "postdominators": {
+          "bb_sol_slither_n0": [
+            "bb_asm1_n0",
+            "bb_asm1_n1",
+            "bb_asm1_n2",
+            "bb_asm1_n3",
+            "bb_asm1_n4",
+            "bb_asm1_n5",
+            "bb_sol_slither_n0",
+            "bb_sol_slither_n1"
+          ],
+          "bb_sol_slither_n1": [
+            "bb_asm1_n0",
+            "bb_asm1_n1",
+            "bb_asm1_n2",
+            "bb_asm1_n3",
+            "bb_asm1_n4",
+            "bb_asm1_n5",
+            "bb_sol_slither_n1"
+          ],
+          "bb_asm1_n0": [
+            "bb_asm1_n0",
+            "bb_asm1_n1",
+            "bb_asm1_n2",
+            "bb_asm1_n3",
+            "bb_asm1_n4",
+            "bb_asm1_n5"
+          ],
+          "bb_asm1_n1": [
+            "bb_asm1_n1"
+          ],
+          "bb_asm1_n2": [
+            "bb_asm1_n1",
+            "bb_asm1_n2",
+            "bb_asm1_n3",
+            "bb_asm1_n4",
+            "bb_asm1_n5"
+          ],
+          "bb_asm1_n3": [
+            "bb_asm1_n1",
+            "bb_asm1_n3",
+            "bb_asm1_n4",
+            "bb_asm1_n5"
+          ],
+          "bb_asm1_n4": [
+            "bb_asm1_n1",
+            "bb_asm1_n4",
+            "bb_asm1_n5"
+          ],
+          "bb_asm1_n5": [
+            "bb_asm1_n1",
+            "bb_asm1_n5"
+          ]
+        },
+        "immediate_postdominator": {
+          "bb_sol_slither_n0": "bb_sol_slither_n1",
+          "bb_sol_slither_n1": "bb_asm1_n0",
+          "bb_asm1_n0": "bb_asm1_n2",
+          "bb_asm1_n1": null,
+          "bb_asm1_n2": "bb_asm1_n3",
+          "bb_asm1_n3": "bb_asm1_n4",
+          "bb_asm1_n4": "bb_asm1_n5",
+          "bb_asm1_n5": "bb_asm1_n1"
+        }
+      },
+      "control_dependencies": [],
+      "control_dependency_closure": {
+        "bb_sol_slither_n0": [],
+        "bb_sol_slither_n1": [],
+        "bb_asm1_n0": [],
+        "bb_asm1_n1": [],
+        "bb_asm1_n2": [],
+        "bb_asm1_n3": [],
+        "bb_asm1_n4": [],
+        "bb_asm1_n5": []
+      },
+      "typed_def_use": {
+        "blocks": {
+          "bb_sol_slither_n0": {
+            "definitions": [
+              {
+                "name": "total",
+                "version": "total_1",
+                "kind": "StateIRVariable",
+                "type": "uint256",
+                "is_state": true,
+                "is_reference": false,
+                "operation_order": 0,
+                "operation_kind": "Phi"
+              },
+              {
+                "name": "balances",
+                "version": "balances_1",
+                "kind": "StateIRVariable",
+                "type": "mapping(address => uint256)",
+                "is_state": true,
+                "is_reference": false,
+                "operation_order": 1,
+                "operation_kind": "Phi"
+              }
+            ],
+            "uses": [
+              {
+                "name": "total",
+                "version": "total_2",
+                "kind": "StateIRVariable",
+                "type": "uint256",
+                "is_state": true,
+                "is_reference": false,
+                "operation_order": 0,
+                "operation_kind": "Phi"
+              },
+              {
+                "name": "total",
+                "version": "total_0",
+                "kind": "StateIRVariable",
+                "type": "uint256",
+                "is_state": true,
+                "is_reference": false,
+                "operation_order": 0,
+                "operation_kind": "Phi"
+              },
+              {
+                "name": "balances",
+                "version": "balances_0",
+                "kind": "StateIRVariable",
+                "type": "mapping(address => uint256)",
+                "is_state": true,
+                "is_reference": false,
+                "operation_order": 1,
+                "operation_kind": "Phi"
+              }
+            ],
+            "reaching_definitions_in": {},
+            "reaching_definitions_out": {
+              "total": [
+                "total_1"
+              ],
+              "balances": [
+                "balances_1"
+              ]
+            }
+          },
+          "bb_sol_slither_n1": {
+            "definitions": [
+              {
+                "name": "TMP_0",
+                "version": "TMP_0",
+                "kind": "TemporaryVariableSSA",
+                "type": "uint256",
+                "is_state": false,
+                "is_reference": false,
+                "operation_order": 0,
+                "operation_kind": "Binary"
+              },
+              {
+                "name": "total",
+                "version": "total_2",
+                "kind": "StateIRVariable",
+                "type": "uint256",
+                "is_state": true,
+                "is_reference": false,
+                "operation_order": 1,
+                "operation_kind": "Assignment"
+              }
+            ],
+            "uses": [
+              {
+                "name": "total",
+                "version": "total_1",
+                "kind": "StateIRVariable",
+                "type": "uint256",
+                "is_state": true,
+                "is_reference": false,
+                "operation_order": 0,
+                "operation_kind": "Binary"
+              },
+              {
+                "name": "amount",
+                "version": "amount_1",
+                "kind": "LocalIRVariable",
+                "type": "uint256",
+                "is_state": false,
+                "is_reference": false,
+                "operation_order": 0,
+                "operation_kind": "Binary"
+              },
+              {
+                "name": "TMP_0",
+                "version": "TMP_0",
+                "kind": "TemporaryVariableSSA",
+                "type": "uint256",
+                "is_state": false,
+                "is_reference": false,
+                "operation_order": 1,
+                "operation_kind": "Assignment"
+              }
+            ],
+            "reaching_definitions_in": {
+              "total": [
+                "total_1"
+              ],
+              "balances": [
+                "balances_1"
+              ]
+            },
+            "reaching_definitions_out": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            }
+          },
+          "bb_asm1_n0": {
+            "definitions": [],
+            "uses": [],
+            "reaching_definitions_in": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            },
+            "reaching_definitions_out": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            }
+          },
+          "bb_asm1_n1": {
+            "definitions": [],
+            "uses": [],
+            "reaching_definitions_in": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            },
+            "reaching_definitions_out": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            }
+          },
+          "bb_asm1_n2": {
+            "definitions": [],
+            "uses": [],
+            "reaching_definitions_in": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            },
+            "reaching_definitions_out": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            }
+          },
+          "bb_asm1_n3": {
+            "definitions": [],
+            "uses": [],
+            "reaching_definitions_in": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            },
+            "reaching_definitions_out": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            }
+          },
+          "bb_asm1_n4": {
+            "definitions": [],
+            "uses": [],
+            "reaching_definitions_in": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            },
+            "reaching_definitions_out": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            }
+          },
+          "bb_asm1_n5": {
+            "definitions": [],
+            "uses": [],
+            "reaching_definitions_in": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            },
+            "reaching_definitions_out": {
+              "total": [
+                "total_2"
+              ],
+              "balances": [
+                "balances_1"
+              ],
+              "TMP_0": [
+                "TMP_0"
+              ]
+            }
+          }
+        }
+      },
+      "assembly_boundaries": {
+        "1": {
+          "assembly_block": 1,
+          "entry_block": "bb_asm1_n0",
+          "exit_block": "bb_asm1_n1",
+          "solidity_predecessors": [
+            "bb_sol_slither_n1"
+          ],
+          "solidity_successors": [],
+          "external_reads": [
+            {
+              "name": "amount",
+              "kind": "parameter",
+              "type_string": "uint256",
+              "data_location": "default",
+              "src": "183:14:0",
+              "storage_slot": null,
+              "expressions": [
+                "amount"
+              ],
+              "reaching_ssa_versions": []
+            },
+            {
+              "name": "balances",
+              "kind": "state",
+              "type_string": "mapping(address => uint256)",
+              "data_location": "default",
+              "src": "116:43:0",
+              "storage_slot": 1,
+              "expressions": [
+                "balances.slot"
+              ],
+              "reaching_ssa_versions": [
+                "balances_1"
+              ]
+            }
+          ],
+          "external_writes": [],
+          "control_dependencies": []
+        }
+      }
+    },
+    "expr_roles": [
+      {
+        "expr_id": "expr_1",
+        "text": "0x00",
+        "normalized": "0x00",
+        "role": "memory_slice_start",
+        "type_hint": "memory_ptr",
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "effect": "eff_4"
+        }
+      },
+      {
+        "expr_id": "expr_2",
+        "text": "0x40",
+        "normalized": "0x40",
+        "role": "memory_slice_size",
+        "type_hint": "uint256",
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "effect": "eff_4"
+        }
+      },
+      {
+        "expr_id": "expr_3",
+        "text": "balanceSlot",
+        "normalized": "balanceSlot",
+        "role": "storage_slot_expr",
+        "type_hint": "storage_slot",
+        "stmt_ref": "asm_s_4",
+        "attrs": {
+          "effect": "eff_6",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ]
+        }
+      },
+      {
+        "expr_id": "expr_4",
+        "text": "add(sload(balanceSlot), amount)",
+        "normalized": "(sload(balanceSlot) + amount)",
+        "role": "storage_write_value",
+        "type_hint": null,
+        "stmt_ref": "asm_s_4",
+        "attrs": {
+          "effect": "eff_6"
+        }
+      },
+      {
+        "expr_id": "expr_5",
+        "text": "balances[msg.sender]",
+        "normalized": "balances[msg.sender]",
+        "role": "mapping_slot_expr",
+        "type_hint": "storage_slot",
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "overlay": "ov_2",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_kind": null,
+          "storage_field": null
+        }
+      },
+      {
+        "expr_id": "expr_6",
+        "text": "msg.sender",
+        "normalized": "msg.sender",
+        "role": "mapping_key_material",
+        "type_hint": null,
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "overlay": "ov_2",
+          "storage_reference": null
+        }
+      },
+      {
+        "expr_id": "expr_7",
+        "text": "balanceSlot",
+        "normalized": "balances[msg.sender]",
+        "role": "mapping_slot_expr",
+        "type_hint": "storage_slot",
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "overlay": "ov_4",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_kind": null,
+          "storage_field": null
+        }
+      },
+      {
+        "expr_id": "expr_8",
+        "text": "balances[msg.sender]",
+        "normalized": "balances[msg.sender]",
+        "role": "state_access_expr",
+        "type_hint": null,
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "overlay": "ov_4",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_kind": null,
+          "storage_field": null
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect_id": "eff_1",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_1"
+        ],
+        "attrs": {
+          "address": "0x00",
+          "value": "caller()",
+          "memory_version": "mem_1",
+          "origin_node": "N2",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "0x00",
+              "base": "0x00",
+              "offset": 0,
+              "expression": "0x00",
+              "source": "literal"
+            }
+          ],
+          "cfg_node_id": 2,
+          "path_states": [
+            "entry"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_2",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_2"
+        ],
+        "attrs": {
+          "address": "32",
+          "value": "balances.slot",
+          "memory_version": "mem_2",
+          "origin_node": "N3",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "32",
+              "base": "0x20",
+              "offset": 0,
+              "expression": "0x20",
+              "source": "literal"
+            },
+            {
+              "key": "add(0x00,32)",
+              "base": "0x00",
+              "offset": 32,
+              "expression": "add(0x00, 32)",
+              "source": "literal-zero-base"
+            }
+          ],
+          "cfg_node_id": 3,
+          "path_states": [
+            "entry"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_3",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "targets": [
+            "balanceSlot"
+          ],
+          "value": "keccak256(0x00, 0x40)",
+          "value_normalized": "keccak256(0x00, 0x40)",
+          "cfg_node_id": 4,
+          "language": "yul",
+          "path_states": [
+            "entry"
+          ],
+          "target_versions": {
+            "balanceSlot": [
+              "balanceSlot__ssa1"
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_4",
+        "kind": "MemoryHash",
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "op": "keccak256",
+          "ptr": "0x00",
+          "size": "0x40",
+          "value": "balanceSlot",
+          "value_versions": {
+            "balanceSlot": [
+              "balanceSlot__ssa1"
+            ]
+          },
+          "ptr_versions": [],
+          "size_versions": [],
+          "cfg_node_id": 4,
+          "path_states": [
+            "entry"
+          ],
+          "memory_read": {
+            "query_kind": "MemoryReadResult",
+            "tracker_scope": "s_seir_memoryssa_query",
+            "node_id": 4,
+            "reason": "keccak256",
+            "pointer": "0x00",
+            "length": "0x40",
+            "normalized_pointer": "0x00",
+            "address": {
+              "base": "0x00",
+              "offset": 0,
+              "offset_expr": "0",
+              "expr": "0x00"
+            },
+            "path_states": [
+              "entry"
+            ],
+            "words": [
+              {
+                "offset": 0,
+                "offset_expr": "0",
+                "address_key": "0x00",
+                "value": "msg.sender",
+                "source": "byte_axis_memory_slice",
+                "size": 32,
+                "memory_ssa": "mem_1",
+                "definition": {
+                  "node_id": 2,
+                  "version": "mem_1",
+                  "address": null,
+                  "value": "caller()"
+                },
+                "known_value": {
+                  "known": true,
+                  "kind": "evm_builtin",
+                  "expr": "msg.sender"
+                }
+              },
+              {
+                "offset": 32,
+                "offset_expr": "32",
+                "address_key": "0x00",
+                "value": "balances.slot",
+                "source": "byte_axis_memory_slice",
+                "size": 32,
+                "memory_ssa": "mem_2",
+                "definition": {
+                  "node_id": 3,
+                  "version": "mem_2",
+                  "address": null,
+                  "value": "balances.slot"
+                },
+                "known_value": {
+                  "known": true,
+                  "kind": "symbolic_known",
+                  "expr": "balances.slot"
+                }
+              }
+            ],
+            "complete": true,
+            "has_unknown": false,
+            "has_phi": false,
+            "loop_facts": [],
+            "top_facts": [],
+            "byte_slice": {
+              "query_kind": "MemoryByteSliceResult",
+              "tracker_scope": "s_seir_memory_byte_axis",
+              "node_id": 4,
+              "reason": "keccak256",
+              "pointer": "0x00",
+              "length": "0x40",
+              "address_aliases": [
+                {
+                  "key": "0x00",
+                  "base": "0x00",
+                  "offset": 0,
+                  "expression": "0x00",
+                  "source": "literal-zero-base"
+                },
+                {
+                  "key": "0x00",
+                  "base": "0x00",
+                  "offset": 0,
+                  "expression": "0x00",
+                  "source": "literal"
+                }
+              ],
+              "size": 64,
+              "complete": true,
+              "has_overlap": false,
+              "slices": [
+                {
+                  "query_offset": 0,
+                  "size": 32,
+                  "source_value": "caller()",
+                  "source_range": [
+                    0,
+                    32
+                  ],
+                  "source_offset": 0,
+                  "source_width": 32,
+                  "source_version": "mem_1",
+                  "source_node_id": 2,
+                  "source_kind": "mstore",
+                  "origin_src": "274:22:0",
+                  "extraction": "msg.sender",
+                  "known_value": {
+                    "known": true,
+                    "kind": "evm_builtin",
+                    "expr": "msg.sender"
+                  },
+                  "overlap_count": 1
+                },
+                {
+                  "query_offset": 32,
+                  "size": 32,
+                  "source_value": "balances.slot",
+                  "source_range": [
+                    0,
+                    32
+                  ],
+                  "source_offset": 0,
+                  "source_width": 32,
+                  "source_version": "mem_2",
+                  "source_node_id": 3,
+                  "source_kind": "mstore",
+                  "origin_src": "309:27:0",
+                  "extraction": "balances.slot",
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "balances.slot"
+                  },
+                  "overlap_count": 1
+                }
+              ],
+              "path_slices": [
+                {
+                  "path": "entry",
+                  "complete": true,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 32,
+                      "source_value": "caller()",
+                      "source_range": [
+                        0,
+                        32
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_1",
+                      "source_node_id": 2,
+                      "source_kind": "mstore",
+                      "origin_src": "274:22:0",
+                      "extraction": "msg.sender",
+                      "known_value": {
+                        "known": true,
+                        "kind": "evm_builtin",
+                        "expr": "msg.sender"
+                      },
+                      "overlap_count": 1
+                    },
+                    {
+                      "query_offset": 32,
+                      "size": 32,
+                      "source_value": "balances.slot",
+                      "source_range": [
+                        0,
+                        32
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_2",
+                      "source_node_id": 3,
+                      "source_kind": "mstore",
+                      "origin_src": "309:27:0",
+                      "extraction": "balances.slot",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "balances.slot"
+                      },
+                      "overlap_count": 1
+                    }
+                  ]
+                }
+              ],
+              "packed_semantics": [
+                "msg.sender",
+                "balances.slot"
+              ]
+            },
+            "owner": "S-SEIR",
+            "assembly_block": 1,
+            "function_loop_context": [],
+            "solidity_yul_boundary": {
+              "assembly_block": 1,
+              "entry_block": "bb_asm1_n0",
+              "exit_block": "bb_asm1_n1",
+              "solidity_predecessors": [
+                "bb_sol_slither_n1"
+              ],
+              "solidity_successors": [],
+              "external_reads": [
+                {
+                  "name": "amount",
+                  "kind": "parameter",
+                  "type_string": "uint256",
+                  "data_location": "default",
+                  "src": "183:14:0",
+                  "storage_slot": null,
+                  "expressions": [
+                    "amount"
+                  ],
+                  "reaching_ssa_versions": []
+                },
+                {
+                  "name": "balances",
+                  "kind": "state",
+                  "type_string": "mapping(address => uint256)",
+                  "data_location": "default",
+                  "src": "116:43:0",
+                  "storage_slot": 1,
+                  "expressions": [
+                    "balances.slot"
+                  ],
+                  "reaching_ssa_versions": [
+                    "balances_1"
+                  ]
+                }
+              ],
+              "external_writes": [],
+              "control_dependencies": []
+            },
+            "known_external_inputs": [
+              {
+                "name": "amount",
+                "kind": "parameter",
+                "type_string": "uint256",
+                "data_location": "default",
+                "src": "183:14:0",
+                "storage_slot": null,
+                "expressions": [
+                  "amount"
+                ],
+                "reaching_ssa_versions": []
+              },
+              {
+                "name": "balances",
+                "kind": "state",
+                "type_string": "mapping(address => uint256)",
+                "data_location": "default",
+                "src": "116:43:0",
+                "storage_slot": 1,
+                "expressions": [
+                  "balances.slot"
+                ],
+                "reaching_ssa_versions": [
+                  "balances_1"
+                ]
+              }
+            ],
+            "external_outputs": [],
+            "loop_alignment": "function_level_solidity_loop_context_plus_yul_loop_memoryssa"
+          },
+          "sink_resolution": {
+            "sink_id": "sink_asm_s_3_MemoryHash_4",
+            "stmt_refs": [
+              "asm_s_3"
+            ],
+            "cfg_node_id": 4,
+            "sink_kind": "MemoryHash",
+            "args": [
+              "0x00",
+              "0x40"
+            ],
+            "path_sensitive": false,
+            "path_resolutions": [
+              {
+                "path_id": "path_0",
+                "condition": null,
+                "status": "resolved",
+                "reason": null,
+                "arg_resolutions": {
+                  "slot": {
+                    "expr": "balanceSlot",
+                    "normalized": "keccak256(abi.encode(msg.sender, balances.slot))",
+                    "ssa_key": "balanceSlot__ssa1",
+                    "memory_slice": {
+                      "query_kind": "PathMemoryByteSlice",
+                      "path": "entry",
+                      "complete": true,
+                      "slices": [
+                        {
+                          "query_offset": 0,
+                          "size": 32,
+                          "source_value": "caller()",
+                          "source_range": [
+                            0,
+                            32
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_1",
+                          "source_node_id": 2,
+                          "source_kind": "mstore",
+                          "origin_src": "274:22:0",
+                          "extraction": "msg.sender",
+                          "known_value": {
+                            "known": true,
+                            "kind": "evm_builtin",
+                            "expr": "msg.sender"
+                          },
+                          "overlap_count": 1
+                        },
+                        {
+                          "query_offset": 32,
+                          "size": 32,
+                          "source_value": "balances.slot",
+                          "source_range": [
+                            0,
+                            32
+                          ],
+                          "source_offset": 0,
+                          "source_width": 32,
+                          "source_version": "mem_2",
+                          "source_node_id": 3,
+                          "source_kind": "mstore",
+                          "origin_src": "309:27:0",
+                          "extraction": "balances.slot",
+                          "known_value": {
+                            "known": true,
+                            "kind": "symbolic_known",
+                            "expr": "balances.slot"
+                          },
+                          "overlap_count": 1
+                        }
+                      ]
+                    },
+                    "notes": [
+                      "hash_input",
+                      "byte_axis_memory_slice",
+                      "path_sensitive_sink"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_5",
+        "kind": "StorageRead",
+        "stmt_refs": [
+          "asm_s_4"
+        ],
+        "attrs": {
+          "slot": "balanceSlot",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "value": "__sseir_eval_asm_s_4_1",
+          "value_versions": {},
+          "cfg_node_id": 5,
+          "path_states": [
+            "entry"
+          ],
+          "expression": "sload(balanceSlot)",
+          "nested_in_storage_value": true,
+          "parent_call": "sstore",
+          "parent_slot": "balanceSlot",
+          "parent_value": "add(sload(balanceSlot), amount)",
+          "atomic_operation_id": "yul_atom_b1_asm_s_4_5_1"
+        }
+      },
+      {
+        "effect_id": "eff_6",
+        "kind": "StorageWrite",
+        "stmt_refs": [
+          "asm_s_4"
+        ],
+        "attrs": {
+          "slot": "balanceSlot",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "value": "add(sload(balanceSlot), amount)",
+          "value_versions": [],
+          "cfg_node_id": 5,
+          "path_states": [
+            "entry"
+          ]
+        }
+      }
+    ],
+    "semantic_overlays": [
+      {
+        "overlay_id": "ov_1",
+        "kind": "MappingSlot",
+        "effects": [
+          "eff_4"
+        ],
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "target": "balanceSlot",
+          "target_key": "balanceSlot__ssa1",
+          "target_keys": [
+            "balanceSlot__ssa1"
+          ],
+          "expression": "balances[msg.sender]",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_type": null,
+          "storage_reference_kind": null,
+          "storage_field": null,
+          "key": "msg.sender",
+          "keys": [
+            "msg.sender"
+          ],
+          "base": "balances.slot",
+          "base_key": "balances.slot",
+          "parent_target_key": null,
+          "slot_kind": "mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "activation": "storage_consumer",
+          "resolved_inputs": [
+            {
+              "offset": 0,
+              "offset_expr": "0",
+              "address_key": "0x00",
+              "value": "msg.sender",
+              "source": "byte_axis_memory_slice",
+              "size": 32,
+              "memory_ssa": "mem_1",
+              "definition": {
+                "node_id": 2,
+                "version": "mem_1",
+                "address": null,
+                "value": "caller()"
+              },
+              "known_value": {
+                "known": true,
+                "kind": "evm_builtin",
+                "expr": "msg.sender"
+              }
+            },
+            {
+              "offset": 32,
+              "offset_expr": "32",
+              "address_key": "0x00",
+              "value": "balances.slot",
+              "source": "byte_axis_memory_slice",
+              "size": 32,
+              "memory_ssa": "mem_2",
+              "definition": {
+                "node_id": 3,
+                "version": "mem_2",
+                "address": null,
+                "value": "balances.slot"
+              },
+              "known_value": {
+                "known": true,
+                "kind": "symbolic_known",
+                "expr": "balances.slot"
+              }
+            }
+          ],
+          "byte_slice": null,
+          "packed_semantics": null,
+          "notes": []
+        }
+      },
+      {
+        "overlay_id": "ov_2",
+        "kind": "MappingSlot",
+        "effects": [
+          "eff_4"
+        ],
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "target": "balanceSlot",
+          "target_key": "balanceSlot",
+          "target_keys": [
+            "balanceSlot__ssa1"
+          ],
+          "expression": "balances[msg.sender]",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_type": null,
+          "storage_reference_kind": null,
+          "storage_field": null,
+          "key": "msg.sender",
+          "keys": [
+            "msg.sender"
+          ],
+          "base": "balances.slot",
+          "base_key": "balances.slot",
+          "parent_target_key": null,
+          "slot_kind": "mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "activation": "storage_consumer",
+          "resolved_inputs": [
+            {
+              "offset": 0,
+              "offset_expr": "0",
+              "address_key": "0x00",
+              "value": "msg.sender",
+              "source": "byte_axis_memory_slice",
+              "size": 32,
+              "memory_ssa": "mem_1",
+              "definition": {
+                "node_id": 2,
+                "version": "mem_1",
+                "address": null,
+                "value": "caller()"
+              },
+              "known_value": {
+                "known": true,
+                "kind": "evm_builtin",
+                "expr": "msg.sender"
+              }
+            },
+            {
+              "offset": 32,
+              "offset_expr": "32",
+              "address_key": "0x00",
+              "value": "balances.slot",
+              "source": "byte_axis_memory_slice",
+              "size": 32,
+              "memory_ssa": "mem_2",
+              "definition": {
+                "node_id": 3,
+                "version": "mem_2",
+                "address": null,
+                "value": "balances.slot"
+              },
+              "known_value": {
+                "known": true,
+                "kind": "symbolic_known",
+                "expr": "balances.slot"
+              }
+            }
+          ],
+          "byte_slice": null,
+          "packed_semantics": null,
+          "notes": []
+        }
+      },
+      {
+        "overlay_id": "ov_3",
+        "kind": "MappingRead",
+        "effects": [
+          "eff_4",
+          "eff_5"
+        ],
+        "stmt_refs": [
+          "asm_s_3",
+          "asm_s_4"
+        ],
+        "attrs": {
+          "access": "balances[msg.sender]",
+          "target": "__sseir_eval_asm_s_4_1",
+          "state_variable": "balances",
+          "key": "msg.sender",
+          "keys": [
+            "msg.sender"
+          ],
+          "slot": "balanceSlot",
+          "slot_key": "balanceSlot__ssa1",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "slot_effect": "eff_4",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "solidity_like": "__sseir_eval_asm_s_4_1 = balances[msg.sender];",
+          "read_expression": "balances[msg.sender]",
+          "source_expression": "sload(balanceSlot)",
+          "nested_in_storage_value": true,
+          "consumed_by": {
+            "kind": "sstore",
+            "slot": "balanceSlot",
+            "value": "add(sload(balanceSlot), amount)"
+          },
+          "notes": []
+        }
+      },
+      {
+        "overlay_id": "ov_4",
+        "kind": "MappingWrite",
+        "effects": [
+          "eff_4",
+          "eff_6"
+        ],
+        "stmt_refs": [
+          "asm_s_3",
+          "asm_s_4"
+        ],
+        "attrs": {
+          "access": "balances[msg.sender]",
+          "value": "(balances[msg.sender] + amount)",
+          "value_yul": "add(sload(balanceSlot), amount)",
+          "value_state_read": {
+            "original": "sload(balanceSlot)",
+            "access": "balances[msg.sender]",
+            "state_access": true,
+            "state_mutation": false,
+            "solidity_like": "balances[msg.sender]",
+            "notes": [
+              "nested_storage_read",
+              "reads_contract_state"
+            ]
+          },
+          "state_variable": "balances",
+          "key": "msg.sender",
+          "keys": [
+            "msg.sender"
+          ],
+          "slot": "balanceSlot",
+          "slot_key": "balanceSlot__ssa1",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "slot_effect": "eff_4",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "solidity_like": "balances[msg.sender] = (balances[msg.sender] + amount);",
+          "notes": []
+        }
+      },
+      {
+        "overlay_id": "ov_5",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ],
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "target": "balanceSlot",
+          "expression": "keccak256(0x00, 0x40)",
+          "expression_normalized": "keccak256(abi.encode(msg.sender, balances.slot))",
+          "solidity_like": "balanceSlot = keccak256(abi.encode(msg.sender, balances.slot));",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": {
+            "expression": "keccak256(abi.encode(msg.sender, balances.slot))",
+            "encoding": "abi.encode",
+            "resolved_inputs": [
+              "msg.sender",
+              "balances.slot"
+            ],
+            "byte_slice": {
+              "query_kind": "MemoryByteSliceResult",
+              "tracker_scope": "s_seir_memory_byte_axis",
+              "node_id": 4,
+              "reason": "keccak256",
+              "pointer": "0x00",
+              "length": "0x40",
+              "address_aliases": [
+                {
+                  "key": "0x00",
+                  "base": "0x00",
+                  "offset": 0,
+                  "expression": "0x00",
+                  "source": "literal-zero-base"
+                },
+                {
+                  "key": "0x00",
+                  "base": "0x00",
+                  "offset": 0,
+                  "expression": "0x00",
+                  "source": "literal"
+                }
+              ],
+              "size": 64,
+              "complete": true,
+              "has_overlap": false,
+              "slices": [
+                {
+                  "query_offset": 0,
+                  "size": 32,
+                  "source_value": "caller()",
+                  "source_range": [
+                    0,
+                    32
+                  ],
+                  "source_offset": 0,
+                  "source_width": 32,
+                  "source_version": "mem_1",
+                  "source_node_id": 2,
+                  "source_kind": "mstore",
+                  "origin_src": "274:22:0",
+                  "extraction": "msg.sender",
+                  "known_value": {
+                    "known": true,
+                    "kind": "evm_builtin",
+                    "expr": "msg.sender"
+                  },
+                  "overlap_count": 1
+                },
+                {
+                  "query_offset": 32,
+                  "size": 32,
+                  "source_value": "balances.slot",
+                  "source_range": [
+                    0,
+                    32
+                  ],
+                  "source_offset": 0,
+                  "source_width": 32,
+                  "source_version": "mem_2",
+                  "source_node_id": 3,
+                  "source_kind": "mstore",
+                  "origin_src": "309:27:0",
+                  "extraction": "balances.slot",
+                  "known_value": {
+                    "known": true,
+                    "kind": "symbolic_known",
+                    "expr": "balances.slot"
+                  },
+                  "overlap_count": 1
+                }
+              ],
+              "path_slices": [
+                {
+                  "path": "entry",
+                  "complete": true,
+                  "slices": [
+                    {
+                      "query_offset": 0,
+                      "size": 32,
+                      "source_value": "caller()",
+                      "source_range": [
+                        0,
+                        32
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_1",
+                      "source_node_id": 2,
+                      "source_kind": "mstore",
+                      "origin_src": "274:22:0",
+                      "extraction": "msg.sender",
+                      "known_value": {
+                        "known": true,
+                        "kind": "evm_builtin",
+                        "expr": "msg.sender"
+                      },
+                      "overlap_count": 1
+                    },
+                    {
+                      "query_offset": 32,
+                      "size": 32,
+                      "source_value": "balances.slot",
+                      "source_range": [
+                        0,
+                        32
+                      ],
+                      "source_offset": 0,
+                      "source_width": 32,
+                      "source_version": "mem_2",
+                      "source_node_id": 3,
+                      "source_kind": "mstore",
+                      "origin_src": "309:27:0",
+                      "extraction": "balances.slot",
+                      "known_value": {
+                        "known": true,
+                        "kind": "symbolic_known",
+                        "expr": "balances.slot"
+                      },
+                      "overlap_count": 1
+                    }
+                  ]
+                }
+              ],
+              "packed_semantics": [
+                "msg.sender",
+                "balances.slot"
+              ]
+            },
+            "notes": [
+              "memory_hash_from_byte_axis"
+            ]
+          },
+          "atomized_value": null
+        }
+      }
+    ],
+    "security_facts": [
+      {
+        "fact_id": "sf_1",
+        "kind": "BalanceRead",
+        "attrs": {
+          "state_var": "balances",
+          "account": "msg.sender"
+        },
+        "source_overlays": [
+          "ov_3"
+        ],
+        "source_effects": [
+          "eff_4",
+          "eff_5"
+        ],
+        "stmt_refs": [
+          "asm_s_3",
+          "asm_s_4"
+        ]
+      },
+      {
+        "fact_id": "sf_2",
+        "kind": "BalanceUpdate",
+        "attrs": {
+          "state_var": "balances",
+          "account": "msg.sender",
+          "delta": "+amount",
+          "value": "(balances[msg.sender] + amount)"
+        },
+        "source_overlays": [
+          "ov_4"
+        ],
+        "source_effects": [
+          "eff_4",
+          "eff_6"
+        ],
+        "stmt_refs": [
+          "asm_s_3",
+          "asm_s_4"
+        ]
+      }
+    ],
+    "analysis_facts": [
+      {
+        "kind": "MemorySSAQueryLayer",
+        "assembly_block": 1,
+        "scope": "s_seir_function_memoryssa_view",
+        "function_loop_context": [],
+        "solidity_yul_boundary": {
+          "assembly_block": 1,
+          "entry_block": "bb_asm1_n0",
+          "exit_block": "bb_asm1_n1",
+          "solidity_predecessors": [
+            "bb_sol_slither_n1"
+          ],
+          "solidity_successors": [],
+          "external_reads": [
+            {
+              "name": "amount",
+              "kind": "parameter",
+              "type_string": "uint256",
+              "data_location": "default",
+              "src": "183:14:0",
+              "storage_slot": null,
+              "expressions": [
+                "amount"
+              ],
+              "reaching_ssa_versions": []
+            },
+            {
+              "name": "balances",
+              "kind": "state",
+              "type_string": "mapping(address => uint256)",
+              "data_location": "default",
+              "src": "116:43:0",
+              "storage_slot": 1,
+              "expressions": [
+                "balances.slot"
+              ],
+              "reaching_ssa_versions": [
+                "balances_1"
+              ]
+            }
+          ],
+          "external_writes": [],
+          "control_dependencies": []
+        },
+        "loop_alignment": "s_seir_controls_all_loop_contexts_legacy_yul_memoryssa_backend",
+        "features": [
+          "path_states",
+          "linear_aliases",
+          "branch_candidates",
+          "loop_phi_facts",
+          "range_summary_facts",
+          "memory_top_facts",
+          "byte_axis_memory_slice"
+        ]
+      },
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "SimpleSemanticIR.deposit(uint256)",
+        "state_variables": [
+          {
+            "name": "total",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "90:20:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "balances",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "116:43:0",
+            "storage_slot": 1
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {}
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 1,
+        "selectors": {
+          "0xb6b55f25": [
+            {
+              "selector": "0xb6b55f25",
+              "signature": "deposit(uint256)",
+              "name": "deposit",
+              "kind": "function",
+              "contract": "SimpleSemanticIR",
+              "source": "ast",
+              "src": "166:304:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "tests/fixtures/simple_semantic_ir.sol",
+        "analysis_source": "tests/fixtures/simple_semantic_ir.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  }
+]

@@ -1,0 +1,872 @@
+[
+  {
+    "function_id": "SimpleSemanticIR.deposit(uint256)",
+    "contract": "SimpleSemanticIR",
+    "function": "deposit",
+    "signature": "deposit(uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "total = total + amount",
+        "src": "218:22:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "asm_s_1",
+        "lang": "yul",
+        "text": "mstore(0x00, caller())",
+        "src": "274:22:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_2",
+        "lang": "yul",
+        "text": "mstore(0x20, balances.slot)",
+        "src": "309:27:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_3",
+        "lang": "yul",
+        "text": "let balanceSlot := keccak256(0x00, 0x40)",
+        "src": "349:40:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulVariableDeclaration",
+          "assembly_block": 1
+        }
+      },
+      {
+        "stmt_id": "asm_s_4",
+        "lang": "yul",
+        "text": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+        "src": "402:52:0",
+        "function_id": "SimpleSemanticIR.deposit(uint256)",
+        "block_id": "asm_block_1",
+        "origin": {
+          "nodeType": "YulExpressionStatement",
+          "assembly_block": 1
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "text": "entrypoint",
+            "src": "208:262:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "total = total + amount"
+          },
+          "attrs": {
+            "text": "total = total + amount",
+            "src": "218:22:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_asm1_n0",
+          "kind": "yul",
+          "stmts": [],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "entry",
+            "node_kind": "entry"
+          },
+          "attrs": {
+            "text": "entry",
+            "node_kind": "entry",
+            "src": "",
+            "function_loop_context": [],
+            "node_id": 0
+          }
+        },
+        {
+          "block_id": "bb_asm1_n1",
+          "kind": "yul",
+          "stmts": [],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "exit",
+            "node_kind": "exit"
+          },
+          "attrs": {
+            "text": "exit",
+            "node_kind": "exit",
+            "src": "",
+            "function_loop_context": [],
+            "node_id": 1
+          }
+        },
+        {
+          "block_id": "bb_asm1_n2",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_1"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "mstore(0x00, caller())",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "text": "mstore(0x00, caller())",
+            "node_kind": "statement",
+            "src": "274:22:0",
+            "function_loop_context": [],
+            "node_id": 2
+          }
+        },
+        {
+          "block_id": "bb_asm1_n3",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_2"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "mstore(0x20, balances.slot)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "text": "mstore(0x20, balances.slot)",
+            "node_kind": "statement",
+            "src": "309:27:0",
+            "function_loop_context": [],
+            "node_id": 3
+          }
+        },
+        {
+          "block_id": "bb_asm1_n4",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_3"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "let balanceSlot := keccak256(0x00, 0x40)",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "text": "let balanceSlot := keccak256(0x00, 0x40)",
+            "node_kind": "statement",
+            "src": "349:40:0",
+            "function_loop_context": [],
+            "node_id": 4
+          }
+        },
+        {
+          "block_id": "bb_asm1_n5",
+          "kind": "yul",
+          "stmts": [
+            "asm_s_4"
+          ],
+          "terminator": {
+            "kind": "YulNode",
+            "text": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+            "node_kind": "statement"
+          },
+          "attrs": {
+            "text": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+            "node_kind": "statement",
+            "src": "402:52:0",
+            "function_loop_context": [],
+            "node_id": 5
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_asm1_n0",
+          "to": "bb_asm1_n2",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n2",
+          "to": "bb_asm1_n3",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n3",
+          "to": "bb_asm1_n4",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n4",
+          "to": "bb_asm1_n5",
+          "kind": "next"
+        },
+        {
+          "from": "bb_asm1_n5",
+          "to": "bb_asm1_n1",
+          "kind": "next"
+        },
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_asm1_n0",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {
+        "1": []
+      },
+      "control_dependencies": [],
+      "assembly_boundaries": {
+        "1": {
+          "assembly_block": 1,
+          "entry_block": "bb_asm1_n0",
+          "exit_block": "bb_asm1_n1",
+          "solidity_predecessors": [
+            "bb_sol_slither_n1"
+          ],
+          "solidity_successors": [],
+          "external_reads": [
+            {
+              "name": "amount",
+              "kind": "parameter",
+              "type_string": "uint256",
+              "data_location": "default",
+              "src": "183:14:0",
+              "storage_slot": null,
+              "expressions": [
+                "amount"
+              ],
+              "reaching_ssa_versions": []
+            },
+            {
+              "name": "balances",
+              "kind": "state",
+              "type_string": "mapping(address => uint256)",
+              "data_location": "default",
+              "src": "116:43:0",
+              "storage_slot": 1,
+              "expressions": [
+                "balances.slot"
+              ],
+              "reaching_ssa_versions": [
+                "balances_1"
+              ]
+            }
+          ],
+          "external_writes": [],
+          "control_dependencies": []
+        }
+      }
+    },
+    "expr_roles": [
+      {
+        "expr_id": "expr_1",
+        "text": "0x00",
+        "normalized": "0x00",
+        "role": "memory_slice_start",
+        "type_hint": "memory_ptr",
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "effect": "eff_4"
+        }
+      },
+      {
+        "expr_id": "expr_2",
+        "text": "0x40",
+        "normalized": "0x40",
+        "role": "memory_slice_size",
+        "type_hint": "uint256",
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "effect": "eff_4"
+        }
+      },
+      {
+        "expr_id": "expr_3",
+        "text": "balanceSlot",
+        "normalized": "balanceSlot",
+        "role": "storage_slot_expr",
+        "type_hint": "storage_slot",
+        "stmt_ref": "asm_s_4",
+        "attrs": {
+          "effect": "eff_6",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ]
+        }
+      },
+      {
+        "expr_id": "expr_4",
+        "text": "add(sload(balanceSlot), amount)",
+        "normalized": "(sload(balanceSlot) + amount)",
+        "role": "storage_write_value",
+        "type_hint": null,
+        "stmt_ref": "asm_s_4",
+        "attrs": {
+          "effect": "eff_6"
+        }
+      },
+      {
+        "expr_id": "expr_5",
+        "text": "balances[msg.sender]",
+        "normalized": "balances[msg.sender]",
+        "role": "mapping_slot_expr",
+        "type_hint": "storage_slot",
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "overlay": "ov_2",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_kind": null,
+          "storage_field": null
+        }
+      },
+      {
+        "expr_id": "expr_6",
+        "text": "msg.sender",
+        "normalized": "msg.sender",
+        "role": "mapping_key_material",
+        "type_hint": null,
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "overlay": "ov_2",
+          "storage_reference": null
+        }
+      },
+      {
+        "expr_id": "expr_7",
+        "text": "balanceSlot",
+        "normalized": "balances[msg.sender]",
+        "role": "mapping_slot_expr",
+        "type_hint": "storage_slot",
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "overlay": "ov_4",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_kind": null,
+          "storage_field": null
+        }
+      },
+      {
+        "expr_id": "expr_8",
+        "text": "balances[msg.sender]",
+        "normalized": "balances[msg.sender]",
+        "role": "state_access_expr",
+        "type_hint": null,
+        "stmt_ref": "asm_s_3",
+        "attrs": {
+          "overlay": "ov_4",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_kind": null,
+          "storage_field": null
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect_id": "eff_1",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_1"
+        ],
+        "attrs": {
+          "address": "0x00",
+          "value": "caller()",
+          "origin_node": "N2",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "0x00",
+              "base": "0x00",
+              "offset": 0,
+              "expression": "0x00",
+              "source": "literal"
+            }
+          ],
+          "cfg_node_id": 2,
+          "path_states": [
+            "entry"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_2",
+        "kind": "MemoryWrite",
+        "stmt_refs": [
+          "asm_s_2"
+        ],
+        "attrs": {
+          "address": "32",
+          "value": "balances.slot",
+          "origin_node": "N3",
+          "write_kind": "mstore",
+          "aliases": [
+            {
+              "key": "32",
+              "base": "0x20",
+              "offset": 0,
+              "expression": "0x20",
+              "source": "literal"
+            },
+            {
+              "key": "add(0x00,32)",
+              "base": "0x00",
+              "offset": 32,
+              "expression": "add(0x00, 32)",
+              "source": "literal-zero-base"
+            }
+          ],
+          "cfg_node_id": 3,
+          "path_states": [
+            "entry"
+          ]
+        }
+      },
+      {
+        "effect_id": "eff_3",
+        "kind": "ValueDef",
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "targets": [
+            "balanceSlot"
+          ],
+          "value": "keccak256(0x00, 0x40)",
+          "value_normalized": "keccak256(0x00, 0x40)",
+          "cfg_node_id": 4,
+          "language": "yul",
+          "path_states": [
+            "entry"
+          ],
+          "target_versions": {
+            "balanceSlot": [
+              "balanceSlot__ssa1"
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_4",
+        "kind": "MemoryHash",
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "op": "keccak256",
+          "ptr": "0x00",
+          "size": "0x40",
+          "value": "balanceSlot",
+          "value_versions": {
+            "balanceSlot": [
+              "balanceSlot__ssa1"
+            ]
+          },
+          "ptr_versions": [],
+          "size_versions": [],
+          "cfg_node_id": 4,
+          "path_states": [
+            "entry"
+          ],
+          "semantic_inputs": {
+            "sink_kind": "MemoryHash",
+            "paths": [
+              {
+                "arguments": {
+                  "slot": "keccak256(abi.encode(msg.sender, balances.slot))"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "effect_id": "eff_5",
+        "kind": "StorageRead",
+        "stmt_refs": [
+          "asm_s_4"
+        ],
+        "attrs": {
+          "slot": "balanceSlot",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "value": "__sseir_eval_asm_s_4_1",
+          "value_versions": {},
+          "cfg_node_id": 5,
+          "path_states": [
+            "entry"
+          ],
+          "expression": "sload(balanceSlot)",
+          "nested_in_storage_value": true,
+          "parent_call": "sstore",
+          "parent_slot": "balanceSlot",
+          "parent_value": "add(sload(balanceSlot), amount)"
+        }
+      },
+      {
+        "effect_id": "eff_6",
+        "kind": "StorageWrite",
+        "stmt_refs": [
+          "asm_s_4"
+        ],
+        "attrs": {
+          "slot": "balanceSlot",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "value": "add(sload(balanceSlot), amount)",
+          "value_versions": [],
+          "cfg_node_id": 5,
+          "path_states": [
+            "entry"
+          ]
+        }
+      }
+    ],
+    "semantic_overlays": [
+      {
+        "overlay_id": "ov_1",
+        "kind": "MappingSlot",
+        "effects": [
+          "eff_4"
+        ],
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "target": "balanceSlot",
+          "target_key": "balanceSlot__ssa1",
+          "target_keys": [
+            "balanceSlot__ssa1"
+          ],
+          "expression": "balances[msg.sender]",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_type": null,
+          "storage_reference_kind": null,
+          "storage_field": null,
+          "key": "msg.sender",
+          "keys": [
+            "msg.sender"
+          ],
+          "base": "balances.slot",
+          "base_key": "balances.slot",
+          "parent_target_key": null,
+          "slot_kind": "mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "activation": "storage_consumer",
+          "resolved_inputs": [
+            {
+              "offset": 0,
+              "offset_expr": "0",
+              "size": 32,
+              "value": "msg.sender"
+            },
+            {
+              "offset": 32,
+              "offset_expr": "32",
+              "size": 32,
+              "value": "balances.slot"
+            }
+          ],
+          "packed_semantics": null
+        }
+      },
+      {
+        "overlay_id": "ov_2",
+        "kind": "MappingSlot",
+        "effects": [
+          "eff_4"
+        ],
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "target": "balanceSlot",
+          "target_key": "balanceSlot",
+          "target_keys": [
+            "balanceSlot__ssa1"
+          ],
+          "expression": "balances[msg.sender]",
+          "state_variable": "balances",
+          "storage_reference": null,
+          "storage_reference_type": null,
+          "storage_reference_kind": null,
+          "storage_field": null,
+          "key": "msg.sender",
+          "keys": [
+            "msg.sender"
+          ],
+          "base": "balances.slot",
+          "base_key": "balances.slot",
+          "parent_target_key": null,
+          "slot_kind": "mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "activation": "storage_consumer",
+          "resolved_inputs": [
+            {
+              "offset": 0,
+              "offset_expr": "0",
+              "size": 32,
+              "value": "msg.sender"
+            },
+            {
+              "offset": 32,
+              "offset_expr": "32",
+              "size": 32,
+              "value": "balances.slot"
+            }
+          ],
+          "packed_semantics": null
+        }
+      },
+      {
+        "overlay_id": "ov_3",
+        "kind": "MappingRead",
+        "effects": [
+          "eff_4",
+          "eff_5"
+        ],
+        "stmt_refs": [
+          "asm_s_3",
+          "asm_s_4"
+        ],
+        "attrs": {
+          "access": "balances[msg.sender]",
+          "target": "__sseir_eval_asm_s_4_1",
+          "state_variable": "balances",
+          "key": "msg.sender",
+          "keys": [
+            "msg.sender"
+          ],
+          "slot": "balanceSlot",
+          "slot_key": "balanceSlot__ssa1",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "slot_effect": "eff_4",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "solidity_like": "__sseir_eval_asm_s_4_1 = balances[msg.sender];",
+          "read_expression": "balances[msg.sender]",
+          "source_expression": "sload(balanceSlot)",
+          "nested_in_storage_value": true,
+          "consumed_by": {
+            "kind": "sstore",
+            "slot": "balanceSlot",
+            "value": "add(sload(balanceSlot), amount)"
+          }
+        }
+      },
+      {
+        "overlay_id": "ov_4",
+        "kind": "MappingWrite",
+        "effects": [
+          "eff_4",
+          "eff_6"
+        ],
+        "stmt_refs": [
+          "asm_s_3",
+          "asm_s_4"
+        ],
+        "attrs": {
+          "access": "balances[msg.sender]",
+          "value": "(balances[msg.sender] + amount)",
+          "value_yul": "add(sload(balanceSlot), amount)",
+          "value_state_read": {
+            "original": "sload(balanceSlot)",
+            "access": "balances[msg.sender]",
+            "state_access": true,
+            "state_mutation": false,
+            "solidity_like": "balances[msg.sender]",
+            "notes": [
+              "nested_storage_read",
+              "reads_contract_state"
+            ]
+          },
+          "state_variable": "balances",
+          "key": "msg.sender",
+          "keys": [
+            "msg.sender"
+          ],
+          "slot": "balanceSlot",
+          "slot_key": "balanceSlot__ssa1",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "slot_effect": "eff_4",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "solidity_like": "balances[msg.sender] = (balances[msg.sender] + amount);"
+        }
+      },
+      {
+        "overlay_id": "ov_5",
+        "kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ],
+        "stmt_refs": [
+          "asm_s_3"
+        ],
+        "attrs": {
+          "target": "balanceSlot",
+          "expression": "keccak256(0x00, 0x40)",
+          "expression_normalized": "keccak256(abi.encode(msg.sender, balances.slot))",
+          "solidity_like": "balanceSlot = keccak256(abi.encode(msg.sender, balances.slot));",
+          "context": "value",
+          "division_guards": [],
+          "memory_hash": {
+            "expression": "keccak256(abi.encode(msg.sender, balances.slot))",
+            "encoding": "abi.encode",
+            "notes": [
+              "memory_hash_from_byte_axis"
+            ]
+          },
+          "atomized_value": null
+        }
+      }
+    ],
+    "security_facts": [
+      {
+        "fact_id": "sf_1",
+        "kind": "BalanceRead",
+        "attrs": {
+          "state_var": "balances",
+          "account": "msg.sender"
+        },
+        "source_overlays": [
+          "ov_3"
+        ],
+        "source_effects": [
+          "eff_4",
+          "eff_5"
+        ],
+        "stmt_refs": [
+          "asm_s_3",
+          "asm_s_4"
+        ]
+      },
+      {
+        "fact_id": "sf_2",
+        "kind": "BalanceUpdate",
+        "attrs": {
+          "state_var": "balances",
+          "account": "msg.sender",
+          "delta": "+amount",
+          "value": "(balances[msg.sender] + amount)"
+        },
+        "source_overlays": [
+          "ov_4"
+        ],
+        "source_effects": [
+          "eff_4",
+          "eff_6"
+        ],
+        "stmt_refs": [
+          "asm_s_3",
+          "asm_s_4"
+        ]
+      }
+    ],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "SimpleSemanticIR.deposit(uint256)",
+        "state_variables": [
+          {
+            "name": "total",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "90:20:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "balances",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "116:43:0",
+            "storage_slot": 1
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {}
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 1,
+        "selectors": {
+          "0xb6b55f25": [
+            {
+              "selector": "0xb6b55f25",
+              "signature": "deposit(uint256)",
+              "name": "deposit",
+              "kind": "function",
+              "contract": "SimpleSemanticIR",
+              "source": "ast",
+              "src": "166:304:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "tests/fixtures/simple_semantic_ir.sol",
+        "analysis_source": "tests/fixtures/simple_semantic_ir.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  }
+]

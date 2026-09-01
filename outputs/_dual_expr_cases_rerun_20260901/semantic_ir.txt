@@ -1,0 +1,184 @@
+SemanticProgram semantic-ir/v2
+Source: tests/fixtures/yul_atomicization_cases.sol
+
+Function YulAtomicizationCases.update(uint256)
+    contract = YulAtomicizationCases
+    signature = update(uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm1_n0)
+
+bb_asm1_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm1_n2)
+
+bb_asm1_n1 [yul]:
+    // predecessors: bb_asm1_n3
+    // no semantic instructions
+    Fallthrough
+
+bb_asm1_n2 [yul]:
+    // predecessors: bb_asm1_n0
+    // ir_1 | source=yul | origin_facts=[fact_1]
+    slot = total.slot
+    Goto(bb_asm1_n3)
+
+bb_asm1_n3 [yul]:
+    // predecessors: bb_asm1_n2
+    // ir_2 | source=yul | origin_facts=[fact_2]
+    @execution StateRead(expr=sload(slot))
+    __sseir_eval_asm_s_2_1 = StateRead(StateVariableLocation(total))
+    // ir_3 | source=yul | origin_facts=[fact_3]
+    @execution StateWrite(expr=Add(__sseir_eval_asm_s_2_1, amount))
+    StateWrite(StateVariableLocation(total), Add(total, amount))
+    Goto(bb_asm1_n1)
+
+CFGEdges:
+    bb_asm1_n0 -> bb_asm1_n2 [next]
+    bb_asm1_n2 -> bb_asm1_n3 [next]
+    bb_asm1_n3 -> bb_asm1_n1 [next]
+    bb_sol_slither_n0 -> bb_asm1_n0 [fallthrough]
+
+DefUse:
+    value:slot#1: def=ir_1, uses=[ir_2]
+    input:total.slot: def=input, uses=[ir_1]
+    value:__sseir_eval_asm_s_2_1#1: def=ir_2, uses=[ir_3]
+    input:amount: def=input, uses=[ir_3]
+
+
+Function YulAtomicizationCases.guardedCall(address, bytes32)
+    contract = YulAtomicizationCases
+    signature = guardedCall(address, bytes32)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm2_n0)
+
+bb_sol_slither_n8 [solidity]:
+    // predecessors: bb_asm2_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_13, fact_12]
+    Return(ok_1)
+
+bb_asm2_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm2_n2)
+
+bb_asm2_n1 [yul]:
+    // predecessors: bb_asm2_n6
+    // no semantic instructions
+    Goto(bb_sol_slither_n8)
+
+bb_asm2_n2 [yul]:
+    // predecessors: bb_asm2_n0
+    // no semantic instructions
+    Goto(bb_asm2_n3)
+
+bb_asm2_n3 [yul]:
+    // predecessors: bb_asm2_n2
+    // ir_4 | source=yul | origin_facts=[fact_5, fact_4]
+    ExternalCall(0x00, gas(), target, 0x00, 0x00, 0x20, 0x00, 0x20)
+    // terminator origin_facts=[fact_4, fact_6, fact_7, fact_8, fact_9, fact_10, fact_11]
+    Branch(
+        IsZero(BitAnd(Eq(mload(0x00), 1), call(gas(), target, 0x00, 0x00, 0x20, 0x00, 0x20))),
+        bb_asm2_n5,
+        bb_asm2_n4
+    )
+
+bb_asm2_n4 [yul]:
+    // predecessors: bb_asm2_n3
+    // no semantic instructions
+    Goto(bb_asm2_n6)
+
+bb_asm2_n5 [yul]:
+    // predecessors: bb_asm2_n3
+    // ir_5 | source=yul | origin_facts=[fact_14, fact_10, fact_9, fact_6, fact_8, fact_4, fact_7]
+    @condition Not(
+    Ne(
+        IsZero(BitAnd(Eq(mload(0x00), 1), call(gas(), target, 0x00, 0x00, 0x20, 0x00, 0x20))),
+        0x00
+    )
+)
+    Require(
+        Not(
+            Ne(
+                IsZero(BitAnd(Eq(mload(0x00), 1), call(gas(), target, 0x00, 0x00, 0x20, 0x00, 0x20))),
+                0x00
+            )
+        )
+    )
+    @execution-values [0x00, 0x00]
+    Revert()
+
+bb_asm2_n6 [yul]:
+    // predecessors: bb_asm2_n4
+    // no semantic instructions
+    Goto(bb_asm2_n1)
+
+CFGEdges:
+    bb_asm2_n0 -> bb_asm2_n2 [next]
+    bb_asm2_n2 -> bb_asm2_n3 [next]
+    bb_asm2_n3 -> bb_asm2_n5 [true: iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))] predicate=iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))
+    bb_asm2_n3 -> bb_asm2_n4 [false: !(iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))))] predicate=!(iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))))
+    bb_asm2_n4 -> bb_asm2_n6 [next]
+    bb_asm2_n6 -> bb_asm2_n1 [next]
+    bb_sol_slither_n0 -> bb_asm2_n0 [fallthrough]
+    bb_asm2_n1 -> bb_sol_slither_n8 [fallthrough]
+
+DefUse:
+    input:ok_1: def=input, uses=[terminator:bb_sol_slither_n8]
+    input:target: def=input, uses=[ir_4, terminator:bb_asm2_n3, ir_5]
+
+
+Function YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)
+    contract = YulAtomicizationCases
+    signature = compute(uint256, uint256, uint256, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm3_n0)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_asm3_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_19, fact_18]
+    Return(result_1)
+
+bb_asm3_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm3_n2)
+
+bb_asm3_n1 [yul]:
+    // predecessors: bb_asm3_n2
+    // no semantic instructions
+    Goto(bb_sol_slither_n4)
+
+bb_asm3_n2 [yul]:
+    // predecessors: bb_asm3_n0
+    // ir_6 | source=yul | origin_facts=[fact_15]
+    __sseir_eval_asm_s_1_1 = Sub(c, d)
+    // ir_7 | source=yul | origin_facts=[fact_16]
+    __sseir_eval_asm_s_1_2 = Mul(a, b)
+    // ir_8 | source=yul | origin_facts=[fact_17]
+    __sseir_eval_asm_s_1_3 = Add(__sseir_eval_asm_s_1_2, __sseir_eval_asm_s_1_1)
+    Goto(bb_asm3_n1)
+
+CFGEdges:
+    bb_asm3_n0 -> bb_asm3_n2 [next]
+    bb_asm3_n2 -> bb_asm3_n1 [next]
+    bb_sol_slither_n0 -> bb_asm3_n0 [fallthrough]
+    bb_asm3_n1 -> bb_sol_slither_n4 [fallthrough]
+
+DefUse:
+    input:result_1: def=input, uses=[terminator:bb_sol_slither_n4]
+    value:__sseir_eval_asm_s_1_1#1: def=ir_6, uses=[ir_8]
+    input:c: def=input, uses=[ir_6]
+    input:d: def=input, uses=[ir_6]
+    value:__sseir_eval_asm_s_1_2#1: def=ir_7, uses=[ir_8]
+    input:a: def=input, uses=[ir_7]
+    input:b: def=input, uses=[ir_7]
+    value:__sseir_eval_asm_s_1_3#1: def=ir_8, uses=[-]

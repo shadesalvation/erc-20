@@ -1,0 +1,5367 @@
+{
+  "schema": "s-seir-function-semantic-facts/v3",
+  "source": "人工构造样例/09_多维Mapping_SemanticFact/contracts/MultiMappingParity.sol",
+  "result_dir": "outputs/module_layout_regression",
+  "model_boundary": {
+    "processing_unit": "function",
+    "fact_granularity": "one_atomic_operation_per_fact",
+    "ordering": "function-level CFG partial order plus block-local operation order",
+    "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter only projects each atom to the common schema.",
+    "yul": "S-SEIR alone analyzes Yul; YulSemanticLifter only projects completed S-SEIR results to the common schema.",
+    "bridge": "SemanticFactBridge restores function-level CFG order and control predecessors after both sources already share one schema."
+  },
+  "function_count": 6,
+  "solidity_fact_count": 20,
+  "yul_fact_count": 21,
+  "fact_count": 41,
+  "solidity_facts": [
+    {
+      "fact_id": "fact_1",
+      "operation_id": "sol_atom_2",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_0",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "ledger_1",
+        "owner_1"
+      ],
+      "writes": [
+        "REF_0"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "324:36:slither",
+          "source_expression": "ledger[owner]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_0(mapping(bytes32 => mapping(uint256 => uint256))) -> ledger_1[owner_1]",
+          "physical_reference": "REF_0"
+        }
+      },
+      "control_predecessors": []
+    },
+    {
+      "fact_id": "fact_2",
+      "operation_id": "sol_atom_3",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_1",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "REF_0",
+        "bucket_1"
+      ],
+      "writes": [
+        "REF_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "324:36:slither",
+          "source_expression": "ledger[owner][bucket]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_1(mapping(uint256 => uint256)) -> REF_0[bucket_1]",
+          "physical_reference": "REF_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_1"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "operation_id": "sol_atom_4",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_2",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "REF_1",
+        "index_1"
+      ],
+      "writes": [
+        "REF_2"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4",
+          "source_span": "324:36:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_2(uint256) -> REF_1[index_1]",
+          "physical_reference": "REF_2"
+        }
+      },
+      "control_predecessors": [
+        "fact_2"
+      ]
+    },
+    {
+      "fact_id": "fact_4",
+      "operation_id": "sol_atom_5:state_read:1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_2",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "ledger[owner][bucket][index]"
+      ],
+      "writes": [
+        "REF_2"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 3
+      },
+      "semantic": {
+        "operation": "state_read",
+        "atomic_operation_count": 1,
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5:state_read:1",
+          "source_span": "324:36:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "StorageRead",
+          "implicit_slithir_operation": true,
+          "physical_reference": "REF_2"
+        }
+      },
+      "control_predecessors": [
+        "fact_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "operation_id": "sol_atom_5",
+      "kind": "ValueAssign",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "value_1",
+      "rvalue": "REF_2",
+      "reads": [
+        "REF_2"
+      ],
+      "writes": [
+        "value_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 4
+      },
+      "semantic": {
+        "operation": "value_assign",
+        "atomic_operation": "Assignment",
+        "atomic_operation_count": 1,
+        "result_ssa": "value_1",
+        "operand_ssa": [
+          "REF_2"
+        ],
+        "resolved_operands": [
+          "ledger[owner][bucket][index]"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5",
+          "source_span": "324:36:slither",
+          "source_expression": "value = ledger[owner][bucket][index]",
+          "slithir_kind": "Assignment",
+          "slithir_text": "value_1(uint256) := REF_2(uint256)",
+          "physical_reference": "value_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_4"
+      ]
+    },
+    {
+      "fact_id": "fact_6",
+      "operation_id": "sol_atom_6",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "rvalue": "value_1",
+      "reads": [
+        "value_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "value_1"
+        ],
+        "resolved_operands": [
+          "ledger[owner][bucket][index]"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "value_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_6",
+          "source_span": "294:15:slither",
+          "source_expression": "value",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN value_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_5"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "operation_id": "sol_atom_1",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
+      "function": "solidityWrite",
+      "contract": "MultiMappingParity",
+      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_3",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "ledger_1",
+        "owner_1"
+      ],
+      "writes": [
+        "REF_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "476:36:slither",
+          "source_expression": "ledger[owner]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_3(mapping(bytes32 => mapping(uint256 => uint256))) -> ledger_1[owner_1]",
+          "physical_reference": "REF_3"
+        }
+      },
+      "control_predecessors": []
+    },
+    {
+      "fact_id": "fact_8",
+      "operation_id": "sol_atom_2",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
+      "function": "solidityWrite",
+      "contract": "MultiMappingParity",
+      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_4",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "REF_3",
+        "bucket_1"
+      ],
+      "writes": [
+        "REF_4"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "476:36:slither",
+          "source_expression": "ledger[owner][bucket]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_4(mapping(uint256 => uint256)) -> REF_3[bucket_1]",
+          "physical_reference": "REF_4"
+        }
+      },
+      "control_predecessors": [
+        "fact_7"
+      ]
+    },
+    {
+      "fact_id": "fact_9",
+      "operation_id": "sol_atom_3",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
+      "function": "solidityWrite",
+      "contract": "MultiMappingParity",
+      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_5",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "REF_4",
+        "index_1"
+      ],
+      "writes": [
+        "REF_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "476:36:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_5(uint256) -> REF_4[index_1]",
+          "physical_reference": "REF_5"
+        }
+      },
+      "control_predecessors": [
+        "fact_8"
+      ]
+    },
+    {
+      "fact_id": "fact_10",
+      "operation_id": "sol_atom_5",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
+      "function": "solidityWrite",
+      "contract": "MultiMappingParity",
+      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "ledger[owner][bucket][index]",
+      "rvalue": "value_1",
+      "reads": [
+        "value_1"
+      ],
+      "writes": [
+        "ledger[owner][bucket][index]"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 4
+      },
+      "semantic": {
+        "operation": "state_write",
+        "atomic_operation_count": 1,
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        },
+        "value": "value"
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5",
+          "source_span": "476:36:slither",
+          "source_expression": "ledger[owner][bucket][index] = value",
+          "slithir_kind": "Assignment",
+          "slithir_text": "REF_5(uint256) (->ledger_2) := value_1(uint256)",
+          "physical_reference": "REF_5"
+        }
+      },
+      "control_predecessors": [
+        "fact_9"
+      ]
+    },
+    {
+      "fact_id": "fact_11",
+      "operation_id": "sol_atom_2",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_6",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "ledger_3",
+        "owner_1"
+      ],
+      "writes": [
+        "REF_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_6(mapping(bytes32 => mapping(uint256 => uint256))) -> ledger_3[owner_1]",
+          "physical_reference": "REF_6"
+        }
+      },
+      "control_predecessors": []
+    },
+    {
+      "fact_id": "fact_12",
+      "operation_id": "sol_atom_3",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_7",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "REF_6",
+        "bucket_1"
+      ],
+      "writes": [
+        "REF_7"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_7(mapping(uint256 => uint256)) -> REF_6[bucket_1]",
+          "physical_reference": "REF_7"
+        }
+      },
+      "control_predecessors": [
+        "fact_11"
+      ]
+    },
+    {
+      "fact_id": "fact_13",
+      "operation_id": "sol_atom_4",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_8",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "REF_7",
+        "index_1"
+      ],
+      "writes": [
+        "REF_8"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_8(uint256) -> REF_7[index_1]",
+          "physical_reference": "REF_8"
+        }
+      },
+      "control_predecessors": [
+        "fact_12"
+      ]
+    },
+    {
+      "fact_id": "fact_14",
+      "operation_id": "sol_atom_5",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_9",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "ledger_3",
+        "owner_1"
+      ],
+      "writes": [
+        "REF_9"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 3
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_9(mapping(bytes32 => mapping(uint256 => uint256))) -> ledger_3[owner_1]",
+          "physical_reference": "REF_9"
+        }
+      },
+      "control_predecessors": [
+        "fact_13"
+      ]
+    },
+    {
+      "fact_id": "fact_15",
+      "operation_id": "sol_atom_6",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_10",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "REF_9",
+        "bucket_1"
+      ],
+      "writes": [
+        "REF_10"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 4
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_6",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_10(mapping(uint256 => uint256)) -> REF_9[bucket_1]",
+          "physical_reference": "REF_10"
+        }
+      },
+      "control_predecessors": [
+        "fact_14"
+      ]
+    },
+    {
+      "fact_id": "fact_16",
+      "operation_id": "sol_atom_7",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_11",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "REF_10",
+        "index_1"
+      ],
+      "writes": [
+        "REF_11"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 5
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_7",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_11(uint256) -> REF_10[index_1]",
+          "physical_reference": "REF_11"
+        }
+      },
+      "control_predecessors": [
+        "fact_15"
+      ]
+    },
+    {
+      "fact_id": "fact_17",
+      "operation_id": "sol_atom_8:state_read:1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_11",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "ledger[owner][bucket][index]"
+      ],
+      "writes": [
+        "REF_11"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 6
+      },
+      "semantic": {
+        "operation": "state_read",
+        "atomic_operation_count": 1,
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_8:state_read:1",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "StorageRead",
+          "implicit_slithir_operation": true,
+          "physical_reference": "REF_11"
+        }
+      },
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_18",
+      "operation_id": "sol_atom_8",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "TMP_0",
+      "rvalue": "REF_11 + delta_1",
+      "reads": [
+        "REF_11",
+        "delta_1"
+      ],
+      "writes": [
+        "TMP_0"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 7
+      },
+      "semantic": {
+        "operation": "value_compute",
+        "atomic_operation": "Binary",
+        "atomic_operation_count": 1,
+        "operator": "+",
+        "result_ssa": "TMP_0",
+        "operand_ssa": [
+          "REF_11",
+          "delta_1"
+        ],
+        "resolved_operands": [
+          "ledger[owner][bucket][index]",
+          "delta"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_8",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index] + delta",
+          "slithir_kind": "Binary",
+          "slithir_text": "TMP_0(uint256) = REF_11 (c)+ delta_1",
+          "physical_reference": "TMP_0"
+        }
+      },
+      "control_predecessors": [
+        "fact_17"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
+      "operation_id": "sol_atom_10",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "ledger[owner][bucket][index]",
+      "rvalue": "TMP_0",
+      "reads": [
+        "TMP_0"
+      ],
+      "writes": [
+        "ledger[owner][bucket][index]"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 9
+      },
+      "semantic": {
+        "operation": "state_write",
+        "atomic_operation_count": 1,
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        },
+        "value": "(ledger[owner][bucket][index] + delta)"
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_10",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index] = ledger[owner][bucket][index] + delta",
+          "slithir_kind": "Assignment",
+          "slithir_text": "REF_8(uint256) (->ledger_4) := TMP_0(uint256)",
+          "physical_reference": "REF_8"
+        }
+      },
+      "control_predecessors": [
+        "fact_18"
+      ]
+    },
+    {
+      "fact_id": "fact_27",
+      "operation_id": "sol_atom_2",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "function": "yulRead",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "cfg_nodes": [
+        "bb_sol_slither_n14"
+      ],
+      "rvalue": "value_1",
+      "reads": [
+        "value_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 12,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "value_1"
+        ],
+        "resolved_operands": [
+          "value"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "value_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "818:15:slither",
+          "source_expression": "value",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN value_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_26"
+      ]
+    }
+  ],
+  "yul_facts": [
+    {
+      "fact_id": "fact_20",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ownerSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 6
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "owner",
+        "ledger.slot"
+      ],
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_8"
+        ],
+        "physical_reference": "ownerSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "owner"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ledger.slot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 7
+      },
+      "anchor_cfg_node": "bb_asm1_n4",
+      "control_predecessors": [
+        "fact_20"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "bucketSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_21"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "bucket",
+        "ownerSlot"
+      ],
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_10"
+        ],
+        "physical_reference": "bucketSlot",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "bucket"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ownerSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 9
+      },
+      "anchor_cfg_node": "bb_asm1_n7",
+      "control_predecessors": [
+        "fact_22"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_24",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n10"
+      ],
+      "lvalue": "value",
+      "rvalue": "sload(keccak256(0x00, 0x40))",
+      "reads": [
+        "sload"
+      ],
+      "writes": [
+        "value"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "value",
+        "expression": "sload(keccak256(0x00, 0x40))"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 10
+      },
+      "control_predecessors": [
+        "fact_23"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_25",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n10"
+      ],
+      "lvalue": "keccak256(0x00, 0x40)",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "index",
+        "bucketSlot"
+      ],
+      "writes": [
+        "keccak256(0x00, 0x40)"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_12"
+        ],
+        "physical_reference": "keccak256(0x00, 0x40)",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "index"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "bucketSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10",
+          "target_keys": [
+            "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 11
+      },
+      "anchor_cfg_node": "bb_asm1_n10",
+      "control_predecessors": [
+        "fact_24"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_26",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "effect",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n10"
+      ],
+      "lvalue": "value",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "ledger[owner][bucket][index]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_12",
+          "eff_13"
+        ],
+        "storage_resolution": {
+          "slot": "keccak256(0x00, 0x40)",
+          "slot_key": "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10",
+          "slot_versions": [
+            "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10"
+          ],
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 12
+      },
+      "anchor_cfg_node": "bb_asm1_n10",
+      "control_predecessors": [
+        "fact_25"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_28",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ownerSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 6
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_29",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "owner",
+        "ledger.slot"
+      ],
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_8"
+        ],
+        "physical_reference": "ownerSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "owner"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ledger.slot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 7
+      },
+      "anchor_cfg_node": "bb_asm2_n4",
+      "control_predecessors": [
+        "fact_28"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_30",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "bucketSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_29"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_31",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "bucket",
+        "ownerSlot"
+      ],
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_10"
+        ],
+        "physical_reference": "bucketSlot",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "bucket"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ownerSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 9
+      },
+      "anchor_cfg_node": "bb_asm2_n7",
+      "control_predecessors": [
+        "fact_30"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_32",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n10"
+      ],
+      "lvalue": "keccak256(0x00, 0x40)",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "index",
+        "bucketSlot"
+      ],
+      "writes": [
+        "keccak256(0x00, 0x40)"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_11"
+        ],
+        "physical_reference": "keccak256(0x00, 0x40)",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "index"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "bucketSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10",
+          "target_keys": [
+            "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 10
+      },
+      "anchor_cfg_node": "bb_asm2_n10",
+      "control_predecessors": [
+        "fact_31"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_33",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "effect",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n10"
+      ],
+      "lvalue": "ledger[owner][bucket][index]",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "ledger[owner][bucket][index]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        },
+        "value": "value"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_11",
+          "eff_12"
+        ],
+        "storage_resolution": {
+          "slot": "keccak256(0x00, 0x40)",
+          "slot_key": "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10",
+          "slot_versions": [
+            "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10"
+          ],
+          "slot_effect": "eff_11",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 11
+      },
+      "anchor_cfg_node": "bb_asm2_n10",
+      "control_predecessors": [
+        "fact_32"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_34",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ownerSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 6
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_35",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "owner",
+        "ledger.slot"
+      ],
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_8"
+        ],
+        "physical_reference": "ownerSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "owner"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ledger.slot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 7
+      },
+      "anchor_cfg_node": "bb_asm3_n4",
+      "control_predecessors": [
+        "fact_34"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_36",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "bucketSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_8",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_35"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_37",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "bucket",
+        "ownerSlot"
+      ],
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_10"
+        ],
+        "physical_reference": "bucketSlot",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "bucket"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ownerSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 9
+      },
+      "anchor_cfg_node": "bb_asm3_n7",
+      "control_predecessors": [
+        "fact_36"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_38",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n10"
+      ],
+      "lvalue": "valueSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "valueSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "valueSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_9",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 10
+      },
+      "control_predecessors": [
+        "fact_37"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_39",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n10"
+      ],
+      "lvalue": "valueSlot",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "index",
+        "bucketSlot"
+      ],
+      "writes": [
+        "valueSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_12"
+        ],
+        "physical_reference": "valueSlot",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "index"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "bucketSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "valueSlot__ssa3",
+          "target_keys": [
+            "valueSlot__ssa3"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 11
+      },
+      "anchor_cfg_node": "bb_asm3_n10",
+      "control_predecessors": [
+        "fact_38"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_40",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "effect",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9",
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n10",
+        "bb_asm3_n11"
+      ],
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "ledger[owner][bucket][index]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_12",
+          "eff_13"
+        ],
+        "storage_resolution": {
+          "slot": "valueSlot",
+          "slot_key": "valueSlot__ssa3",
+          "slot_versions": [
+            "valueSlot__ssa3"
+          ],
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 11,
+        "operation_order": 12
+      },
+      "anchor_cfg_node": "bb_asm3_n11",
+      "control_predecessors": [
+        "fact_39"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n10"
+      ]
+    },
+    {
+      "fact_id": "fact_41",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "effect",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9",
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n10",
+        "bb_asm3_n11"
+      ],
+      "lvalue": "ledger[owner][bucket][index]",
+      "rvalue": "(ledger[owner][bucket][index] + delta)",
+      "reads": [
+        "ledger[owner]",
+        "bucket",
+        "index",
+        "delta",
+        "ledger[owner][bucket][index]"
+      ],
+      "writes": [
+        "ledger[owner][bucket][index]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        },
+        "value": "(ledger[owner][bucket][index] + delta)"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_12",
+          "eff_14"
+        ],
+        "storage_resolution": {
+          "slot": "valueSlot",
+          "slot_key": "valueSlot__ssa3",
+          "slot_versions": [
+            "valueSlot__ssa3"
+          ],
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 11,
+        "operation_order": 13
+      },
+      "anchor_cfg_node": "bb_asm3_n11",
+      "control_predecessors": [
+        "fact_40"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n10"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact_1",
+      "operation_id": "sol_atom_2",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_0",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "ledger_1",
+        "owner_1"
+      ],
+      "writes": [
+        "REF_0"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "324:36:slither",
+          "source_expression": "ledger[owner]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_0(mapping(bytes32 => mapping(uint256 => uint256))) -> ledger_1[owner_1]",
+          "physical_reference": "REF_0"
+        }
+      },
+      "control_predecessors": []
+    },
+    {
+      "fact_id": "fact_2",
+      "operation_id": "sol_atom_3",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_1",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "REF_0",
+        "bucket_1"
+      ],
+      "writes": [
+        "REF_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "324:36:slither",
+          "source_expression": "ledger[owner][bucket]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_1(mapping(uint256 => uint256)) -> REF_0[bucket_1]",
+          "physical_reference": "REF_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_1"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "operation_id": "sol_atom_4",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_2",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "REF_1",
+        "index_1"
+      ],
+      "writes": [
+        "REF_2"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4",
+          "source_span": "324:36:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_2(uint256) -> REF_1[index_1]",
+          "physical_reference": "REF_2"
+        }
+      },
+      "control_predecessors": [
+        "fact_2"
+      ]
+    },
+    {
+      "fact_id": "fact_4",
+      "operation_id": "sol_atom_5:state_read:1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_2",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "ledger[owner][bucket][index]"
+      ],
+      "writes": [
+        "REF_2"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 3
+      },
+      "semantic": {
+        "operation": "state_read",
+        "atomic_operation_count": 1,
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5:state_read:1",
+          "source_span": "324:36:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "StorageRead",
+          "implicit_slithir_operation": true,
+          "physical_reference": "REF_2"
+        }
+      },
+      "control_predecessors": [
+        "fact_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "operation_id": "sol_atom_5",
+      "kind": "ValueAssign",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "value_1",
+      "rvalue": "REF_2",
+      "reads": [
+        "REF_2"
+      ],
+      "writes": [
+        "value_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 4
+      },
+      "semantic": {
+        "operation": "value_assign",
+        "atomic_operation": "Assignment",
+        "atomic_operation_count": 1,
+        "result_ssa": "value_1",
+        "operand_ssa": [
+          "REF_2"
+        ],
+        "resolved_operands": [
+          "ledger[owner][bucket][index]"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5",
+          "source_span": "324:36:slither",
+          "source_expression": "value = ledger[owner][bucket][index]",
+          "slithir_kind": "Assignment",
+          "slithir_text": "value_1(uint256) := REF_2(uint256)",
+          "physical_reference": "value_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_4"
+      ]
+    },
+    {
+      "fact_id": "fact_6",
+      "operation_id": "sol_atom_6",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityRead(address, bytes32, uint256)",
+      "function": "solidityRead",
+      "contract": "MultiMappingParity",
+      "signature": "solidityRead(address, bytes32, uint256)",
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "rvalue": "value_1",
+      "reads": [
+        "value_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "value_1"
+        ],
+        "resolved_operands": [
+          "ledger[owner][bucket][index]"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "value_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_6",
+          "source_span": "294:15:slither",
+          "source_expression": "value",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN value_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_5"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "operation_id": "sol_atom_1",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
+      "function": "solidityWrite",
+      "contract": "MultiMappingParity",
+      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_3",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "ledger_1",
+        "owner_1"
+      ],
+      "writes": [
+        "REF_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "476:36:slither",
+          "source_expression": "ledger[owner]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_3(mapping(bytes32 => mapping(uint256 => uint256))) -> ledger_1[owner_1]",
+          "physical_reference": "REF_3"
+        }
+      },
+      "control_predecessors": []
+    },
+    {
+      "fact_id": "fact_8",
+      "operation_id": "sol_atom_2",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
+      "function": "solidityWrite",
+      "contract": "MultiMappingParity",
+      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_4",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "REF_3",
+        "bucket_1"
+      ],
+      "writes": [
+        "REF_4"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "476:36:slither",
+          "source_expression": "ledger[owner][bucket]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_4(mapping(uint256 => uint256)) -> REF_3[bucket_1]",
+          "physical_reference": "REF_4"
+        }
+      },
+      "control_predecessors": [
+        "fact_7"
+      ]
+    },
+    {
+      "fact_id": "fact_9",
+      "operation_id": "sol_atom_3",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
+      "function": "solidityWrite",
+      "contract": "MultiMappingParity",
+      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_5",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "REF_4",
+        "index_1"
+      ],
+      "writes": [
+        "REF_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "476:36:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_5(uint256) -> REF_4[index_1]",
+          "physical_reference": "REF_5"
+        }
+      },
+      "control_predecessors": [
+        "fact_8"
+      ]
+    },
+    {
+      "fact_id": "fact_10",
+      "operation_id": "sol_atom_5",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityWrite(address, bytes32, uint256, uint256)",
+      "function": "solidityWrite",
+      "contract": "MultiMappingParity",
+      "signature": "solidityWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "ledger[owner][bucket][index]",
+      "rvalue": "value_1",
+      "reads": [
+        "value_1"
+      ],
+      "writes": [
+        "ledger[owner][bucket][index]"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 4
+      },
+      "semantic": {
+        "operation": "state_write",
+        "atomic_operation_count": 1,
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        },
+        "value": "value"
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5",
+          "source_span": "476:36:slither",
+          "source_expression": "ledger[owner][bucket][index] = value",
+          "slithir_kind": "Assignment",
+          "slithir_text": "REF_5(uint256) (->ledger_2) := value_1(uint256)",
+          "physical_reference": "REF_5"
+        }
+      },
+      "control_predecessors": [
+        "fact_9"
+      ]
+    },
+    {
+      "fact_id": "fact_11",
+      "operation_id": "sol_atom_2",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_6",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "ledger_3",
+        "owner_1"
+      ],
+      "writes": [
+        "REF_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_6(mapping(bytes32 => mapping(uint256 => uint256))) -> ledger_3[owner_1]",
+          "physical_reference": "REF_6"
+        }
+      },
+      "control_predecessors": []
+    },
+    {
+      "fact_id": "fact_12",
+      "operation_id": "sol_atom_3",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_7",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "REF_6",
+        "bucket_1"
+      ],
+      "writes": [
+        "REF_7"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_7(mapping(uint256 => uint256)) -> REF_6[bucket_1]",
+          "physical_reference": "REF_7"
+        }
+      },
+      "control_predecessors": [
+        "fact_11"
+      ]
+    },
+    {
+      "fact_id": "fact_13",
+      "operation_id": "sol_atom_4",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_8",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "REF_7",
+        "index_1"
+      ],
+      "writes": [
+        "REF_8"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_8(uint256) -> REF_7[index_1]",
+          "physical_reference": "REF_8"
+        }
+      },
+      "control_predecessors": [
+        "fact_12"
+      ]
+    },
+    {
+      "fact_id": "fact_14",
+      "operation_id": "sol_atom_5",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_9",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "ledger_3",
+        "owner_1"
+      ],
+      "writes": [
+        "REF_9"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 3
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_9(mapping(bytes32 => mapping(uint256 => uint256))) -> ledger_3[owner_1]",
+          "physical_reference": "REF_9"
+        }
+      },
+      "control_predecessors": [
+        "fact_13"
+      ]
+    },
+    {
+      "fact_id": "fact_15",
+      "operation_id": "sol_atom_6",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_10",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "REF_9",
+        "bucket_1"
+      ],
+      "writes": [
+        "REF_10"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 4
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_6",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_10(mapping(uint256 => uint256)) -> REF_9[bucket_1]",
+          "physical_reference": "REF_10"
+        }
+      },
+      "control_predecessors": [
+        "fact_14"
+      ]
+    },
+    {
+      "fact_id": "fact_16",
+      "operation_id": "sol_atom_7",
+      "kind": "StorageLocationResolve",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_11",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "REF_10",
+        "index_1"
+      ],
+      "writes": [
+        "REF_11"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 5
+      },
+      "semantic": {
+        "operation": "storage_location_resolve",
+        "atomic_operation_count": 1,
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_7",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "Index",
+          "slithir_text": "REF_11(uint256) -> REF_10[index_1]",
+          "physical_reference": "REF_11"
+        }
+      },
+      "control_predecessors": [
+        "fact_15"
+      ]
+    },
+    {
+      "fact_id": "fact_17",
+      "operation_id": "sol_atom_8:state_read:1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "REF_11",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "ledger[owner][bucket][index]"
+      ],
+      "writes": [
+        "REF_11"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 6
+      },
+      "semantic": {
+        "operation": "state_read",
+        "atomic_operation_count": 1,
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_8:state_read:1",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index]",
+          "slithir_kind": "StorageRead",
+          "implicit_slithir_operation": true,
+          "physical_reference": "REF_11"
+        }
+      },
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_18",
+      "operation_id": "sol_atom_8",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "TMP_0",
+      "rvalue": "REF_11 + delta_1",
+      "reads": [
+        "REF_11",
+        "delta_1"
+      ],
+      "writes": [
+        "TMP_0"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 7
+      },
+      "semantic": {
+        "operation": "value_compute",
+        "atomic_operation": "Binary",
+        "atomic_operation_count": 1,
+        "operator": "+",
+        "result_ssa": "TMP_0",
+        "operand_ssa": [
+          "REF_11",
+          "delta_1"
+        ],
+        "resolved_operands": [
+          "ledger[owner][bucket][index]",
+          "delta"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_8",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index] + delta",
+          "slithir_kind": "Binary",
+          "slithir_text": "TMP_0(uint256) = REF_11 (c)+ delta_1",
+          "physical_reference": "TMP_0"
+        }
+      },
+      "control_predecessors": [
+        "fact_17"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
+      "operation_id": "sol_atom_10",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.solidityUpdate(address, bytes32, uint256, uint256)",
+      "function": "solidityUpdate",
+      "contract": "MultiMappingParity",
+      "signature": "solidityUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "ledger[owner][bucket][index]",
+      "rvalue": "TMP_0",
+      "reads": [
+        "TMP_0"
+      ],
+      "writes": [
+        "ledger[owner][bucket][index]"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 9
+      },
+      "semantic": {
+        "operation": "state_write",
+        "atomic_operation_count": 1,
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        },
+        "value": "(ledger[owner][bucket][index] + delta)"
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_10",
+          "source_span": "629:67:slither",
+          "source_expression": "ledger[owner][bucket][index] = ledger[owner][bucket][index] + delta",
+          "slithir_kind": "Assignment",
+          "slithir_text": "REF_8(uint256) (->ledger_4) := TMP_0(uint256)",
+          "physical_reference": "REF_8"
+        }
+      },
+      "control_predecessors": [
+        "fact_18"
+      ]
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ownerSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 6
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "owner",
+        "ledger.slot"
+      ],
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_8"
+        ],
+        "physical_reference": "ownerSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "owner"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ledger.slot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 7
+      },
+      "anchor_cfg_node": "bb_asm1_n4",
+      "control_predecessors": [
+        "fact_20"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "bucketSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_21"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "bucket",
+        "ownerSlot"
+      ],
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_10"
+        ],
+        "physical_reference": "bucketSlot",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "bucket"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ownerSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 9
+      },
+      "anchor_cfg_node": "bb_asm1_n7",
+      "control_predecessors": [
+        "fact_22"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_24",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n10"
+      ],
+      "lvalue": "value",
+      "rvalue": "sload(keccak256(0x00, 0x40))",
+      "reads": [
+        "sload"
+      ],
+      "writes": [
+        "value"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "value",
+        "expression": "sload(keccak256(0x00, 0x40))"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 10
+      },
+      "control_predecessors": [
+        "fact_23"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_25",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n10"
+      ],
+      "lvalue": "keccak256(0x00, 0x40)",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "index",
+        "bucketSlot"
+      ],
+      "writes": [
+        "keccak256(0x00, 0x40)"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_12"
+        ],
+        "physical_reference": "keccak256(0x00, 0x40)",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "index"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "bucketSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10",
+          "target_keys": [
+            "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 11
+      },
+      "anchor_cfg_node": "bb_asm1_n10",
+      "control_predecessors": [
+        "fact_24"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_26",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulRead",
+      "fact_role": "effect",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n10"
+      ],
+      "lvalue": "value",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "ledger[owner][bucket][index]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_12",
+          "eff_13"
+        ],
+        "storage_resolution": {
+          "slot": "keccak256(0x00, 0x40)",
+          "slot_key": "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10",
+          "slot_versions": [
+            "keccak256(0x00, 0x40)__inline_asm1_asm_s_9_n10"
+          ],
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 12
+      },
+      "anchor_cfg_node": "bb_asm1_n10",
+      "control_predecessors": [
+        "fact_25"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_27",
+      "operation_id": "sol_atom_2",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "MultiMappingParity.yulRead(address, bytes32, uint256)",
+      "function": "yulRead",
+      "contract": "MultiMappingParity",
+      "signature": "yulRead(address, bytes32, uint256)",
+      "cfg_nodes": [
+        "bb_sol_slither_n14"
+      ],
+      "rvalue": "value_1",
+      "reads": [
+        "value_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 12,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "value_1"
+        ],
+        "resolved_operands": [
+          "value"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "value_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "818:15:slither",
+          "source_expression": "value",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN value_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_26"
+      ]
+    },
+    {
+      "fact_id": "fact_28",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ownerSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 6
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_29",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "owner",
+        "ledger.slot"
+      ],
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_8"
+        ],
+        "physical_reference": "ownerSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "owner"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ledger.slot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 7
+      },
+      "anchor_cfg_node": "bb_asm2_n4",
+      "control_predecessors": [
+        "fact_28"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_30",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "bucketSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_29"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_31",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "bucket",
+        "ownerSlot"
+      ],
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_10"
+        ],
+        "physical_reference": "bucketSlot",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "bucket"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ownerSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 9
+      },
+      "anchor_cfg_node": "bb_asm2_n7",
+      "control_predecessors": [
+        "fact_30"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_32",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n10"
+      ],
+      "lvalue": "keccak256(0x00, 0x40)",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "index",
+        "bucketSlot"
+      ],
+      "writes": [
+        "keccak256(0x00, 0x40)"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_11"
+        ],
+        "physical_reference": "keccak256(0x00, 0x40)",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "index"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "bucketSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10",
+          "target_keys": [
+            "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 10
+      },
+      "anchor_cfg_node": "bb_asm2_n10",
+      "control_predecessors": [
+        "fact_31"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_33",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulWrite",
+      "fact_role": "effect",
+      "contract": "MultiMappingParity",
+      "signature": "yulWrite(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n10"
+      ],
+      "lvalue": "ledger[owner][bucket][index]",
+      "rvalue": "value",
+      "reads": [
+        "value"
+      ],
+      "writes": [
+        "ledger[owner][bucket][index]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        },
+        "value": "value"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_11",
+          "eff_12"
+        ],
+        "storage_resolution": {
+          "slot": "keccak256(0x00, 0x40)",
+          "slot_key": "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10",
+          "slot_versions": [
+            "keccak256(0x00, 0x40)__inline_asm2_asm_s_9_n10"
+          ],
+          "slot_effect": "eff_11",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "function_id": "MultiMappingParity.yulWrite(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 11
+      },
+      "anchor_cfg_node": "bb_asm2_n10",
+      "control_predecessors": [
+        "fact_32"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_34",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ownerSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 6
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_35",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n4"
+      ],
+      "lvalue": "ownerSlot",
+      "rvalue": "ledger[owner]",
+      "reads": [
+        "owner",
+        "ledger.slot"
+      ],
+      "writes": [
+        "ownerSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_8"
+        ],
+        "physical_reference": "ownerSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "owner"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ledger.slot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "ownerSlot__ssa1",
+          "target_keys": [
+            "ownerSlot__ssa1"
+          ],
+          "base_key": "ledger.slot"
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 7
+      },
+      "anchor_cfg_node": "bb_asm3_n4",
+      "control_predecessors": [
+        "fact_34"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_36",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "bucketSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_8",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_35"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_37",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_6"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n7"
+      ],
+      "lvalue": "bucketSlot",
+      "rvalue": "ledger[owner][bucket]",
+      "reads": [
+        "bucket",
+        "ownerSlot"
+      ],
+      "writes": [
+        "bucketSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_10"
+        ],
+        "physical_reference": "bucketSlot",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "bucket"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "ownerSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "bucketSlot__ssa2",
+          "target_keys": [
+            "bucketSlot__ssa2"
+          ],
+          "parent_target_key": "ownerSlot__ssa1",
+          "base_key": "ownerSlot__ssa1"
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 9
+      },
+      "anchor_cfg_node": "bb_asm3_n7",
+      "control_predecessors": [
+        "fact_36"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n6"
+      ]
+    },
+    {
+      "fact_id": "fact_38",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n10"
+      ],
+      "lvalue": "valueSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "valueSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "valueSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ]
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_9",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 10
+      },
+      "control_predecessors": [
+        "fact_37"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_39",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "support",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n10"
+      ],
+      "lvalue": "valueSlot",
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "index",
+        "bucketSlot"
+      ],
+      "writes": [
+        "valueSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_12"
+        ],
+        "physical_reference": "valueSlot",
+        "slot_kind": "nested_mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "index"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "bucketSlot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "valueSlot__ssa3",
+          "target_keys": [
+            "valueSlot__ssa3"
+          ],
+          "parent_target_key": "bucketSlot__ssa2",
+          "base_key": "bucketSlot__ssa2"
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 11
+      },
+      "anchor_cfg_node": "bb_asm3_n10",
+      "control_predecessors": [
+        "fact_38"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n9"
+      ]
+    },
+    {
+      "fact_id": "fact_40",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "effect",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9",
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n10",
+        "bb_asm3_n11"
+      ],
+      "rvalue": "ledger[owner][bucket][index]",
+      "reads": [
+        "ledger[owner][bucket][index]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_12",
+          "eff_13"
+        ],
+        "storage_resolution": {
+          "slot": "valueSlot",
+          "slot_key": "valueSlot__ssa3",
+          "slot_versions": [
+            "valueSlot__ssa3"
+          ],
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 11,
+        "operation_order": 12
+      },
+      "anchor_cfg_node": "bb_asm3_n11",
+      "control_predecessors": [
+        "fact_39"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n10"
+      ]
+    },
+    {
+      "fact_id": "fact_41",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "yulUpdate",
+      "fact_role": "effect",
+      "contract": "MultiMappingParity",
+      "signature": "yulUpdate(address, bytes32, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_9",
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n10",
+        "bb_asm3_n11"
+      ],
+      "lvalue": "ledger[owner][bucket][index]",
+      "rvalue": "(ledger[owner][bucket][index] + delta)",
+      "reads": [
+        "ledger[owner]",
+        "bucket",
+        "index",
+        "delta",
+        "ledger[owner][bucket][index]"
+      ],
+      "writes": [
+        "ledger[owner][bucket][index]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "ledger[owner][bucket][index]",
+        "state_variable": "ledger",
+        "keys": [
+          "owner",
+          "bucket",
+          "index"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[owner][bucket][index]",
+          "state_variable": "ledger",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        },
+        "value": "(ledger[owner][bucket][index] + delta)"
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_12",
+          "eff_14"
+        ],
+        "storage_resolution": {
+          "slot": "valueSlot",
+          "slot_key": "valueSlot__ssa3",
+          "slot_versions": [
+            "valueSlot__ssa3"
+          ],
+          "slot_effect": "eff_12",
+          "parent_target_key": "bucketSlot__ssa2",
+          "keys": [
+            "owner",
+            "bucket",
+            "index"
+          ]
+        }
+      },
+      "function_id": "MultiMappingParity.yulUpdate(address, bytes32, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 11,
+        "operation_order": 13
+      },
+      "anchor_cfg_node": "bb_asm3_n11",
+      "control_predecessors": [
+        "fact_40"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n10"
+      ]
+    }
+  ]
+}

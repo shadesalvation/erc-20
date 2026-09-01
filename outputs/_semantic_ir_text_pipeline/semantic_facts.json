@@ -1,0 +1,937 @@
+{
+  "schema": "s-seir-function-semantic-facts/v3",
+  "source": "tests/fixtures/simple_semantic_ir.sol",
+  "result_dir": "outputs/_semantic_ir_text_pipeline",
+  "model_boundary": {
+    "processing_unit": "function",
+    "fact_granularity": "one_atomic_operation_per_fact",
+    "ordering": "function-level CFG partial order plus block-local operation order",
+    "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter only projects each atom to the common schema.",
+    "yul": "S-SEIR alone analyzes Yul; YulSemanticLifter only projects completed S-SEIR results to the common schema.",
+    "bridge": "SemanticFactBridge restores function-level CFG order and control predecessors after both sources already share one schema."
+  },
+  "function_count": 1,
+  "solidity_fact_count": 3,
+  "yul_fact_count": 4,
+  "fact_count": 7,
+  "solidity_facts": [
+    {
+      "fact_id": "fact_1",
+      "operation_id": "sol_atom_3:state_read:1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "function": "deposit",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "total_1",
+      "rvalue": "total",
+      "reads": [
+        "total"
+      ],
+      "writes": [
+        "total_1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "state_read",
+        "atomic_operation_count": 1,
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3:state_read:1",
+          "source_span": "218:22:slither",
+          "source_expression": "total",
+          "slithir_kind": "StorageRead",
+          "implicit_slithir_operation": true,
+          "physical_reference": "total_1"
+        }
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_2",
+      "operation_id": "sol_atom_3",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "function": "deposit",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "TMP_0",
+      "rvalue": "total_1 + amount_1",
+      "reads": [
+        "total_1",
+        "amount_1"
+      ],
+      "writes": [
+        "TMP_0"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "value_compute",
+        "atomic_operation": "Binary",
+        "atomic_operation_count": 1,
+        "operator": "+",
+        "result_ssa": "TMP_0",
+        "operand_ssa": [
+          "total_1",
+          "amount_1"
+        ],
+        "resolved_operands": [
+          "total",
+          "amount"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "218:22:slither",
+          "source_expression": "total + amount",
+          "slithir_kind": "Binary",
+          "slithir_text": "TMP_0(uint256) = total_1 (c)+ amount_1",
+          "physical_reference": "TMP_0"
+        }
+      },
+      "control_predecessors": [
+        "fact_1"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "operation_id": "sol_atom_4",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "function": "deposit",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "total",
+      "rvalue": "TMP_0",
+      "reads": [
+        "TMP_0"
+      ],
+      "writes": [
+        "total"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "state_write",
+        "atomic_operation_count": 1,
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        },
+        "value": "(total + amount)"
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4",
+          "source_span": "218:22:slither",
+          "source_expression": "total = total + amount",
+          "slithir_kind": "Assignment",
+          "slithir_text": "total_2(uint256) := TMP_0(uint256)",
+          "physical_reference": "total_2"
+        }
+      },
+      "control_predecessors": [
+        "fact_2"
+      ]
+    }
+  ],
+  "yul_facts": [
+    {
+      "fact_id": "fact_4",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "deposit",
+      "fact_role": "support",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "balanceSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "balanceSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "balanceSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 2
+      },
+      "control_predecessors": [
+        "fact_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "deposit",
+      "fact_role": "support",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "balanceSlot",
+      "rvalue": "balances[msg.sender]",
+      "reads": [
+        "msg.sender",
+        "balances.slot"
+      ],
+      "writes": [
+        "balanceSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "balances[msg.sender]",
+          "state_variable": "balances",
+          "keys": [
+            "msg.sender"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_4"
+        ],
+        "physical_reference": "balanceSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "msg.sender"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "balances.slot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "balanceSlot__ssa1",
+          "target_keys": [
+            "balanceSlot__ssa1"
+          ],
+          "base_key": "balances.slot"
+        }
+      },
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 3
+      },
+      "anchor_cfg_node": "bb_asm1_n4",
+      "control_predecessors": [
+        "fact_4"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "deposit",
+      "fact_role": "effect",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "asm_s_3",
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4",
+        "bb_asm1_n5"
+      ],
+      "rvalue": "balances[msg.sender]",
+      "reads": [
+        "balances[msg.sender]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "balances[msg.sender]",
+        "state_variable": "balances",
+        "keys": [
+          "msg.sender"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "balances[msg.sender]",
+          "state_variable": "balances",
+          "keys": [
+            "msg.sender"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_4",
+          "eff_5"
+        ],
+        "storage_resolution": {
+          "slot": "balanceSlot",
+          "slot_key": "balanceSlot__ssa1",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "slot_effect": "eff_4",
+          "keys": [
+            "msg.sender"
+          ]
+        }
+      },
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 6,
+        "operation_order": 4
+      },
+      "anchor_cfg_node": "bb_asm1_n5",
+      "control_predecessors": [
+        "fact_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n4"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "deposit",
+      "fact_role": "effect",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "asm_s_3",
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4",
+        "bb_asm1_n5"
+      ],
+      "lvalue": "balances[msg.sender]",
+      "rvalue": "(balances[msg.sender] + amount)",
+      "reads": [
+        "balances[msg.sender]",
+        "amount"
+      ],
+      "writes": [
+        "balances[msg.sender]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "balances[msg.sender]",
+        "state_variable": "balances",
+        "keys": [
+          "msg.sender"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "balances[msg.sender]",
+          "state_variable": "balances",
+          "keys": [
+            "msg.sender"
+          ]
+        },
+        "value": "(balances[msg.sender] + amount)"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4",
+          "eff_6"
+        ],
+        "storage_resolution": {
+          "slot": "balanceSlot",
+          "slot_key": "balanceSlot__ssa1",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "slot_effect": "eff_4",
+          "keys": [
+            "msg.sender"
+          ]
+        }
+      },
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 6,
+        "operation_order": 5
+      },
+      "anchor_cfg_node": "bb_asm1_n5",
+      "control_predecessors": [
+        "fact_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n4"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact_1",
+      "operation_id": "sol_atom_3:state_read:1",
+      "kind": "StateRead",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "function": "deposit",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "total_1",
+      "rvalue": "total",
+      "reads": [
+        "total"
+      ],
+      "writes": [
+        "total_1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "state_read",
+        "atomic_operation_count": 1,
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        }
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3:state_read:1",
+          "source_span": "218:22:slither",
+          "source_expression": "total",
+          "slithir_kind": "StorageRead",
+          "implicit_slithir_operation": true,
+          "physical_reference": "total_1"
+        }
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_2",
+      "operation_id": "sol_atom_3",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "function": "deposit",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "TMP_0",
+      "rvalue": "total_1 + amount_1",
+      "reads": [
+        "total_1",
+        "amount_1"
+      ],
+      "writes": [
+        "TMP_0"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "value_compute",
+        "atomic_operation": "Binary",
+        "atomic_operation_count": 1,
+        "operator": "+",
+        "result_ssa": "TMP_0",
+        "operand_ssa": [
+          "total_1",
+          "amount_1"
+        ],
+        "resolved_operands": [
+          "total",
+          "amount"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "218:22:slither",
+          "source_expression": "total + amount",
+          "slithir_kind": "Binary",
+          "slithir_text": "TMP_0(uint256) = total_1 (c)+ amount_1",
+          "physical_reference": "TMP_0"
+        }
+      },
+      "control_predecessors": [
+        "fact_1"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "operation_id": "sol_atom_4",
+      "kind": "StateWrite",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "function": "deposit",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "total",
+      "rvalue": "TMP_0",
+      "reads": [
+        "TMP_0"
+      ],
+      "writes": [
+        "total"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 2
+      },
+      "semantic": {
+        "operation": "state_write",
+        "atomic_operation_count": 1,
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        },
+        "value": "(total + amount)"
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4",
+          "source_span": "218:22:slither",
+          "source_expression": "total = total + amount",
+          "slithir_kind": "Assignment",
+          "slithir_text": "total_2(uint256) := TMP_0(uint256)",
+          "physical_reference": "total_2"
+        }
+      },
+      "control_predecessors": [
+        "fact_2"
+      ]
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "deposit",
+      "fact_role": "support",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "balanceSlot",
+      "rvalue": "keccak256(0x00, 0x40)",
+      "writes": [
+        "balanceSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "balanceSlot",
+        "expression": "keccak256(0x00, 0x40)"
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 2
+      },
+      "control_predecessors": [
+        "fact_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "StorageLocationResolve",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "deposit",
+      "fact_role": "support",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4"
+      ],
+      "lvalue": "balanceSlot",
+      "rvalue": "balances[msg.sender]",
+      "reads": [
+        "msg.sender",
+        "balances.slot"
+      ],
+      "writes": [
+        "balanceSlot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "storage_location_resolve",
+        "location": {
+          "kind": "mapping",
+          "access": "balances[msg.sender]",
+          "state_variable": "balances",
+          "keys": [
+            "msg.sender"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "MappingSlot",
+        "effects": [
+          "eff_4"
+        ],
+        "physical_reference": "balanceSlot",
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [
+          {
+            "offset": 0,
+            "offset_expr": "0",
+            "size": 32,
+            "value": "msg.sender"
+          },
+          {
+            "offset": 32,
+            "offset_expr": "32",
+            "size": 32,
+            "value": "balances.slot"
+          }
+        ],
+        "slot_relation": {
+          "target_key": "balanceSlot__ssa1",
+          "target_keys": [
+            "balanceSlot__ssa1"
+          ],
+          "base_key": "balances.slot"
+        }
+      },
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 3
+      },
+      "anchor_cfg_node": "bb_asm1_n4",
+      "control_predecessors": [
+        "fact_4"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "deposit",
+      "fact_role": "effect",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "asm_s_3",
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4",
+        "bb_asm1_n5"
+      ],
+      "rvalue": "balances[msg.sender]",
+      "reads": [
+        "balances[msg.sender]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "balances[msg.sender]",
+        "state_variable": "balances",
+        "keys": [
+          "msg.sender"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "balances[msg.sender]",
+          "state_variable": "balances",
+          "keys": [
+            "msg.sender"
+          ]
+        }
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "MappingRead",
+        "effects": [
+          "eff_4",
+          "eff_5"
+        ],
+        "storage_resolution": {
+          "slot": "balanceSlot",
+          "slot_key": "balanceSlot__ssa1",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "slot_effect": "eff_4",
+          "keys": [
+            "msg.sender"
+          ]
+        }
+      },
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 6,
+        "operation_order": 4
+      },
+      "anchor_cfg_node": "bb_asm1_n5",
+      "control_predecessors": [
+        "fact_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n4"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "deposit",
+      "fact_role": "effect",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "stmt_refs": [
+        "asm_s_3",
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n4",
+        "bb_asm1_n5"
+      ],
+      "lvalue": "balances[msg.sender]",
+      "rvalue": "(balances[msg.sender] + amount)",
+      "reads": [
+        "balances[msg.sender]",
+        "amount"
+      ],
+      "writes": [
+        "balances[msg.sender]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "balances[msg.sender]",
+        "state_variable": "balances",
+        "keys": [
+          "msg.sender"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "balances[msg.sender]",
+          "state_variable": "balances",
+          "keys": [
+            "msg.sender"
+          ]
+        },
+        "value": "(balances[msg.sender] + amount)"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "MappingWrite",
+        "effects": [
+          "eff_4",
+          "eff_6"
+        ],
+        "storage_resolution": {
+          "slot": "balanceSlot",
+          "slot_key": "balanceSlot__ssa1",
+          "slot_versions": [
+            "balanceSlot__ssa1"
+          ],
+          "slot_effect": "eff_4",
+          "keys": [
+            "msg.sender"
+          ]
+        }
+      },
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 6,
+        "operation_order": 5
+      },
+      "anchor_cfg_node": "bb_asm1_n5",
+      "control_predecessors": [
+        "fact_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n4"
+      ]
+    }
+  ]
+}

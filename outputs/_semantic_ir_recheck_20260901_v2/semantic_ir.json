@@ -1,0 +1,1501 @@
+{
+  "schema": "semantic-ir/v2",
+  "source": "tests/fixtures/simple_semantic_ir.sol",
+  "function_count": 1,
+  "functions": [
+    {
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "contract": "SimpleSemanticIR",
+      "function": "deposit",
+      "signature": "deposit(uint256)",
+      "source_statements": [
+        {
+          "stmt_id": "sol_s_1",
+          "lang": "solidity",
+          "text": "total = total + amount",
+          "src": "218:22:0",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "origin": {
+            "nodeType": "ExpressionStatement"
+          }
+        },
+        {
+          "stmt_id": "asm_s_1",
+          "lang": "yul",
+          "text": "mstore(0x00, caller())",
+          "src": "274:22:0",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "block_id": "asm_block_1",
+          "origin": {
+            "nodeType": "YulExpressionStatement",
+            "assembly_block": 1
+          }
+        },
+        {
+          "stmt_id": "asm_s_2",
+          "lang": "yul",
+          "text": "mstore(0x20, balances.slot)",
+          "src": "309:27:0",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "block_id": "asm_block_1",
+          "origin": {
+            "nodeType": "YulExpressionStatement",
+            "assembly_block": 1
+          }
+        },
+        {
+          "stmt_id": "asm_s_3",
+          "lang": "yul",
+          "text": "let balanceSlot := keccak256(0x00, 0x40)",
+          "src": "349:40:0",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "block_id": "asm_block_1",
+          "origin": {
+            "nodeType": "YulVariableDeclaration",
+            "assembly_block": 1
+          }
+        },
+        {
+          "stmt_id": "asm_s_4",
+          "lang": "yul",
+          "text": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+          "src": "402:52:0",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "block_id": "asm_block_1",
+          "origin": {
+            "nodeType": "YulExpressionStatement",
+            "assembly_block": 1
+          }
+        }
+      ],
+      "fact_table": [
+        {
+          "fact_id": "fact_1",
+          "operation_id": "sol_atom_3:state_read:1",
+          "kind": "StateRead",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "function": "deposit",
+          "contract": "SimpleSemanticIR",
+          "signature": "deposit(uint256)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "lvalue": "total_1",
+          "rvalue": "total",
+          "reads": [
+            "total"
+          ],
+          "writes": [
+            "total_1"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 0
+          },
+          "semantic": {
+            "operation": "state_read",
+            "atomic_operation_count": 1,
+            "access": "total",
+            "state_variable": "total",
+            "location": {
+              "kind": "state_variable",
+              "access": "total",
+              "state_variable": "total"
+            }
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_3:state_read:1",
+              "source_span": "218:22:slither",
+              "source_expression": "total",
+              "slithir_kind": "StorageRead",
+              "implicit_slithir_operation": true,
+              "physical_reference": "total_1"
+            }
+          },
+          "control_predecessors": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
+        },
+        {
+          "fact_id": "fact_2",
+          "operation_id": "sol_atom_3",
+          "kind": "ValueCompute",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "support",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "function": "deposit",
+          "contract": "SimpleSemanticIR",
+          "signature": "deposit(uint256)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "lvalue": "TMP_0",
+          "rvalue": "total_1 + amount_1",
+          "reads": [
+            "total_1",
+            "amount_1"
+          ],
+          "writes": [
+            "TMP_0"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 1
+          },
+          "semantic": {
+            "operation": "value_compute",
+            "atomic_operation": "Binary",
+            "atomic_operation_count": 1,
+            "operator": "+",
+            "result_ssa": "TMP_0",
+            "operand_ssa": [
+              "total_1",
+              "amount_1"
+            ],
+            "resolved_operands": [
+              "total",
+              "amount"
+            ],
+            "checked": true,
+            "runtime_operation": true
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_3",
+              "source_span": "218:22:slither",
+              "source_expression": "total + amount",
+              "slithir_kind": "Binary",
+              "slithir_text": "TMP_0(uint256) = total_1 (c)+ amount_1",
+              "physical_reference": "TMP_0"
+            }
+          },
+          "control_predecessors": [
+            "fact_1"
+          ]
+        },
+        {
+          "fact_id": "fact_3",
+          "operation_id": "sol_atom_4",
+          "kind": "StateWrite",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "function": "deposit",
+          "contract": "SimpleSemanticIR",
+          "signature": "deposit(uint256)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "lvalue": "total",
+          "rvalue": "TMP_0",
+          "reads": [
+            "TMP_0"
+          ],
+          "writes": [
+            "total"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 2
+          },
+          "semantic": {
+            "operation": "state_write",
+            "atomic_operation_count": 1,
+            "access": "total",
+            "state_variable": "total",
+            "location": {
+              "kind": "state_variable",
+              "access": "total",
+              "state_variable": "total"
+            },
+            "value": "(total + amount)"
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_4",
+              "source_span": "218:22:slither",
+              "source_expression": "total = total + amount",
+              "slithir_kind": "Assignment",
+              "slithir_text": "total_2(uint256) := TMP_0(uint256)",
+              "physical_reference": "total_2"
+            }
+          },
+          "control_predecessors": [
+            "fact_2"
+          ]
+        },
+        {
+          "fact_id": "fact_4",
+          "kind": "ValueCompute",
+          "source_lang": "yul",
+          "origin": "yul_sseir",
+          "function": "deposit",
+          "fact_role": "support",
+          "contract": "SimpleSemanticIR",
+          "signature": "deposit(uint256)",
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "cfg_nodes": [
+            "bb_asm1_n4"
+          ],
+          "lvalue": "balanceSlot",
+          "rvalue": "keccak256(0x00, 0x40)",
+          "writes": [
+            "balanceSlot"
+          ],
+          "semantic": {
+            "atomic_operation_count": 1,
+            "target": "balanceSlot",
+            "expression": "keccak256(0x00, 0x40)",
+            "expression_normalized": "keccak256(abi.encode(msg.sender, balances.slot))"
+          },
+          "evidence": {
+            "overlay": "ov_5",
+            "overlay_kind": "ExpressionNormalization",
+            "effects": [
+              "eff_3"
+            ]
+          },
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "operation_id": "yul_overlay:ov_5",
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 5,
+            "operation_order": 2
+          },
+          "control_predecessors": [
+            "fact_3"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_asm1_n3"
+          ]
+        },
+        {
+          "fact_id": "fact_5",
+          "kind": "StorageLocationResolve",
+          "source_lang": "yul",
+          "origin": "yul_sseir",
+          "function": "deposit",
+          "fact_role": "support",
+          "contract": "SimpleSemanticIR",
+          "signature": "deposit(uint256)",
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "cfg_nodes": [
+            "bb_asm1_n4"
+          ],
+          "lvalue": "balanceSlot",
+          "rvalue": "balances[msg.sender]",
+          "reads": [
+            "msg.sender",
+            "balances.slot"
+          ],
+          "writes": [
+            "balanceSlot"
+          ],
+          "semantic": {
+            "atomic_operation_count": 1,
+            "operation": "storage_location_resolve",
+            "location": {
+              "kind": "mapping",
+              "access": "balances[msg.sender]",
+              "state_variable": "balances",
+              "keys": [
+                "msg.sender"
+              ]
+            }
+          },
+          "evidence": {
+            "overlay": "ov_1",
+            "overlay_kind": "MappingSlot",
+            "effects": [
+              "eff_4"
+            ],
+            "physical_reference": "balanceSlot",
+            "slot_kind": "mapping_slot",
+            "resolved_inputs": [
+              {
+                "offset": 0,
+                "offset_expr": "0",
+                "size": 32,
+                "value": "msg.sender"
+              },
+              {
+                "offset": 32,
+                "offset_expr": "32",
+                "size": 32,
+                "value": "balances.slot"
+              }
+            ],
+            "slot_relation": {
+              "target_key": "balanceSlot__ssa1",
+              "target_keys": [
+                "balanceSlot__ssa1"
+              ],
+              "base_key": "balances.slot"
+            }
+          },
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "operation_id": "yul_overlay:ov_1",
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 5,
+            "operation_order": 3
+          },
+          "anchor_cfg_node": "bb_asm1_n4",
+          "control_predecessors": [
+            "fact_4"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_asm1_n3"
+          ]
+        },
+        {
+          "fact_id": "fact_6",
+          "kind": "StateRead",
+          "source_lang": "yul",
+          "origin": "yul_sseir",
+          "function": "deposit",
+          "fact_role": "effect",
+          "contract": "SimpleSemanticIR",
+          "signature": "deposit(uint256)",
+          "stmt_refs": [
+            "asm_s_3",
+            "asm_s_4"
+          ],
+          "cfg_nodes": [
+            "bb_asm1_n4",
+            "bb_asm1_n5"
+          ],
+          "lvalue": "__sseir_eval_asm_s_4_1",
+          "rvalue": "balances[msg.sender]",
+          "reads": [
+            "balances[msg.sender]"
+          ],
+          "semantic": {
+            "atomic_operation_count": 1,
+            "operation": "state_read",
+            "access": "balances[msg.sender]",
+            "state_variable": "balances",
+            "keys": [
+              "msg.sender"
+            ],
+            "location": {
+              "kind": "mapping",
+              "access": "balances[msg.sender]",
+              "state_variable": "balances",
+              "keys": [
+                "msg.sender"
+              ]
+            }
+          },
+          "evidence": {
+            "overlay": "ov_3",
+            "overlay_kind": "MappingRead",
+            "effects": [
+              "eff_4",
+              "eff_5"
+            ],
+            "storage_resolution": {
+              "slot": "balanceSlot",
+              "slot_key": "balanceSlot__ssa1",
+              "slot_versions": [
+                "balanceSlot__ssa1"
+              ],
+              "slot_effect": "eff_4",
+              "keys": [
+                "msg.sender"
+              ]
+            }
+          },
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "operation_id": "yul_overlay:ov_3",
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 6,
+            "operation_order": 4
+          },
+          "anchor_cfg_node": "bb_asm1_n5",
+          "control_predecessors": [
+            "fact_5"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_asm1_n4"
+          ]
+        },
+        {
+          "fact_id": "fact_7",
+          "kind": "StateWrite",
+          "source_lang": "yul",
+          "origin": "yul_sseir",
+          "function": "deposit",
+          "fact_role": "effect",
+          "contract": "SimpleSemanticIR",
+          "signature": "deposit(uint256)",
+          "stmt_refs": [
+            "asm_s_3",
+            "asm_s_4"
+          ],
+          "cfg_nodes": [
+            "bb_asm1_n4",
+            "bb_asm1_n5"
+          ],
+          "lvalue": "balances[msg.sender]",
+          "rvalue": "(balances[msg.sender] + amount)",
+          "reads": [
+            "balances[msg.sender]",
+            "amount"
+          ],
+          "writes": [
+            "balances[msg.sender]"
+          ],
+          "semantic": {
+            "atomic_operation_count": 1,
+            "operation": "state_write",
+            "access": "balances[msg.sender]",
+            "state_variable": "balances",
+            "keys": [
+              "msg.sender"
+            ],
+            "location": {
+              "kind": "mapping",
+              "access": "balances[msg.sender]",
+              "state_variable": "balances",
+              "keys": [
+                "msg.sender"
+              ]
+            },
+            "value": "(balances[msg.sender] + amount)"
+          },
+          "evidence": {
+            "overlay": "ov_4",
+            "overlay_kind": "MappingWrite",
+            "effects": [
+              "eff_4",
+              "eff_6"
+            ],
+            "storage_resolution": {
+              "slot": "balanceSlot",
+              "slot_key": "balanceSlot__ssa1",
+              "slot_versions": [
+                "balanceSlot__ssa1"
+              ],
+              "slot_effect": "eff_4",
+              "keys": [
+                "msg.sender"
+              ]
+            }
+          },
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "operation_id": "yul_overlay:ov_4",
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 6,
+            "operation_order": 5
+          },
+          "anchor_cfg_node": "bb_asm1_n5",
+          "control_predecessors": [
+            "fact_6"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_asm1_n4"
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "instructions": [],
+          "terminator": {
+            "kind": "Goto",
+            "targets": [
+              "bb_sol_slither_n1"
+            ],
+            "execution_values": [],
+            "normalized_values": [],
+            "values": [],
+            "origin_facts": [],
+            "stmt_refs": [],
+            "attrs": {
+              "edge_kind": "fallthrough"
+            },
+            "rewrite_history": []
+          },
+          "predecessors": [],
+          "successors": [
+            "bb_sol_slither_n1"
+          ],
+          "stmt_refs": [],
+          "attrs": {
+            "source_terminator": {
+              "kind": "Fallthrough",
+              "text": "entrypoint"
+            },
+            "source_attrs": {
+              "src": "208:262:slither",
+              "text": "entrypoint",
+              "slither_node_type": "NodeType.ENTRYPOINT"
+            }
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "instructions": [
+            {
+              "instruction_id": "ir_1",
+              "op": "StateRead",
+              "result": "total_1",
+              "result_value": "value:total_1#1",
+              "execution_expr": "expr_1",
+              "normalized_expr": "expr_1",
+              "expression": "expr_1",
+              "location": "loc_1",
+              "execution_arguments": [],
+              "normalized_arguments": [],
+              "arguments": [],
+              "source_languages": [
+                "solidity"
+              ],
+              "origin_facts": [
+                "fact_1"
+              ],
+              "origin_effects": [],
+              "stmt_refs": [
+                "sol_s_1"
+              ],
+              "attrs": {
+                "fact_kind": "StateRead",
+                "semantic": {
+                  "operation": "state_read",
+                  "atomic_operation_count": 1,
+                  "access": "total",
+                  "state_variable": "total",
+                  "location": {
+                    "kind": "state_variable",
+                    "access": "total",
+                    "state_variable": "total"
+                  }
+                },
+                "guard_conditions": [],
+                "order": {
+                  "kind": "cfg_partial_order",
+                  "cfg_block_order": 1,
+                  "operation_order": 0
+                }
+              },
+              "rewrite_history": []
+            },
+            {
+              "instruction_id": "ir_2",
+              "op": "Assign",
+              "result": "TMP_0",
+              "result_value": "value:TMP_0#1",
+              "execution_expr": "expr_4",
+              "normalized_expr": "expr_4",
+              "expression": "expr_4",
+              "execution_arguments": [],
+              "normalized_arguments": [],
+              "arguments": [],
+              "source_languages": [
+                "solidity"
+              ],
+              "origin_facts": [
+                "fact_2"
+              ],
+              "origin_effects": [],
+              "stmt_refs": [
+                "sol_s_1"
+              ],
+              "attrs": {
+                "fact_kind": "ValueCompute",
+                "semantic": {
+                  "operation": "value_compute",
+                  "atomic_operation": "Binary",
+                  "atomic_operation_count": 1,
+                  "operator": "+",
+                  "result_ssa": "TMP_0",
+                  "operand_ssa": [
+                    "total_1",
+                    "amount_1"
+                  ],
+                  "resolved_operands": [
+                    "total",
+                    "amount"
+                  ],
+                  "checked": true,
+                  "runtime_operation": true
+                },
+                "guard_conditions": [],
+                "order": {
+                  "kind": "cfg_partial_order",
+                  "cfg_block_order": 1,
+                  "operation_order": 1
+                }
+              },
+              "rewrite_history": []
+            },
+            {
+              "instruction_id": "ir_3",
+              "op": "StateWrite",
+              "execution_expr": "expr_5",
+              "normalized_expr": "expr_7",
+              "expression": "expr_7",
+              "location": "loc_1",
+              "execution_arguments": [],
+              "normalized_arguments": [],
+              "arguments": [],
+              "source_languages": [
+                "solidity"
+              ],
+              "origin_facts": [
+                "fact_3"
+              ],
+              "origin_effects": [],
+              "stmt_refs": [
+                "sol_s_1"
+              ],
+              "attrs": {
+                "fact_kind": "StateWrite",
+                "semantic": {
+                  "operation": "state_write",
+                  "atomic_operation_count": 1,
+                  "access": "total",
+                  "state_variable": "total",
+                  "location": {
+                    "kind": "state_variable",
+                    "access": "total",
+                    "state_variable": "total"
+                  },
+                  "value": "(total + amount)"
+                },
+                "guard_conditions": [],
+                "order": {
+                  "kind": "cfg_partial_order",
+                  "cfg_block_order": 1,
+                  "operation_order": 2
+                }
+              },
+              "rewrite_history": []
+            }
+          ],
+          "terminator": {
+            "kind": "Goto",
+            "targets": [
+              "bb_asm1_n0"
+            ],
+            "execution_values": [],
+            "normalized_values": [],
+            "values": [],
+            "origin_facts": [],
+            "stmt_refs": [],
+            "attrs": {
+              "edge_kind": "fallthrough"
+            },
+            "rewrite_history": []
+          },
+          "predecessors": [
+            "bb_sol_slither_n0"
+          ],
+          "successors": [
+            "bb_asm1_n0"
+          ],
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "attrs": {
+            "source_terminator": {
+              "kind": "Fallthrough",
+              "text": "total = total + amount"
+            },
+            "source_attrs": {
+              "src": "218:22:slither",
+              "text": "total = total + amount",
+              "slither_node_type": "NodeType.EXPRESSION"
+            }
+          }
+        },
+        {
+          "block_id": "bb_asm1_n0",
+          "kind": "yul",
+          "instructions": [],
+          "terminator": {
+            "kind": "Goto",
+            "targets": [
+              "bb_asm1_n2"
+            ],
+            "execution_values": [],
+            "normalized_values": [],
+            "values": [],
+            "origin_facts": [],
+            "stmt_refs": [],
+            "attrs": {
+              "edge_kind": "next"
+            },
+            "rewrite_history": []
+          },
+          "predecessors": [
+            "bb_sol_slither_n1"
+          ],
+          "successors": [
+            "bb_asm1_n2"
+          ],
+          "stmt_refs": [],
+          "attrs": {
+            "source_terminator": {
+              "kind": "YulNode",
+              "text": "entry",
+              "node_kind": "entry"
+            },
+            "source_attrs": {
+              "src": "",
+              "text": "entry",
+              "node_id": 0,
+              "node_kind": "entry",
+              "function_loop_context": []
+            }
+          }
+        },
+        {
+          "block_id": "bb_asm1_n1",
+          "kind": "yul",
+          "instructions": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "targets": [],
+            "execution_values": [],
+            "normalized_values": [],
+            "values": [],
+            "origin_facts": [],
+            "stmt_refs": [],
+            "attrs": {
+              "source": {
+                "kind": "YulNode",
+                "text": "exit",
+                "node_kind": "exit"
+              }
+            },
+            "rewrite_history": []
+          },
+          "predecessors": [
+            "bb_asm1_n5"
+          ],
+          "successors": [],
+          "stmt_refs": [],
+          "attrs": {
+            "source_terminator": {
+              "kind": "YulNode",
+              "text": "exit",
+              "node_kind": "exit"
+            },
+            "source_attrs": {
+              "src": "",
+              "text": "exit",
+              "node_id": 1,
+              "node_kind": "exit",
+              "function_loop_context": []
+            }
+          }
+        },
+        {
+          "block_id": "bb_asm1_n2",
+          "kind": "yul",
+          "instructions": [],
+          "terminator": {
+            "kind": "Goto",
+            "targets": [
+              "bb_asm1_n3"
+            ],
+            "execution_values": [],
+            "normalized_values": [],
+            "values": [],
+            "origin_facts": [],
+            "stmt_refs": [],
+            "attrs": {
+              "edge_kind": "next"
+            },
+            "rewrite_history": []
+          },
+          "predecessors": [
+            "bb_asm1_n0"
+          ],
+          "successors": [
+            "bb_asm1_n3"
+          ],
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "attrs": {
+            "source_terminator": {
+              "kind": "YulNode",
+              "text": "mstore(0x00, caller())",
+              "node_kind": "statement"
+            },
+            "source_attrs": {
+              "src": "274:22:0",
+              "text": "mstore(0x00, caller())",
+              "node_id": 2,
+              "node_kind": "statement",
+              "function_loop_context": []
+            }
+          }
+        },
+        {
+          "block_id": "bb_asm1_n3",
+          "kind": "yul",
+          "instructions": [],
+          "terminator": {
+            "kind": "Goto",
+            "targets": [
+              "bb_asm1_n4"
+            ],
+            "execution_values": [],
+            "normalized_values": [],
+            "values": [],
+            "origin_facts": [],
+            "stmt_refs": [],
+            "attrs": {
+              "edge_kind": "next"
+            },
+            "rewrite_history": []
+          },
+          "predecessors": [
+            "bb_asm1_n2"
+          ],
+          "successors": [
+            "bb_asm1_n4"
+          ],
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "attrs": {
+            "source_terminator": {
+              "kind": "YulNode",
+              "text": "mstore(0x20, balances.slot)",
+              "node_kind": "statement"
+            },
+            "source_attrs": {
+              "src": "309:27:0",
+              "text": "mstore(0x20, balances.slot)",
+              "node_id": 3,
+              "node_kind": "statement",
+              "function_loop_context": []
+            }
+          }
+        },
+        {
+          "block_id": "bb_asm1_n4",
+          "kind": "yul",
+          "instructions": [],
+          "terminator": {
+            "kind": "Goto",
+            "targets": [
+              "bb_asm1_n5"
+            ],
+            "execution_values": [],
+            "normalized_values": [],
+            "values": [],
+            "origin_facts": [],
+            "stmt_refs": [],
+            "attrs": {
+              "edge_kind": "next"
+            },
+            "rewrite_history": []
+          },
+          "predecessors": [
+            "bb_asm1_n3"
+          ],
+          "successors": [
+            "bb_asm1_n5"
+          ],
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "attrs": {
+            "source_terminator": {
+              "kind": "YulNode",
+              "text": "let balanceSlot := keccak256(0x00, 0x40)",
+              "node_kind": "statement"
+            },
+            "source_attrs": {
+              "src": "349:40:0",
+              "text": "let balanceSlot := keccak256(0x00, 0x40)",
+              "node_id": 4,
+              "node_kind": "statement",
+              "function_loop_context": []
+            }
+          }
+        },
+        {
+          "block_id": "bb_asm1_n5",
+          "kind": "yul",
+          "instructions": [
+            {
+              "instruction_id": "ir_4",
+              "op": "StateRead",
+              "result": "__sseir_eval_asm_s_4_1",
+              "result_value": "value:__sseir_eval_asm_s_4_1#1",
+              "execution_expr": "expr_11",
+              "normalized_expr": "expr_14",
+              "expression": "expr_14",
+              "location": "loc_2",
+              "execution_arguments": [],
+              "normalized_arguments": [],
+              "arguments": [],
+              "source_languages": [
+                "yul"
+              ],
+              "origin_facts": [
+                "fact_6",
+                "fact_5",
+                "fact_4"
+              ],
+              "origin_effects": [
+                "eff_4",
+                "eff_5"
+              ],
+              "stmt_refs": [
+                "asm_s_3",
+                "asm_s_4"
+              ],
+              "attrs": {
+                "fact_kind": "StateRead",
+                "semantic": {
+                  "atomic_operation_count": 1,
+                  "operation": "state_read",
+                  "access": "balances[msg.sender]",
+                  "state_variable": "balances",
+                  "keys": [
+                    "msg.sender"
+                  ],
+                  "location": {
+                    "kind": "mapping",
+                    "access": "balances[msg.sender]",
+                    "state_variable": "balances",
+                    "keys": [
+                      "msg.sender"
+                    ]
+                  }
+                },
+                "guard_conditions": [],
+                "order": {
+                  "kind": "cfg_partial_order",
+                  "cfg_block_order": 6,
+                  "operation_order": 4
+                }
+              },
+              "rewrite_history": []
+            },
+            {
+              "instruction_id": "ir_5",
+              "op": "StateWrite",
+              "execution_expr": "expr_16",
+              "normalized_expr": "expr_17",
+              "expression": "expr_17",
+              "location": "loc_2",
+              "execution_arguments": [],
+              "normalized_arguments": [],
+              "arguments": [],
+              "source_languages": [
+                "yul"
+              ],
+              "origin_facts": [
+                "fact_7",
+                "fact_5",
+                "fact_4"
+              ],
+              "origin_effects": [
+                "eff_4",
+                "eff_6"
+              ],
+              "stmt_refs": [
+                "asm_s_3",
+                "asm_s_4"
+              ],
+              "attrs": {
+                "fact_kind": "StateWrite",
+                "semantic": {
+                  "atomic_operation_count": 1,
+                  "operation": "state_write",
+                  "access": "balances[msg.sender]",
+                  "state_variable": "balances",
+                  "keys": [
+                    "msg.sender"
+                  ],
+                  "location": {
+                    "kind": "mapping",
+                    "access": "balances[msg.sender]",
+                    "state_variable": "balances",
+                    "keys": [
+                      "msg.sender"
+                    ]
+                  },
+                  "value": "(balances[msg.sender] + amount)"
+                },
+                "guard_conditions": [],
+                "order": {
+                  "kind": "cfg_partial_order",
+                  "cfg_block_order": 6,
+                  "operation_order": 5
+                }
+              },
+              "rewrite_history": []
+            }
+          ],
+          "terminator": {
+            "kind": "Goto",
+            "targets": [
+              "bb_asm1_n1"
+            ],
+            "execution_values": [],
+            "normalized_values": [],
+            "values": [],
+            "origin_facts": [],
+            "stmt_refs": [],
+            "attrs": {
+              "edge_kind": "next"
+            },
+            "rewrite_history": []
+          },
+          "predecessors": [
+            "bb_asm1_n4"
+          ],
+          "successors": [
+            "bb_asm1_n1"
+          ],
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "attrs": {
+            "source_terminator": {
+              "kind": "YulNode",
+              "text": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+              "node_kind": "statement"
+            },
+            "source_attrs": {
+              "src": "402:52:0",
+              "text": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+              "node_id": 5,
+              "node_kind": "statement",
+              "function_loop_context": []
+            }
+          }
+        }
+      ],
+      "edges": [
+        {
+          "source": "bb_asm1_n0",
+          "target": "bb_asm1_n2",
+          "kind": "next"
+        },
+        {
+          "source": "bb_asm1_n2",
+          "target": "bb_asm1_n3",
+          "kind": "next"
+        },
+        {
+          "source": "bb_asm1_n3",
+          "target": "bb_asm1_n4",
+          "kind": "next"
+        },
+        {
+          "source": "bb_asm1_n4",
+          "target": "bb_asm1_n5",
+          "kind": "next"
+        },
+        {
+          "source": "bb_asm1_n5",
+          "target": "bb_asm1_n1",
+          "kind": "next"
+        },
+        {
+          "source": "bb_sol_slither_n0",
+          "target": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "source": "bb_sol_slither_n1",
+          "target": "bb_asm1_n0",
+          "kind": "fallthrough"
+        }
+      ],
+      "expressions": [
+        {
+          "expr_id": "expr_1",
+          "kind": "Variable",
+          "operands": [],
+          "name": "total",
+          "raw": "total",
+          "origin_facts": [
+            "fact_1",
+            "fact_3"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_2",
+          "kind": "Variable",
+          "operands": [],
+          "name": "total_1",
+          "raw": "total_1",
+          "origin_facts": [
+            "fact_2"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_3",
+          "kind": "Variable",
+          "operands": [],
+          "name": "amount_1",
+          "raw": "amount_1",
+          "origin_facts": [
+            "fact_2"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_4",
+          "kind": "Add",
+          "operands": [
+            "expr_2",
+            "expr_3"
+          ],
+          "operator": "+",
+          "origin_facts": [
+            "fact_2"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_5",
+          "kind": "Variable",
+          "operands": [],
+          "name": "TMP_0",
+          "raw": "TMP_0",
+          "origin_facts": [
+            "fact_3"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_6",
+          "kind": "Variable",
+          "operands": [],
+          "name": "amount",
+          "raw": "amount",
+          "origin_facts": [
+            "fact_3",
+            "fact_7",
+            "fact_5",
+            "fact_4"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_7",
+          "kind": "Add",
+          "operands": [
+            "expr_1",
+            "expr_6"
+          ],
+          "operator": "+",
+          "origin_facts": [
+            "fact_3"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_8",
+          "kind": "Constant",
+          "operands": [],
+          "value": 0,
+          "raw": "0x00",
+          "origin_facts": [
+            "fact_6",
+            "fact_5",
+            "fact_4"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_9",
+          "kind": "Constant",
+          "operands": [],
+          "value": 64,
+          "raw": "0x40",
+          "origin_facts": [
+            "fact_6",
+            "fact_5",
+            "fact_4"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_10",
+          "kind": "Keccak",
+          "operands": [
+            "expr_8",
+            "expr_9"
+          ],
+          "callee": "keccak256",
+          "raw": "keccak256(0x00, 0x40)",
+          "origin_facts": [
+            "fact_6",
+            "fact_5",
+            "fact_4"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_11",
+          "kind": "Call",
+          "operands": [
+            "expr_10"
+          ],
+          "callee": "sload",
+          "raw": "sload(balanceSlot)",
+          "origin_facts": [
+            "fact_6",
+            "fact_5",
+            "fact_4"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_12",
+          "kind": "Variable",
+          "operands": [],
+          "name": "balances",
+          "raw": "balances",
+          "origin_facts": [
+            "fact_6",
+            "fact_5",
+            "fact_4",
+            "fact_7"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_13",
+          "kind": "Variable",
+          "operands": [],
+          "name": "msg.sender",
+          "raw": "msg.sender",
+          "origin_facts": [
+            "fact_6",
+            "fact_5",
+            "fact_4",
+            "fact_7"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_14",
+          "kind": "Index",
+          "operands": [
+            "expr_12",
+            "expr_13"
+          ],
+          "raw": "balances[msg.sender]",
+          "origin_facts": [
+            "fact_6",
+            "fact_5",
+            "fact_4",
+            "fact_7"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_15",
+          "kind": "Variable",
+          "operands": [],
+          "name": "__sseir_eval_asm_s_4_1",
+          "raw": "__sseir_eval_asm_s_4_1",
+          "origin_facts": [
+            "fact_7",
+            "fact_5",
+            "fact_4"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_16",
+          "kind": "Add",
+          "operands": [
+            "expr_15",
+            "expr_6"
+          ],
+          "callee": "add",
+          "raw": "add(__sseir_eval_asm_s_4_1, amount)",
+          "origin_facts": [
+            "fact_7",
+            "fact_5",
+            "fact_4"
+          ],
+          "rewrite_history": []
+        },
+        {
+          "expr_id": "expr_17",
+          "kind": "Add",
+          "operands": [
+            "expr_14",
+            "expr_6"
+          ],
+          "operator": "+",
+          "origin_facts": [
+            "fact_7",
+            "fact_5",
+            "fact_4"
+          ],
+          "rewrite_history": []
+        }
+      ],
+      "locations": [
+        {
+          "location_id": "loc_1",
+          "kind": "StateVariableLocation",
+          "base": "total",
+          "keys": [],
+          "access": "total",
+          "origin_facts": [
+            "fact_1",
+            "fact_3"
+          ],
+          "attrs": {
+            "identity": "{\"access\": \"total\", \"base\": \"total\", \"keys\": [], \"kind\": \"StateVariableLocation\", \"slot\": null}",
+            "source_kind": "state_variable"
+          },
+          "rewrite_history": []
+        },
+        {
+          "location_id": "loc_2",
+          "kind": "MappingLocation",
+          "base": "balances",
+          "keys": [
+            "expr_13"
+          ],
+          "access": "balances[msg.sender]",
+          "origin_facts": [
+            "fact_6",
+            "fact_5",
+            "fact_4",
+            "fact_7"
+          ],
+          "attrs": {
+            "identity": "{\"access\": \"balances[msg.sender]\", \"base\": \"balances\", \"keys\": [\"expr_13\"], \"kind\": \"MappingLocation\", \"slot\": null}",
+            "source_kind": "mapping"
+          },
+          "rewrite_history": []
+        }
+      ],
+      "def_use": [
+        {
+          "value_id": "value:total_1#1",
+          "name": "total_1",
+          "definition": "ir_1",
+          "uses": [
+            "ir_2"
+          ]
+        },
+        {
+          "value_id": "input:total",
+          "name": "total",
+          "uses": [
+            "ir_1"
+          ]
+        },
+        {
+          "value_id": "value:TMP_0#1",
+          "name": "TMP_0",
+          "definition": "ir_2",
+          "uses": [
+            "ir_3"
+          ]
+        },
+        {
+          "value_id": "input:amount_1",
+          "name": "amount_1",
+          "uses": [
+            "ir_2"
+          ]
+        },
+        {
+          "value_id": "value:__sseir_eval_asm_s_4_1#1",
+          "name": "__sseir_eval_asm_s_4_1",
+          "definition": "ir_4",
+          "uses": [
+            "ir_5"
+          ]
+        },
+        {
+          "value_id": "input:msg.sender",
+          "name": "msg.sender",
+          "uses": [
+            "ir_4",
+            "ir_5"
+          ]
+        },
+        {
+          "value_id": "input:amount",
+          "name": "amount",
+          "uses": [
+            "ir_5"
+          ]
+        }
+      ],
+      "fact_groups": [
+        {
+          "group_id": "group_1",
+          "primary_fact": "fact_6",
+          "support_facts": [
+            "fact_5",
+            "fact_4"
+          ],
+          "reason": "support_fact_fused_into_effect"
+        },
+        {
+          "group_id": "group_2",
+          "primary_fact": "fact_7",
+          "support_facts": [
+            "fact_5",
+            "fact_4"
+          ],
+          "reason": "support_fact_fused_into_effect"
+        }
+      ],
+      "unplaced_facts": [],
+      "rewrite_history": [],
+      "diagnostics": []
+    }
+  ],
+  "diagnostics": []
+}

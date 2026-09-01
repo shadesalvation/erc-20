@@ -1,0 +1,3564 @@
+{
+  "schema": "s-seir-solidity-atomic-operations/v2",
+  "source": "人工构造样例/07_内联Assembly_memorysafe_Yul操作/contracts/AssemblyERC20.sol",
+  "function_count": 9,
+  "operation_count": 39,
+  "functions": [
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "AssemblyERC20.constructor(uint256)",
+      "contract": "AssemblyERC20",
+      "function": "constructor",
+      "signature": "constructor(uint256)",
+      "operation_count": 6,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "Assignment",
+          "text": "totalSupply_1(uint256) := initialSupply_1(uint256)",
+          "ssa": true,
+          "source_expression": "totalSupply = initialSupply",
+          "lvalue": {
+            "kind": "StateIRVariable",
+            "text": "totalSupply_1",
+            "name": "totalSupply",
+            "base_name": "totalSupply",
+            "type": "uint256",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "rvalue": {
+            "kind": "LocalIRVariable",
+            "text": "initialSupply_1",
+            "name": "initialSupply",
+            "base_name": "initialSupply",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "initialSupply_1",
+              "name": "initialSupply",
+              "base_name": "initialSupply",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "565:27:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "StateWrite",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "totalSupply",
+          "result_ssa": "totalSupply_1",
+          "expression": "initialSupply",
+          "resolved_reads": [
+            "initialSupply"
+          ],
+          "writes": [
+            "totalSupply"
+          ],
+          "storage_access": {
+            "access": "totalSupply",
+            "state_variable": "totalSupply",
+            "keys": [],
+            "reference_kind": "state_variable",
+            "type": "uint256"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 0,
+          "kind": "Index",
+          "text": "REF_0(uint256) -> balanceOf_0[msg.sender]",
+          "ssa": true,
+          "source_expression": "balanceOf[msg.sender]",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_0",
+            "name": "REF_0",
+            "base_name": "REF_0",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "StateIRVariable",
+            "text": "balanceOf_0",
+            "name": "balanceOf",
+            "base_name": "balanceOf",
+            "type": "mapping(address => uint256)",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "SolidityVariableComposed",
+            "text": "msg.sender",
+            "name": "msg.sender",
+            "base_name": "msg.sender",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": true
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "balanceOf_0",
+              "name": "balanceOf",
+              "base_name": "balanceOf",
+              "type": "mapping(address => uint256)",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_2",
+          "sequence": 2,
+          "block_order": 2,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n2",
+          "cfg_node_id": 2,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "602:37:slither",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ReferenceAccess",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_0",
+          "result_ssa": "REF_0",
+          "expression": "balanceOf[msg.sender]",
+          "resolved_reads": [
+            "balanceOf",
+            "msg.sender"
+          ],
+          "writes": [
+            "REF_0"
+          ],
+          "reference_definition": {
+            "access": "balanceOf[msg.sender]",
+            "state_variable": "balanceOf",
+            "keys": [
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
+            "type": "uint256"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 1,
+          "kind": "Phi",
+          "text": "balanceOf_1(mapping(address => uint256)) := ϕ(['balanceOf_0'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "StateIRVariable",
+            "text": "balanceOf_1",
+            "name": "balanceOf",
+            "base_name": "balanceOf",
+            "type": "mapping(address => uint256)",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "balanceOf_0",
+              "name": "balanceOf",
+              "base_name": "balanceOf",
+              "type": "mapping(address => uint256)",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "phi_origin_nodes": [
+            {
+              "node_id": 2,
+              "node_type": "NodeType.EXPRESSION",
+              "function": "AssemblyERC20.constructor(uint256)"
+            }
+          ],
+          "phi_callback": false,
+          "atom_id": "sol_atom_3",
+          "sequence": 3,
+          "block_order": 2,
+          "operation_order": 1,
+          "cfg_block_id": "bb_sol_slither_n2",
+          "cfg_node_id": 2,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "602:37:slither",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result": "balanceOf",
+          "result_ssa": "balanceOf_1",
+          "expression": "balanceOf",
+          "resolved_reads": [
+            "balanceOf"
+          ],
+          "writes": [
+            "balanceOf"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ],
+          "phi_scope": "function",
+          "phi_role": "mutation_version",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_2"
+        },
+        {
+          "order": 2,
+          "kind": "Assignment",
+          "text": "REF_0(uint256) (->balanceOf_1) := initialSupply_1(uint256)",
+          "ssa": true,
+          "source_expression": "balanceOf[msg.sender] = initialSupply",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_0",
+            "name": "REF_0",
+            "base_name": "REF_0",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "rvalue": {
+            "kind": "LocalIRVariable",
+            "text": "initialSupply_1",
+            "name": "initialSupply",
+            "base_name": "initialSupply",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "initialSupply_1",
+              "name": "initialSupply",
+              "base_name": "initialSupply",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_4",
+          "sequence": 4,
+          "block_order": 2,
+          "operation_order": 2,
+          "cfg_block_id": "bb_sol_slither_n2",
+          "cfg_node_id": 2,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "602:37:slither",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "StateWrite",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_0",
+          "result_ssa": "REF_0",
+          "expression": "initialSupply",
+          "resolved_reads": [
+            "initialSupply"
+          ],
+          "writes": [
+            "balanceOf[msg.sender]"
+          ],
+          "storage_access": {
+            "access": "balanceOf[msg.sender]",
+            "state_variable": "balanceOf",
+            "keys": [
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
+            "type": "uint256"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_3"
+        },
+        {
+          "order": 0,
+          "kind": "TypeConversion",
+          "text": "TMP_0 = CONVERT 0 to address",
+          "ssa": true,
+          "source_expression": "address(0)",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_0",
+            "name": "TMP_0",
+            "base_name": "TMP_0",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable": {
+            "kind": "Constant",
+            "text": "0",
+            "name": "0",
+            "base_name": "0",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": true,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "Constant",
+              "text": "0",
+              "name": "0",
+              "base_name": "0",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "operator": "address",
+          "checked": true,
+          "atom_id": "sol_atom_5",
+          "sequence": 5,
+          "block_order": 3,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "649:52:slither",
+          "stmt_refs": [
+            "sol_s_3"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ValueCompute",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_0",
+          "result_ssa": "TMP_0",
+          "expression": "address(0)",
+          "resolved_reads": [
+            "0"
+          ],
+          "writes": [
+            "TMP_0"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 1,
+          "kind": "EventCall",
+          "text": "Emit Transfer(TMP_0,msg.sender,initialSupply_1)",
+          "ssa": true,
+          "source_expression": "Transfer(address(0),msg.sender,initialSupply)",
+          "read": [
+            {
+              "kind": "TemporaryVariableSSA",
+              "text": "TMP_0",
+              "name": "TMP_0",
+              "base_name": "TMP_0",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "initialSupply_1",
+              "name": "initialSupply",
+              "base_name": "initialSupply",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "arguments": [
+            {
+              "kind": "TemporaryVariableSSA",
+              "text": "TMP_0",
+              "name": "TMP_0",
+              "base_name": "TMP_0",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "initialSupply_1",
+              "name": "initialSupply",
+              "base_name": "initialSupply",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "name": "Transfer",
+          "atom_id": "sol_atom_6",
+          "sequence": 6,
+          "block_order": 3,
+          "operation_order": 1,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "649:52:slither",
+          "stmt_refs": [
+            "sol_s_3"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "EventEmit",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "Transfer(address(0),msg.sender,initialSupply)",
+          "resolved_reads": [
+            "address(0)",
+            "msg.sender",
+            "initialSupply"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_5"
+          ],
+          "previous_atom_id": "sol_atom_5"
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "AssemblyERC20.transfer(address, uint256)",
+      "contract": "AssemblyERC20",
+      "function": "transfer",
+      "signature": "transfer(address, uint256)",
+      "operation_count": 2,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "InternalCall",
+          "text": "INTERNAL_CALL, AssemblyERC20._assemblyMove(address,address,uint256)(msg.sender,to_1,value_1)",
+          "ssa": true,
+          "source_expression": "_assemblyMove(msg.sender,to,value)",
+          "read": [
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "to_1",
+              "name": "to",
+              "base_name": "to",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "arguments": [
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "to_1",
+              "name": "to",
+              "base_name": "to",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "function": {
+            "kind": "FunctionContract",
+            "name": "_assemblyMove",
+            "full_name": "_assemblyMove(address,address,uint256)",
+            "canonical_name": "AssemblyERC20._assemblyMove(address,address,uint256)",
+            "contract": "AssemblyERC20"
+          },
+          "function_name": "_assemblyMove",
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "793:36:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "Call",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "_assemblyMove(msg.sender,to,value)",
+          "resolved_reads": [
+            "msg.sender",
+            "to",
+            "value"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 0,
+          "kind": "Return",
+          "text": "RETURN True",
+          "ssa": true,
+          "source_expression": "true",
+          "read": [
+            {
+              "kind": "Constant",
+              "text": "True",
+              "name": "True",
+              "base_name": "True",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "values": [
+            {
+              "kind": "Constant",
+              "text": "True",
+              "name": "True",
+              "base_name": "True",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_2",
+          "sequence": 2,
+          "block_order": 2,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n2",
+          "cfg_node_id": 2,
+          "cfg_node_type": "NodeType.RETURN",
+          "source_span": "839:11:slither",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "Return",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "True",
+          "resolved_reads": [
+            "True"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ],
+          "depends_on_atoms": []
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "AssemblyERC20.approve(address, uint256)",
+      "contract": "AssemblyERC20",
+      "function": "approve",
+      "signature": "approve(address, uint256)",
+      "operation_count": 6,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "Index",
+          "text": "REF_1(mapping(address => uint256)) -> allowance_0[msg.sender]",
+          "ssa": true,
+          "source_expression": "allowance[msg.sender]",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_1",
+            "name": "REF_1",
+            "base_name": "REF_1",
+            "type": "mapping(address => uint256)",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "StateIRVariable",
+            "text": "allowance_0",
+            "name": "allowance",
+            "base_name": "allowance",
+            "type": "mapping(address => mapping(address => uint256))",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "SolidityVariableComposed",
+            "text": "msg.sender",
+            "name": "msg.sender",
+            "base_name": "msg.sender",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": true
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "allowance_0",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "mapping(address => mapping(address => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "946:38:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ReferenceAccess",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_1",
+          "result_ssa": "REF_1",
+          "expression": "allowance[msg.sender]",
+          "resolved_reads": [
+            "allowance",
+            "msg.sender"
+          ],
+          "writes": [
+            "REF_1"
+          ],
+          "reference_definition": {
+            "access": "allowance[msg.sender]",
+            "state_variable": "allowance",
+            "keys": [
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => mapping(address => uint256))",
+            "type": "mapping(address => uint256)"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 1,
+          "kind": "Index",
+          "text": "REF_2(uint256) -> REF_1[spender_1]",
+          "ssa": true,
+          "source_expression": "allowance[msg.sender][spender]",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_2",
+            "name": "REF_2",
+            "base_name": "REF_2",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_1",
+            "name": "REF_1",
+            "base_name": "REF_1",
+            "type": "mapping(address => uint256)",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "LocalIRVariable",
+            "text": "spender_1",
+            "name": "spender",
+            "base_name": "spender",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "ReferenceVariableSSA",
+              "text": "REF_1",
+              "name": "REF_1",
+              "base_name": "REF_1",
+              "type": "mapping(address => uint256)",
+              "is_state": false,
+              "is_reference": true,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "spender_1",
+              "name": "spender",
+              "base_name": "spender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_2",
+          "sequence": 2,
+          "block_order": 1,
+          "operation_order": 1,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "946:38:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ReferenceAccess",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_2",
+          "result_ssa": "REF_2",
+          "expression": "allowance[msg.sender][spender]",
+          "resolved_reads": [
+            "allowance[msg.sender]",
+            "spender"
+          ],
+          "writes": [
+            "REF_2"
+          ],
+          "reference_definition": {
+            "access": "allowance[msg.sender][spender]",
+            "state_variable": "allowance",
+            "keys": [
+              "msg.sender",
+              "spender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
+            "type": "uint256"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_1"
+          ],
+          "previous_atom_id": "sol_atom_1"
+        },
+        {
+          "order": 2,
+          "kind": "Phi",
+          "text": "allowance_1(mapping(address => mapping(address => uint256))) := ϕ(['allowance_0'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "StateIRVariable",
+            "text": "allowance_1",
+            "name": "allowance",
+            "base_name": "allowance",
+            "type": "mapping(address => mapping(address => uint256))",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "allowance_0",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "mapping(address => mapping(address => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "phi_origin_nodes": [
+            {
+              "node_id": 1,
+              "node_type": "NodeType.EXPRESSION",
+              "function": "AssemblyERC20.approve(address,uint256)"
+            }
+          ],
+          "phi_callback": false,
+          "atom_id": "sol_atom_3",
+          "sequence": 3,
+          "block_order": 1,
+          "operation_order": 2,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "946:38:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result": "allowance",
+          "result_ssa": "allowance_1",
+          "expression": "allowance",
+          "resolved_reads": [
+            "allowance"
+          ],
+          "writes": [
+            "allowance"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "phi_scope": "function",
+          "phi_role": "mutation_version",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_2"
+        },
+        {
+          "order": 3,
+          "kind": "Assignment",
+          "text": "REF_2(uint256) (->allowance_1) := value_1(uint256)",
+          "ssa": true,
+          "source_expression": "allowance[msg.sender][spender] = value",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_2",
+            "name": "REF_2",
+            "base_name": "REF_2",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "rvalue": {
+            "kind": "LocalIRVariable",
+            "text": "value_1",
+            "name": "value",
+            "base_name": "value",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_4",
+          "sequence": 4,
+          "block_order": 1,
+          "operation_order": 3,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "946:38:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "StateWrite",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_2",
+          "result_ssa": "REF_2",
+          "expression": "value",
+          "resolved_reads": [
+            "value"
+          ],
+          "writes": [
+            "allowance[msg.sender][spender]"
+          ],
+          "storage_access": {
+            "access": "allowance[msg.sender][spender]",
+            "state_variable": "allowance",
+            "keys": [
+              "msg.sender",
+              "spender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
+            "type": "uint256"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_3"
+        },
+        {
+          "order": 0,
+          "kind": "EventCall",
+          "text": "Emit Approval(msg.sender,spender_1,value_1)",
+          "ssa": true,
+          "source_expression": "Approval(msg.sender,spender,value)",
+          "read": [
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "spender_1",
+              "name": "spender",
+              "base_name": "spender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "arguments": [
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "spender_1",
+              "name": "spender",
+              "base_name": "spender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "name": "Approval",
+          "atom_id": "sol_atom_5",
+          "sequence": 5,
+          "block_order": 2,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n2",
+          "cfg_node_id": 2,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "994:41:slither",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "EventEmit",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "Approval(msg.sender,spender,value)",
+          "resolved_reads": [
+            "msg.sender",
+            "spender",
+            "value"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 0,
+          "kind": "Return",
+          "text": "RETURN True",
+          "ssa": true,
+          "source_expression": "true",
+          "read": [
+            {
+              "kind": "Constant",
+              "text": "True",
+              "name": "True",
+              "base_name": "True",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "values": [
+            {
+              "kind": "Constant",
+              "text": "True",
+              "name": "True",
+              "base_name": "True",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_6",
+          "sequence": 6,
+          "block_order": 3,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.RETURN",
+          "source_span": "1045:11:slither",
+          "stmt_refs": [
+            "sol_s_3"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "Return",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "True",
+          "resolved_reads": [
+            "True"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "depends_on_atoms": []
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "AssemblyERC20.transferFrom(address, address, uint256)",
+      "contract": "AssemblyERC20",
+      "function": "transferFrom",
+      "signature": "transferFrom(address, address, uint256)",
+      "operation_count": 14,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "Phi",
+          "text": "allowance_2(mapping(address => mapping(address => uint256))) := ϕ(['allowance_0', 'allowance_1', 'allowance_3'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "StateIRVariable",
+            "text": "allowance_2",
+            "name": "allowance",
+            "base_name": "allowance",
+            "type": "mapping(address => mapping(address => uint256))",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "allowance_0",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "mapping(address => mapping(address => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "StateIRVariable",
+              "text": "allowance_1",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "mapping(address => mapping(address => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "StateIRVariable",
+              "text": "allowance_3",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "mapping(address => mapping(address => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 0,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n0",
+          "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
+          "source_span": "1156:260:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result": "allowance",
+          "result_ssa": "allowance_2",
+          "expression": "allowance",
+          "resolved_reads": [
+            "allowance"
+          ],
+          "writes": [
+            "allowance"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": []
+        },
+        {
+          "order": 0,
+          "kind": "Index",
+          "text": "REF_3(mapping(address => uint256)) -> allowance_2[from_1]",
+          "ssa": true,
+          "source_expression": "allowance[from]",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_3",
+            "name": "REF_3",
+            "base_name": "REF_3",
+            "type": "mapping(address => uint256)",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "StateIRVariable",
+            "text": "allowance_2",
+            "name": "allowance",
+            "base_name": "allowance",
+            "type": "mapping(address => mapping(address => uint256))",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "LocalIRVariable",
+            "text": "from_1",
+            "name": "from",
+            "base_name": "from",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "allowance_2",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "mapping(address => mapping(address => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "from_1",
+              "name": "from",
+              "base_name": "from",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_2",
+          "sequence": 2,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.VARIABLE",
+          "source_span": "1166:45:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ReferenceAccess",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_3",
+          "result_ssa": "REF_3",
+          "expression": "allowance[from]",
+          "resolved_reads": [
+            "allowance",
+            "from"
+          ],
+          "writes": [
+            "REF_3"
+          ],
+          "reference_definition": {
+            "access": "allowance[from]",
+            "state_variable": "allowance",
+            "keys": [
+              "from"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => mapping(address => uint256))",
+            "type": "mapping(address => uint256)"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 1,
+          "kind": "Index",
+          "text": "REF_4(uint256) -> REF_3[msg.sender]",
+          "ssa": true,
+          "source_expression": "allowance[from][msg.sender]",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_4",
+            "name": "REF_4",
+            "base_name": "REF_4",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_3",
+            "name": "REF_3",
+            "base_name": "REF_3",
+            "type": "mapping(address => uint256)",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "SolidityVariableComposed",
+            "text": "msg.sender",
+            "name": "msg.sender",
+            "base_name": "msg.sender",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": true
+          },
+          "read": [
+            {
+              "kind": "ReferenceVariableSSA",
+              "text": "REF_3",
+              "name": "REF_3",
+              "base_name": "REF_3",
+              "type": "mapping(address => uint256)",
+              "is_state": false,
+              "is_reference": true,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_3",
+          "sequence": 3,
+          "block_order": 1,
+          "operation_order": 1,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.VARIABLE",
+          "source_span": "1166:45:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ReferenceAccess",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_4",
+          "result_ssa": "REF_4",
+          "expression": "allowance[from][msg.sender]",
+          "resolved_reads": [
+            "allowance[from]",
+            "msg.sender"
+          ],
+          "writes": [
+            "REF_4"
+          ],
+          "reference_definition": {
+            "access": "allowance[from][msg.sender]",
+            "state_variable": "allowance",
+            "keys": [
+              "from",
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
+            "type": "uint256"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_2"
+          ],
+          "previous_atom_id": "sol_atom_2"
+        },
+        {
+          "atom_id": "sol_atom_4:state_read:1",
+          "kind": "StorageRead",
+          "atomic_kind": "StateRead",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "block_order": 1,
+          "source_span": "1166:45:slither",
+          "source_expression": "allowance[from][msg.sender]",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "result": "REF_4",
+          "result_ssa": "REF_4",
+          "expression": "allowance[from][msg.sender]",
+          "resolved_reads": [
+            "allowance[from][msg.sender]"
+          ],
+          "writes": [
+            "REF_4"
+          ],
+          "storage_access": {
+            "access": "allowance[from][msg.sender]",
+            "state_variable": "allowance",
+            "keys": [
+              "from",
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
+            "type": "uint256"
+          },
+          "depends_on_atoms": [
+            "sol_atom_3"
+          ],
+          "source": "slithir_ssa",
+          "implicit_slithir_operation": true,
+          "consumer_atom_id": "sol_atom_4",
+          "sequence": 4,
+          "operation_order": 2
+        },
+        {
+          "order": 2,
+          "kind": "Assignment",
+          "text": "current_1(uint256) := REF_4(uint256)",
+          "ssa": true,
+          "source_expression": "current = allowance[from][msg.sender]",
+          "lvalue": {
+            "kind": "LocalIRVariable",
+            "text": "current_1",
+            "name": "current",
+            "base_name": "current",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "rvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_4",
+            "name": "REF_4",
+            "base_name": "REF_4",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "ReferenceVariableSSA",
+              "text": "REF_4",
+              "name": "REF_4",
+              "base_name": "REF_4",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": true,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_4",
+          "sequence": 5,
+          "block_order": 1,
+          "operation_order": 3,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.VARIABLE",
+          "source_span": "1166:45:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ValueAssign",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "current",
+          "result_ssa": "current_1",
+          "expression": "allowance[from][msg.sender]",
+          "resolved_reads": [
+            "allowance[from][msg.sender]"
+          ],
+          "writes": [
+            "current"
+          ],
+          "storage_reads": [
+            {
+              "access": "allowance[from][msg.sender]",
+              "state_variable": "allowance",
+              "keys": [
+                "from",
+                "msg.sender"
+              ],
+              "reference_kind": "index",
+              "container_type": "mapping(address => uint256)",
+              "type": "uint256",
+              "operand_ssa": "REF_4",
+              "operand": {
+                "kind": "ReferenceVariableSSA",
+                "text": "REF_4",
+                "name": "REF_4",
+                "base_name": "REF_4",
+                "type": "uint256",
+                "is_state": false,
+                "is_reference": true,
+                "is_constant": false,
+                "is_solidity_builtin": false
+              }
+            }
+          ],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_4:state_read:1"
+          ],
+          "previous_atom_id": "sol_atom_3"
+        },
+        {
+          "order": 0,
+          "kind": "Binary",
+          "text": "TMP_4(bool) = current_1 >= value_1",
+          "ssa": true,
+          "source_expression": "current >= value",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_4",
+            "name": "TMP_4",
+            "base_name": "TMP_4",
+            "type": "bool",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "LocalIRVariable",
+            "text": "current_1",
+            "name": "current",
+            "base_name": "current",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "LocalIRVariable",
+            "text": "value_1",
+            "name": "value",
+            "base_name": "value",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "current_1",
+              "name": "current",
+              "base_name": "current",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "operator": ">=",
+          "checked": true,
+          "atom_id": "sol_atom_5",
+          "sequence": 6,
+          "block_order": 2,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n2",
+          "cfg_node_id": 2,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "1221:38:slither",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ValueCompute",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_4",
+          "result_ssa": "TMP_4",
+          "expression": "(allowance[from][msg.sender] >= value)",
+          "resolved_reads": [
+            "allowance[from][msg.sender]",
+            "value"
+          ],
+          "writes": [
+            "TMP_4"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ]
+        },
+        {
+          "order": 1,
+          "kind": "SolidityCall",
+          "text": "TMP_5(None) = SOLIDITY_CALL require(bool,string)(TMP_4,allowance)",
+          "ssa": true,
+          "source_expression": "require(bool,string)(current >= value,allowance)",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_5",
+            "name": "TMP_5",
+            "base_name": "TMP_5",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "TemporaryVariableSSA",
+              "text": "TMP_4",
+              "name": "TMP_4",
+              "base_name": "TMP_4",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "Constant",
+              "text": "allowance",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "string",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "arguments": [
+            {
+              "kind": "TemporaryVariableSSA",
+              "text": "TMP_4",
+              "name": "TMP_4",
+              "base_name": "TMP_4",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "Constant",
+              "text": "allowance",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "string",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "function": {
+            "kind": "SolidityFunction",
+            "name": "require(bool,string)",
+            "full_name": "require(bool,string)",
+            "canonical_name": "",
+            "contract": ""
+          },
+          "atom_id": "sol_atom_6",
+          "sequence": 7,
+          "block_order": 2,
+          "operation_order": 1,
+          "cfg_block_id": "bb_sol_slither_n2",
+          "cfg_node_id": 2,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "1221:38:slither",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "Call",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_5",
+          "result_ssa": "TMP_5",
+          "expression": "require(bool,string)(current >= value,allowance)",
+          "resolved_reads": [
+            "(allowance[from][msg.sender] >= value)",
+            "allowance"
+          ],
+          "writes": [
+            "TMP_5"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_5"
+          ],
+          "previous_atom_id": "sol_atom_5"
+        },
+        {
+          "order": 0,
+          "kind": "Index",
+          "text": "REF_5(mapping(address => uint256)) -> allowance_2[from_1]",
+          "ssa": true,
+          "source_expression": "allowance[from]",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_5",
+            "name": "REF_5",
+            "base_name": "REF_5",
+            "type": "mapping(address => uint256)",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "StateIRVariable",
+            "text": "allowance_2",
+            "name": "allowance",
+            "base_name": "allowance",
+            "type": "mapping(address => mapping(address => uint256))",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "LocalIRVariable",
+            "text": "from_1",
+            "name": "from",
+            "base_name": "from",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "allowance_2",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "mapping(address => mapping(address => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "from_1",
+              "name": "from",
+              "base_name": "from",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": false,
+          "atom_id": "sol_atom_7",
+          "sequence": 8,
+          "block_order": 3,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "1293:45:slither",
+          "stmt_refs": [
+            "sol_s_4"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ReferenceAccess",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_5",
+          "result_ssa": "REF_5",
+          "expression": "allowance[from]",
+          "resolved_reads": [
+            "allowance",
+            "from"
+          ],
+          "writes": [
+            "REF_5"
+          ],
+          "reference_definition": {
+            "access": "allowance[from]",
+            "state_variable": "allowance",
+            "keys": [
+              "from"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => mapping(address => uint256))",
+            "type": "mapping(address => uint256)"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 1,
+          "kind": "Index",
+          "text": "REF_6(uint256) -> REF_5[msg.sender]",
+          "ssa": true,
+          "source_expression": "allowance[from][msg.sender]",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_6",
+            "name": "REF_6",
+            "base_name": "REF_6",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_5",
+            "name": "REF_5",
+            "base_name": "REF_5",
+            "type": "mapping(address => uint256)",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "SolidityVariableComposed",
+            "text": "msg.sender",
+            "name": "msg.sender",
+            "base_name": "msg.sender",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": true
+          },
+          "read": [
+            {
+              "kind": "ReferenceVariableSSA",
+              "text": "REF_5",
+              "name": "REF_5",
+              "base_name": "REF_5",
+              "type": "mapping(address => uint256)",
+              "is_state": false,
+              "is_reference": true,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            }
+          ],
+          "checked": false,
+          "atom_id": "sol_atom_8",
+          "sequence": 9,
+          "block_order": 3,
+          "operation_order": 1,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "1293:45:slither",
+          "stmt_refs": [
+            "sol_s_4"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ReferenceAccess",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_6",
+          "result_ssa": "REF_6",
+          "expression": "allowance[from][msg.sender]",
+          "resolved_reads": [
+            "allowance[from]",
+            "msg.sender"
+          ],
+          "writes": [
+            "REF_6"
+          ],
+          "reference_definition": {
+            "access": "allowance[from][msg.sender]",
+            "state_variable": "allowance",
+            "keys": [
+              "from",
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
+            "type": "uint256"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_7"
+          ],
+          "previous_atom_id": "sol_atom_7"
+        },
+        {
+          "order": 2,
+          "kind": "Binary",
+          "text": "TMP_6(uint256) = current_1 - value_1",
+          "ssa": true,
+          "source_expression": "current - value",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_6",
+            "name": "TMP_6",
+            "base_name": "TMP_6",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "LocalIRVariable",
+            "text": "current_1",
+            "name": "current",
+            "base_name": "current",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "LocalIRVariable",
+            "text": "value_1",
+            "name": "value",
+            "base_name": "value",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "current_1",
+              "name": "current",
+              "base_name": "current",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "operator": "-",
+          "checked": false,
+          "atom_id": "sol_atom_9",
+          "sequence": 10,
+          "block_order": 3,
+          "operation_order": 2,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "1293:45:slither",
+          "stmt_refs": [
+            "sol_s_4"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ValueCompute",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_6",
+          "result_ssa": "TMP_6",
+          "expression": "(allowance[from][msg.sender] - value)",
+          "resolved_reads": [
+            "allowance[from][msg.sender]",
+            "value"
+          ],
+          "writes": [
+            "TMP_6"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "previous_atom_id": "sol_atom_8"
+        },
+        {
+          "order": 3,
+          "kind": "Phi",
+          "text": "allowance_3(mapping(address => mapping(address => uint256))) := ϕ(['allowance_2'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "StateIRVariable",
+            "text": "allowance_3",
+            "name": "allowance",
+            "base_name": "allowance",
+            "type": "mapping(address => mapping(address => uint256))",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "allowance_2",
+              "name": "allowance",
+              "base_name": "allowance",
+              "type": "mapping(address => mapping(address => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": false,
+          "phi_origin_nodes": [
+            {
+              "node_id": 3,
+              "node_type": "NodeType.EXPRESSION",
+              "function": "AssemblyERC20.transferFrom(address,address,uint256)"
+            }
+          ],
+          "phi_callback": false,
+          "atom_id": "sol_atom_10",
+          "sequence": 11,
+          "block_order": 3,
+          "operation_order": 3,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "1293:45:slither",
+          "stmt_refs": [
+            "sol_s_4"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result": "allowance",
+          "result_ssa": "allowance_3",
+          "expression": "allowance",
+          "resolved_reads": [
+            "allowance"
+          ],
+          "writes": [
+            "allowance"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "phi_scope": "function",
+          "phi_role": "mutation_version",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_9"
+        },
+        {
+          "order": 4,
+          "kind": "Assignment",
+          "text": "REF_6(uint256) (->allowance_3) := TMP_6(uint256)",
+          "ssa": true,
+          "source_expression": "allowance[from][msg.sender] = current - value",
+          "lvalue": {
+            "kind": "ReferenceVariableSSA",
+            "text": "REF_6",
+            "name": "REF_6",
+            "base_name": "REF_6",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": true,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "rvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_6",
+            "name": "TMP_6",
+            "base_name": "TMP_6",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "TemporaryVariableSSA",
+              "text": "TMP_6",
+              "name": "TMP_6",
+              "base_name": "TMP_6",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": false,
+          "atom_id": "sol_atom_11",
+          "sequence": 12,
+          "block_order": 3,
+          "operation_order": 4,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "1293:45:slither",
+          "stmt_refs": [
+            "sol_s_4"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "StateWrite",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "REF_6",
+          "result_ssa": "REF_6",
+          "expression": "(allowance[from][msg.sender] - value)",
+          "resolved_reads": [
+            "(allowance[from][msg.sender] - value)"
+          ],
+          "writes": [
+            "allowance[from][msg.sender]"
+          ],
+          "storage_access": {
+            "access": "allowance[from][msg.sender]",
+            "state_variable": "allowance",
+            "keys": [
+              "from",
+              "msg.sender"
+            ],
+            "reference_kind": "index",
+            "container_type": "mapping(address => uint256)",
+            "type": "uint256"
+          },
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_9",
+            "sol_atom_8"
+          ],
+          "previous_atom_id": "sol_atom_10"
+        },
+        {
+          "order": 0,
+          "kind": "InternalCall",
+          "text": "INTERNAL_CALL, AssemblyERC20._assemblyMove(address,address,uint256)(from_1,to_1,value_1)",
+          "ssa": true,
+          "source_expression": "_assemblyMove(from,to,value)",
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "from_1",
+              "name": "from",
+              "base_name": "from",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "to_1",
+              "name": "to",
+              "base_name": "to",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "arguments": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "from_1",
+              "name": "from",
+              "base_name": "from",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "to_1",
+              "name": "to",
+              "base_name": "to",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "function": {
+            "kind": "FunctionContract",
+            "name": "_assemblyMove",
+            "full_name": "_assemblyMove(address,address,uint256)",
+            "canonical_name": "AssemblyERC20._assemblyMove(address,address,uint256)",
+            "contract": "AssemblyERC20"
+          },
+          "function_name": "_assemblyMove",
+          "atom_id": "sol_atom_12",
+          "sequence": 13,
+          "block_order": 4,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n4",
+          "cfg_node_id": 4,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "1358:30:slither",
+          "stmt_refs": [
+            "sol_s_5"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "Call",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "_assemblyMove(from,to,value)",
+          "resolved_reads": [
+            "from",
+            "to",
+            "value"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 0,
+          "kind": "Return",
+          "text": "RETURN True",
+          "ssa": true,
+          "source_expression": "true",
+          "read": [
+            {
+              "kind": "Constant",
+              "text": "True",
+              "name": "True",
+              "base_name": "True",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "values": [
+            {
+              "kind": "Constant",
+              "text": "True",
+              "name": "True",
+              "base_name": "True",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_13",
+          "sequence": 14,
+          "block_order": 5,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n5",
+          "cfg_node_id": 5,
+          "cfg_node_type": "NodeType.RETURN",
+          "source_span": "1398:11:slither",
+          "stmt_refs": [
+            "sol_s_6"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "Return",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "True",
+          "resolved_reads": [
+            "True"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ],
+          "depends_on_atoms": []
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "AssemblyERC20.selectorFromCalldata()",
+      "contract": "AssemblyERC20",
+      "function": "selectorFromCalldata",
+      "signature": "selectorFromCalldata()",
+      "operation_count": 1,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "Return",
+          "text": "RETURN selector_1",
+          "ssa": true,
+          "source_expression": "selector",
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "selector_1",
+              "name": "selector",
+              "base_name": "selector",
+              "type": "bytes4",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "values": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "selector_1",
+              "name": "selector",
+              "base_name": "selector",
+              "type": "bytes4",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n4",
+          "cfg_node_id": 4,
+          "cfg_node_type": "NodeType.RETURN",
+          "source_span": "1476:17:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "Return",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "selector",
+          "resolved_reads": [
+            "selector"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_asm1_n1"
+          ],
+          "depends_on_atoms": []
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "AssemblyERC20.hashMemorySafe(bytes)",
+      "contract": "AssemblyERC20",
+      "function": "hashMemorySafe",
+      "signature": "hashMemorySafe(bytes)",
+      "operation_count": 1,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "Return",
+          "text": "RETURN h_1",
+          "ssa": true,
+          "source_expression": "h",
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "h_1",
+              "name": "h",
+              "base_name": "h",
+              "type": "bytes32",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "values": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "h_1",
+              "name": "h",
+              "base_name": "h",
+              "type": "bytes32",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n4",
+          "cfg_node_id": 4,
+          "cfg_node_type": "NodeType.RETURN",
+          "source_span": "1651:11:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "Return",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "h",
+          "resolved_reads": [
+            "h"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_asm2_n1"
+          ],
+          "depends_on_atoms": []
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "AssemblyERC20.sumSkipping(uint256[])",
+      "contract": "AssemblyERC20",
+      "function": "sumSkipping",
+      "signature": "sumSkipping(uint256[])",
+      "operation_count": 1,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "Return",
+          "text": "RETURN total_0",
+          "ssa": true,
+          "source_expression": "total",
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "total_0",
+              "name": "total",
+              "base_name": "total",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "values": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "total_0",
+              "name": "total",
+              "base_name": "total",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n27",
+          "cfg_node_id": 27,
+          "cfg_node_type": "NodeType.RETURN",
+          "source_span": "1846:15:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "Return",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "total",
+          "resolved_reads": [
+            "total"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_asm3_n1"
+          ],
+          "depends_on_atoms": []
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "AssemblyERC20.rawContext()",
+      "contract": "AssemblyERC20",
+      "function": "rawContext",
+      "signature": "rawContext()",
+      "operation_count": 1,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "Return",
+          "text": "RETURN who_1,value_1,size_1,gasLeft_1",
+          "ssa": true,
+          "source_expression": "(who,value,size,gasLeft)",
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "who_1",
+              "name": "who",
+              "base_name": "who",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "size_1",
+              "name": "size",
+              "base_name": "size",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "gasLeft_1",
+              "name": "gasLeft",
+              "base_name": "gasLeft",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "values": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "who_1",
+              "name": "who",
+              "base_name": "who",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "size_1",
+              "name": "size",
+              "base_name": "size",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "gasLeft_1",
+              "name": "gasLeft",
+              "base_name": "gasLeft",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n7",
+          "cfg_node_id": 7,
+          "cfg_node_type": "NodeType.RETURN",
+          "source_span": "2672:59:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "Return",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "(who, value, size, gasLeft)",
+          "resolved_reads": [
+            "who",
+            "value",
+            "size",
+            "gasLeft"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_asm4_n1"
+          ],
+          "depends_on_atoms": []
+        }
+      ]
+    },
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "AssemblyERC20._assemblyMove(address, address, uint256)",
+      "contract": "AssemblyERC20",
+      "function": "_assemblyMove",
+      "signature": "_assemblyMove(address, address, uint256)",
+      "operation_count": 7,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "Phi",
+          "text": "from_1(address) := ϕ(['msg.sender', 'from_1'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "LocalIRVariable",
+            "text": "from_1",
+            "name": "from",
+            "base_name": "from",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "SolidityVariableComposed",
+              "text": "msg.sender",
+              "name": "msg.sender",
+              "base_name": "msg.sender",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": true
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "from_1",
+              "name": "from",
+              "base_name": "from",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 0,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n0",
+          "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
+          "source_span": "2972:840:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result": "from",
+          "result_ssa": "from_1",
+          "expression": "from",
+          "resolved_reads": [
+            "msg.sender",
+            "from"
+          ],
+          "writes": [
+            "from"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": []
+        },
+        {
+          "order": 1,
+          "kind": "Phi",
+          "text": "to_1(address) := ϕ(['to_1', 'to_1'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "LocalIRVariable",
+            "text": "to_1",
+            "name": "to",
+            "base_name": "to",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "to_1",
+              "name": "to",
+              "base_name": "to",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "to_1",
+              "name": "to",
+              "base_name": "to",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
+          "atom_id": "sol_atom_2",
+          "sequence": 2,
+          "block_order": 0,
+          "operation_order": 1,
+          "cfg_block_id": "bb_sol_slither_n0",
+          "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
+          "source_span": "2972:840:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result": "to",
+          "result_ssa": "to_1",
+          "expression": "to",
+          "resolved_reads": [
+            "to"
+          ],
+          "writes": [
+            "to"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_1"
+        },
+        {
+          "order": 2,
+          "kind": "Phi",
+          "text": "value_1(uint256) := ϕ(['value_1', 'value_1'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "LocalIRVariable",
+            "text": "value_1",
+            "name": "value",
+            "base_name": "value",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "value_1",
+              "name": "value",
+              "base_name": "value",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
+          "atom_id": "sol_atom_3",
+          "sequence": 3,
+          "block_order": 0,
+          "operation_order": 2,
+          "cfg_block_id": "bb_sol_slither_n0",
+          "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
+          "source_span": "2972:840:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result": "value",
+          "result_ssa": "value_1",
+          "expression": "value",
+          "resolved_reads": [
+            "value"
+          ],
+          "writes": [
+            "value"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_2"
+        },
+        {
+          "order": 3,
+          "kind": "Phi",
+          "text": "balanceOf_2(mapping(address => uint256)) := ϕ(['balanceOf_0', 'balanceOf_1'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "StateIRVariable",
+            "text": "balanceOf_2",
+            "name": "balanceOf",
+            "base_name": "balanceOf",
+            "type": "mapping(address => uint256)",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "balanceOf_0",
+              "name": "balanceOf",
+              "base_name": "balanceOf",
+              "type": "mapping(address => uint256)",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "StateIRVariable",
+              "text": "balanceOf_1",
+              "name": "balanceOf",
+              "base_name": "balanceOf",
+              "type": "mapping(address => uint256)",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
+          "atom_id": "sol_atom_4",
+          "sequence": 4,
+          "block_order": 0,
+          "operation_order": 3,
+          "cfg_block_id": "bb_sol_slither_n0",
+          "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
+          "source_span": "2972:840:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result": "balanceOf",
+          "result_ssa": "balanceOf_2",
+          "expression": "balanceOf",
+          "resolved_reads": [
+            "balanceOf"
+          ],
+          "writes": [
+            "balanceOf"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": [],
+          "previous_atom_id": "sol_atom_3"
+        },
+        {
+          "order": 0,
+          "kind": "TypeConversion",
+          "text": "TMP_31 = CONVERT 0 to address",
+          "ssa": true,
+          "source_expression": "address(0)",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_31",
+            "name": "TMP_31",
+            "base_name": "TMP_31",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable": {
+            "kind": "Constant",
+            "text": "0",
+            "name": "0",
+            "base_name": "0",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": true,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "Constant",
+              "text": "0",
+              "name": "0",
+              "base_name": "0",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "operator": "address",
+          "checked": true,
+          "atom_id": "sol_atom_5",
+          "sequence": 5,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "2982:33:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ValueCompute",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_31",
+          "result_ssa": "TMP_31",
+          "expression": "address(0)",
+          "resolved_reads": [
+            "0"
+          ],
+          "writes": [
+            "TMP_31"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 1,
+          "kind": "Binary",
+          "text": "TMP_32(bool) = to_1 != TMP_31",
+          "ssa": true,
+          "source_expression": "to != address(0)",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_32",
+            "name": "TMP_32",
+            "base_name": "TMP_32",
+            "type": "bool",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "LocalIRVariable",
+            "text": "to_1",
+            "name": "to",
+            "base_name": "to",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_31",
+            "name": "TMP_31",
+            "base_name": "TMP_31",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "to_1",
+              "name": "to",
+              "base_name": "to",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "TemporaryVariableSSA",
+              "text": "TMP_31",
+              "name": "TMP_31",
+              "base_name": "TMP_31",
+              "type": "address",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "operator": "!=",
+          "checked": true,
+          "atom_id": "sol_atom_6",
+          "sequence": 6,
+          "block_order": 1,
+          "operation_order": 1,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "2982:33:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ValueCompute",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_32",
+          "result_ssa": "TMP_32",
+          "expression": "(to != address(0))",
+          "resolved_reads": [
+            "to",
+            "address(0)"
+          ],
+          "writes": [
+            "TMP_32"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_5"
+          ],
+          "previous_atom_id": "sol_atom_5"
+        },
+        {
+          "order": 2,
+          "kind": "SolidityCall",
+          "text": "TMP_33(None) = SOLIDITY_CALL require(bool,string)(TMP_32,zero)",
+          "ssa": true,
+          "source_expression": "require(bool,string)(to != address(0),zero)",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_33",
+            "name": "TMP_33",
+            "base_name": "TMP_33",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "TemporaryVariableSSA",
+              "text": "TMP_32",
+              "name": "TMP_32",
+              "base_name": "TMP_32",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "Constant",
+              "text": "zero",
+              "name": "zero",
+              "base_name": "zero",
+              "type": "string",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "arguments": [
+            {
+              "kind": "TemporaryVariableSSA",
+              "text": "TMP_32",
+              "name": "TMP_32",
+              "base_name": "TMP_32",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "Constant",
+              "text": "zero",
+              "name": "zero",
+              "base_name": "zero",
+              "type": "string",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "function": {
+            "kind": "SolidityFunction",
+            "name": "require(bool,string)",
+            "full_name": "require(bool,string)",
+            "canonical_name": "",
+            "contract": ""
+          },
+          "atom_id": "sol_atom_7",
+          "sequence": 7,
+          "block_order": 1,
+          "operation_order": 2,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "2982:33:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "Call",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_33",
+          "result_ssa": "TMP_33",
+          "expression": "require(bool,string)(to != address(0),zero)",
+          "resolved_reads": [
+            "(to != address(0))",
+            "zero"
+          ],
+          "writes": [
+            "TMP_33"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_6"
+          ],
+          "previous_atom_id": "sol_atom_6"
+        }
+      ]
+    }
+  ]
+}

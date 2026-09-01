@@ -1,0 +1,233 @@
+SemanticProgram semantic-ir/v2
+Source: tests/fixtures/semantic_ir_memory_defuse_complex.sol
+
+Function SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)
+    contract = SemanticIRMemoryDefUseComplex
+    signature = update(address, uint256, uint256, bool, bool)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_1 | source=solidity | origin_facts=[fact_1]
+    delta_1 = amount_1
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_2]
+    @execution-condition discount
+    Branch(discount_1, bb_sol_slither_n3, bb_sol_slither_n4)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_2 | source=solidity | origin_facts=[fact_3]
+    @condition discount
+    TMP_0 = Sub(amount_1, 1)
+    // ir_3 | source=solidity | origin_facts=[fact_4]
+    @condition discount
+    delta_2 = TMP_0
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n2, bb_sol_slither_n3
+    // ir_4 | source=solidity | origin_facts=[fact_5]
+    delta_3 = Phi(delta_2, delta_1)
+    Branch(endif, bb_asm1_n0)
+
+bb_sol_slither_n28 [solidity]:
+    // predecessors: bb_asm1_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_24, fact_23, fact_18, fact_12, fact_11, fact_8, fact_6]
+    Return(result_1)
+
+bb_asm1_n0 [yul]:
+    // predecessors: bb_sol_slither_n4
+    // no semantic instructions
+    Goto(bb_asm1_n2)
+
+bb_asm1_n1 [yul]:
+    // predecessors: bb_asm1_n16
+    // no semantic instructions
+    Goto(bb_sol_slither_n28)
+
+bb_asm1_n2 [yul]:
+    // predecessors: bb_asm1_n0
+    // ir_18 | source=yul | origin_facts=[-]
+    free = MemoryRead()
+    Goto(bb_asm1_n3)
+
+bb_asm1_n3 [yul]:
+    // predecessors: bb_asm1_n2
+    // ir_5 | source=yul | origin_facts=[fact_7]
+    __sseir_eval_asm_s_2_1 = Add(free, 0x20)
+    Goto(bb_asm1_n4)
+
+bb_asm1_n4 [yul]:
+    // predecessors: bb_asm1_n3
+    // ir_16 | source=yul | origin_facts=[-]
+    MemoryWrite(ptr, user)
+    Goto(bb_asm1_n5)
+
+bb_asm1_n5 [yul]:
+    // predecessors: bb_asm1_n4
+    // ir_17 | source=yul | origin_facts=[-]
+    MemoryWrite(Add(ptr, 0x20), ledger.slot)
+    Goto(bb_asm1_n6)
+
+bb_asm1_n6 [yul]:
+    // predecessors: bb_asm1_n5
+    // ir_6 | source=yul | origin_facts=[fact_9]
+    @execution Assign(expr=Keccak(__sseir_eval_asm_s_2_1, 0x40))
+    outerSlot = Keccak(abi.encode(user, ledger.slot))
+    // ir_19 | source=yul | origin_facts=[-]
+    outerSlot = MemoryHash(ptr, 0x40)
+    Goto(bb_asm1_n7)
+
+bb_asm1_n7 [yul]:
+    // predecessors: bb_asm1_n6
+    // no semantic instructions
+    Goto(bb_asm1_n8)
+
+bb_asm1_n8 [yul]:
+    // predecessors: bb_asm1_n7
+    // no semantic instructions
+    // terminator origin_facts=[fact_10]
+    Branch(normalizeBucket, bb_asm1_n10, bb_asm1_n9)
+
+bb_asm1_n9 [yul]:
+    // predecessors: bb_asm1_n10, bb_asm1_n8
+    // no semantic instructions
+    Goto(bb_asm1_n11)
+
+bb_asm1_n10 [yul]:
+    // predecessors: bb_asm1_n8
+    // no semantic instructions
+    Goto(bb_asm1_n9)
+
+bb_asm1_n11 [yul]:
+    // predecessors: bb_asm1_n9
+    // no semantic instructions
+    Goto(bb_asm1_n12)
+
+bb_asm1_n12 [yul]:
+    // predecessors: bb_asm1_n11
+    // no semantic instructions
+    Goto(bb_asm1_n13)
+
+bb_asm1_n13 [yul]:
+    // predecessors: bb_asm1_n12
+    // ir_7 | source=yul | origin_facts=[fact_13, fact_12, fact_11, fact_8, fact_6]
+    @condition And(Not(discount), Not(normalizeBucket))
+    @execution StateRead(expr=sload(Keccak(Add(mload(0x40), 0x20), 0x40)))
+    oldValue = StateRead(MappingLocation(base = ledger, keys = [user, bucket]))
+    // ir_8 | source=yul | origin_facts=[fact_14, fact_12, fact_11, fact_8, fact_6]
+    @condition And(Not(discount), normalizeBucket)
+    @execution StateRead(expr=sload(Keccak(Add(mload(0x40), 0x20), 0x40)))
+    oldValue = StateRead(MappingLocation(base = ledger, keys = [user, 1]))
+    // ir_9 | source=yul | origin_facts=[fact_15, fact_12, fact_11, fact_8, fact_6]
+    @condition And(discount, Not(normalizeBucket))
+    @execution StateRead(expr=sload(Keccak(Add(mload(0x40), 0x20), 0x40)))
+    oldValue = StateRead(MappingLocation(base = ledger, keys = [user, bucket]))
+    // ir_10 | source=yul | origin_facts=[fact_16, fact_12, fact_11, fact_8, fact_6]
+    @condition And(discount, normalizeBucket)
+    @execution StateRead(expr=sload(Keccak(Add(mload(0x40), 0x20), 0x40)))
+    oldValue = StateRead(MappingLocation(base = ledger, keys = [user, 1]))
+    Goto(bb_asm1_n14)
+
+bb_asm1_n14 [yul]:
+    // predecessors: bb_asm1_n13
+    // ir_11 | source=yul | origin_facts=[fact_17]
+    __sseir_eval_asm_s_12_1 = Add(oldValue, delta)
+    Goto(bb_asm1_n15)
+
+bb_asm1_n15 [yul]:
+    // predecessors: bb_asm1_n14
+    // ir_12 | source=yul | origin_facts=[fact_19, fact_18, fact_12, fact_11, fact_8, fact_6]
+    @condition And(Not(discount), Not(normalizeBucket))
+    @execution StateWrite(expr=__sseir_eval_asm_s_12_1)
+    StateWrite(
+        MappingLocation(base = ledger, keys = [user, bucket]),
+        Add(sload(Keccak(Add(mload(0x40), 0x20), 0x40)), delta)
+    )
+    // ir_13 | source=yul | origin_facts=[fact_20, fact_18, fact_12, fact_11, fact_8, fact_6]
+    @condition And(Not(discount), normalizeBucket)
+    @execution StateWrite(expr=__sseir_eval_asm_s_12_1)
+    StateWrite(
+        MappingLocation(base = ledger, keys = [user, 1]),
+        Add(sload(Keccak(Add(mload(0x40), 0x20), 0x40)), delta)
+    )
+    // ir_14 | source=yul | origin_facts=[fact_21, fact_18, fact_12, fact_11, fact_8, fact_6]
+    @condition And(discount, Not(normalizeBucket))
+    @execution StateWrite(expr=__sseir_eval_asm_s_12_1)
+    StateWrite(
+        MappingLocation(base = ledger, keys = [user, bucket]),
+        Add(sload(Keccak(Add(mload(0x40), 0x20), 0x40)), delta)
+    )
+    // ir_15 | source=yul | origin_facts=[fact_22, fact_18, fact_12, fact_11, fact_8, fact_6]
+    @condition And(discount, normalizeBucket)
+    @execution StateWrite(expr=__sseir_eval_asm_s_12_1)
+    StateWrite(
+        MappingLocation(base = ledger, keys = [user, 1]),
+        Add(sload(Keccak(Add(mload(0x40), 0x20), 0x40)), delta)
+    )
+    Goto(bb_asm1_n16)
+
+bb_asm1_n16 [yul]:
+    // predecessors: bb_asm1_n15
+    // no semantic instructions
+    Goto(bb_asm1_n1)
+
+CFGEdges:
+    bb_asm1_n0 -> bb_asm1_n2 [next]
+    bb_asm1_n2 -> bb_asm1_n3 [next]
+    bb_asm1_n3 -> bb_asm1_n4 [next]
+    bb_asm1_n4 -> bb_asm1_n5 [next]
+    bb_asm1_n5 -> bb_asm1_n6 [next]
+    bb_asm1_n6 -> bb_asm1_n7 [next]
+    bb_asm1_n7 -> bb_asm1_n8 [next]
+    bb_asm1_n8 -> bb_asm1_n10 [true: normalizeBucket] predicate=normalizeBucket
+    bb_asm1_n10 -> bb_asm1_n9 [next]
+    bb_asm1_n8 -> bb_asm1_n9 [false: !(normalizeBucket)] predicate=!(normalizeBucket)
+    bb_asm1_n9 -> bb_asm1_n11 [next]
+    bb_asm1_n11 -> bb_asm1_n12 [next]
+    bb_asm1_n12 -> bb_asm1_n13 [next]
+    bb_asm1_n13 -> bb_asm1_n14 [next]
+    bb_asm1_n14 -> bb_asm1_n15 [next]
+    bb_asm1_n15 -> bb_asm1_n16 [next]
+    bb_asm1_n16 -> bb_asm1_n1 [next]
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [true]
+    bb_sol_slither_n2 -> bb_sol_slither_n4 [false]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_asm1_n0 [join]
+    bb_asm1_n1 -> bb_sol_slither_n28 [fallthrough]
+
+DefUse:
+    value:delta_1#1: def=ir_1, uses=[ir_4]
+    value:TMP_0#1: def=ir_2, uses=[ir_3]
+    value:delta_2#1: def=ir_3, uses=[ir_4]
+    value:delta_3#1: def=ir_4, uses=[-]
+    value:free#1: def=ir_18, uses=[ir_5]
+    value:__sseir_eval_asm_s_2_1#1: def=ir_5, uses=[ir_6]
+    value:outerSlot#1: def=ir_6, uses=[-]
+    value:outerSlot#2: def=ir_19, uses=[-]
+    value:oldValue#1: def=ir_7, uses=[-]
+    value:oldValue#2: def=ir_8, uses=[-]
+    value:oldValue#3: def=ir_9, uses=[-]
+    value:oldValue#4: def=ir_10, uses=[ir_11]
+    value:__sseir_eval_asm_s_12_1#1: def=ir_11, uses=[ir_12, ir_13, ir_14, ir_15]
+    input:amount: def=input, uses=[ir_1, ir_2]
+    input:discount: def=input, uses=[terminator:bb_sol_slither_n2, ir_2, ir_3, ir_7, ir_8, ir_9, ir_10, ir_12, ir_13, ir_14, ir_15]
+    input:endif: def=input, uses=[terminator:bb_sol_slither_n4]
+    input:result: def=input, uses=[terminator:bb_sol_slither_n28]
+    input:ptr: def=input, uses=[ir_16, ir_17, ir_19]
+    input:user: def=input, uses=[ir_16, ir_7, ir_8, ir_9, ir_10, ir_12, ir_13, ir_14, ir_15]
+    input:ledger.slot: def=input, uses=[ir_17]
+    input:normalizeBucket: def=input, uses=[terminator:bb_asm1_n8, ir_7, ir_8, ir_9, ir_10, ir_12, ir_13, ir_14, ir_15]
+    input:bucket: def=input, uses=[ir_7, ir_9, ir_12, ir_14]
+    input:delta: def=input, uses=[ir_11]

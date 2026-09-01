@@ -1,0 +1,483 @@
+SemanticProgram semantic-ir/v2
+Source: 人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol
+
+Function LayoutToken.constructor(string, string, address)
+    contract = LayoutToken
+    signature = constructor(string, string, address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_1 | source=solidity | origin_facts=[fact_1]
+    TMP_0 = address(0)
+    // ir_2 | source=solidity | origin_facts=[fact_2]
+    TMP_1 = Eq(receiver_1, TMP_0)
+    // terminator origin_facts=[fact_3]
+    @execution-condition Eq(receiver, address(0))
+    Branch(TMP_1, bb_sol_slither_n2, bb_sol_slither_n3)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_20]
+    Revert()
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Branch(endif, bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_3 | source=solidity | origin_facts=[fact_4]
+    @condition Not(Eq(receiver, address(0)))
+    @execution StateWrite(expr=tokenName_1)
+    StateWrite(StateVariableLocation(name), tokenName)
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_4 | source=solidity | origin_facts=[fact_5]
+    @condition Not(Eq(receiver, address(0)))
+    @execution StateWrite(expr=tokenSymbol_1)
+    StateWrite(StateVariableLocation(symbol), tokenSymbol)
+    Goto(bb_sol_slither_n6)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // ir_5 | source=solidity | origin_facts=[fact_6]
+    @condition Not(Eq(receiver, address(0)))
+    TMP_3 = LibraryCall(TokenAmountLib.wrap(ONE_TOKEN), ONE_TOKEN)
+    // ir_6 | source=solidity | origin_facts=[fact_7]
+    @condition Not(Eq(receiver, address(0)))
+    TMP_4 = TokenAmount(0)
+    // ir_7 | source=solidity | origin_facts=[fact_8]
+    @condition Not(Eq(receiver, address(0)))
+    TMP_5 = InternalCall(tokenAmountAdd(TMP_3, TMP_4), TMP_3, TMP_4)
+    // ir_8 | source=solidity | origin_facts=[fact_9]
+    @condition Not(Eq(receiver, address(0)))
+    plannedAmount_1 = TMP_5
+    Goto(bb_sol_slither_n7)
+
+bb_sol_slither_n7 [solidity]:
+    // predecessors: bb_sol_slither_n6
+    // ir_9 | source=solidity | origin_facts=[fact_10]
+    @condition Not(Eq(receiver, address(0)))
+    TMP_6 = NewStructure(NewStructure(receiver_1, plannedAmount_1))
+    // ir_10 | source=solidity | origin_facts=[fact_11]
+    @condition Not(Eq(receiver, address(0)))
+    @execution StateWrite(expr=TMP_6)
+    StateWrite(
+        StateVariableLocation(genesisPlan),
+        OpaqueExpression("MintPlan({receiver:receiver,amount:plannedAmount})")
+    )
+    Goto(bb_sol_slither_n8)
+
+bb_sol_slither_n8 [solidity]:
+    // predecessors: bb_sol_slither_n7
+    // ir_11 | source=solidity | origin_facts=[fact_14, fact_12, fact_13]
+    @condition Not(Eq(receiver, address(0)))
+    REF_2 = StateRead(
+        StructFieldLocation(
+            base = genesisPlan,
+            member = amount,
+            access = MintPlan({receiver:receiver,amount:plannedAmount}).amount
+        )
+    )
+    // ir_12 | source=solidity | origin_facts=[fact_15, fact_12, fact_13]
+    @condition Not(Eq(receiver, address(0)))
+    @execution InternalCall(expr=unwrapAmount(REF_2), args=[REF_2])
+    TMP_7 = InternalCall(
+        unwrapAmount(
+            OpaqueExpression("MintPlan({receiver:receiver,amount:plannedAmount}).amount")
+        ),
+        OpaqueExpression("MintPlan({receiver:receiver,amount:plannedAmount}).amount")
+    )
+    // ir_13 | source=solidity | origin_facts=[fact_16, fact_12, fact_13]
+    @condition Not(Eq(receiver, address(0)))
+    REF_1 = StateRead(
+        StructFieldLocation(
+            base = genesisPlan,
+            member = receiver,
+            access = MintPlan({receiver:receiver,amount:plannedAmount}).receiver
+        )
+    )
+    // ir_14 | source=solidity | origin_facts=[fact_17, fact_12, fact_13]
+    @condition Not(Eq(receiver, address(0)))
+    @execution InternalCall(expr=_mint(REF_1, TMP_7), args=[REF_1, TMP_7])
+    InternalCall(
+        _mint(
+            OpaqueExpression("MintPlan({receiver:receiver,amount:plannedAmount}).receiver"),
+            TMP_7
+        ),
+        OpaqueExpression("MintPlan({receiver:receiver,amount:plannedAmount}).receiver"),
+        TMP_7
+    )
+    Goto(bb_sol_slither_n9)
+
+bb_sol_slither_n9 [solidity]:
+    // predecessors: bb_sol_slither_n8
+    // ir_15 | source=solidity | origin_facts=[fact_19, fact_18]
+    @condition Not(Eq(receiver, address(0)))
+    @execution StateWrite(expr=REF_3)
+    StateWrite(StateVariableLocation(mintState), MintState.Minted)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [true]
+    bb_sol_slither_n1 -> bb_sol_slither_n3 [false]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [join]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [fallthrough]
+    bb_sol_slither_n6 -> bb_sol_slither_n7 [fallthrough]
+    bb_sol_slither_n7 -> bb_sol_slither_n8 [fallthrough]
+    bb_sol_slither_n8 -> bb_sol_slither_n9 [fallthrough]
+
+DefUse:
+    value:TMP_0#1: def=ir_1, uses=[ir_2]
+    value:TMP_1#1: def=ir_2, uses=[-]
+    input:receiver_1: def=input, uses=[ir_2, ir_9]
+    input:receiver: def=input, uses=[terminator:bb_sol_slither_n1, ir_3, ir_4, ir_5, ir_6, ir_7, ir_8, ir_9, ir_10, ir_11, ir_12, ir_13, ir_14, ir_15]
+    input:endif: def=input, uses=[terminator:bb_sol_slither_n3]
+    input:tokenName_1: def=input, uses=[ir_3]
+    input:tokenSymbol_1: def=input, uses=[ir_4]
+    value:TMP_3#1: def=ir_5, uses=[ir_7]
+    input:ONE_TOKEN: def=input, uses=[ir_5]
+    value:TMP_4#1: def=ir_6, uses=[ir_7]
+    value:TMP_5#1: def=ir_7, uses=[ir_8]
+    value:plannedAmount_1#1: def=ir_8, uses=[ir_9]
+    value:TMP_6#1: def=ir_9, uses=[ir_10]
+    value:REF_2#1: def=ir_11, uses=[ir_12]
+    value:TMP_7#1: def=ir_12, uses=[ir_14]
+    value:REF_1#1: def=ir_13, uses=[ir_14]
+    input:REF_3: def=input, uses=[ir_15]
+
+
+Function LayoutToken.transfer(address, uint256)
+    contract = LayoutToken
+    signature = transfer(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_16 | source=solidity | origin_facts=[fact_21]
+    InternalCall(_transfer(msg.sender, to_1, value_1), msg.sender, to_1, value_1)
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_22]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+
+DefUse:
+    input:msg.sender: def=input, uses=[ir_16]
+    input:to_1: def=input, uses=[ir_16]
+    input:value_1: def=input, uses=[ir_16]
+
+
+Function LayoutToken.approve(address, uint256)
+    contract = LayoutToken
+    signature = approve(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_17 | source=solidity | origin_facts=[fact_25, fact_23, fact_24]
+    @execution StateWrite(expr=value_1)
+    StateWrite(MappingLocation(base = allowance, keys = [msg.sender, spender]), value)
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_18 | source=solidity | origin_facts=[fact_26]
+    EventEmit(Approval, msg.sender, spender_1, value_1)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    // terminator origin_facts=[fact_27]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+DefUse:
+    input:value_1: def=input, uses=[ir_17, ir_18]
+    input:msg.sender: def=input, uses=[ir_17, ir_18]
+    input:spender: def=input, uses=[ir_17]
+    input:spender_1: def=input, uses=[ir_18]
+
+
+Function LayoutToken.transferFrom(address, address, uint256)
+    contract = LayoutToken
+    signature = transferFrom(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_19 | source=solidity | origin_facts=[fact_30, fact_28, fact_29, fact_35, fact_34]
+    REF_7 = StateRead(MappingLocation(base = allowance, keys = [from, msg.sender]))
+    // ir_20 | source=solidity | origin_facts=[fact_31]
+    allowed_1 = REF_7
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_21 | source=solidity | origin_facts=[fact_32]
+    TMP_11 = Ge(allowed_1, value_1)
+    // ir_22 | source=solidity | origin_facts=[fact_33]
+    @execution Require(expr=require(bool,string)(TMP_11, allowance)(TMP_11, allowance))
+    Require(Ge(Index(Index(allowance, from), msg.sender), value))
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_24 | source=solidity | origin_facts=[fact_37, fact_29, fact_34, fact_35, fact_28]
+    @condition Ge(Index(Index(allowance, from), msg.sender), value)
+    @execution StateWrite(expr=TMP_13)
+    StateWrite(
+        MappingLocation(base = allowance, keys = [from, msg.sender]),
+        Sub(Index(Index(allowance, from), msg.sender), value)
+    )
+    // ir_23 | source=solidity | origin_facts=[fact_36]
+    @condition Ge(Index(Index(allowance, from), msg.sender), value)
+    TMP_13 = Sub(allowed_1, value_1)
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_25 | source=solidity | origin_facts=[fact_38]
+    @condition Ge(Index(Index(allowance, from), msg.sender), value)
+    InternalCall(_transfer(from_1, to_1, value_1), from_1, to_1, value_1)
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // no semantic instructions
+    // terminator origin_facts=[fact_39]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+
+DefUse:
+    value:REF_7#1: def=ir_19, uses=[ir_20]
+    input:allowance: def=input, uses=[ir_19, ir_22, ir_24, ir_23, ir_25]
+    input:from: def=input, uses=[ir_19, ir_24, ir_23, ir_25]
+    input:msg.sender: def=input, uses=[ir_19, ir_24, ir_23, ir_25]
+    value:allowed_1#1: def=ir_20, uses=[ir_21, ir_23]
+    value:TMP_11#1: def=ir_21, uses=[ir_22]
+    input:value_1: def=input, uses=[ir_21, ir_23, ir_25]
+    input:TMP_13: def=input, uses=[ir_24]
+    input:value: def=input, uses=[ir_24, ir_23, ir_25]
+    value:TMP_13#1: def=ir_23, uses=[-]
+    input:from_1: def=input, uses=[ir_25]
+    input:to_1: def=input, uses=[ir_25]
+
+
+Function LayoutToken._mint(address, uint256)
+    contract = LayoutToken
+    signature = _mint(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_26 | source=solidity | origin_facts=[fact_40]
+    totalSupply_1 = StateRead(StateVariableLocation(totalSupply))
+    // ir_27 | source=solidity | origin_facts=[fact_41]
+    @execution StateWrite(expr=Add(totalSupply_1, value_1))
+    StateWrite(StateVariableLocation(totalSupply), Add(totalSupply, value))
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_28 | source=solidity | origin_facts=[fact_43, fact_42]
+    REF_10 = StateRead(MappingLocation(base = balanceOf, keys = [to]))
+    // ir_29 | source=solidity | origin_facts=[fact_44, fact_42]
+    @execution StateWrite(expr=Add(REF_10, value_1))
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [to]),
+        Add(Index(balanceOf, to), value)
+    )
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_30 | source=solidity | origin_facts=[fact_45]
+    TMP_15 = address(0)
+    // ir_31 | source=solidity | origin_facts=[fact_46]
+    EventEmit(Transfer, TMP_15, to_1, value_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+DefUse:
+    value:totalSupply_1#1: def=ir_26, uses=[ir_27]
+    input:totalSupply: def=input, uses=[ir_26]
+    input:value_1: def=input, uses=[ir_27, ir_29, ir_31]
+    value:REF_10#1: def=ir_28, uses=[ir_29]
+    input:balanceOf: def=input, uses=[ir_28]
+    input:to: def=input, uses=[ir_28, ir_29]
+    value:TMP_15#1: def=ir_30, uses=[ir_31]
+    input:to_1: def=input, uses=[ir_31]
+
+
+Function LayoutToken._transfer(address, address, uint256)
+    contract = LayoutToken
+    signature = _transfer(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_32 | source=solidity | origin_facts=[fact_47]
+    TMP_17 = address(0)
+    // ir_33 | source=solidity | origin_facts=[fact_48]
+    TMP_18 = Eq(to_1, TMP_17)
+    // terminator origin_facts=[fact_49]
+    @execution-condition Eq(to, address(0))
+    Branch(TMP_18, bb_sol_slither_n2, bb_sol_slither_n3)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_62]
+    Revert()
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Branch(endif, bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_34 | source=solidity | origin_facts=[fact_51, fact_50, fact_55]
+    @condition Not(Eq(to, address(0)))
+    REF_11 = StateRead(MappingLocation(base = balanceOf, keys = [from]))
+    // ir_35 | source=solidity | origin_facts=[fact_52]
+    @condition Not(Eq(to, address(0)))
+    bal_1 = REF_11
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_36 | source=solidity | origin_facts=[fact_53]
+    @condition Not(Eq(to, address(0)))
+    TMP_20 = Ge(bal_1, value_1)
+    // ir_37 | source=solidity | origin_facts=[fact_54]
+    @condition Not(Eq(to, address(0)))
+    @execution Require(expr=require(bool,string)(TMP_20, balance)(TMP_20, balance))
+    Require(Ge(Index(balanceOf, from), value))
+    Goto(bb_sol_slither_n6)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // ir_39 | source=solidity | origin_facts=[fact_57, fact_50, fact_55]
+    @condition And(
+    And(Ge(Index(balanceOf, from), value), Ge(Index(balanceOf, from), value)),
+    Not(Eq(to, address(0)))
+)
+    @execution StateWrite(expr=TMP_22)
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [from]),
+        Sub(Index(balanceOf, from), value)
+    )
+    // ir_38 | source=solidity | origin_facts=[fact_56]
+    @condition And(
+    And(Ge(Index(balanceOf, from), value), Ge(Index(balanceOf, from), value)),
+    Not(Eq(to, address(0)))
+)
+    TMP_22 = Sub(bal_1, value_1)
+    Goto(bb_sol_slither_n7)
+
+bb_sol_slither_n7 [solidity]:
+    // predecessors: bb_sol_slither_n6
+    // ir_40 | source=solidity | origin_facts=[fact_59, fact_58]
+    @condition And(
+    And(Ge(Index(balanceOf, from), value), Ge(Index(balanceOf, from), value)),
+    Not(Eq(to, address(0)))
+)
+    REF_13 = StateRead(MappingLocation(base = balanceOf, keys = [to]))
+    // ir_41 | source=solidity | origin_facts=[fact_60, fact_58]
+    @condition And(
+    And(Ge(Index(balanceOf, from), value), Ge(Index(balanceOf, from), value)),
+    Not(Eq(to, address(0)))
+)
+    @execution StateWrite(expr=Add(REF_13, value_1))
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [to]),
+        Add(Index(balanceOf, to), value)
+    )
+    Goto(bb_sol_slither_n8)
+
+bb_sol_slither_n8 [solidity]:
+    // predecessors: bb_sol_slither_n7
+    // ir_42 | source=solidity | origin_facts=[fact_61]
+    @condition And(
+    And(Ge(Index(balanceOf, from), value), Ge(Index(balanceOf, from), value)),
+    Not(Eq(to, address(0)))
+)
+    EventEmit(Transfer, from_1, to_1, value_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [true]
+    bb_sol_slither_n1 -> bb_sol_slither_n3 [false]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [join]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [fallthrough]
+    bb_sol_slither_n6 -> bb_sol_slither_n7 [fallthrough]
+    bb_sol_slither_n7 -> bb_sol_slither_n8 [fallthrough]
+
+DefUse:
+    value:TMP_17#1: def=ir_32, uses=[ir_33]
+    value:TMP_18#1: def=ir_33, uses=[-]
+    input:to_1: def=input, uses=[ir_33, ir_42]
+    input:to: def=input, uses=[terminator:bb_sol_slither_n1, ir_34, ir_35, ir_36, ir_37, ir_39, ir_38, ir_40, ir_41, ir_42]
+    input:endif: def=input, uses=[terminator:bb_sol_slither_n3]
+    value:REF_11#1: def=ir_34, uses=[ir_35]
+    input:balanceOf: def=input, uses=[ir_34, ir_39, ir_38, ir_40, ir_41, ir_42]
+    input:from: def=input, uses=[ir_34, ir_39, ir_38, ir_40, ir_41, ir_42]
+    value:bal_1#1: def=ir_35, uses=[ir_36, ir_38]
+    value:TMP_20#1: def=ir_36, uses=[ir_37]
+    input:value_1: def=input, uses=[ir_36, ir_38, ir_41, ir_42]
+    input:balance: def=input, uses=[ir_37]
+    input:TMP_22: def=input, uses=[ir_39]
+    input:value: def=input, uses=[ir_39, ir_38, ir_40, ir_41, ir_42]
+    value:TMP_22#1: def=ir_38, uses=[-]
+    value:REF_13#1: def=ir_40, uses=[ir_41]
+    input:from_1: def=input, uses=[ir_42]

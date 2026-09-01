@@ -1,0 +1,2088 @@
+[
+  {
+    "function_id": "LayoutToken.constructor(string, string, address)",
+    "contract": "LayoutToken",
+    "function": "constructor",
+    "signature": "constructor(string, string, address)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "if (receiver == address(0)) revert ZeroAddress()",
+        "src": "959:48:1",
+        "function_id": "LayoutToken.constructor(string, string, address)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "revert ZeroAddress()",
+        "src": "987:20:1",
+        "function_id": "LayoutToken.constructor(string, string, address)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "name = tokenName",
+        "src": "1017:16:1",
+        "function_id": "LayoutToken.constructor(string, string, address)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "symbol = tokenSymbol",
+        "src": "1043:20:1",
+        "function_id": "LayoutToken.constructor(string, string, address)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "TokenAmount plannedAmount = ONE_TOKEN.wrap() + TokenAmount.wrap(0)",
+        "src": "1073:66:1",
+        "function_id": "LayoutToken.constructor(string, string, address)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_6",
+        "lang": "solidity",
+        "text": "genesisPlan = MintPlan({receiver: receiver, amount: plannedAmount})",
+        "src": "1149:67:1",
+        "function_id": "LayoutToken.constructor(string, string, address)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_7",
+        "lang": "solidity",
+        "text": "_mint(genesisPlan.receiver, unwrapAmount(genesisPlan.amount))",
+        "src": "1226:61:1",
+        "function_id": "LayoutToken.constructor(string, string, address)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_8",
+        "lang": "solidity",
+        "text": "mintState = MintState.Minted",
+        "src": "1297:28:1",
+        "function_id": "LayoutToken.constructor(string, string, address)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "949:383:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "receiver == address(0)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.IF",
+            "src": "963:22:slither",
+            "text": "receiver == address(0)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert ZeroAddress()()"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "987:20:slither",
+            "text": "revert ZeroAddress()()"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENDIF",
+            "src": "959:48:slither",
+            "text": "endif"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "name = tokenName"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1017:16:slither",
+            "text": "name = tokenName"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "symbol = tokenSymbol"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1043:20:slither",
+            "text": "symbol = tokenSymbol"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "plannedAmount = tokenAmountAdd(ONE_TOKEN.wrap(),TokenAmount.wrap(0))"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "1073:66:slither",
+            "text": "plannedAmount = tokenAmountAdd(ONE_TOKEN.wrap(),TokenAmount.wrap(0))"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n7",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_6"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "genesisPlan = MintPlan({receiver:receiver,amount:plannedAmount})"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1149:67:slither",
+            "text": "genesisPlan = MintPlan({receiver:receiver,amount:plannedAmount})"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n8",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_7"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_mint(genesisPlan.receiver,unwrapAmount(genesisPlan.amount))"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1226:61:slither",
+            "text": "_mint(genesisPlan.receiver,unwrapAmount(genesisPlan.amount))"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n9",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_8"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "mintState = MintState.Minted"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1297:28:slither",
+            "text": "mintState = MintState.Minted"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n3",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n6",
+          "to": "bb_sol_slither_n7",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n7",
+          "to": "bb_sol_slither_n8",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n8",
+          "to": "bb_sol_slither_n9",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n1",
+          "dependent": "bb_sol_slither_n2",
+          "edge_kind": "true",
+          "condition": "receiver == address(0)",
+          "predicate": "receiver == address(0)"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "LayoutToken.constructor(string, string, address)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "508:18:1",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:20:1",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "612:26:1",
+            "storage_slot": 2
+          },
+          {
+            "name": "mintState",
+            "kind": "state",
+            "type_string": "enum MintState",
+            "data_location": "default",
+            "src": "644:26:1",
+            "storage_slot": 3
+          },
+          {
+            "name": "genesisPlan",
+            "kind": "state",
+            "type_string": "struct MintPlan",
+            "data_location": "default",
+            "src": "676:27:1",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "710:60:1",
+            "storage_slot": 6
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "776:84:1",
+            "storage_slot": 7
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "ERC20_DECIMALS",
+            "src": "558:47:1"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 5,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1338:139:1"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1483:200:1"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1689:309:1"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2004:166:1"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2176:320:1"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  },
+  {
+    "function_id": "LayoutToken.transfer(address, uint256)",
+    "contract": "LayoutToken",
+    "function": "transfer",
+    "signature": "transfer(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "_transfer(msg.sender, to, value)",
+        "src": "1417:32:1",
+        "function_id": "LayoutToken.transfer(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "return true",
+        "src": "1459:11:1",
+        "function_id": "LayoutToken.transfer(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "1407:70:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_transfer(msg.sender,to,value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1417:32:slither",
+            "text": "_transfer(msg.sender,to,value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "true"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "1459:11:slither",
+            "text": "true"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "LayoutToken.transfer(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "508:18:1",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:20:1",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "612:26:1",
+            "storage_slot": 2
+          },
+          {
+            "name": "mintState",
+            "kind": "state",
+            "type_string": "enum MintState",
+            "data_location": "default",
+            "src": "644:26:1",
+            "storage_slot": 3
+          },
+          {
+            "name": "genesisPlan",
+            "kind": "state",
+            "type_string": "struct MintPlan",
+            "data_location": "default",
+            "src": "676:27:1",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "710:60:1",
+            "storage_slot": 6
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "776:84:1",
+            "storage_slot": 7
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "ERC20_DECIMALS",
+            "src": "558:47:1"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 5,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1338:139:1"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1483:200:1"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1689:309:1"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2004:166:1"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2176:320:1"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  },
+  {
+    "function_id": "LayoutToken.approve(address, uint256)",
+    "contract": "LayoutToken",
+    "function": "approve",
+    "signature": "approve(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "allowance[msg.sender][spender] = value",
+        "src": "1566:38:1",
+        "function_id": "LayoutToken.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "emit Approval(msg.sender, spender, value)",
+        "src": "1614:41:1",
+        "function_id": "LayoutToken.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "return true",
+        "src": "1665:11:1",
+        "function_id": "LayoutToken.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "1556:127:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "allowance[msg.sender][spender] = value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1566:38:slither",
+            "text": "allowance[msg.sender][spender] = value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "Approval(msg.sender,spender,value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1614:41:slither",
+            "text": "Approval(msg.sender,spender,value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "true"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "1665:11:slither",
+            "text": "true"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "LayoutToken.approve(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "508:18:1",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:20:1",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "612:26:1",
+            "storage_slot": 2
+          },
+          {
+            "name": "mintState",
+            "kind": "state",
+            "type_string": "enum MintState",
+            "data_location": "default",
+            "src": "644:26:1",
+            "storage_slot": 3
+          },
+          {
+            "name": "genesisPlan",
+            "kind": "state",
+            "type_string": "struct MintPlan",
+            "data_location": "default",
+            "src": "676:27:1",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "710:60:1",
+            "storage_slot": 6
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "776:84:1",
+            "storage_slot": 7
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "ERC20_DECIMALS",
+            "src": "558:47:1"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 5,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1338:139:1"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1483:200:1"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1689:309:1"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2004:166:1"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2176:320:1"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  },
+  {
+    "function_id": "LayoutToken.transferFrom(address, address, uint256)",
+    "contract": "LayoutToken",
+    "function": "transferFrom",
+    "signature": "transferFrom(address, address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "uint256 allowed = allowance[from][msg.sender]",
+        "src": "1786:45:1",
+        "function_id": "LayoutToken.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "require(allowed >= value, \"allowance\")",
+        "src": "1841:38:1",
+        "function_id": "LayoutToken.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "allowance[from][msg.sender] = allowed - value",
+        "src": "1889:45:1",
+        "function_id": "LayoutToken.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "_transfer(from, to, value)",
+        "src": "1944:26:1",
+        "function_id": "LayoutToken.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "return true",
+        "src": "1980:11:1",
+        "function_id": "LayoutToken.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "1776:222:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "allowed = allowance[from][msg.sender]"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "1786:45:slither",
+            "text": "allowed = allowance[from][msg.sender]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(allowed >= value,allowance)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1841:38:slither",
+            "text": "require(bool,string)(allowed >= value,allowance)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "allowance[from][msg.sender] = allowed - value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1889:45:slither",
+            "text": "allowance[from][msg.sender] = allowed - value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_transfer(from,to,value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1944:26:slither",
+            "text": "_transfer(from,to,value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "true"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "1980:11:slither",
+            "text": "true"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "LayoutToken.transferFrom(address, address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "508:18:1",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:20:1",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "612:26:1",
+            "storage_slot": 2
+          },
+          {
+            "name": "mintState",
+            "kind": "state",
+            "type_string": "enum MintState",
+            "data_location": "default",
+            "src": "644:26:1",
+            "storage_slot": 3
+          },
+          {
+            "name": "genesisPlan",
+            "kind": "state",
+            "type_string": "struct MintPlan",
+            "data_location": "default",
+            "src": "676:27:1",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "710:60:1",
+            "storage_slot": 6
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "776:84:1",
+            "storage_slot": 7
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "ERC20_DECIMALS",
+            "src": "558:47:1"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 5,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1338:139:1"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1483:200:1"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1689:309:1"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2004:166:1"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2176:320:1"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  },
+  {
+    "function_id": "LayoutToken._mint(address, uint256)",
+    "contract": "LayoutToken",
+    "function": "_mint",
+    "signature": "_mint(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "totalSupply += value",
+        "src": "2065:20:1",
+        "function_id": "LayoutToken._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "balanceOf[to] += value",
+        "src": "2095:22:1",
+        "function_id": "LayoutToken._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "emit Transfer(address(0), to, value)",
+        "src": "2127:36:1",
+        "function_id": "LayoutToken._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "2055:115:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "totalSupply += value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2065:20:slither",
+            "text": "totalSupply += value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "balanceOf[to] += value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2095:22:slither",
+            "text": "balanceOf[to] += value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "Transfer(address(0),to,value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2127:36:slither",
+            "text": "Transfer(address(0),to,value)"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "LayoutToken._mint(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "508:18:1",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:20:1",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "612:26:1",
+            "storage_slot": 2
+          },
+          {
+            "name": "mintState",
+            "kind": "state",
+            "type_string": "enum MintState",
+            "data_location": "default",
+            "src": "644:26:1",
+            "storage_slot": 3
+          },
+          {
+            "name": "genesisPlan",
+            "kind": "state",
+            "type_string": "struct MintPlan",
+            "data_location": "default",
+            "src": "676:27:1",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "710:60:1",
+            "storage_slot": 6
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "776:84:1",
+            "storage_slot": 7
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "ERC20_DECIMALS",
+            "src": "558:47:1"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 5,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1338:139:1"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1483:200:1"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1689:309:1"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2004:166:1"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2176:320:1"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  },
+  {
+    "function_id": "LayoutToken._transfer(address, address, uint256)",
+    "contract": "LayoutToken",
+    "function": "_transfer",
+    "signature": "_transfer(address, address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "if (to == address(0)) revert ZeroAddress()",
+        "src": "2255:42:1",
+        "function_id": "LayoutToken._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "revert ZeroAddress()",
+        "src": "2277:20:1",
+        "function_id": "LayoutToken._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "RevertStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "uint256 bal = balanceOf[from]",
+        "src": "2307:29:1",
+        "function_id": "LayoutToken._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "require(bal >= value, \"balance\")",
+        "src": "2346:32:1",
+        "function_id": "LayoutToken._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "balanceOf[from] = bal - value",
+        "src": "2388:29:1",
+        "function_id": "LayoutToken._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_6",
+        "lang": "solidity",
+        "text": "balanceOf[to] += value",
+        "src": "2427:22:1",
+        "function_id": "LayoutToken._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_7",
+        "lang": "solidity",
+        "text": "emit Transfer(from, to, value)",
+        "src": "2459:30:1",
+        "function_id": "LayoutToken._transfer(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "2245:251:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "to == address(0)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.IF",
+            "src": "2259:16:slither",
+            "text": "to == address(0)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Revert",
+            "text": "revert ZeroAddress()()"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2277:20:slither",
+            "text": "revert ZeroAddress()()"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENDIF",
+            "src": "2255:42:slither",
+            "text": "endif"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "bal = balanceOf[from]"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "2307:29:slither",
+            "text": "bal = balanceOf[from]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(bal >= value,balance)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2346:32:slither",
+            "text": "require(bool,string)(bal >= value,balance)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "balanceOf[from] = bal - value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2388:29:slither",
+            "text": "balanceOf[from] = bal - value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n7",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_6"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "balanceOf[to] += value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2427:22:slither",
+            "text": "balanceOf[to] += value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n8",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_7"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "Transfer(from,to,value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2459:30:slither",
+            "text": "Transfer(from,to,value)"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n3",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n6",
+          "to": "bb_sol_slither_n7",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n7",
+          "to": "bb_sol_slither_n8",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n1",
+          "dependent": "bb_sol_slither_n2",
+          "edge_kind": "true",
+          "condition": "to == address(0)",
+          "predicate": "to == address(0)"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "LayoutToken._transfer(address, address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "508:18:1",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:20:1",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "612:26:1",
+            "storage_slot": 2
+          },
+          {
+            "name": "mintState",
+            "kind": "state",
+            "type_string": "enum MintState",
+            "data_location": "default",
+            "src": "644:26:1",
+            "storage_slot": 3
+          },
+          {
+            "name": "genesisPlan",
+            "kind": "state",
+            "type_string": "struct MintPlan",
+            "data_location": "default",
+            "src": "676:27:1",
+            "storage_slot": 4
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "710:60:1",
+            "storage_slot": 6
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "776:84:1",
+            "storage_slot": 7
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "ERC20_DECIMALS",
+            "src": "558:47:1"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 5,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1338:139:1"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1483:200:1"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "1689:309:1"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2004:166:1"
+            }
+          ],
+          "0x30e0789e": [
+            {
+              "selector": "0x30e0789e",
+              "signature": "_transfer(address,address,uint256)",
+              "name": "_transfer",
+              "kind": "function",
+              "contract": "LayoutToken",
+              "source": "ast",
+              "src": "2176:320:1"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol",
+        "rewrite_count": 0,
+        "enabled": false,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": []
+      }
+    ]
+  }
+]

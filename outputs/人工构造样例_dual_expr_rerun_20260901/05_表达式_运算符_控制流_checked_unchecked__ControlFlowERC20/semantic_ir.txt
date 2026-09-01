@@ -1,0 +1,1140 @@
+SemanticProgram semantic-ir/v2
+Source: 人工构造样例/05_表达式_运算符_控制流_checked_unchecked/contracts/ControlFlowERC20.sol
+
+Function ControlFlowERC20.constructor(uint256)
+    contract = ControlFlowERC20
+    signature = constructor(uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_1 | source=solidity | origin_facts=[fact_1]
+    InternalCall(_mint(msg.sender, initialSupply_1), msg.sender, initialSupply_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+DefUse:
+    input:msg.sender: def=input, uses=[ir_1]
+    input:initialSupply_1: def=input, uses=[ir_1]
+
+
+Function ControlFlowERC20.transfer(address, uint256)
+    contract = ControlFlowERC20
+    signature = transfer(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n7
+    // ir_7 | source=solidity | origin_facts=[fact_8]
+    InternalCall(_move(msg.sender, to_1, value_1, fee_3), msg.sender, to_1, value_1, fee_3)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    // terminator origin_facts=[fact_9]
+    Return(true)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_2 | source=solidity | origin_facts=[fact_2]
+    TMP_2 = Gt(value_1, 1000000000000000000000)
+    // terminator origin_facts=[fact_3]
+    @execution-condition Gt(value, 1000000000000000000000)
+    Branch(TMP_2, bb_sol_slither_n5, bb_sol_slither_n6)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_4 | source=solidity | origin_facts=[fact_5]
+    @condition Gt(value, 1000000000000000000000)
+    TMP_3 = Div(value_1, 100)
+    // ir_5 | source=solidity | origin_facts=[fact_6]
+    @condition Gt(value, 1000000000000000000000)
+    fee_1 = TMP_3
+    Goto(bb_sol_slither_n7)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_3 | source=solidity | origin_facts=[fact_4]
+    @condition Not(Gt(value, 1000000000000000000000))
+    fee_2 = 0
+    Goto(bb_sol_slither_n7)
+
+bb_sol_slither_n7 [solidity]:
+    // predecessors: bb_sol_slither_n5, bb_sol_slither_n6
+    // ir_6 | source=solidity | origin_facts=[fact_7]
+    fee_3 = Phi(Tuple(fee_1, fee_2))
+    Branch(endif, bb_sol_slither_n2)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [true]
+    bb_sol_slither_n4 -> bb_sol_slither_n6 [false]
+    bb_sol_slither_n5 -> bb_sol_slither_n7 [fallthrough]
+    bb_sol_slither_n6 -> bb_sol_slither_n7 [fallthrough]
+    bb_sol_slither_n7 -> bb_sol_slither_n2 [join]
+
+DefUse:
+    input:msg.sender: def=input, uses=[ir_7]
+    input:to_1: def=input, uses=[ir_7]
+    input:value_1: def=input, uses=[ir_7, ir_2, ir_4]
+    input:fee_3: def=input, uses=[ir_7]
+    value:TMP_2#1: def=ir_2, uses=[-]
+    input:value: def=input, uses=[terminator:bb_sol_slither_n4, ir_4, ir_5, ir_3]
+    value:TMP_3#1: def=ir_4, uses=[ir_5]
+    value:fee_1#1: def=ir_5, uses=[ir_6]
+    value:fee_2#1: def=ir_3, uses=[ir_6]
+    value:fee_3#1: def=ir_6, uses=[-]
+    input:endif: def=input, uses=[terminator:bb_sol_slither_n7]
+
+
+Function ControlFlowERC20.approve(address, uint256)
+    contract = ControlFlowERC20
+    signature = approve(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_8 | source=solidity | origin_facts=[fact_12, fact_10, fact_11]
+    @execution StateWrite(expr=value_1)
+    StateWrite(MappingLocation(base = allowance, keys = [msg.sender, spender]), value)
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_9 | source=solidity | origin_facts=[fact_13]
+    EventEmit(Approval, msg.sender, spender_1, value_1)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    // terminator origin_facts=[fact_14]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+DefUse:
+    input:value_1: def=input, uses=[ir_8, ir_9]
+    input:msg.sender: def=input, uses=[ir_8, ir_9]
+    input:spender: def=input, uses=[ir_8]
+    input:spender_1: def=input, uses=[ir_9]
+
+
+Function ControlFlowERC20.transferFrom(address, address, uint256)
+    contract = ControlFlowERC20
+    signature = transferFrom(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_10 | source=solidity | origin_facts=[fact_17, fact_15, fact_16, fact_25, fact_24]
+    REF_3 = StateRead(MappingLocation(base = allowance, keys = [from, msg.sender]))
+    // ir_11 | source=solidity | origin_facts=[fact_18]
+    current_1 = REF_3
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_12 | source=solidity | origin_facts=[fact_19]
+    TMP_5 = Ge(current_1, value_1)
+    // ir_13 | source=solidity | origin_facts=[fact_20]
+    TMP_6 = address(0)
+    // ir_14 | source=solidity | origin_facts=[fact_21]
+    TMP_7 = Ne(to_1, TMP_6)
+    // ir_15 | source=solidity | origin_facts=[fact_22]
+    TMP_8 = And(TMP_5, TMP_7)
+    // ir_16 | source=solidity | origin_facts=[fact_23]
+    @execution Require(expr=OpaqueExpression("require(bool,string)(TMP_8, bad transferFrom)"))
+    Require(And(Ge(Index(Index(allowance, from), msg.sender), value), Ne(to, address(0))))
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_17 | source=solidity | origin_facts=[fact_26, fact_16, fact_24, fact_25, fact_15]
+    @condition And(Ge(Index(Index(allowance, from), msg.sender), value), Ne(to, address(0)))
+    REF_5 = StateRead(MappingLocation(base = allowance, keys = [from, msg.sender]))
+    // ir_18 | source=solidity | origin_facts=[fact_27, fact_16, fact_24, fact_25, fact_15]
+    @condition And(Ge(Index(Index(allowance, from), msg.sender), value), Ne(to, address(0)))
+    @execution StateWrite(expr=Sub(REF_5, value_1))
+    StateWrite(
+        MappingLocation(base = allowance, keys = [from, msg.sender]),
+        Sub(Index(Index(allowance, from), msg.sender), value)
+    )
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_19 | source=solidity | origin_facts=[fact_28]
+    @condition And(Ge(Index(Index(allowance, from), msg.sender), value), Ne(to, address(0)))
+    InternalCall(_move(from_1, to_1, value_1, 0), from_1, to_1, value_1, 0)
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // no semantic instructions
+    // terminator origin_facts=[fact_29]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+
+DefUse:
+    value:REF_3#1: def=ir_10, uses=[ir_11]
+    input:allowance: def=input, uses=[ir_10, ir_17, ir_18, ir_19]
+    input:from: def=input, uses=[ir_10, ir_17, ir_18, ir_19]
+    input:msg.sender: def=input, uses=[ir_10, ir_17, ir_18, ir_19]
+    value:current_1#1: def=ir_11, uses=[ir_12]
+    value:TMP_5#1: def=ir_12, uses=[ir_15]
+    input:value_1: def=input, uses=[ir_12, ir_18, ir_19]
+    value:TMP_6#1: def=ir_13, uses=[ir_14]
+    value:TMP_7#1: def=ir_14, uses=[ir_15]
+    input:to_1: def=input, uses=[ir_14, ir_19]
+    value:TMP_8#1: def=ir_15, uses=[ir_16]
+    value:REF_5#1: def=ir_17, uses=[ir_18]
+    input:value: def=input, uses=[ir_17, ir_18, ir_19]
+    input:to: def=input, uses=[ir_17, ir_18, ir_19]
+    input:from_1: def=input, uses=[ir_19]
+
+
+Function ControlFlowERC20.distribute(address[], uint256)
+    contract = ControlFlowERC20
+    signature = distribute(address[], uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // no semantic instructions
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n4, bb_sol_slither_n9
+    // no semantic instructions
+    Goto(bb_sol_slither_n14)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_20 | source=solidity | origin_facts=[fact_30]
+    i_1 = 0
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n1, bb_sol_slither_n13
+    // ir_21 | source=solidity | origin_facts=[fact_31]
+    i_2 = Phi(Tuple(i_1, i_3))
+    // ir_22 | source=solidity | origin_facts=[fact_32]
+    REF_6 = LengthRead(receivers_1.length)
+    // ir_23 | source=solidity | origin_facts=[fact_33]
+    TMP_11 = Lt(i_2, REF_6)
+    // terminator origin_facts=[fact_34]
+    @execution-condition Lt(i, receivers.length)
+    Branch(TMP_11, bb_sol_slither_n5, bb_sol_slither_n2)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_24 | source=solidity | origin_facts=[fact_35]
+    @condition Lt(i, receivers.length)
+    REF_7 = IndexAccess(Index(receivers_1, i_2))
+    // ir_25 | source=solidity | origin_facts=[fact_36]
+    @condition Lt(i, receivers.length)
+    TMP_12 = address(0)
+    // ir_26 | source=solidity | origin_facts=[fact_37]
+    @condition Lt(i, receivers.length)
+    TMP_13 = Eq(REF_7, TMP_12)
+    // terminator origin_facts=[fact_38]
+    @execution-condition Eq(Index(receivers, i), address(0))
+    Branch(TMP_13, bb_sol_slither_n6, bb_sol_slither_n7)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // no semantic instructions
+    Goto(bb_sol_slither_n13)
+
+bb_sol_slither_n7 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // no semantic instructions
+    Branch(endif, bb_sol_slither_n8)
+
+bb_sol_slither_n8 [solidity]:
+    // predecessors: bb_sol_slither_n7
+    // ir_27 | source=solidity | origin_facts=[fact_39]
+    @condition And(Lt(i, receivers.length), Not(Eq(Index(receivers, i), address(0))))
+    TMP_14 = Ge(sent_0, 10)
+    // terminator origin_facts=[fact_40]
+    @execution-condition Ge(sent, 10)
+    Branch(TMP_14, bb_sol_slither_n9, bb_sol_slither_n10)
+
+bb_sol_slither_n9 [solidity]:
+    // predecessors: bb_sol_slither_n8
+    // no semantic instructions
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n10 [solidity]:
+    // predecessors: bb_sol_slither_n8
+    // no semantic instructions
+    Branch(endif, bb_sol_slither_n11)
+
+bb_sol_slither_n11 [solidity]:
+    // predecessors: bb_sol_slither_n10
+    // ir_28 | source=solidity | origin_facts=[fact_42, fact_41]
+    @condition And(
+    And(Lt(i, receivers.length), Not(Eq(Index(receivers, i), address(0)))),
+    Not(Ge(sent, 10))
+)
+    @execution InternalCall(expr=_move(msg.sender, REF_8, amount_1, 0), args=[msg.sender, REF_8, amount_1, 0])
+    InternalCall(
+        _move(msg.sender, Index(receivers_1, i_2), amount_1, 0),
+        msg.sender,
+        Index(receivers_1, i_2),
+        amount_1,
+        0
+    )
+    Goto(bb_sol_slither_n12)
+
+bb_sol_slither_n12 [solidity]:
+    // predecessors: bb_sol_slither_n11
+    // ir_29 | source=solidity | origin_facts=[fact_43]
+    @condition And(
+    And(Lt(i, receivers.length), Not(Eq(Index(receivers, i), address(0)))),
+    Not(Ge(sent, 10))
+)
+    TMP_16 = sent_0
+    // ir_30 | source=solidity | origin_facts=[fact_44]
+    @condition And(
+    And(Lt(i, receivers.length), Not(Eq(Index(receivers, i), address(0)))),
+    Not(Ge(sent, 10))
+)
+    sent_2 = Add(sent_0, 1)
+    Goto(bb_sol_slither_n13)
+
+bb_sol_slither_n13 [solidity]:
+    // predecessors: bb_sol_slither_n6, bb_sol_slither_n12
+    // ir_31 | source=solidity | origin_facts=[fact_46]
+    @condition Lt(i, receivers.length)
+    sent_1 = Phi(Tuple(sent_0, sent_2))
+    // ir_32 | source=solidity | origin_facts=[fact_47]
+    @condition Lt(i, receivers.length)
+    i_3 = Add(i_2, 1)
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n14 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    // terminator origin_facts=[fact_45]
+    Return(sent_0)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n4 [loop]
+    bb_sol_slither_n2 -> bb_sol_slither_n14 [loop]
+    bb_sol_slither_n3 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [true]
+    bb_sol_slither_n4 -> bb_sol_slither_n2 [false]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [true]
+    bb_sol_slither_n5 -> bb_sol_slither_n7 [false]
+    bb_sol_slither_n6 -> bb_sol_slither_n13 [fallthrough]
+    bb_sol_slither_n7 -> bb_sol_slither_n8 [join]
+    bb_sol_slither_n8 -> bb_sol_slither_n9 [true]
+    bb_sol_slither_n8 -> bb_sol_slither_n10 [false]
+    bb_sol_slither_n9 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n10 -> bb_sol_slither_n11 [join]
+    bb_sol_slither_n11 -> bb_sol_slither_n12 [fallthrough]
+    bb_sol_slither_n12 -> bb_sol_slither_n13 [fallthrough]
+    bb_sol_slither_n13 -> bb_sol_slither_n4 [fallthrough]
+
+DefUse:
+    value:i_1#1: def=ir_20, uses=[ir_21]
+    value:i_2#1: def=ir_21, uses=[ir_23, ir_24, ir_32]
+    input:i_3: def=input, uses=[ir_21]
+    value:REF_6#1: def=ir_22, uses=[ir_23]
+    input:receivers_1.length: def=input, uses=[ir_22]
+    value:TMP_11#1: def=ir_23, uses=[-]
+    input:i: def=input, uses=[terminator:bb_sol_slither_n4, ir_24, ir_25, ir_26, terminator:bb_sol_slither_n5, ir_27, ir_28, ir_29, ir_30, ir_31, ir_32]
+    input:receivers.length: def=input, uses=[terminator:bb_sol_slither_n4, ir_24, ir_25, ir_26, ir_27, ir_28, ir_29, ir_30, ir_31, ir_32]
+    value:REF_7#1: def=ir_24, uses=[ir_26]
+    input:receivers_1: def=input, uses=[ir_24]
+    value:TMP_12#1: def=ir_25, uses=[ir_26]
+    value:TMP_13#1: def=ir_26, uses=[-]
+    input:receivers: def=input, uses=[terminator:bb_sol_slither_n5, ir_27, ir_28, ir_29, ir_30]
+    input:endif: def=input, uses=[terminator:bb_sol_slither_n7, terminator:bb_sol_slither_n10]
+    value:TMP_14#1: def=ir_27, uses=[-]
+    input:sent_0: def=input, uses=[ir_27, ir_29, ir_30, ir_31, terminator:bb_sol_slither_n14]
+    input:sent: def=input, uses=[terminator:bb_sol_slither_n8, ir_28, ir_29, ir_30]
+    input:msg.sender: def=input, uses=[ir_28]
+    input:REF_8: def=input, uses=[ir_28]
+    input:amount_1: def=input, uses=[ir_28]
+    value:TMP_16#1: def=ir_29, uses=[-]
+    value:sent_2#1: def=ir_30, uses=[ir_31]
+    value:sent_1#1: def=ir_31, uses=[-]
+    value:i_3#1: def=ir_32, uses=[-]
+
+
+Function ControlFlowERC20.burnUntilBelow(uint256, uint256)
+    contract = ControlFlowERC20
+    signature = burnUntilBelow(uint256, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_33 | source=solidity | origin_facts=[fact_48]
+    TMP_17 = Ne(step_1, 0)
+    // ir_34 | source=solidity | origin_facts=[fact_49]
+    @execution Require(expr=require(bool,string)(TMP_17, step)(TMP_17, step))
+    Require(Ne(step, 0))
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2, bb_sol_slither_n6
+    // ir_35 | source=solidity | origin_facts=[fact_50]
+    @condition Ne(step, 0)
+    burned_1 = Phi(Tuple(burned_0, burned_2))
+    // ir_36 | source=solidity | origin_facts=[fact_51]
+    @condition Ne(step, 0)
+    totalSupply_1 = StateRead(StateVariableLocation(totalSupply))
+    // ir_37 | source=solidity | origin_facts=[fact_52]
+    @condition Ne(step, 0)
+    TMP_19 = Gt(totalSupply_1, targetSupply_1)
+    // terminator origin_facts=[fact_53]
+    @execution-condition Gt(totalSupply, targetSupply)
+    Branch(TMP_19, bb_sol_slither_n8, bb_sol_slither_n7)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n11
+    // ir_46 | source=solidity | origin_facts=[fact_64]
+    @condition And(Gt(totalSupply, targetSupply), Ne(step, 0))
+    InternalCall(_burn(msg.sender, burnAmount_3), msg.sender, burnAmount_3)
+    Goto(bb_sol_slither_n6)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // ir_47 | source=solidity | origin_facts=[fact_65]
+    @condition And(Gt(totalSupply, targetSupply), Ne(step, 0))
+    burned_2 = Add(burned_1, burnAmount_3)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n7 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // no semantic instructions
+    Goto(bb_sol_slither_n12)
+
+bb_sol_slither_n8 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_38 | source=solidity | origin_facts=[fact_55]
+    @condition And(Gt(totalSupply, targetSupply), Ne(step, 0))
+    totalSupply_1 = StateRead(StateVariableLocation(totalSupply))
+    // ir_39 | source=solidity | origin_facts=[fact_56]
+    @condition And(Gt(totalSupply, targetSupply), Ne(step, 0))
+    TMP_21 = Sub(totalSupply_1, targetSupply_1)
+    // ir_40 | source=solidity | origin_facts=[fact_57]
+    @condition And(Gt(totalSupply, targetSupply), Ne(step, 0))
+    TMP_22 = Gt(TMP_21, step_1)
+    // terminator origin_facts=[fact_58]
+    @execution-condition Gt(Sub(totalSupply, targetSupply), step)
+    Branch(TMP_22, bb_sol_slither_n9, bb_sol_slither_n10)
+
+bb_sol_slither_n9 [solidity]:
+    // predecessors: bb_sol_slither_n8
+    // ir_44 | source=solidity | origin_facts=[fact_62]
+    @condition And(
+    And(Gt(totalSupply, targetSupply), Gt(Sub(totalSupply, targetSupply), step)),
+    Ne(step, 0)
+)
+    burnAmount_2 = step_1
+    Goto(bb_sol_slither_n11)
+
+bb_sol_slither_n10 [solidity]:
+    // predecessors: bb_sol_slither_n8
+    // ir_41 | source=solidity | origin_facts=[fact_59]
+    @condition And(
+    And(Gt(totalSupply, targetSupply), Not(Gt(Sub(totalSupply, targetSupply), step))),
+    Ne(step, 0)
+)
+    totalSupply_1 = StateRead(StateVariableLocation(totalSupply))
+    // ir_42 | source=solidity | origin_facts=[fact_60]
+    @condition And(
+    And(Gt(totalSupply, targetSupply), Not(Gt(Sub(totalSupply, targetSupply), step))),
+    Ne(step, 0)
+)
+    TMP_23 = Sub(totalSupply_1, targetSupply_1)
+    // ir_43 | source=solidity | origin_facts=[fact_61]
+    @condition And(
+    And(Gt(totalSupply, targetSupply), Not(Gt(Sub(totalSupply, targetSupply), step))),
+    Ne(step, 0)
+)
+    burnAmount_1 = TMP_23
+    Goto(bb_sol_slither_n11)
+
+bb_sol_slither_n11 [solidity]:
+    // predecessors: bb_sol_slither_n9, bb_sol_slither_n10
+    // ir_45 | source=solidity | origin_facts=[fact_63]
+    @condition And(Gt(totalSupply, targetSupply), Ne(step, 0))
+    burnAmount_3 = Phi(Tuple(burnAmount_1, burnAmount_2))
+    Branch(endif, bb_sol_slither_n5)
+
+bb_sol_slither_n12 [solidity]:
+    // predecessors: bb_sol_slither_n7
+    // no semantic instructions
+    // terminator origin_facts=[fact_54]
+    Return(burned_1)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [loop]
+    bb_sol_slither_n3 -> bb_sol_slither_n8 [true]
+    bb_sol_slither_n3 -> bb_sol_slither_n7 [false]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [fallthrough]
+    bb_sol_slither_n6 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n7 -> bb_sol_slither_n12 [loop]
+    bb_sol_slither_n8 -> bb_sol_slither_n9 [true]
+    bb_sol_slither_n8 -> bb_sol_slither_n10 [false]
+    bb_sol_slither_n9 -> bb_sol_slither_n11 [fallthrough]
+    bb_sol_slither_n10 -> bb_sol_slither_n11 [fallthrough]
+    bb_sol_slither_n11 -> bb_sol_slither_n5 [join]
+
+DefUse:
+    value:TMP_17#1: def=ir_33, uses=[ir_34]
+    input:step_1: def=input, uses=[ir_33, ir_40, ir_44]
+    input:step: def=input, uses=[ir_34, ir_35, ir_36, ir_37, ir_46, ir_47, ir_38, ir_39, ir_40, terminator:bb_sol_slither_n8, ir_44, ir_41, ir_42, ir_43, ir_45]
+    value:burned_1#1: def=ir_35, uses=[ir_47, terminator:bb_sol_slither_n12]
+    input:burned_0: def=input, uses=[ir_35]
+    input:burned_2: def=input, uses=[ir_35]
+    value:totalSupply_1#1: def=ir_36, uses=[ir_37]
+    input:totalSupply: def=input, uses=[ir_36, terminator:bb_sol_slither_n3, ir_46, ir_47, ir_38, ir_39, ir_40, terminator:bb_sol_slither_n8, ir_44, ir_41, ir_42, ir_43, ir_45]
+    value:TMP_19#1: def=ir_37, uses=[-]
+    input:targetSupply_1: def=input, uses=[ir_37, ir_39, ir_42]
+    input:targetSupply: def=input, uses=[terminator:bb_sol_slither_n3, ir_46, ir_47, ir_38, ir_39, ir_40, terminator:bb_sol_slither_n8, ir_44, ir_41, ir_42, ir_43, ir_45]
+    input:msg.sender: def=input, uses=[ir_46]
+    input:burnAmount_3: def=input, uses=[ir_46, ir_47]
+    value:burned_2#1: def=ir_47, uses=[-]
+    value:totalSupply_1#2: def=ir_38, uses=[ir_39]
+    value:TMP_21#1: def=ir_39, uses=[ir_40]
+    value:TMP_22#1: def=ir_40, uses=[-]
+    value:burnAmount_2#1: def=ir_44, uses=[ir_45]
+    value:totalSupply_1#3: def=ir_41, uses=[ir_42]
+    value:TMP_23#1: def=ir_42, uses=[ir_43]
+    value:burnAmount_1#1: def=ir_43, uses=[ir_45]
+    value:burnAmount_3#1: def=ir_45, uses=[-]
+    input:endif: def=input, uses=[terminator:bb_sol_slither_n11]
+
+
+Function ControlFlowERC20.fillPreview(uint256)
+    contract = ControlFlowERC20
+    signature = fillPreview(uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_48 | source=solidity | origin_facts=[fact_66]
+    TMP_25 = NewArray(NewArray(length_1))
+    // ir_49 | source=solidity | origin_facts=[fact_67]
+    preview_1 = ArrayConstruct(OpaqueExpression("preview_1(uint256[]) = ['TMP_25(uint256[])']"))
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n9
+    // ir_56 | source=solidity | origin_facts=[fact_75]
+    @condition Not(Eq(length, 0))
+    TMP_26 = Lt(i_2, length_1)
+    // terminator origin_facts=[fact_76]
+    @execution-condition Lt(i, length)
+    Branch(TMP_26, bb_sol_slither_n5, bb_sol_slither_n10)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n3, bb_sol_slither_n4
+    // ir_50 | source=solidity | origin_facts=[fact_68]
+    i_1 = Phi(Tuple(i_2, i_0))
+    // ir_51 | source=solidity | origin_facts=[fact_69]
+    TMP_27 = Eq(length_1, 0)
+    // terminator origin_facts=[fact_70]
+    @execution-condition Eq(length, 0)
+    Branch(TMP_27, bb_sol_slither_n6, bb_sol_slither_n7)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // no semantic instructions
+    Goto(bb_sol_slither_n10)
+
+bb_sol_slither_n7 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // no semantic instructions
+    Branch(endif, bb_sol_slither_n8)
+
+bb_sol_slither_n8 [solidity]:
+    // predecessors: bb_sol_slither_n7
+    // ir_52 | source=solidity | origin_facts=[fact_71]
+    @condition Not(Eq(length, 0))
+    REF_9 = IndexAccess(Index(preview_1, i_1))
+    // ir_53 | source=solidity | origin_facts=[fact_72]
+    @condition Not(Eq(length, 0))
+    TMP_28 = OpaqueExpression("2 ** i_1")
+    // ir_54 | source=solidity | origin_facts=[fact_73]
+    @condition Not(Eq(length, 0))
+    REF_9 = TMP_28
+    Goto(bb_sol_slither_n9)
+
+bb_sol_slither_n9 [solidity]:
+    // predecessors: bb_sol_slither_n8
+    // ir_55 | source=solidity | origin_facts=[fact_74]
+    @condition Not(Eq(length, 0))
+    i_2 = Add(i_1, 1)
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n10 [solidity]:
+    // predecessors: bb_sol_slither_n4, bb_sol_slither_n6
+    // ir_57 | source=solidity | origin_facts=[fact_77]
+    preview_3 = Phi(Tuple(preview_2, preview_1))
+    Goto(bb_sol_slither_n11)
+
+bb_sol_slither_n11 [solidity]:
+    // predecessors: bb_sol_slither_n10
+    // no semantic instructions
+    // terminator origin_facts=[fact_78]
+    Return(preview_3)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n5 [loop]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [true]
+    bb_sol_slither_n4 -> bb_sol_slither_n10 [false]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [true]
+    bb_sol_slither_n5 -> bb_sol_slither_n7 [false]
+    bb_sol_slither_n6 -> bb_sol_slither_n10 [fallthrough]
+    bb_sol_slither_n7 -> bb_sol_slither_n8 [join]
+    bb_sol_slither_n8 -> bb_sol_slither_n9 [fallthrough]
+    bb_sol_slither_n9 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n10 -> bb_sol_slither_n11 [loop]
+
+DefUse:
+    value:TMP_25#1: def=ir_48, uses=[-]
+    input:length_1: def=input, uses=[ir_48, ir_56, ir_51]
+    value:preview_1#1: def=ir_49, uses=[ir_52, ir_57]
+    value:TMP_26#1: def=ir_56, uses=[-]
+    input:i_2: def=input, uses=[ir_56, ir_50]
+    input:length: def=input, uses=[ir_56, terminator:bb_sol_slither_n4, terminator:bb_sol_slither_n5, ir_52, ir_53, ir_54, ir_55]
+    input:i: def=input, uses=[terminator:bb_sol_slither_n4]
+    value:i_1#1: def=ir_50, uses=[ir_52, ir_55]
+    input:i_0: def=input, uses=[ir_50]
+    value:TMP_27#1: def=ir_51, uses=[-]
+    input:endif: def=input, uses=[terminator:bb_sol_slither_n7]
+    value:REF_9#1: def=ir_52, uses=[-]
+    value:TMP_28#1: def=ir_53, uses=[ir_54]
+    value:REF_9#2: def=ir_54, uses=[-]
+    value:i_2#1: def=ir_55, uses=[-]
+    value:preview_3#1: def=ir_57, uses=[terminator:bb_sol_slither_n11]
+    input:preview_2: def=input, uses=[ir_57]
+
+
+Function ControlFlowERC20.resetAllowance(address)
+    contract = ControlFlowERC20
+    signature = resetAllowance(address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_58 | source=solidity | origin_facts=[fact_81, fact_79, fact_80]
+    StateWrite(MappingLocation(base = allowance, keys = [msg.sender, spender]), 0)
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_59 | source=solidity | origin_facts=[fact_82]
+    EventEmit(Approval, msg.sender, spender_1, 0)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+
+DefUse:
+    input:msg.sender: def=input, uses=[ir_58, ir_59]
+    input:spender: def=input, uses=[ir_58]
+    input:spender_1: def=input, uses=[ir_59]
+
+
+Function ControlFlowERC20.bitOps(uint256, uint256)
+    contract = ControlFlowERC20
+    signature = bitOps(uint256, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_60 | source=solidity | origin_facts=[fact_83]
+    TMP_30 = BitAnd(x_1, y_1)
+    // ir_61 | source=solidity | origin_facts=[fact_84]
+    TMP_31 = Xor(x_1, y_1)
+    // ir_62 | source=solidity | origin_facts=[fact_85]
+    TMP_32 = BitOr(TMP_30, TMP_31)
+    // ir_63 | source=solidity | origin_facts=[fact_86]
+    z_1 = TMP_32
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_64 | source=solidity | origin_facts=[fact_87]
+    z_2 = Shl(z_1, 1)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_65 | source=solidity | origin_facts=[fact_88]
+    z_3 = Shr(z_2, 1)
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_66 | source=solidity | origin_facts=[fact_89]
+    TMP_34 = 18446744073709551615
+    // ir_67 | source=solidity | origin_facts=[fact_90]
+    z_4 = Mod(z_3, TMP_34)
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_68 | source=solidity | origin_facts=[fact_91]
+    TMP_35 = BitNot(z_4)
+    // terminator origin_facts=[fact_92]
+    Return(TMP_35)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+
+DefUse:
+    value:TMP_30#1: def=ir_60, uses=[ir_62]
+    input:x_1: def=input, uses=[ir_60, ir_61]
+    input:y_1: def=input, uses=[ir_60, ir_61]
+    value:TMP_31#1: def=ir_61, uses=[ir_62]
+    value:TMP_32#1: def=ir_62, uses=[ir_63]
+    value:z_1#1: def=ir_63, uses=[ir_64]
+    value:z_2#1: def=ir_64, uses=[ir_65]
+    value:z_3#1: def=ir_65, uses=[ir_67]
+    value:TMP_34#1: def=ir_66, uses=[ir_67]
+    value:z_4#1: def=ir_67, uses=[ir_68]
+    value:TMP_35#1: def=ir_68, uses=[terminator:bb_sol_slither_n5]
+
+
+Function ControlFlowERC20._move(address, address, uint256, uint256)
+    contract = ControlFlowERC20
+    signature = _move(address, address, uint256, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_69 | source=solidity | origin_facts=[fact_93]
+    TMP_36 = address(0)
+    // ir_70 | source=solidity | origin_facts=[fact_94]
+    TMP_37 = Ne(to_1, TMP_36)
+    // ir_71 | source=solidity | origin_facts=[fact_95]
+    TMP_38 = Ne(value_1, 0)
+    // ir_72 | source=solidity | origin_facts=[fact_96]
+    TMP_39 = Eq(fee_1, 0)
+    // ir_73 | source=solidity | origin_facts=[fact_97]
+    TMP_40 = Or(TMP_38, TMP_39)
+    // ir_74 | source=solidity | origin_facts=[fact_98]
+    TMP_41 = And(TMP_37, TMP_40)
+    // ir_75 | source=solidity | origin_facts=[fact_99]
+    @execution Require(expr=require(bool,string)(TMP_41, bad)(TMP_41, bad))
+    Require(And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))))
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_76 | source=solidity | origin_facts=[fact_100]
+    @condition And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))
+    TMP_43 = Add(value_1, fee_1)
+    // ir_77 | source=solidity | origin_facts=[fact_101]
+    @condition And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))
+    debit_1 = TMP_43
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_78 | source=solidity | origin_facts=[fact_103, fact_102, fact_107]
+    @condition And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))
+    REF_12 = StateRead(MappingLocation(base = balanceOf, keys = [from]))
+    // ir_79 | source=solidity | origin_facts=[fact_104]
+    @condition And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))
+    bal_1 = REF_12
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_80 | source=solidity | origin_facts=[fact_105]
+    @condition And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))
+    TMP_44 = Ge(bal_1, debit_1)
+    // ir_81 | source=solidity | origin_facts=[fact_106]
+    @condition And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))
+    @execution Require(expr=require(bool,string)(TMP_44, balance)(TMP_44, balance))
+    Require(Ge(Index(balanceOf, from), Add(value, fee)))
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_83 | source=solidity | origin_facts=[fact_109, fact_102, fact_107]
+    @condition And(
+    And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    @execution StateWrite(expr=TMP_46)
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [from]),
+        Sub(Index(balanceOf, from), Add(value, fee))
+    )
+    // ir_82 | source=solidity | origin_facts=[fact_108]
+    @condition And(
+    And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    TMP_46 = Sub(bal_1, debit_1)
+    Goto(bb_sol_slither_n6)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // ir_84 | source=solidity | origin_facts=[fact_111, fact_110]
+    @condition And(
+    And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    REF_14 = StateRead(MappingLocation(base = balanceOf, keys = [to]))
+    // ir_85 | source=solidity | origin_facts=[fact_112, fact_110]
+    @condition And(
+    And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    @execution StateWrite(expr=Add(REF_14, value_1))
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [to]),
+        Add(Index(balanceOf, to), value)
+    )
+    Goto(bb_sol_slither_n7)
+
+bb_sol_slither_n7 [solidity]:
+    // predecessors: bb_sol_slither_n6
+    // ir_86 | source=solidity | origin_facts=[fact_113]
+    @condition And(
+    And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    TMP_47 = Gt(fee_1, 0)
+    // terminator origin_facts=[fact_114]
+    @execution-condition Gt(fee, 0)
+    Branch(TMP_47, bb_sol_slither_n8, bb_sol_slither_n10)
+
+bb_sol_slither_n8 [solidity]:
+    // predecessors: bb_sol_slither_n7
+    // ir_87 | source=solidity | origin_facts=[fact_115]
+    @condition And(
+    And(Gt(fee, 0), And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    totalSupply_3 = StateRead(StateVariableLocation(totalSupply))
+    // ir_88 | source=solidity | origin_facts=[fact_116]
+    @condition And(
+    And(Gt(fee, 0), And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    @execution StateWrite(expr=Sub(totalSupply_3, fee_1))
+    StateWrite(StateVariableLocation(totalSupply), Sub(totalSupply, fee))
+    Goto(bb_sol_slither_n9)
+
+bb_sol_slither_n9 [solidity]:
+    // predecessors: bb_sol_slither_n8
+    // ir_89 | source=solidity | origin_facts=[fact_117]
+    @condition And(
+    And(Gt(fee, 0), And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    TMP_48 = address(0)
+    // ir_90 | source=solidity | origin_facts=[fact_118]
+    @condition And(
+    And(Gt(fee, 0), And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0)))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    EventEmit(Transfer, from_1, TMP_48, fee_1)
+    Goto(bb_sol_slither_n10)
+
+bb_sol_slither_n10 [solidity]:
+    // predecessors: bb_sol_slither_n7, bb_sol_slither_n9
+    // no semantic instructions
+    Branch(endif, bb_sol_slither_n11)
+
+bb_sol_slither_n11 [solidity]:
+    // predecessors: bb_sol_slither_n10
+    // ir_91 | source=solidity | origin_facts=[fact_119]
+    @condition And(
+    And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    TMP_50 = uint160(to_1)
+    // ir_92 | source=solidity | origin_facts=[fact_120]
+    @condition And(
+    And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    transferBitmap_1 = StateRead(StateVariableLocation(transferBitmap))
+    // ir_93 | source=solidity | origin_facts=[fact_121]
+    @condition And(
+    And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    @execution StateWrite(expr=Xor(transferBitmap_1, TMP_50))
+    StateWrite(StateVariableLocation(transferBitmap), Xor(transferBitmap, uint160(to)))
+    Goto(bb_sol_slither_n12)
+
+bb_sol_slither_n12 [solidity]:
+    // predecessors: bb_sol_slither_n11
+    // ir_94 | source=solidity | origin_facts=[fact_122]
+    @condition And(
+    And(Ne(to, address(0)), Or(Ne(value, 0), Eq(fee, 0))),
+    Ge(Index(balanceOf, from), Add(value, fee))
+)
+    EventEmit(Transfer, from_1, to_1, value_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [fallthrough]
+    bb_sol_slither_n6 -> bb_sol_slither_n7 [fallthrough]
+    bb_sol_slither_n7 -> bb_sol_slither_n8 [true]
+    bb_sol_slither_n7 -> bb_sol_slither_n10 [false]
+    bb_sol_slither_n8 -> bb_sol_slither_n9 [fallthrough]
+    bb_sol_slither_n9 -> bb_sol_slither_n10 [fallthrough]
+    bb_sol_slither_n10 -> bb_sol_slither_n11 [join]
+    bb_sol_slither_n11 -> bb_sol_slither_n12 [fallthrough]
+
+DefUse:
+    value:TMP_36#1: def=ir_69, uses=[ir_70]
+    value:TMP_37#1: def=ir_70, uses=[ir_74]
+    input:to_1: def=input, uses=[ir_70, ir_91, ir_94]
+    value:TMP_38#1: def=ir_71, uses=[ir_73]
+    input:value_1: def=input, uses=[ir_71, ir_76, ir_85, ir_94]
+    value:TMP_39#1: def=ir_72, uses=[ir_73]
+    input:fee_1: def=input, uses=[ir_72, ir_76, ir_86, ir_88, ir_90]
+    value:TMP_40#1: def=ir_73, uses=[ir_74]
+    value:TMP_41#1: def=ir_74, uses=[ir_75]
+    input:bad: def=input, uses=[ir_75]
+    value:TMP_43#1: def=ir_76, uses=[ir_77]
+    input:to: def=input, uses=[ir_76, ir_77, ir_78, ir_79, ir_80, ir_81, ir_83, ir_82, ir_84, ir_85, ir_86, ir_87, ir_88, ir_89, ir_90, ir_91, ir_92, ir_93, ir_94]
+    input:value: def=input, uses=[ir_76, ir_77, ir_78, ir_79, ir_80, ir_81, ir_83, ir_82, ir_84, ir_85, ir_86, ir_87, ir_88, ir_89, ir_90, ir_91, ir_92, ir_93, ir_94]
+    input:fee: def=input, uses=[ir_76, ir_77, ir_78, ir_79, ir_80, ir_81, ir_83, ir_82, ir_84, ir_85, ir_86, terminator:bb_sol_slither_n7, ir_87, ir_88, ir_89, ir_90, ir_91, ir_92, ir_93, ir_94]
+    value:debit_1#1: def=ir_77, uses=[ir_80, ir_82]
+    value:REF_12#1: def=ir_78, uses=[ir_79]
+    input:balanceOf: def=input, uses=[ir_78, ir_83, ir_82, ir_84, ir_85, ir_86, ir_87, ir_88, ir_89, ir_90, ir_91, ir_92, ir_93, ir_94]
+    input:from: def=input, uses=[ir_78, ir_83, ir_82, ir_84, ir_85, ir_86, ir_87, ir_88, ir_89, ir_90, ir_91, ir_92, ir_93, ir_94]
+    value:bal_1#1: def=ir_79, uses=[ir_80, ir_82]
+    value:TMP_44#1: def=ir_80, uses=[ir_81]
+    input:balance: def=input, uses=[ir_81]
+    input:TMP_46: def=input, uses=[ir_83]
+    value:TMP_46#1: def=ir_82, uses=[-]
+    value:REF_14#1: def=ir_84, uses=[ir_85]
+    value:TMP_47#1: def=ir_86, uses=[-]
+    value:totalSupply_3#1: def=ir_87, uses=[ir_88]
+    input:totalSupply: def=input, uses=[ir_87]
+    value:TMP_48#1: def=ir_89, uses=[ir_90]
+    input:from_1: def=input, uses=[ir_90, ir_94]
+    input:endif: def=input, uses=[terminator:bb_sol_slither_n10]
+    value:TMP_50#1: def=ir_91, uses=[ir_93]
+    value:transferBitmap_1#1: def=ir_92, uses=[ir_93]
+    input:transferBitmap: def=input, uses=[ir_92]
+
+
+Function ControlFlowERC20._mint(address, uint256)
+    contract = ControlFlowERC20
+    signature = _mint(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_95 | source=solidity | origin_facts=[fact_123]
+    totalSupply_5 = StateRead(StateVariableLocation(totalSupply))
+    // ir_96 | source=solidity | origin_facts=[fact_124]
+    @execution StateWrite(expr=Add(totalSupply_5, value_1))
+    StateWrite(StateVariableLocation(totalSupply), Add(totalSupply, value))
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_97 | source=solidity | origin_facts=[fact_126, fact_125]
+    REF_15 = StateRead(MappingLocation(base = balanceOf, keys = [to]))
+    // ir_98 | source=solidity | origin_facts=[fact_127, fact_125]
+    @execution StateWrite(expr=Add(REF_15, value_1))
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [to]),
+        Add(Index(balanceOf, to), value)
+    )
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_99 | source=solidity | origin_facts=[fact_128]
+    TMP_52 = address(0)
+    // ir_100 | source=solidity | origin_facts=[fact_129]
+    EventEmit(Transfer, TMP_52, to_1, value_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+DefUse:
+    value:totalSupply_5#1: def=ir_95, uses=[ir_96]
+    input:totalSupply: def=input, uses=[ir_95]
+    input:value_1: def=input, uses=[ir_96, ir_98, ir_100]
+    value:REF_15#1: def=ir_97, uses=[ir_98]
+    input:balanceOf: def=input, uses=[ir_97]
+    input:to: def=input, uses=[ir_97, ir_98]
+    value:TMP_52#1: def=ir_99, uses=[ir_100]
+    input:to_1: def=input, uses=[ir_100]
+
+
+Function ControlFlowERC20._burn(address, uint256)
+    contract = ControlFlowERC20
+    signature = _burn(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_101 | source=solidity | origin_facts=[fact_131, fact_130, fact_135]
+    REF_16 = StateRead(MappingLocation(base = balanceOf, keys = [from]))
+    // ir_102 | source=solidity | origin_facts=[fact_132]
+    bal_1 = REF_16
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_103 | source=solidity | origin_facts=[fact_133]
+    TMP_54 = Ge(bal_1, value_1)
+    // ir_104 | source=solidity | origin_facts=[fact_134]
+    @execution Require(expr=require(bool,string)(TMP_54, balance)(TMP_54, balance))
+    Require(Ge(Index(balanceOf, from), value))
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_106 | source=solidity | origin_facts=[fact_137, fact_130, fact_135]
+    @condition Ge(Index(balanceOf, from), value)
+    @execution StateWrite(expr=TMP_56)
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [from]),
+        Sub(Index(balanceOf, from), value)
+    )
+    // ir_105 | source=solidity | origin_facts=[fact_136]
+    @condition Ge(Index(balanceOf, from), value)
+    TMP_56 = Sub(bal_1, value_1)
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_107 | source=solidity | origin_facts=[fact_138]
+    @condition Ge(Index(balanceOf, from), value)
+    totalSupply_7 = StateRead(StateVariableLocation(totalSupply))
+    // ir_108 | source=solidity | origin_facts=[fact_139]
+    @condition Ge(Index(balanceOf, from), value)
+    @execution StateWrite(expr=Sub(totalSupply_7, value_1))
+    StateWrite(StateVariableLocation(totalSupply), Sub(totalSupply, value))
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_109 | source=solidity | origin_facts=[fact_140]
+    @condition Ge(Index(balanceOf, from), value)
+    TMP_57 = address(0)
+    // ir_110 | source=solidity | origin_facts=[fact_141]
+    @condition Ge(Index(balanceOf, from), value)
+    EventEmit(Transfer, from_1, TMP_57, value_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+
+DefUse:
+    value:REF_16#1: def=ir_101, uses=[ir_102]
+    input:balanceOf: def=input, uses=[ir_101, ir_106, ir_105, ir_107, ir_108, ir_109, ir_110]
+    input:from: def=input, uses=[ir_101, ir_106, ir_105, ir_107, ir_108, ir_109, ir_110]
+    value:bal_1#1: def=ir_102, uses=[ir_103, ir_105]
+    value:TMP_54#1: def=ir_103, uses=[ir_104]
+    input:value_1: def=input, uses=[ir_103, ir_105, ir_108, ir_110]
+    input:balance: def=input, uses=[ir_104]
+    input:TMP_56: def=input, uses=[ir_106]
+    input:value: def=input, uses=[ir_106, ir_105, ir_107, ir_108, ir_109, ir_110]
+    value:TMP_56#1: def=ir_105, uses=[-]
+    value:totalSupply_7#1: def=ir_107, uses=[ir_108]
+    input:totalSupply: def=input, uses=[ir_107]
+    value:TMP_57#1: def=ir_109, uses=[ir_110]
+    input:from_1: def=input, uses=[ir_110]

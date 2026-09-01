@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path as _SSEIRPath
 import sys as _sseir_sys
 _SSEIR_ROOT = _SSEIRPath(__file__).resolve().parents[1]
-for _sseir_path in (_SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
+for _sseir_path in (_SSEIR_ROOT, _SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
     _sseir_text = str(_sseir_path)
     if _sseir_text not in _sseir_sys.path:
         _sseir_sys.path.insert(0, _sseir_text)
@@ -26,12 +26,18 @@ from s_seir_model import FunctionSSEIR
 from s_seir_overlay_builder import SemanticOverlayBuilder
 from s_seir_selector_registry import build_selector_registry
 from s_seir_source_collector import SourceStatementCollector
-from s_seir_solidity_atomic_ops import SolidityAtomicOperationExtractor, write_solidity_atomic_operation_json
 from s_seir_solidity_like_export import write_solidity_like_text
 from s_seir_storage_layout import apply_storage_layout, extract_storage_layout
 from s_seir_security_facts import SecurityFactBuilder
-from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload, write_json as write_semantic_fact_json
 from s_seir_type_env import TypeEnv
+from s_seir_yul_atomic_ops import YulAtomicOperationExtractor, write_yul_atomic_operation_json
+from semantic_fact import (
+    SolidityAtomicOperationExtractor,
+    build_function_level_semantic_fact_payload,
+    write_json as write_semantic_fact_json,
+    write_solidity_atomic_operation_json,
+)
+from semantic_ir import build_semantic_ir_program, write_semantic_ir_json, write_semantic_ir_text
 
 def json_ready(v:Any)->Any:
     if is_dataclass(v): return json_ready(asdict(v))
@@ -135,9 +141,13 @@ def build_sseir(source_path:Path, solc_bin:str|None=None, slither_bin:str|None=N
     storage_layouts=extract_storage_layout(source_path,solc)
     out=[]
     control_builder=ControlBuilder(source_path, solc, slither_bin, workdir or Path.cwd())
+    yul_atomic_extractor=YulAtomicOperationExtractor()
     for unit in SourceStatementCollector(source_path,ast).collect():
         apply_storage_layout(unit,storage_layouts)
+        yul_atomic_operations=yul_atomic_extractor.extract(unit)
+        setattr(unit,'_sseir_yul_atomic_operations',yul_atomic_operations)
         type_env=TypeEnv(unit); control=control_builder.build(unit)
+        yul_atomic_extractor.attach_to_control(control,yul_atomic_operations)
         solidity_atomic_operations=SolidityAtomicOperationExtractor().extract(unit,control)
         mem=build_memory_ssa_views(unit,control)
         roles=ExpressionRoleAnalyzer().analyze(unit,type_env,mem)
@@ -156,6 +166,7 @@ def build_sseir(source_path:Path, solc_bin:str|None=None, slither_bin:str|None=N
         setattr(fn,'_sseir_function_source',{'src':fn_src,'text':extract_function_source_text(unit,source_text)})
         setattr(fn,'_sseir_assembly_sources',[{'block_id':f'asm_block_{b.block_id}','src':b.src,'text':b.snippet} for b in unit.assembly_blocks])
         setattr(fn,'_sseir_solidity_atomic_operations',solidity_atomic_operations)
+        setattr(fn,'_sseir_yul_atomic_operations',yul_atomic_operations)
         out.append(fn)
     if temp_context is not None:
         temp_context.cleanup()
@@ -183,18 +194,32 @@ def render_text(functions):
     return '\n'.join(lines)
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('source',type=Path); ap.add_argument('-o','--output',type=Path,default=Path('outputs/sseir.json')); ap.add_argument('--text-output',type=Path,default=Path('outputs/sseir.txt')); ap.add_argument('--semantic-facts-output',type=Path,default=Path('outputs/semantic_facts.json')); ap.add_argument('--solidity-atomic-output',type=Path,help='Optional audit output for the transient Solidity atomic-operation table.'); ap.add_argument('--debug-output',type=Path,help='Optional full analysis output including MemorySSA/SinkResolver query traces.'); ap.add_argument('--cfg-dot-dir',type=Path); ap.add_argument('--llm-assembly-output',type=Path); ap.add_argument('--llm-assembly-text-output',type=Path); ap.add_argument('--llm-assembly-compact-output',type=Path); ap.add_argument('--llm-assembly-compact-text-output',type=Path); ap.add_argument('--solidity-like-output',type=Path); ap.add_argument('--branch-preprocessed-output',type=Path); ap.add_argument('--branch-report-output',type=Path); ap.add_argument('--no-branch-preprocess',action='store_true'); ap.add_argument('--solc-bin'); ap.add_argument('--slither-bin'); ap.add_argument('--workdir',type=Path,default=Path('.'))
+    ap=argparse.ArgumentParser(); ap.add_argument('source',type=Path); ap.add_argument('-o','--output',type=Path,default=Path('outputs/sseir.json')); ap.add_argument('--text-output',type=Path,default=Path('outputs/sseir.txt')); ap.add_argument('--semantic-facts-output',type=Path,default=Path('outputs/semantic_facts.json')); ap.add_argument('--semantic-ir-output',type=Path,default=Path('outputs/semantic_ir.json')); ap.add_argument('--semantic-ir-text-output',type=Path,help='Optional human-readable Semantic IR output.'); ap.add_argument('--semantic-ir-analysis-indexes',action='store_true',help='Include optional Def-Use/SSA indexes in Semantic IR outputs.'); ap.add_argument('--solidity-atomic-output',type=Path,help='Optional audit output for the transient Solidity atomic-operation table.'); ap.add_argument('--yul-atomic-output',type=Path,help='Optional audit output for the transient Yul atomic-operation table.'); ap.add_argument('--debug-output',type=Path,help='Optional full analysis output including MemorySSA/SinkResolver query traces.'); ap.add_argument('--cfg-dot-dir',type=Path); ap.add_argument('--llm-assembly-output',type=Path); ap.add_argument('--llm-assembly-text-output',type=Path); ap.add_argument('--llm-assembly-compact-output',type=Path); ap.add_argument('--llm-assembly-compact-text-output',type=Path); ap.add_argument('--solidity-like-output',type=Path); ap.add_argument('--branch-preprocessed-output',type=Path); ap.add_argument('--branch-report-output',type=Path); ap.add_argument('--no-branch-preprocess',action='store_true'); ap.add_argument('--solc-bin'); ap.add_argument('--slither-bin'); ap.add_argument('--workdir',type=Path,default=Path('.'))
     a=ap.parse_args(); fns=build_sseir(a.source,a.solc_bin,a.slither_bin,a.workdir.resolve(),branch_preprocess=not a.no_branch_preprocess,branch_preprocess_output=a.branch_preprocessed_output,branch_report_output=a.branch_report_output)
     a.output.parent.mkdir(parents=True,exist_ok=True); a.text_output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps([x.to_semantic_dict() for x in fns],indent=2,ensure_ascii=False),encoding='utf-8'); a.text_output.write_text(render_text(fns),encoding='utf-8')
     print(f'Wrote {a.output}'); print(f'Wrote {a.text_output}')
+    facts=None
+    if a.semantic_facts_output or a.semantic_ir_output or a.semantic_ir_text_output:
+        fact_output=a.semantic_facts_output or a.semantic_ir_output or a.semantic_ir_text_output
+        facts=build_function_level_semantic_fact_payload(fns,source=str(a.source),result_dir=str(fact_output.parent))
     if a.semantic_facts_output:
-        facts=build_function_level_semantic_fact_payload(fns,source=str(a.source),result_dir=str(a.semantic_facts_output.parent))
         write_semantic_fact_json(a.semantic_facts_output,facts)
         print(f'Wrote {a.semantic_facts_output}')
+    if a.semantic_ir_output or a.semantic_ir_text_output:
+        program=build_semantic_ir_program(fns,facts,source=str(a.source))
+    if a.semantic_ir_output:
+        write_semantic_ir_json(a.semantic_ir_output,program,include_analysis_indexes=a.semantic_ir_analysis_indexes)
+        print(f'Wrote {a.semantic_ir_output}')
+    if a.semantic_ir_text_output:
+        write_semantic_ir_text(a.semantic_ir_text_output,program,include_analysis_indexes=a.semantic_ir_analysis_indexes)
+        print(f'Wrote {a.semantic_ir_text_output}')
     if a.solidity_atomic_output:
         write_solidity_atomic_operation_json(fns,a.solidity_atomic_output,source=str(a.source))
         print(f'Wrote {a.solidity_atomic_output}')
+    if a.yul_atomic_output:
+        write_yul_atomic_operation_json(fns,a.yul_atomic_output,source=str(a.source))
+        print(f'Wrote {a.yul_atomic_output}')
     if a.debug_output:
         a.debug_output.parent.mkdir(parents=True,exist_ok=True)
         a.debug_output.write_text(json.dumps([x.to_dict() for x in fns],indent=2,ensure_ascii=False),encoding='utf-8')

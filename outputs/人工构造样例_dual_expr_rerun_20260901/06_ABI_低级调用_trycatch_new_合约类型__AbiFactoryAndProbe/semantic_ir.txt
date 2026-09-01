@@ -1,0 +1,917 @@
+SemanticProgram semantic-ir/v2
+Source: 人工构造样例/06_ABI_低级调用_trycatch_new_合约类型/contracts/AbiFactoryAndProbe.sol
+
+Function IERC20View.totalSupply()
+    contract = IERC20View
+    signature = totalSupply()
+
+
+
+Function IERC20View.balanceOf(address)
+    contract = IERC20View
+    signature = balanceOf(address)
+
+
+
+Function IERC20View.transfer(address, uint256)
+    contract = IERC20View
+    signature = transfer(address, uint256)
+
+
+
+Function IERC20View.approve(address, uint256)
+    contract = IERC20View
+    signature = approve(address, uint256)
+
+
+
+Function FactoryMintedERC20.constructor(string, string, address, uint256)
+    contract = FactoryMintedERC20
+    signature = constructor(string, string, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_1 | source=solidity | origin_facts=[fact_1]
+    @execution StateWrite(expr=tokenName_1)
+    StateWrite(StateVariableLocation(name), tokenName)
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_2 | source=solidity | origin_facts=[fact_2]
+    @execution StateWrite(expr=tokenSymbol_1)
+    StateWrite(StateVariableLocation(symbol), tokenSymbol)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_3 | source=solidity | origin_facts=[fact_3]
+    InternalCall(_mint(receiver_1, initialSupply_1), receiver_1, initialSupply_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+DefUse:
+    input:tokenName_1: def=input, uses=[ir_1]
+    input:tokenSymbol_1: def=input, uses=[ir_2]
+    input:receiver_1: def=input, uses=[ir_3]
+    input:initialSupply_1: def=input, uses=[ir_3]
+
+
+Function FactoryMintedERC20.transfer(address, uint256)
+    contract = FactoryMintedERC20
+    signature = transfer(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_4 | source=solidity | origin_facts=[fact_4]
+    InternalCall(_transfer(msg.sender, to_1, value_1), msg.sender, to_1, value_1)
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_5]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+
+DefUse:
+    input:msg.sender: def=input, uses=[ir_4]
+    input:to_1: def=input, uses=[ir_4]
+    input:value_1: def=input, uses=[ir_4]
+
+
+Function FactoryMintedERC20.approve(address, uint256)
+    contract = FactoryMintedERC20
+    signature = approve(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_5 | source=solidity | origin_facts=[fact_8, fact_6, fact_7]
+    @execution StateWrite(expr=value_1)
+    StateWrite(MappingLocation(base = allowance, keys = [msg.sender, spender]), value)
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_6 | source=solidity | origin_facts=[fact_9]
+    EventEmit(Approval, msg.sender, spender_1, value_1)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    // terminator origin_facts=[fact_10]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+DefUse:
+    input:value_1: def=input, uses=[ir_5, ir_6]
+    input:msg.sender: def=input, uses=[ir_5, ir_6]
+    input:spender: def=input, uses=[ir_5]
+    input:spender_1: def=input, uses=[ir_6]
+
+
+Function FactoryMintedERC20.transferFrom(address, address, uint256)
+    contract = FactoryMintedERC20
+    signature = transferFrom(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_7 | source=solidity | origin_facts=[fact_13, fact_11, fact_12, fact_18, fact_17]
+    REF_3 = StateRead(MappingLocation(base = allowance, keys = [from, msg.sender]))
+    // ir_8 | source=solidity | origin_facts=[fact_14]
+    current_1 = REF_3
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_9 | source=solidity | origin_facts=[fact_15]
+    TMP_3 = Ge(current_1, value_1)
+    // ir_10 | source=solidity | origin_facts=[fact_16]
+    @execution Require(expr=require(bool,string)(TMP_3, allowance)(TMP_3, allowance))
+    Require(Ge(Index(Index(allowance, from), msg.sender), value))
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_12 | source=solidity | origin_facts=[fact_20, fact_12, fact_17, fact_18, fact_11]
+    @condition Ge(Index(Index(allowance, from), msg.sender), value)
+    @execution StateWrite(expr=TMP_5)
+    StateWrite(
+        MappingLocation(base = allowance, keys = [from, msg.sender]),
+        Sub(Index(Index(allowance, from), msg.sender), value)
+    )
+    // ir_11 | source=solidity | origin_facts=[fact_19]
+    @condition Ge(Index(Index(allowance, from), msg.sender), value)
+    TMP_5 = Sub(current_1, value_1)
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_13 | source=solidity | origin_facts=[fact_21]
+    @condition Ge(Index(Index(allowance, from), msg.sender), value)
+    InternalCall(_transfer(from_1, to_1, value_1), from_1, to_1, value_1)
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // no semantic instructions
+    // terminator origin_facts=[fact_22]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+
+DefUse:
+    value:REF_3#1: def=ir_7, uses=[ir_8]
+    input:allowance: def=input, uses=[ir_7, ir_10, ir_12, ir_11, ir_13]
+    input:from: def=input, uses=[ir_7, ir_12, ir_11, ir_13]
+    input:msg.sender: def=input, uses=[ir_7, ir_12, ir_11, ir_13]
+    value:current_1#1: def=ir_8, uses=[ir_9, ir_11]
+    value:TMP_3#1: def=ir_9, uses=[ir_10]
+    input:value_1: def=input, uses=[ir_9, ir_11, ir_13]
+    input:TMP_5: def=input, uses=[ir_12]
+    input:value: def=input, uses=[ir_12, ir_11, ir_13]
+    value:TMP_5#1: def=ir_11, uses=[-]
+    input:from_1: def=input, uses=[ir_13]
+    input:to_1: def=input, uses=[ir_13]
+
+
+Function FactoryMintedERC20._mint(address, uint256)
+    contract = FactoryMintedERC20
+    signature = _mint(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_14 | source=solidity | origin_facts=[fact_23]
+    totalSupply_1 = StateRead(StateVariableLocation(totalSupply))
+    // ir_15 | source=solidity | origin_facts=[fact_24]
+    @execution StateWrite(expr=Add(totalSupply_1, value_1))
+    StateWrite(StateVariableLocation(totalSupply), Add(totalSupply, value))
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_16 | source=solidity | origin_facts=[fact_26, fact_25]
+    REF_6 = StateRead(MappingLocation(base = balanceOf, keys = [to]))
+    // ir_17 | source=solidity | origin_facts=[fact_27, fact_25]
+    @execution StateWrite(expr=Add(REF_6, value_1))
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [to]),
+        Add(Index(balanceOf, to), value)
+    )
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_18 | source=solidity | origin_facts=[fact_28]
+    TMP_7 = address(0)
+    // ir_19 | source=solidity | origin_facts=[fact_29]
+    EventEmit(Transfer, TMP_7, to_1, value_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+DefUse:
+    value:totalSupply_1#1: def=ir_14, uses=[ir_15]
+    input:totalSupply: def=input, uses=[ir_14]
+    input:value_1: def=input, uses=[ir_15, ir_17, ir_19]
+    value:REF_6#1: def=ir_16, uses=[ir_17]
+    input:balanceOf: def=input, uses=[ir_16]
+    input:to: def=input, uses=[ir_16, ir_17]
+    value:TMP_7#1: def=ir_18, uses=[ir_19]
+    input:to_1: def=input, uses=[ir_19]
+
+
+Function FactoryMintedERC20._transfer(address, address, uint256)
+    contract = FactoryMintedERC20
+    signature = _transfer(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_20 | source=solidity | origin_facts=[fact_30]
+    TMP_9 = address(0)
+    // ir_21 | source=solidity | origin_facts=[fact_31]
+    TMP_10 = Ne(to_1, TMP_9)
+    // ir_22 | source=solidity | origin_facts=[fact_32]
+    @execution Require(expr=require(bool,string)(TMP_10, zero)(TMP_10, zero))
+    Require(Ne(to, address(0)))
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_23 | source=solidity | origin_facts=[fact_34, fact_33, fact_38]
+    @condition Ne(to, address(0))
+    REF_7 = StateRead(MappingLocation(base = balanceOf, keys = [from]))
+    // ir_24 | source=solidity | origin_facts=[fact_35]
+    @condition Ne(to, address(0))
+    bal_1 = REF_7
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_25 | source=solidity | origin_facts=[fact_36]
+    @condition Ne(to, address(0))
+    TMP_12 = Ge(bal_1, value_1)
+    // ir_26 | source=solidity | origin_facts=[fact_37]
+    @condition Ne(to, address(0))
+    @execution Require(expr=require(bool,string)(TMP_12, balance)(TMP_12, balance))
+    Require(Ge(Index(balanceOf, from), value))
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_28 | source=solidity | origin_facts=[fact_40, fact_33, fact_38]
+    @condition And(Ne(to, address(0)), Ge(Index(balanceOf, from), value))
+    @execution StateWrite(expr=TMP_14)
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [from]),
+        Sub(Index(balanceOf, from), value)
+    )
+    // ir_27 | source=solidity | origin_facts=[fact_39]
+    @condition And(Ne(to, address(0)), Ge(Index(balanceOf, from), value))
+    TMP_14 = Sub(bal_1, value_1)
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_29 | source=solidity | origin_facts=[fact_42, fact_41]
+    @condition And(Ne(to, address(0)), Ge(Index(balanceOf, from), value))
+    REF_9 = StateRead(MappingLocation(base = balanceOf, keys = [to]))
+    // ir_30 | source=solidity | origin_facts=[fact_43, fact_41]
+    @condition And(Ne(to, address(0)), Ge(Index(balanceOf, from), value))
+    @execution StateWrite(expr=Add(REF_9, value_1))
+    StateWrite(
+        MappingLocation(base = balanceOf, keys = [to]),
+        Add(Index(balanceOf, to), value)
+    )
+    Goto(bb_sol_slither_n6)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // ir_31 | source=solidity | origin_facts=[fact_44]
+    @condition And(Ne(to, address(0)), Ge(Index(balanceOf, from), value))
+    EventEmit(Transfer, from_1, to_1, value_1)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [fallthrough]
+
+DefUse:
+    value:TMP_9#1: def=ir_20, uses=[ir_21]
+    value:TMP_10#1: def=ir_21, uses=[ir_22]
+    input:to_1: def=input, uses=[ir_21, ir_31]
+    input:zero: def=input, uses=[ir_22]
+    value:REF_7#1: def=ir_23, uses=[ir_24]
+    input:balanceOf: def=input, uses=[ir_23, ir_28, ir_27, ir_29, ir_30, ir_31]
+    input:from: def=input, uses=[ir_23, ir_28, ir_27, ir_29, ir_30, ir_31]
+    input:to: def=input, uses=[ir_23, ir_24, ir_25, ir_26, ir_28, ir_27, ir_29, ir_30, ir_31]
+    value:bal_1#1: def=ir_24, uses=[ir_25, ir_27]
+    value:TMP_12#1: def=ir_25, uses=[ir_26]
+    input:value_1: def=input, uses=[ir_25, ir_27, ir_30, ir_31]
+    input:balance: def=input, uses=[ir_26]
+    input:TMP_14: def=input, uses=[ir_28]
+    input:value: def=input, uses=[ir_28, ir_27, ir_29, ir_30, ir_31]
+    value:TMP_14#1: def=ir_27, uses=[-]
+    value:REF_9#1: def=ir_29, uses=[ir_30]
+    input:from_1: def=input, uses=[ir_31]
+
+
+Function AbiFactoryAndProbe.createToken(string, string, uint256)
+    contract = AbiFactoryAndProbe
+    signature = createToken(string, string, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_32 | source=solidity | origin_facts=[fact_45]
+    TMP_17 = NewContract(NewContract(name_1, symbol_1, msg.sender, supply_1))
+    // ir_33 | source=solidity | origin_facts=[fact_46]
+    token_1 = TMP_17
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_34 | source=solidity | origin_facts=[fact_47]
+    TMP_18 = address(token_1)
+    // ir_35 | source=solidity | origin_facts=[fact_48]
+    TMP_19 = bytes32(0)
+    // ir_36 | source=solidity | origin_facts=[fact_49]
+    EventEmit(TokenCreated, TMP_18, TMP_19)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    // terminator origin_facts=[fact_50]
+    Return(token_1)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+DefUse:
+    value:TMP_17#1: def=ir_32, uses=[ir_33]
+    input:name_1: def=input, uses=[ir_32]
+    input:symbol_1: def=input, uses=[ir_32]
+    input:msg.sender: def=input, uses=[ir_32]
+    input:supply_1: def=input, uses=[ir_32]
+    value:token_1#1: def=ir_33, uses=[ir_34, terminator:bb_sol_slither_n3]
+    value:TMP_18#1: def=ir_34, uses=[ir_36]
+    value:TMP_19#1: def=ir_35, uses=[ir_36]
+
+
+Function AbiFactoryAndProbe.createToken2(bytes32, string, string, uint256)
+    contract = AbiFactoryAndProbe
+    signature = createToken2(bytes32, string, string, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_37 | source=solidity | origin_facts=[fact_51]
+    TMP_22 = NewContract(NewContract(name_1, symbol_1, msg.sender, supply_1))
+    // ir_38 | source=solidity | origin_facts=[fact_52]
+    token_1 = TMP_22
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_39 | source=solidity | origin_facts=[fact_53]
+    TMP_23 = address(token_1)
+    // ir_40 | source=solidity | origin_facts=[fact_54]
+    EventEmit(TokenCreated, TMP_23, salt_1)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    // terminator origin_facts=[fact_55]
+    Return(token_1)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+DefUse:
+    value:TMP_22#1: def=ir_37, uses=[ir_38]
+    input:name_1: def=input, uses=[ir_37]
+    input:symbol_1: def=input, uses=[ir_37]
+    input:msg.sender: def=input, uses=[ir_37]
+    input:supply_1: def=input, uses=[ir_37]
+    value:token_1#1: def=ir_38, uses=[ir_39, terminator:bb_sol_slither_n3]
+    value:TMP_23#1: def=ir_39, uses=[ir_40]
+    input:salt_1: def=input, uses=[ir_40]
+
+
+Function AbiFactoryAndProbe.encodeSamples(address, address, uint256)
+    contract = AbiFactoryAndProbe
+    signature = encodeSamples(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_41 | source=solidity | origin_facts=[fact_56]
+    TMP_25 = BuiltinCall(abi.encode(to_1, amount_1), to_1, amount_1)
+    // ir_42 | source=solidity | origin_facts=[fact_57]
+    a_1 = TMP_25
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_43 | source=solidity | origin_facts=[fact_58]
+    REF_13 = 2835717307
+    // ir_44 | source=solidity | origin_facts=[fact_59]
+    TMP_26 = BuiltinCall(abi.encodeWithSelector(REF_13, to_1, amount_1), REF_13, to_1, amount_1)
+    // ir_45 | source=solidity | origin_facts=[fact_60]
+    b_1 = TMP_26
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_46 | source=solidity | origin_facts=[fact_62, fact_61]
+    @execution BuiltinCall(args=[REF_15, OpaqueExpression("[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x795dc2fe8f20>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x795dc2fe9040>]")])
+    TMP_27 = BuiltinCall(
+        OpaqueExpression("abi.encodeCall(REF_15, [<slither.slithir.variables.local_variable.LocalIRVariable object at 0x795dc2fe8f20>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x795dc2fe9040>])"),
+        IERC20View.approve,
+        OpaqueExpression("[<slither.slithir.variables.local_variable.LocalIRVariable object at 0x795dc2fe8f20>, <slither.slithir.variables.local_variable.LocalIRVariable object at 0x795dc2fe9040>]")
+    )
+    // ir_47 | source=solidity | origin_facts=[fact_63]
+    c_1 = TMP_27
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_48 | source=solidity | origin_facts=[fact_64]
+    TMP_28 = BuiltinCall(abi.encodePacked(token_1, to_1, amount_1), token_1, to_1, amount_1)
+    // ir_49 | source=solidity | origin_facts=[fact_65]
+    TMP_29 = BuiltinCall(Keccak(TMP_28), TMP_28)
+    // ir_50 | source=solidity | origin_facts=[fact_66]
+    packedHash_1 = TMP_29
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // no semantic instructions
+    // terminator origin_facts=[fact_67]
+    Return(a_1, b_1, c_1, packedHash_1)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+
+DefUse:
+    value:TMP_25#1: def=ir_41, uses=[ir_42]
+    input:to_1: def=input, uses=[ir_41, ir_44, ir_48]
+    input:amount_1: def=input, uses=[ir_41, ir_44, ir_48]
+    value:a_1#1: def=ir_42, uses=[terminator:bb_sol_slither_n5]
+    value:REF_13#1: def=ir_43, uses=[ir_44]
+    value:TMP_26#1: def=ir_44, uses=[ir_45]
+    value:b_1#1: def=ir_45, uses=[terminator:bb_sol_slither_n5]
+    value:TMP_27#1: def=ir_46, uses=[ir_47]
+    input:REF_15: def=input, uses=[ir_46]
+    value:c_1#1: def=ir_47, uses=[terminator:bb_sol_slither_n5]
+    value:TMP_28#1: def=ir_48, uses=[ir_49]
+    input:token_1: def=input, uses=[ir_48]
+    value:TMP_29#1: def=ir_49, uses=[ir_50]
+    value:packedHash_1#1: def=ir_50, uses=[terminator:bb_sol_slither_n5]
+
+
+Function AbiFactoryAndProbe.decodePair(bytes)
+    contract = AbiFactoryAndProbe
+    signature = decodePair(bytes)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_51 | source=solidity | origin_facts=[fact_68]
+    TUPLE_0 = BuiltinCall(
+        OpaqueExpression("abi.decode(data_1, [<slither.core.solidity_types.elementary_type.ElementaryType object at 0x795dc312a2d0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x795dc312a330>])"),
+        data_1,
+        OpaqueExpression("[<slither.core.solidity_types.elementary_type.ElementaryType object at 0x795dc312a2d0>, <slither.core.solidity_types.elementary_type.ElementaryType object at 0x795dc312a330>]")
+    )
+    // ir_52 | source=solidity | origin_facts=[fact_69]
+    account_1 = TupleUnpack(OpaqueExpression("account_1(address)= UNPACK TUPLE_0 index: 0"))
+    // ir_53 | source=solidity | origin_facts=[fact_70]
+    amount_1 = TupleUnpack(OpaqueExpression("amount_1(uint256)= UNPACK TUPLE_0 index: 1"))
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_71]
+    Return(account_1, amount_1)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+
+DefUse:
+    value:TUPLE_0#1: def=ir_51, uses=[-]
+    input:data_1: def=input, uses=[ir_51]
+    value:account_1#1: def=ir_52, uses=[terminator:bb_sol_slither_n2]
+    value:amount_1#1: def=ir_53, uses=[terminator:bb_sol_slither_n2]
+
+
+Function AbiFactoryAndProbe.lowLevelTransfer(address, address, uint256)
+    contract = AbiFactoryAndProbe
+    signature = lowLevelTransfer(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_54 | source=solidity | origin_facts=[fact_72]
+    TMP_30 = BuiltinCall(
+        abi.encodeWithSignature(transfer(address, uint256), to_1, amount_1),
+        transfer(address, uint256),
+        to_1,
+        amount_1
+    )
+    // ir_55 | source=solidity | origin_facts=[fact_73]
+    TUPLE_1 = LowLevelCall(token_1.call(TMP_30), TMP_30)
+    // ir_56 | source=solidity | origin_facts=[fact_74]
+    ok_1 = TupleUnpack(OpaqueExpression("ok_1(bool)= UNPACK TUPLE_1 index: 0"))
+    // ir_57 | source=solidity | origin_facts=[fact_75]
+    data_1 = TupleUnpack(OpaqueExpression("data_1(bytes)= UNPACK TUPLE_1 index: 1"))
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_58 | source=solidity | origin_facts=[fact_76]
+    EventEmit(ProbeResult, token_1, ok_1, data_1)
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_59 | source=solidity | origin_facts=[fact_77]
+    REF_20 = LengthRead(data_1.length)
+    // ir_60 | source=solidity | origin_facts=[fact_78]
+    TMP_32 = Eq(REF_20, 0)
+    // ir_61 | source=solidity | origin_facts=[fact_79]
+    TMP_33 = BuiltinCall(abi.decode(data_1, bool), data_1, bool)
+    // ir_62 | source=solidity | origin_facts=[fact_80]
+    TMP_34 = Or(TMP_32, TMP_33)
+    // ir_63 | source=solidity | origin_facts=[fact_81]
+    TMP_35 = And(ok_1, TMP_34)
+    // terminator origin_facts=[fact_82]
+    Return(TMP_35)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+
+DefUse:
+    value:TMP_30#1: def=ir_54, uses=[ir_55]
+    input:address: def=input, uses=[ir_54]
+    input:uint256: def=input, uses=[ir_54]
+    input:to_1: def=input, uses=[ir_54]
+    input:amount_1: def=input, uses=[ir_54]
+    value:TUPLE_1#1: def=ir_55, uses=[-]
+    value:ok_1#1: def=ir_56, uses=[ir_58, ir_63]
+    value:data_1#1: def=ir_57, uses=[ir_58, ir_61]
+    input:token_1: def=input, uses=[ir_58]
+    value:REF_20#1: def=ir_59, uses=[ir_60]
+    input:data_1.length: def=input, uses=[ir_59]
+    value:TMP_32#1: def=ir_60, uses=[ir_62]
+    value:TMP_33#1: def=ir_61, uses=[ir_62]
+    input:bool: def=input, uses=[ir_61]
+    value:TMP_34#1: def=ir_62, uses=[ir_63]
+    value:TMP_35#1: def=ir_63, uses=[terminator:bb_sol_slither_n5]
+
+
+Function AbiFactoryAndProbe.staticSupply(address)
+    contract = AbiFactoryAndProbe
+    signature = staticSupply(address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_64 | source=solidity | origin_facts=[fact_83]
+    REF_25 = 404098525
+    // ir_65 | source=solidity | origin_facts=[fact_84]
+    TMP_36 = BuiltinCall(abi.encodeWithSelector(REF_25), REF_25)
+    // ir_66 | source=solidity | origin_facts=[fact_85]
+    TUPLE_2 = LowLevelCall(token_1.staticcall(TMP_36), TMP_36)
+    // ir_67 | source=solidity | origin_facts=[fact_86]
+    ok_1 = TupleUnpack(OpaqueExpression("ok_1(bool)= UNPACK TUPLE_2 index: 0"))
+    // ir_68 | source=solidity | origin_facts=[fact_87]
+    data_1 = TupleUnpack(OpaqueExpression("data_1(bytes)= UNPACK TUPLE_2 index: 1"))
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_69 | source=solidity | origin_facts=[fact_88]
+    @execution Require(expr=require(bool,string)(ok_1, staticcall)(ok_1, staticcall))
+    Require(
+        OpaqueExpression("(ok,data) = token.staticcall(abi.encodeWithSelector(IERC20View.totalSupply.selector))")
+    )
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_70 | source=solidity | origin_facts=[fact_89]
+    @condition OpaqueExpression("((ok,data) = token.staticcall(abi.encodeWithSelector(IERC20View.totalSupply.selector)))")
+    TMP_38 = BuiltinCall(abi.decode(data_1, uint256), data_1, uint256)
+    // ir_71 | source=solidity | origin_facts=[fact_90]
+    @condition OpaqueExpression("((ok,data) = token.staticcall(abi.encodeWithSelector(IERC20View.totalSupply.selector)))")
+    supply_1 = TMP_38
+    Goto(bb_sol_slither_n6)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // no semantic instructions
+    // terminator origin_facts=[fact_91]
+    Return(supply_1)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [fallthrough]
+
+DefUse:
+    value:REF_25#1: def=ir_64, uses=[ir_65]
+    value:TMP_36#1: def=ir_65, uses=[ir_66]
+    value:TUPLE_2#1: def=ir_66, uses=[-]
+    value:ok_1#1: def=ir_67, uses=[ir_69]
+    value:data_1#1: def=ir_68, uses=[ir_70]
+    input:staticcall: def=input, uses=[ir_69]
+    value:TMP_38#1: def=ir_70, uses=[ir_71]
+    input:uint256: def=input, uses=[ir_70]
+    value:supply_1#1: def=ir_71, uses=[terminator:bb_sol_slither_n6]
+
+
+Function AbiFactoryAndProbe.tryBalance(contract IERC20View, address)
+    contract = AbiFactoryAndProbe
+    signature = tryBalance(contract IERC20View, address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_72 | source=solidity | origin_facts=[fact_93]
+    TMP_39 = ExternalCall(token_1.balanceOf(account_1), account_1)
+    // ir_73 | source=solidity | origin_facts=[fact_94]
+    value_1 = TMP_39
+    Branch(bb_sol_slither_n2, bb_sol_slither_n4, bb_sol_slither_n6, bb_sol_slither_n8)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    // terminator origin_facts=[fact_98]
+    Return(value_1, true)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // no semantic instructions
+    // terminator origin_facts=[fact_97]
+    Return(0, false)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_sol_slither_n7)
+
+bb_sol_slither_n7 [solidity]:
+    // predecessors: bb_sol_slither_n6
+    // no semantic instructions
+    // terminator origin_facts=[fact_96]
+    Return(0, false)
+
+bb_sol_slither_n8 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_sol_slither_n9)
+
+bb_sol_slither_n9 [solidity]:
+    // predecessors: bb_sol_slither_n8
+    // no semantic instructions
+    // terminator origin_facts=[fact_95]
+    Return(0, false)
+
+bb_sol_slither_n10 [solidity]:
+    // no semantic instructions
+    // terminator origin_facts=[fact_92]
+    Return(balance, success)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n6 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n8 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+    bb_sol_slither_n6 -> bb_sol_slither_n7 [fallthrough]
+    bb_sol_slither_n8 -> bb_sol_slither_n9 [fallthrough]
+
+DefUse:
+    value:TMP_39#1: def=ir_72, uses=[ir_73]
+    input:account_1: def=input, uses=[ir_72]
+    value:value_1#1: def=ir_73, uses=[terminator:bb_sol_slither_n3]
+    input:balance: def=input, uses=[terminator:bb_sol_slither_n10]
+    input:success: def=input, uses=[terminator:bb_sol_slither_n10]
+
+
+Function AbiFactoryAndProbe.destructure(address, address)
+    contract = AbiFactoryAndProbe
+    signature = destructure(address, address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_74 | source=solidity | origin_facts=[fact_99]
+    TMP_40 = IERC20View(token_1)
+    // ir_75 | source=solidity | origin_facts=[fact_100]
+    TUPLE_3 = InternalCall(_supplyAndBalance(TMP_40, account_1), TMP_40, account_1)
+    // ir_76 | source=solidity | origin_facts=[fact_101]
+    supply_1 = TupleUnpack(OpaqueExpression("supply_1(uint256)= UNPACK TUPLE_3 index: 0"))
+    // ir_77 | source=solidity | origin_facts=[fact_102]
+    balance_1 = TupleUnpack(OpaqueExpression("balance_1(uint256)= UNPACK TUPLE_3 index: 1"))
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // no semantic instructions
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_78 | source=solidity | origin_facts=[fact_103]
+    TMP_41 = IERC20View(token_1)
+    // ir_79 | source=solidity | origin_facts=[fact_104]
+    TUPLE_4 = InternalCall(_supplyAndBalance(TMP_41, account_1), TMP_41, account_1)
+    // ir_80 | source=solidity | origin_facts=[fact_105]
+    onlyBalance_1 = TupleUnpack(OpaqueExpression("onlyBalance_1(uint256)= UNPACK TUPLE_4 index: 1"))
+    Goto(bb_sol_slither_n6)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // no semantic instructions
+    // terminator origin_facts=[fact_106]
+    Return(onlyBalance_1)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [fallthrough]
+
+DefUse:
+    value:TMP_40#1: def=ir_74, uses=[ir_75]
+    input:token_1: def=input, uses=[ir_74, ir_78]
+    value:TUPLE_3#1: def=ir_75, uses=[-]
+    input:account_1: def=input, uses=[ir_75, ir_79]
+    value:supply_1#1: def=ir_76, uses=[-]
+    value:balance_1#1: def=ir_77, uses=[-]
+    value:TMP_41#1: def=ir_78, uses=[ir_79]
+    value:TUPLE_4#1: def=ir_79, uses=[-]
+    value:onlyBalance_1#1: def=ir_80, uses=[terminator:bb_sol_slither_n6]
+
+
+Function AbiFactoryAndProbe._supplyAndBalance(contract IERC20View, address)
+    contract = AbiFactoryAndProbe
+    signature = _supplyAndBalance(contract IERC20View, address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_81 | source=solidity | origin_facts=[fact_107]
+    TMP_42 = ExternalCall(token_1.totalSupply(token_1), token_1)
+    // ir_82 | source=solidity | origin_facts=[fact_108]
+    TMP_43 = ExternalCall(token_1.balanceOf(account_1), account_1)
+    // terminator origin_facts=[fact_109]
+    Return(TMP_42, TMP_43)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+DefUse:
+    value:TMP_42#1: def=ir_81, uses=[terminator:bb_sol_slither_n1]
+    input:token_1: def=input, uses=[ir_81]
+    value:TMP_43#1: def=ir_82, uses=[terminator:bb_sol_slither_n1]
+    input:account_1: def=input, uses=[ir_82]

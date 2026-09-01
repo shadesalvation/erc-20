@@ -23,6 +23,7 @@ from assembly_memory_ssa import direct_call, statement_expression
 from s_seir_id import IdAllocator
 from s_seir_model import EffectNode, FunctionUnit
 from s_seir_yul_eval_order import YulEvaluationOrder
+from s_seir_yul_atomic_ops import YulAtomicOperationExtractor
 from s_seir_yul_normalize import call_parts, int_text, normalize_expr
 
 
@@ -141,7 +142,12 @@ class EffectLifter:
                     condition = yul_expression(condition_node)
                     if self.is_replayed_branch_node(res, nid, condition):
                         continue
-                    evaluation = YulEvaluationOrder(stmt).materialize(condition_node, context="condition")
+                    evaluation = (
+                        YulAtomicOperationExtractor.evaluation_for_node(
+                            getattr(unit, "_sseir_yul_atomic_operations", None), block.block_id, nid
+                        )
+                        or YulEvaluationOrder(stmt).materialize(condition_node, context="condition")
+                    )
                     branch_effect = self.effect("Branch", [stmt], {
                         "condition": condition,
                         "condition_normalized": normalize_expr(condition),
@@ -166,7 +172,9 @@ class EffectLifter:
                 atomized_value: dict[str, Any] | None = None
                 if names and value_expr is not None:
                     raw_value = yul_expression(value_expr)
-                    atomized_value = self.atomize_value(stmt, value_expr, direct_semantic_call)
+                    atomized_value = self.atomized_value_for_node(
+                        unit, block.block_id, nid, stmt, value_expr, direct_semantic_call
+                    )
                     value_attrs = {
                         "targets": names,
                         "value": raw_value,
@@ -236,7 +244,14 @@ class EffectLifter:
                     slot_versions = self.reaching_value_versions(res, nid, vals[0])
                     if inline_hash and inline_hash.attrs.get("inline_slot_key") not in slot_versions:
                         slot_versions = [inline_hash.attrs["inline_slot_key"]] + slot_versions
-                    for read_expr, read_slot in self.sload_reads_in_expr(vals[1]):
+                    atomic_reads = self.atomic_storage_reads(unit, block.block_id, nid)
+                    nested_reads = atomic_reads or [
+                        {"expression": read_expr, "slot": read_slot, "value": None, "atom_id": None}
+                        for read_expr, read_slot in self.sload_reads_in_expr(vals[1])
+                    ]
+                    for nested_read in nested_reads:
+                        read_expr = str(nested_read.get("expression") or "")
+                        read_slot = str(nested_read.get("slot") or "")
                         nested_inline_hash = self.inline_keccak_hash_effect(stmt, res, nid, read_slot, block_loop_context)
                         if nested_inline_hash:
                             effects.append(nested_inline_hash)
@@ -246,7 +261,7 @@ class EffectLifter:
                         effects.append(self.effect("StorageRead", [stmt], {
                             "slot": read_slot,
                             "slot_versions": read_slot_versions,
-                            "value": None,
+                            "value": nested_read.get("value"),
                             "value_versions": {},
                             "cfg_node_id": nid,
                             "path_states": self.node_path_states(res, nid),
@@ -255,6 +270,7 @@ class EffectLifter:
                             "parent_call": "sstore",
                             "parent_slot": vals[0],
                             "parent_value": vals[1],
+                            "atomic_operation_id": nested_read.get("atom_id"),
                         }))
                     effects.append(self.effect("StorageWrite", [stmt], {
                         "slot": vals[0],
@@ -1046,6 +1062,43 @@ class EffectLifter:
             return None
         atomized["atomization_model"] = "rhs_atomic_single_operation_steps"
         return atomized
+
+    @classmethod
+    def atomized_value_for_node(
+        cls,
+        unit: FunctionUnit,
+        assembly_block_id: int,
+        node_id: int,
+        stmt: str | None,
+        value_expr: Any,
+        direct_semantic_call: bool,
+    ) -> dict[str, Any] | None:
+        if direct_semantic_call:
+            return None
+        table = getattr(unit, "_sseir_yul_atomic_operations", None)
+        atomic = YulAtomicOperationExtractor.evaluation_for_node(table, assembly_block_id, node_id)
+        if atomic and atomic.get("steps"):
+            atomic["atomization_model"] = "yul_atomic_operation_table"
+            return atomic
+        return cls.atomize_value(stmt, value_expr, direct_semantic_call)
+
+    @staticmethod
+    def atomic_storage_reads(unit: FunctionUnit, assembly_block_id: int, node_id: int) -> list[dict[str, Any]]:
+        table = getattr(unit, "_sseir_yul_atomic_operations", None)
+        reads = []
+        for operation in YulAtomicOperationExtractor.operations_for_node(table, assembly_block_id, node_id):
+            if operation.get("atomic_kind") != "StorageRead" or operation.get("root_operation"):
+                continue
+            raw_args = list(operation.get("raw_arguments") or [])
+            if not raw_args:
+                continue
+            reads.append({
+                "expression": f"sload({raw_args[0]})",
+                "slot": raw_args[0],
+                "value": operation.get("result"),
+                "atom_id": operation.get("atom_id"),
+            })
+        return reads
 
     def is_replayed_branch_node(self, res: Any, nid: int, condition: str) -> bool:
         condition_text = str(condition or "").strip()

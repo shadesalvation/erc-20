@@ -1,0 +1,5055 @@
+[
+  {
+    "function_id": "TypedSnapshotERC20.constructor(uint256, bytes)",
+    "contract": "TypedSnapshotERC20",
+    "function": "constructor",
+    "signature": "constructor(uint256, bytes)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "metadataBlob = metadata",
+        "src": "1266:23:0",
+        "function_id": "TypedSnapshotERC20.constructor(uint256, bytes)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "domain = keccak256(abi.encode(block.chainid, address(this), \"TST\"))",
+        "src": "1299:67:0",
+        "function_id": "TypedSnapshotERC20.constructor(uint256, bytes)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "_mint(msg.sender, initialSupply)",
+        "src": "1376:32:0",
+        "function_id": "TypedSnapshotERC20.constructor(uint256, bytes)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "1256:159:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "metadataBlob = metadata"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1266:23:slither",
+            "text": "metadataBlob = metadata"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "domain = keccak256(bytes)(abi.encode(block.chainid,address(this),TST))"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1299:67:slither",
+            "text": "domain = keccak256(bytes)(abi.encode(block.chainid,address(this),TST))"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "_mint(msg.sender,initialSupply)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1376:32:slither",
+            "text": "_mint(msg.sender,initialSupply)"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20.constructor(uint256, bytes)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20.transfer(address, uint256)",
+    "contract": "TypedSnapshotERC20",
+    "function": "transfer",
+    "signature": "transfer(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "_transferWithHook(msg.sender, to, value, _identityFee)",
+        "src": "1500:54:0",
+        "function_id": "TypedSnapshotERC20.transfer(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "return true",
+        "src": "1564:11:0",
+        "function_id": "TypedSnapshotERC20.transfer(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "1490:92:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_transferWithHook(msg.sender,to,value,_identityFee)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1500:54:slither",
+            "text": "_transferWithHook(msg.sender,to,value,_identityFee)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "true"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "1564:11:slither",
+            "text": "true"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20.transfer(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20.approve(address, uint256)",
+    "contract": "TypedSnapshotERC20",
+    "function": "approve",
+    "signature": "approve(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "allowance[msg.sender][spender] = value",
+        "src": "1671:38:0",
+        "function_id": "TypedSnapshotERC20.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "emit Approval(msg.sender, spender, value)",
+        "src": "1719:41:0",
+        "function_id": "TypedSnapshotERC20.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "return true",
+        "src": "1770:11:0",
+        "function_id": "TypedSnapshotERC20.approve(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "1661:127:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "allowance[msg.sender][spender] = value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1671:38:slither",
+            "text": "allowance[msg.sender][spender] = value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "Approval(msg.sender,spender,value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1719:41:slither",
+            "text": "Approval(msg.sender,spender,value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "true"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "1770:11:slither",
+            "text": "true"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20.approve(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20.transferFrom(address, address, uint256)",
+    "contract": "TypedSnapshotERC20",
+    "function": "transferFrom",
+    "signature": "transferFrom(address, address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "uint256 current = allowance[from][msg.sender]",
+        "src": "1891:45:0",
+        "function_id": "TypedSnapshotERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "require(current >= value, \"allowance\")",
+        "src": "1946:38:0",
+        "function_id": "TypedSnapshotERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "allowance[from][msg.sender] = current - value",
+        "src": "1994:45:0",
+        "function_id": "TypedSnapshotERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "_transferWithHook(from, to, value, _identityFee)",
+        "src": "2049:48:0",
+        "function_id": "TypedSnapshotERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "return true",
+        "src": "2107:11:0",
+        "function_id": "TypedSnapshotERC20.transferFrom(address, address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "1881:244:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "current = allowance[from][msg.sender]"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "1891:45:slither",
+            "text": "current = allowance[from][msg.sender]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(current >= value,allowance)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1946:38:slither",
+            "text": "require(bool,string)(current >= value,allowance)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "allowance[from][msg.sender] = current - value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "1994:45:slither",
+            "text": "allowance[from][msg.sender] = current - value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_transferWithHook(from,to,value,_identityFee)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2049:48:slither",
+            "text": "_transferWithHook(from,to,value,_identityFee)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "true"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "2107:11:slither",
+            "text": "true"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20.transferFrom(address, address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20.batchTransfer(address[], uint256[])",
+    "contract": "TypedSnapshotERC20",
+    "function": "batchTransfer",
+    "signature": "batchTransfer(address[], uint256[])",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "require(receivers.length == values.length, \"length\")",
+        "src": "2259:52:0",
+        "function_id": "TypedSnapshotERC20.batchTransfer(address[], uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "for (uint256 i = 0; i < receivers.length; ++i) { _transferWithHook(msg.sender, receivers[i], values[i], _identityFee); totalMoved += values[i]; }",
+        "src": "2321:177:0",
+        "function_id": "TypedSnapshotERC20.batchTransfer(address[], uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ForStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "uint256 i = 0",
+        "src": "2326:13:0",
+        "function_id": "TypedSnapshotERC20.batchTransfer(address[], uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_6",
+        "lang": "solidity",
+        "text": "++i",
+        "src": "2363:3:0",
+        "function_id": "TypedSnapshotERC20.batchTransfer(address[], uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "_transferWithHook(msg.sender, receivers[i], values[i], _identityFee)",
+        "src": "2382:68:0",
+        "function_id": "TypedSnapshotERC20.batchTransfer(address[], uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "totalMoved += values[i]",
+        "src": "2464:23:0",
+        "function_id": "TypedSnapshotERC20.batchTransfer(address[], uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "2249:255:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(receivers.length == values.length,length)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2259:52:slither",
+            "text": "require(bool,string)(receivers.length == values.length,length)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "startloop"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.STARTLOOP",
+            "src": "2321:177:slither",
+            "text": "startloop"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "endloop"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENDLOOP",
+            "src": "2321:177:slither",
+            "text": "endloop"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "i = 0"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "2326:13:slither",
+            "text": "i = 0"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "i < receivers.length"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.IFLOOP",
+            "src": "2341:20:slither",
+            "text": "i < receivers.length"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "_transferWithHook(msg.sender,receivers[i],values[i],_identityFee)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2382:68:slither",
+            "text": "_transferWithHook(msg.sender,receivers[i],values[i],_identityFee)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n7",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "totalMoved += values[i]"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2464:23:slither",
+            "text": "totalMoved += values[i]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n8",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_6"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "++ i"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2363:3:slither",
+            "text": "++ i"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n9",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Return",
+            "text": "totalMoved"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "2228:20:slither",
+            "text": "totalMoved"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n5",
+          "kind": "loop"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n9",
+          "kind": "loop"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n3",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n6",
+          "to": "bb_sol_slither_n7",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n7",
+          "to": "bb_sol_slither_n8",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n8",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n5",
+          "dependent": "bb_sol_slither_n6",
+          "edge_kind": "true",
+          "condition": "i < receivers.length",
+          "predicate": "i < receivers.length"
+        },
+        {
+          "controller": "bb_sol_slither_n5",
+          "dependent": "bb_sol_slither_n7",
+          "edge_kind": "true",
+          "condition": "i < receivers.length",
+          "predicate": "i < receivers.length"
+        },
+        {
+          "controller": "bb_sol_slither_n5",
+          "dependent": "bb_sol_slither_n8",
+          "edge_kind": "true",
+          "condition": "i < receivers.length",
+          "predicate": "i < receivers.length"
+        },
+        {
+          "controller": "bb_sol_slither_n5",
+          "dependent": "bb_sol_slither_n5",
+          "edge_kind": "true",
+          "condition": "i < receivers.length",
+          "predicate": "i < receivers.length"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20.batchTransfer(address[], uint256[])",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20.takeSnapshot(address, string)",
+    "contract": "TypedSnapshotERC20",
+    "function": "takeSnapshot",
+    "signature": "takeSnapshot(address, string)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "id = SnapshotId.wrap(snapshots.length + 1)",
+        "src": "2614:42:0",
+        "function_id": "TypedSnapshotERC20.takeSnapshot(address, string)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "snapshots.push(Snapshot({ id: id, account: account, balance: balanceOf[account], noteHash: keccak256(bytes(note)) }))",
+        "src": "2666:173:0",
+        "function_id": "TypedSnapshotERC20.takeSnapshot(address, string)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "emit SnapshotTaken(id, account, balanceOf[account])",
+        "src": "2849:51:0",
+        "function_id": "TypedSnapshotERC20.takeSnapshot(address, string)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "2604:303:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "id = SnapshotId.wrap(snapshots.length + 1)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2614:42:slither",
+            "text": "id = SnapshotId.wrap(snapshots.length + 1)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "snapshots.push(Snapshot({id:id,account:account,balance:balanceOf[account],noteHash:keccak256(bytes)(bytes(note))}))"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2666:173:slither",
+            "text": "snapshots.push(Snapshot({id:id,account:account,balance:balanceOf[account],noteHash:keccak256(bytes)(bytes(note))}))"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "SnapshotTaken(id,account,balanceOf[account])"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "2849:51:slither",
+            "text": "SnapshotTaken(id,account,balanceOf[account])"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Return",
+            "text": "id"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "2588:15:slither",
+            "text": "id"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20.takeSnapshot(address, string)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20.copySnapshot(uint256)",
+    "contract": "TypedSnapshotERC20",
+    "function": "copySnapshot",
+    "signature": "copySnapshot(uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "Snapshot storage stored = snapshots[index]",
+        "src": "3005:42:0",
+        "function_id": "TypedSnapshotERC20.copySnapshot(uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "snap = stored",
+        "src": "3057:13:0",
+        "function_id": "TypedSnapshotERC20.copySnapshot(uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "2995:82:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "stored = snapshots[index]"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "3005:42:slither",
+            "text": "stored = snapshots[index]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "snap = stored"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "3057:13:slither",
+            "text": "snap = stored"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Return",
+            "text": "snap"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "2972:22:slither",
+            "text": "snap"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20.copySnapshot(uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20.snapshotCount()",
+    "contract": "TypedSnapshotERC20",
+    "function": "snapshotCount",
+    "signature": "snapshotCount()",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "return snapshots.length",
+        "src": "3150:23:0",
+        "function_id": "TypedSnapshotERC20.snapshotCount()",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "3140:40:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "snapshots.length"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "3150:23:slither",
+            "text": "snapshots.length"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20.snapshotCount()",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20.castExamples(address payable, uint256)",
+    "contract": "TypedSnapshotERC20",
+    "function": "castExamples",
+    "signature": "castExamples(address payable, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "uint128 narrowed = uint128(raw)",
+        "src": "3321:31:0",
+        "function_id": "TypedSnapshotERC20.castExamples(address payable, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "bytes20 accountBytes = bytes20(address(payableAccount))",
+        "src": "3362:55:0",
+        "function_id": "TypedSnapshotERC20.castExamples(address payable, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "return (narrowed, accountBytes, payable(payableAccount))",
+        "src": "3427:56:0",
+        "function_id": "TypedSnapshotERC20.castExamples(address payable, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "3311:179:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "narrowed = uint128(raw)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "3321:31:slither",
+            "text": "narrowed = uint128(raw)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "accountBytes = bytes20(address(payableAccount))"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "3362:55:slither",
+            "text": "accountBytes = bytes20(address(payableAccount))"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "(narrowed,accountBytes,address(payableAccount))"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "3427:56:slither",
+            "text": "(narrowed,accountBytes,address(payableAccount))"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20.castExamples(address payable, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+    "contract": "TypedSnapshotERC20",
+    "function": "_transferWithHook",
+    "signature": "_transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "require(flags[from] != AccountFlag.Frozen, \"frozen\")",
+        "src": "3669:52:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "uint256 fee = feeFn(value)",
+        "src": "3731:26:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "uint256 debit = value + fee",
+        "src": "3767:27:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "uint256 bal = balanceOf[from]",
+        "src": "3804:29:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "require(bal >= debit, \"balance\")",
+        "src": "3843:32:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_6",
+        "lang": "solidity",
+        "text": "balanceOf[from] = bal - debit",
+        "src": "3885:29:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_7",
+        "lang": "solidity",
+        "text": "balanceOf[to] += value",
+        "src": "3924:22:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_8",
+        "lang": "solidity",
+        "text": "signedSupplyDelta -= int256(fee)",
+        "src": "3956:32:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_9",
+        "lang": "solidity",
+        "text": "lastThreeTransfers[0] = lastThreeTransfers[1]",
+        "src": "3998:45:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_10",
+        "lang": "solidity",
+        "text": "lastThreeTransfers[1] = lastThreeTransfers[2]",
+        "src": "4053:45:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_11",
+        "lang": "solidity",
+        "text": "lastThreeTransfers[2] = value",
+        "src": "4108:29:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_12",
+        "lang": "solidity",
+        "text": "emit Transfer(from, to, value)",
+        "src": "4147:30:0",
+        "function_id": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "3659:525:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(flags[from] != AccountFlag.Frozen,frozen)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "3669:52:slither",
+            "text": "require(bool,string)(flags[from] != AccountFlag.Frozen,frozen)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "fee = feeFn(value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "3731:26:slither",
+            "text": "fee = feeFn(value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "debit = value + fee"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "3767:27:slither",
+            "text": "debit = value + fee"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "bal = balanceOf[from]"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.VARIABLE",
+            "src": "3804:29:slither",
+            "text": "bal = balanceOf[from]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(bal >= debit,balance)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "3843:32:slither",
+            "text": "require(bool,string)(bal >= debit,balance)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_6"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "balanceOf[from] = bal - debit"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "3885:29:slither",
+            "text": "balanceOf[from] = bal - debit"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n7",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_7"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "balanceOf[to] += value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "3924:22:slither",
+            "text": "balanceOf[to] += value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n8",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_8"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "signedSupplyDelta -= int256(fee)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "3956:32:slither",
+            "text": "signedSupplyDelta -= int256(fee)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n9",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_9"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "lastThreeTransfers[0] = lastThreeTransfers[1]"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "3998:45:slither",
+            "text": "lastThreeTransfers[0] = lastThreeTransfers[1]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n10",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_10"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "lastThreeTransfers[1] = lastThreeTransfers[2]"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "4053:45:slither",
+            "text": "lastThreeTransfers[1] = lastThreeTransfers[2]"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n11",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_11"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "lastThreeTransfers[2] = value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "4108:29:slither",
+            "text": "lastThreeTransfers[2] = value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n12",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_12"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "Transfer(from,to,value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "4147:30:slither",
+            "text": "Transfer(from,to,value)"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n6",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n6",
+          "to": "bb_sol_slither_n7",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n7",
+          "to": "bb_sol_slither_n8",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n8",
+          "to": "bb_sol_slither_n9",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n9",
+          "to": "bb_sol_slither_n10",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n10",
+          "to": "bb_sol_slither_n11",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n11",
+          "to": "bb_sol_slither_n12",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20._transferWithHook(address, address, uint256, function (uint256) pure returns (uint256))",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20._identityFee(uint256)",
+    "contract": "TypedSnapshotERC20",
+    "function": "_identityFee",
+    "signature": "_identityFee(uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "return 0",
+        "src": "4263:8:0",
+        "function_id": "TypedSnapshotERC20._identityFee(uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "4253:25:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "0"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.RETURN",
+            "src": "4263:8:slither",
+            "text": "0"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20._identityFee(uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "TypedSnapshotERC20._mint(address, uint256)",
+    "contract": "TypedSnapshotERC20",
+    "function": "_mint",
+    "signature": "_mint(address, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "balanceOf[to] += value",
+        "src": "4345:22:0",
+        "function_id": "TypedSnapshotERC20._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "totalSupply += value",
+        "src": "4377:20:0",
+        "function_id": "TypedSnapshotERC20._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "signedSupplyDelta += int256(value)",
+        "src": "4407:34:0",
+        "function_id": "TypedSnapshotERC20._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "emit Transfer(address(0), to, value)",
+        "src": "4451:36:0",
+        "function_id": "TypedSnapshotERC20._mint(address, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.ENTRYPOINT",
+            "src": "4335:159:slither",
+            "text": "entrypoint"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "balanceOf[to] += value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "4345:22:slither",
+            "text": "balanceOf[to] += value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "totalSupply += value"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "4377:20:slither",
+            "text": "totalSupply += value"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "signedSupplyDelta += int256(value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "4407:34:slither",
+            "text": "signedSupplyDelta += int256(value)"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Terminal",
+            "text": "Transfer(address(0),to,value)"
+          },
+          "attrs": {
+            "slither_node_type": "NodeType.EXPRESSION",
+            "src": "4451:36:slither",
+            "text": "Transfer(address(0),to,value)"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "TypedSnapshotERC20._mint(address, uint256)",
+        "state_variables": [
+          {
+            "name": "name",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "532:43:0",
+            "storage_slot": 0
+          },
+          {
+            "name": "symbol",
+            "kind": "state",
+            "type_string": "string",
+            "data_location": "default",
+            "src": "581:28:0",
+            "storage_slot": 1
+          },
+          {
+            "name": "totalSupply",
+            "kind": "state",
+            "type_string": "uint256",
+            "data_location": "default",
+            "src": "656:26:0",
+            "storage_slot": 2
+          },
+          {
+            "name": "paused",
+            "kind": "state",
+            "type_string": "bool",
+            "data_location": "default",
+            "src": "688:18:0",
+            "storage_slot": 3
+          },
+          {
+            "name": "signedSupplyDelta",
+            "kind": "state",
+            "type_string": "int256",
+            "data_location": "default",
+            "src": "712:31:0",
+            "storage_slot": 4
+          },
+          {
+            "name": "domain",
+            "kind": "state",
+            "type_string": "bytes32",
+            "data_location": "default",
+            "src": "844:21:0",
+            "storage_slot": 5
+          },
+          {
+            "name": "metadataBlob",
+            "kind": "state",
+            "type_string": "bytes",
+            "data_location": "default",
+            "src": "871:25:0",
+            "storage_slot": 6
+          },
+          {
+            "name": "lastThreeTransfers",
+            "kind": "state",
+            "type_string": "uint256[3]",
+            "data_location": "default",
+            "src": "902:36:0",
+            "storage_slot": 7
+          },
+          {
+            "name": "snapshots",
+            "kind": "state",
+            "type_string": "struct Snapshot[]",
+            "data_location": "default",
+            "src": "945:27:0",
+            "storage_slot": 10
+          },
+          {
+            "name": "balanceOf",
+            "kind": "state",
+            "type_string": "mapping(address => uint256)",
+            "data_location": "default",
+            "src": "978:60:0",
+            "storage_slot": 11
+          },
+          {
+            "name": "allowance",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "1044:84:0",
+            "storage_slot": 12
+          },
+          {
+            "name": "flags",
+            "kind": "state",
+            "type_string": "mapping(address => enum AccountFlag)",
+            "data_location": "default",
+            "src": "1134:57:0",
+            "storage_slot": 13
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {
+          "decimals": {
+            "name": "decimals",
+            "type_string": "uint8",
+            "value": "18",
+            "src": "615:35:0"
+          },
+          "TRANSFER_SELECTOR": {
+            "name": "TRANSFER_SELECTOR",
+            "type_string": "bytes4",
+            "value": "bytes4(keccak256(\"transfer(address,uint256)\"))",
+            "src": "749:89:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 10,
+        "selectors": {
+          "0xa9059cbb": [
+            {
+              "selector": "0xa9059cbb",
+              "signature": "transfer(address,uint256)",
+              "name": "transfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1421:161:0"
+            }
+          ],
+          "0x095ea7b3": [
+            {
+              "selector": "0x095ea7b3",
+              "signature": "approve(address,uint256)",
+              "name": "approve",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1588:200:0"
+            }
+          ],
+          "0x23b872dd": [
+            {
+              "selector": "0x23b872dd",
+              "signature": "transferFrom(address,address,uint256)",
+              "name": "transferFrom",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "1794:331:0"
+            }
+          ],
+          "0x88d695b2": [
+            {
+              "selector": "0x88d695b2",
+              "signature": "batchTransfer(address[],uint256[])",
+              "name": "batchTransfer",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2131:373:0"
+            }
+          ],
+          "0x5e682e13": [
+            {
+              "selector": "0x5e682e13",
+              "signature": "takeSnapshot(address,string)",
+              "name": "takeSnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2510:397:0"
+            }
+          ],
+          "0x126c030e": [
+            {
+              "selector": "0x126c030e",
+              "signature": "copySnapshot(uint256)",
+              "name": "copySnapshot",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "2913:164:0"
+            }
+          ],
+          "0x098ab6a1": [
+            {
+              "selector": "0x098ab6a1",
+              "signature": "snapshotCount()",
+              "name": "snapshotCount",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3083:97:0"
+            }
+          ],
+          "0x269701c4": [
+            {
+              "selector": "0x269701c4",
+              "signature": "castExamples(address,uint256)",
+              "name": "castExamples",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "3186:304:0"
+            }
+          ],
+          "0xd8d2f139": [
+            {
+              "selector": "0xd8d2f139",
+              "signature": "_identityFee(uint256)",
+              "name": "_identityFee",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4190:88:0"
+            }
+          ],
+          "0x4e6ec247": [
+            {
+              "selector": "0x4e6ec247",
+              "signature": "_mint(address,uint256)",
+              "name": "_mint",
+              "kind": "function",
+              "contract": "TypedSnapshotERC20",
+              "source": "ast",
+              "src": "4284:210:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol",
+        "analysis_source": "/tmp/sseir_branch_ccgret48/TypedSnapshotERC20.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/人工构造样例/04_类型系统_数组_mapping_struct_enum_UDVT/contracts/TypedSnapshotERC20.sol"
+        ]
+      }
+    ]
+  }
+]

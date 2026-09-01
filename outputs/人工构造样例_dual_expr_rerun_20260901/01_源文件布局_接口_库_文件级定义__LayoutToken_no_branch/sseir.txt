@@ -1,0 +1,129 @@
+Function LayoutToken.constructor(string, string, address)
+  function_id: LayoutToken.constructor(string, string, address)
+  SourceStatements:
+    sol_s_1 [solidity] if (receiver == address(0)) revert ZeroAddress()
+    sol_s_2 [solidity] revert ZeroAddress()
+    sol_s_3 [solidity] name = tokenName
+    sol_s_4 [solidity] symbol = tokenSymbol
+    sol_s_5 [solidity] TokenAmount plannedAmount = ONE_TOKEN.wrap() + TokenAmount.wrap(0)
+    sol_s_6 [solidity] genesisPlan = MintPlan({receiver: receiver, amount: plannedAmount})
+    sol_s_7 [solidity] _mint(genesisPlan.receiver, unwrapAmount(genesisPlan.amount))
+    sol_s_8 [solidity] mintState = MintState.Minted
+  Control:
+    blocks: 10
+    edges: 10
+  ExpressionRoles:
+  Effects:
+  SemanticOverlays:
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "LayoutToken.constructor(string, string, address)", "state_variables": [{"name": "name", "kind": "state", "type_string": "string", "data_location": "default", "src": "508:18:1", "storage_slot": 0}, {"name": "symbol", "kind": "state", "type_string": "string", "data_location": "default", "src": "532:20:1", "storage_slot": 1}, {"name": "totalSupply", "kind": "state", "type_string": "uint256", "data_location": "default", "src": "612:26:1", "storage_slot": 2}, {"name": "mintState", "kind": "state", "type_string": "enum MintState", "data_location": "default", "src": "644:26:1", "storage_slot": 3}, {"name": "genesisPlan", "kind": "state", "type_string": "struct MintPlan", "data_location": "default", "src": "676:27:1", "storage_slot": 4}, {"name": "balanceOf", "kind": "state", "type_string": "mapping(address => uint256)", "data_location": "default", "src": "710:60:1", "storage_slot": 6}, {"name": "allowance", "kind": "state", "type_string": "mapping(address => mapping(address => uint256))", "data_location": "default", "src": "776:84:1", "storage_slot": 7}]}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {"decimals": {"name": "decimals", "type_string": "uint8", "value": "ERC20_DECIMALS", "src": "558:47:1"}}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 5, "selectors": {"0xa9059cbb": [{"selector": "0xa9059cbb", "signature": "transfer(address,uint256)", "name": "transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1338:139:1"}], "0x095ea7b3": [{"selector": "0x095ea7b3", "signature": "approve(address,uint256)", "name": "approve", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1483:200:1"}], "0x23b872dd": [{"selector": "0x23b872dd", "signature": "transferFrom(address,address,uint256)", "name": "transferFrom", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1689:309:1"}], "0x4e6ec247": [{"selector": "0x4e6ec247", "signature": "_mint(address,uint256)", "name": "_mint", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2004:166:1"}], "0x30e0789e": [{"selector": "0x30e0789e", "signature": "_transfer(address,address,uint256)", "name": "_transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2176:320:1"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "rewrite_count": 0, "enabled": false, "flattened_imports": false, "imported_files": [], "preprocessed_files": []}
+
+Function LayoutToken.transfer(address, uint256)
+  function_id: LayoutToken.transfer(address, uint256)
+  SourceStatements:
+    sol_s_1 [solidity] _transfer(msg.sender, to, value)
+    sol_s_2 [solidity] return true
+  Control:
+    blocks: 3
+    edges: 2
+  ExpressionRoles:
+  Effects:
+  SemanticOverlays:
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "LayoutToken.transfer(address, uint256)", "state_variables": [{"name": "name", "kind": "state", "type_string": "string", "data_location": "default", "src": "508:18:1", "storage_slot": 0}, {"name": "symbol", "kind": "state", "type_string": "string", "data_location": "default", "src": "532:20:1", "storage_slot": 1}, {"name": "totalSupply", "kind": "state", "type_string": "uint256", "data_location": "default", "src": "612:26:1", "storage_slot": 2}, {"name": "mintState", "kind": "state", "type_string": "enum MintState", "data_location": "default", "src": "644:26:1", "storage_slot": 3}, {"name": "genesisPlan", "kind": "state", "type_string": "struct MintPlan", "data_location": "default", "src": "676:27:1", "storage_slot": 4}, {"name": "balanceOf", "kind": "state", "type_string": "mapping(address => uint256)", "data_location": "default", "src": "710:60:1", "storage_slot": 6}, {"name": "allowance", "kind": "state", "type_string": "mapping(address => mapping(address => uint256))", "data_location": "default", "src": "776:84:1", "storage_slot": 7}]}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {"decimals": {"name": "decimals", "type_string": "uint8", "value": "ERC20_DECIMALS", "src": "558:47:1"}}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 5, "selectors": {"0xa9059cbb": [{"selector": "0xa9059cbb", "signature": "transfer(address,uint256)", "name": "transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1338:139:1"}], "0x095ea7b3": [{"selector": "0x095ea7b3", "signature": "approve(address,uint256)", "name": "approve", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1483:200:1"}], "0x23b872dd": [{"selector": "0x23b872dd", "signature": "transferFrom(address,address,uint256)", "name": "transferFrom", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1689:309:1"}], "0x4e6ec247": [{"selector": "0x4e6ec247", "signature": "_mint(address,uint256)", "name": "_mint", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2004:166:1"}], "0x30e0789e": [{"selector": "0x30e0789e", "signature": "_transfer(address,address,uint256)", "name": "_transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2176:320:1"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "rewrite_count": 0, "enabled": false, "flattened_imports": false, "imported_files": [], "preprocessed_files": []}
+
+Function LayoutToken.approve(address, uint256)
+  function_id: LayoutToken.approve(address, uint256)
+  SourceStatements:
+    sol_s_1 [solidity] allowance[msg.sender][spender] = value
+    sol_s_2 [solidity] emit Approval(msg.sender, spender, value)
+    sol_s_3 [solidity] return true
+  Control:
+    blocks: 4
+    edges: 3
+  ExpressionRoles:
+  Effects:
+  SemanticOverlays:
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "LayoutToken.approve(address, uint256)", "state_variables": [{"name": "name", "kind": "state", "type_string": "string", "data_location": "default", "src": "508:18:1", "storage_slot": 0}, {"name": "symbol", "kind": "state", "type_string": "string", "data_location": "default", "src": "532:20:1", "storage_slot": 1}, {"name": "totalSupply", "kind": "state", "type_string": "uint256", "data_location": "default", "src": "612:26:1", "storage_slot": 2}, {"name": "mintState", "kind": "state", "type_string": "enum MintState", "data_location": "default", "src": "644:26:1", "storage_slot": 3}, {"name": "genesisPlan", "kind": "state", "type_string": "struct MintPlan", "data_location": "default", "src": "676:27:1", "storage_slot": 4}, {"name": "balanceOf", "kind": "state", "type_string": "mapping(address => uint256)", "data_location": "default", "src": "710:60:1", "storage_slot": 6}, {"name": "allowance", "kind": "state", "type_string": "mapping(address => mapping(address => uint256))", "data_location": "default", "src": "776:84:1", "storage_slot": 7}]}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {"decimals": {"name": "decimals", "type_string": "uint8", "value": "ERC20_DECIMALS", "src": "558:47:1"}}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 5, "selectors": {"0xa9059cbb": [{"selector": "0xa9059cbb", "signature": "transfer(address,uint256)", "name": "transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1338:139:1"}], "0x095ea7b3": [{"selector": "0x095ea7b3", "signature": "approve(address,uint256)", "name": "approve", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1483:200:1"}], "0x23b872dd": [{"selector": "0x23b872dd", "signature": "transferFrom(address,address,uint256)", "name": "transferFrom", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1689:309:1"}], "0x4e6ec247": [{"selector": "0x4e6ec247", "signature": "_mint(address,uint256)", "name": "_mint", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2004:166:1"}], "0x30e0789e": [{"selector": "0x30e0789e", "signature": "_transfer(address,address,uint256)", "name": "_transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2176:320:1"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "rewrite_count": 0, "enabled": false, "flattened_imports": false, "imported_files": [], "preprocessed_files": []}
+
+Function LayoutToken.transferFrom(address, address, uint256)
+  function_id: LayoutToken.transferFrom(address, address, uint256)
+  SourceStatements:
+    sol_s_1 [solidity] uint256 allowed = allowance[from][msg.sender]
+    sol_s_2 [solidity] require(allowed >= value, "allowance")
+    sol_s_3 [solidity] allowance[from][msg.sender] = allowed - value
+    sol_s_4 [solidity] _transfer(from, to, value)
+    sol_s_5 [solidity] return true
+  Control:
+    blocks: 6
+    edges: 5
+  ExpressionRoles:
+  Effects:
+  SemanticOverlays:
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "LayoutToken.transferFrom(address, address, uint256)", "state_variables": [{"name": "name", "kind": "state", "type_string": "string", "data_location": "default", "src": "508:18:1", "storage_slot": 0}, {"name": "symbol", "kind": "state", "type_string": "string", "data_location": "default", "src": "532:20:1", "storage_slot": 1}, {"name": "totalSupply", "kind": "state", "type_string": "uint256", "data_location": "default", "src": "612:26:1", "storage_slot": 2}, {"name": "mintState", "kind": "state", "type_string": "enum MintState", "data_location": "default", "src": "644:26:1", "storage_slot": 3}, {"name": "genesisPlan", "kind": "state", "type_string": "struct MintPlan", "data_location": "default", "src": "676:27:1", "storage_slot": 4}, {"name": "balanceOf", "kind": "state", "type_string": "mapping(address => uint256)", "data_location": "default", "src": "710:60:1", "storage_slot": 6}, {"name": "allowance", "kind": "state", "type_string": "mapping(address => mapping(address => uint256))", "data_location": "default", "src": "776:84:1", "storage_slot": 7}]}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {"decimals": {"name": "decimals", "type_string": "uint8", "value": "ERC20_DECIMALS", "src": "558:47:1"}}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 5, "selectors": {"0xa9059cbb": [{"selector": "0xa9059cbb", "signature": "transfer(address,uint256)", "name": "transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1338:139:1"}], "0x095ea7b3": [{"selector": "0x095ea7b3", "signature": "approve(address,uint256)", "name": "approve", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1483:200:1"}], "0x23b872dd": [{"selector": "0x23b872dd", "signature": "transferFrom(address,address,uint256)", "name": "transferFrom", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1689:309:1"}], "0x4e6ec247": [{"selector": "0x4e6ec247", "signature": "_mint(address,uint256)", "name": "_mint", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2004:166:1"}], "0x30e0789e": [{"selector": "0x30e0789e", "signature": "_transfer(address,address,uint256)", "name": "_transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2176:320:1"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "rewrite_count": 0, "enabled": false, "flattened_imports": false, "imported_files": [], "preprocessed_files": []}
+
+Function LayoutToken._mint(address, uint256)
+  function_id: LayoutToken._mint(address, uint256)
+  SourceStatements:
+    sol_s_1 [solidity] totalSupply += value
+    sol_s_2 [solidity] balanceOf[to] += value
+    sol_s_3 [solidity] emit Transfer(address(0), to, value)
+  Control:
+    blocks: 4
+    edges: 3
+  ExpressionRoles:
+  Effects:
+  SemanticOverlays:
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "LayoutToken._mint(address, uint256)", "state_variables": [{"name": "name", "kind": "state", "type_string": "string", "data_location": "default", "src": "508:18:1", "storage_slot": 0}, {"name": "symbol", "kind": "state", "type_string": "string", "data_location": "default", "src": "532:20:1", "storage_slot": 1}, {"name": "totalSupply", "kind": "state", "type_string": "uint256", "data_location": "default", "src": "612:26:1", "storage_slot": 2}, {"name": "mintState", "kind": "state", "type_string": "enum MintState", "data_location": "default", "src": "644:26:1", "storage_slot": 3}, {"name": "genesisPlan", "kind": "state", "type_string": "struct MintPlan", "data_location": "default", "src": "676:27:1", "storage_slot": 4}, {"name": "balanceOf", "kind": "state", "type_string": "mapping(address => uint256)", "data_location": "default", "src": "710:60:1", "storage_slot": 6}, {"name": "allowance", "kind": "state", "type_string": "mapping(address => mapping(address => uint256))", "data_location": "default", "src": "776:84:1", "storage_slot": 7}]}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {"decimals": {"name": "decimals", "type_string": "uint8", "value": "ERC20_DECIMALS", "src": "558:47:1"}}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 5, "selectors": {"0xa9059cbb": [{"selector": "0xa9059cbb", "signature": "transfer(address,uint256)", "name": "transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1338:139:1"}], "0x095ea7b3": [{"selector": "0x095ea7b3", "signature": "approve(address,uint256)", "name": "approve", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1483:200:1"}], "0x23b872dd": [{"selector": "0x23b872dd", "signature": "transferFrom(address,address,uint256)", "name": "transferFrom", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1689:309:1"}], "0x4e6ec247": [{"selector": "0x4e6ec247", "signature": "_mint(address,uint256)", "name": "_mint", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2004:166:1"}], "0x30e0789e": [{"selector": "0x30e0789e", "signature": "_transfer(address,address,uint256)", "name": "_transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2176:320:1"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "rewrite_count": 0, "enabled": false, "flattened_imports": false, "imported_files": [], "preprocessed_files": []}
+
+Function LayoutToken._transfer(address, address, uint256)
+  function_id: LayoutToken._transfer(address, address, uint256)
+  SourceStatements:
+    sol_s_1 [solidity] if (to == address(0)) revert ZeroAddress()
+    sol_s_2 [solidity] revert ZeroAddress()
+    sol_s_3 [solidity] uint256 bal = balanceOf[from]
+    sol_s_4 [solidity] require(bal >= value, "balance")
+    sol_s_5 [solidity] balanceOf[from] = bal - value
+    sol_s_6 [solidity] balanceOf[to] += value
+    sol_s_7 [solidity] emit Transfer(from, to, value)
+  Control:
+    blocks: 9
+    edges: 9
+  ExpressionRoles:
+  Effects:
+  SemanticOverlays:
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "LayoutToken._transfer(address, address, uint256)", "state_variables": [{"name": "name", "kind": "state", "type_string": "string", "data_location": "default", "src": "508:18:1", "storage_slot": 0}, {"name": "symbol", "kind": "state", "type_string": "string", "data_location": "default", "src": "532:20:1", "storage_slot": 1}, {"name": "totalSupply", "kind": "state", "type_string": "uint256", "data_location": "default", "src": "612:26:1", "storage_slot": 2}, {"name": "mintState", "kind": "state", "type_string": "enum MintState", "data_location": "default", "src": "644:26:1", "storage_slot": 3}, {"name": "genesisPlan", "kind": "state", "type_string": "struct MintPlan", "data_location": "default", "src": "676:27:1", "storage_slot": 4}, {"name": "balanceOf", "kind": "state", "type_string": "mapping(address => uint256)", "data_location": "default", "src": "710:60:1", "storage_slot": 6}, {"name": "allowance", "kind": "state", "type_string": "mapping(address => mapping(address => uint256))", "data_location": "default", "src": "776:84:1", "storage_slot": 7}]}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {"decimals": {"name": "decimals", "type_string": "uint8", "value": "ERC20_DECIMALS", "src": "558:47:1"}}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 5, "selectors": {"0xa9059cbb": [{"selector": "0xa9059cbb", "signature": "transfer(address,uint256)", "name": "transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1338:139:1"}], "0x095ea7b3": [{"selector": "0x095ea7b3", "signature": "approve(address,uint256)", "name": "approve", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1483:200:1"}], "0x23b872dd": [{"selector": "0x23b872dd", "signature": "transferFrom(address,address,uint256)", "name": "transferFrom", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "1689:309:1"}], "0x4e6ec247": [{"selector": "0x4e6ec247", "signature": "_mint(address,uint256)", "name": "_mint", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2004:166:1"}], "0x30e0789e": [{"selector": "0x30e0789e", "signature": "_transfer(address,address,uint256)", "name": "_transfer", "kind": "function", "contract": "LayoutToken", "source": "ast", "src": "2176:320:1"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "analysis_source": "人工构造样例/01_源文件布局_接口_库_文件级定义/contracts/LayoutToken.sol", "rewrite_count": 0, "enabled": false, "flattened_imports": false, "imported_files": [], "preprocessed_files": []}

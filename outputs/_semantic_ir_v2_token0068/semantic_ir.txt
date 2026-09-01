@@ -1,0 +1,1727 @@
+SemanticProgram semantic-ir/v2
+Source: TOKENS/0x0068e979c72bbb31373ea8cb47eaefb44978566e/Token.sol
+
+Function Token.constructor(string, string, uint256, uint256, uint256)
+    contract = Token
+    signature = constructor(string, string, uint256, uint256, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_1 | source=solidity | origin_facts=[fact_1]
+    @execution StateWrite(expr=_baseSupply_1)
+    StateWrite(StateVariableLocation(qBQC), _baseSupply)
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_2 | source=solidity | origin_facts=[fact_2]
+    @execution StateWrite(expr=_name_1)
+    StateWrite(StateVariableLocation(RZsb), _name)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_3 | source=solidity | origin_facts=[fact_3]
+    @execution StateWrite(expr=_symbol_1)
+    StateWrite(StateVariableLocation(PZVt), _symbol)
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // ir_4 | source=solidity | origin_facts=[fact_4]
+    TMP_0 = InternalCall(decimals())
+    // ir_5 | source=solidity | origin_facts=[fact_5]
+    TMP_1 = OpaqueExpression("10 ** TMP_0")
+    // ir_6 | source=solidity | origin_facts=[fact_6]
+    TMP_2 = Mul(_supply_1, TMP_1)
+    // ir_7 | source=solidity | origin_facts=[fact_7]
+    @execution StateWrite(expr=TMP_2)
+    StateWrite(
+        StateVariableLocation(FFxO),
+        OpaqueExpression("(_supply * (10 ** decimals()))")
+    )
+    Goto(bb_sol_slither_n5)
+
+bb_sol_slither_n5 [solidity]:
+    // predecessors: bb_sol_slither_n4
+    // ir_8 | source=solidity | origin_facts=[fact_8]
+    @execution StateWrite(expr=_maxSupply_1)
+    StateWrite(StateVariableLocation(sSgI), _maxSupply)
+    Goto(bb_sol_slither_n6)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_sol_slither_n5
+    // ir_9 | source=solidity | origin_facts=[fact_10, fact_9]
+    FFxO_1 = StateRead(StateVariableLocation(FFxO))
+    // ir_10 | source=solidity | origin_facts=[fact_11, fact_9]
+    @execution StateWrite(expr=FFxO_1)
+    StateWrite(
+        MappingLocation(base = UbLX, keys = [msg.sender]),
+        OpaqueExpression("(_supply * (10 ** decimals()))")
+    )
+    Goto(bb_sol_slither_n7)
+
+bb_sol_slither_n7 [solidity]:
+    // predecessors: bb_sol_slither_n6
+    // ir_11 | source=solidity | origin_facts=[fact_12]
+    TMP_3 = address(0)
+    // ir_12 | source=solidity | origin_facts=[fact_13]
+    EventEmit(OwnershipTransferred, msg.sender, TMP_3)
+    Fallthrough
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+    bb_sol_slither_n4 -> bb_sol_slither_n5 [fallthrough]
+    bb_sol_slither_n5 -> bb_sol_slither_n6 [fallthrough]
+    bb_sol_slither_n6 -> bb_sol_slither_n7 [fallthrough]
+
+
+Function Token.name()
+    contract = Token
+    signature = name()
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_13 | source=solidity | origin_facts=[fact_14]
+    RZsb_2 = StateRead(StateVariableLocation(RZsb))
+    // terminator origin_facts=[fact_15]
+    Return(RZsb_2)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+
+Function Token.symbol()
+    contract = Token
+    signature = symbol()
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_14 | source=solidity | origin_facts=[fact_16]
+    PZVt_2 = StateRead(StateVariableLocation(PZVt))
+    // terminator origin_facts=[fact_17]
+    Return(PZVt_2)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+
+Function Token.decimals()
+    contract = Token
+    signature = decimals()
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    // terminator origin_facts=[fact_18]
+    Return(8)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+
+Function Token.totalSupply()
+    contract = Token
+    signature = totalSupply()
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_15 | source=solidity | origin_facts=[fact_19]
+    FFxO_2 = StateRead(StateVariableLocation(FFxO))
+    // terminator origin_facts=[fact_20]
+    Return(FFxO_2)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+
+Function Token.balanceOf(address)
+    contract = Token
+    signature = balanceOf(address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_16 | source=solidity | origin_facts=[fact_22, fact_21]
+    REF_1 = StateRead(MappingLocation(base = UbLX, keys = [_account]))
+    // terminator origin_facts=[fact_23, fact_21]
+    Return(REF_1)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+
+Function Token.transfer(address, uint256)
+    contract = Token
+    signature = transfer(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_17 | source=solidity | origin_facts=[fact_24]
+    Cizk_1 = msg.sender
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_18 | source=solidity | origin_facts=[fact_25]
+    InternalCall(_spendAllowance(Cizk_1, _to_1, 0), Cizk_1, _to_1, 0)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // ir_19 | source=solidity | origin_facts=[fact_26]
+    InternalCall(_transfer(Cizk_1, _to_1, _amount_1), Cizk_1, _to_1, _amount_1)
+    Goto(bb_sol_slither_n4)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_sol_slither_n3
+    // no semantic instructions
+    // terminator origin_facts=[fact_27]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+    bb_sol_slither_n3 -> bb_sol_slither_n4 [fallthrough]
+
+
+Function Token.allowance(address, address)
+    contract = Token
+    signature = allowance(address, address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_20 | source=solidity | origin_facts=[fact_30, fact_28, fact_29]
+    REF_3 = StateRead(MappingLocation(base = wZHA, keys = [_owner, _spender]))
+    // terminator origin_facts=[fact_31, fact_28, fact_29]
+    Return(REF_3)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+
+
+Function Token.transferFrom(address, address, uint256)
+    contract = Token
+    signature = transferFrom(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_21 | source=solidity | origin_facts=[fact_32]
+    InternalCall(
+        _spendAllowance(_from_1, msg.sender, _amount_1),
+        _from_1,
+        msg.sender,
+        _amount_1
+    )
+    Goto(bb_sol_slither_n2)
+
+bb_sol_slither_n2 [solidity]:
+    // predecessors: bb_sol_slither_n1
+    // ir_22 | source=solidity | origin_facts=[fact_33]
+    InternalCall(_transfer(_from_1, _to_1, _amount_1), _from_1, _to_1, _amount_1)
+    Goto(bb_sol_slither_n3)
+
+bb_sol_slither_n3 [solidity]:
+    // predecessors: bb_sol_slither_n2
+    // no semantic instructions
+    // terminator origin_facts=[fact_34]
+    Return(true)
+
+CFGEdges:
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_sol_slither_n2 [fallthrough]
+    bb_sol_slither_n2 -> bb_sol_slither_n3 [fallthrough]
+
+
+Function Token._transfer(address, address, uint256)
+    contract = Token
+    signature = _transfer(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm1_n0)
+
+bb_asm1_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm1_n2)
+
+bb_asm1_n1 [yul]:
+    // predecessors: bb_asm1_n38
+    // no semantic instructions
+    Fallthrough
+
+bb_asm1_n2 [yul]:
+    // predecessors: bb_asm1_n0
+    // no semantic instructions
+    // terminator origin_facts=[fact_35, fact_36]
+    Branch(IsZero(_from), bb_asm1_n4, bb_asm1_n3)
+
+bb_asm1_n3 [yul]:
+    // predecessors: bb_asm1_n2
+    // no semantic instructions
+    Goto(bb_asm1_n5)
+
+bb_asm1_n4 [yul]:
+    // predecessors: bb_asm1_n2
+    // ir_56 | source=yul | origin_facts=[fact_91, fact_35]
+    @condition Not(Ne(IsZero(_from), 0))
+    Require(Not(Ne(IsZero(_from), 0)))
+    @execution-values [0, 0]
+    Revert()
+
+bb_asm1_n5 [yul]:
+    // predecessors: bb_asm1_n3
+    // no semantic instructions
+    // terminator origin_facts=[fact_37, fact_38]
+    Branch(IsZero(_to), bb_asm1_n7, bb_asm1_n6)
+
+bb_asm1_n6 [yul]:
+    // predecessors: bb_asm1_n5
+    // no semantic instructions
+    Goto(bb_asm1_n8)
+
+bb_asm1_n7 [yul]:
+    // predecessors: bb_asm1_n5
+    // ir_55 | source=yul | origin_facts=[fact_90]
+    @condition Not(Ne(__sseir_eval_asm_s_3_1, 0))
+    Require(Not(Ne(__sseir_eval_asm_s_3_1, 0)))
+    @execution-values [0, 0]
+    Revert()
+
+bb_asm1_n8 [yul]:
+    // predecessors: bb_asm1_n6
+    // ir_57 | source=yul | origin_facts=[-]
+    bbwz = MemoryRead()
+    Goto(bb_asm1_n9)
+
+bb_asm1_n9 [yul]:
+    // predecessors: bb_asm1_n8
+    // ir_23 | source=yul | origin_facts=[fact_40]
+    @condition And(Not(IsZero(_from)), Not(IsZero(_to)))
+    @execution Assign(expr=basefee())
+    __sseir_eval_asm_s_6_1 = block.basefee
+    Goto(bb_asm1_n10)
+
+bb_asm1_n10 [yul]:
+    // predecessors: bb_asm1_n9
+    // ir_24 | source=yul | origin_facts=[fact_42]
+    @condition And(Not(IsZero(_from)), Not(IsZero(_to)))
+    @execution Assign(expr=number())
+    __sseir_eval_asm_s_7_1 = block.number
+    // ir_25 | source=yul | origin_facts=[fact_43]
+    @condition And(Not(IsZero(_from)), Not(IsZero(_to)))
+    nezy9b8 = __sseir_eval_asm_s_7_1
+    Goto(bb_asm1_n11)
+
+bb_asm1_n11 [yul]:
+    // predecessors: bb_asm1_n10
+    // no semantic instructions
+    // terminator origin_facts=[fact_44, fact_46]
+    Branch(IsZero(Xor(bfo228g, bfo228g)), bb_asm1_n13, bb_asm1_n12)
+
+bb_asm1_n12 [yul]:
+    // predecessors: bb_asm1_n14, bb_asm1_n11
+    // ir_26 | source=yul | origin_facts=[fact_45]
+    @condition And(Not(IsZero(_from)), Not(IsZero(_to)))
+    @execution Assign(expr=IsZero(__sseir_eval_asm_s_8_1))
+    __sseir_eval_asm_s_8_2 = Eq(__sseir_eval_asm_s_8_1, 0)
+    Goto(bb_asm1_n15)
+
+bb_asm1_n13 [yul]:
+    // predecessors: bb_asm1_n11
+    // no semantic instructions
+    Goto(bb_asm1_n14)
+
+bb_asm1_n14 [yul]:
+    // predecessors: bb_asm1_n13
+    // no semantic instructions
+    Goto(bb_asm1_n12)
+
+bb_asm1_n15 [yul]:
+    // predecessors: bb_asm1_n12
+    // no semantic instructions
+    Goto(bb_asm1_n16)
+
+bb_asm1_n16 [yul]:
+    // predecessors: bb_asm1_n15
+    // ir_27 | source=yul | origin_facts=[fact_50, fact_41, fact_47, fact_48, fact_49, fact_39]
+    @condition And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee()))))
+    @execution StateRead(expr=sload(XCUz))
+    qVPd = StateRead(RawStorageLocation(access = qVPd))
+    // ir_28 | source=yul | origin_facts=[fact_51, fact_41, fact_48, fact_49, fact_47, fact_39]
+    @condition And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee())))
+    @execution StateRead(expr=sload(XCUz))
+    qVPd = StateRead(MappingLocation(base = UbLX, keys = [_from]))
+    Goto(bb_asm1_n17)
+
+bb_asm1_n17 [yul]:
+    // predecessors: bb_asm1_n16
+    // ir_29 | source=yul | origin_facts=[fact_53, fact_52]
+    @condition And(Not(IsZero(_from)), Not(IsZero(_to)))
+    @execution StateRead(expr=sload(sSgI.slot))
+    Fpzy = StateRead(StateVariableLocation(sSgI))
+    Goto(bb_asm1_n18)
+
+bb_asm1_n18 [yul]:
+    // predecessors: bb_asm1_n17
+    // no semantic instructions
+    Goto(bb_asm1_n19)
+
+bb_asm1_n19 [yul]:
+    // predecessors: bb_asm1_n18
+    // ir_30 | source=yul | origin_facts=[fact_55, fact_39, fact_41]
+    @condition And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee()))))
+    @execution PrecompileCall(expr=staticcall(__sseir_eval_asm_s_15_1, 2, mload(0x40), 20, mload(0x40), 32), args=[__sseir_eval_asm_s_15_1, 2, mload(0x40), 20, mload(0x40), 32])
+    PrecompileCall(target=2, data=data_1)
+    @data-objects [data_1]
+    // ir_31 | source=yul | origin_facts=[fact_56, fact_39, fact_41]
+    @condition And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee())))
+    @execution PrecompileCall(expr=staticcall(__sseir_eval_asm_s_15_1, 2, mload(0x40), 20, mload(0x40), 32), args=[__sseir_eval_asm_s_15_1, 2, mload(0x40), 20, mload(0x40), 32])
+    PrecompileCall(target=2, data=data_1)
+    @data-objects [data_1]
+    // terminator origin_facts=[fact_54, fact_59]
+    Branch(IsZero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)), bb_asm1_n21, bb_asm1_n20)
+
+bb_asm1_n20 [yul]:
+    // predecessors: bb_asm1_n19
+    // ir_32 | source=yul | origin_facts=[fact_57]
+    @condition And(Not(IsZero(_from)), Not(IsZero(_to)))
+    @execution Assign(expr=IsZero(__sseir_eval_asm_s_15_2))
+    __sseir_eval_asm_s_15_2 = staticcall(__sseir_eval_asm_s_15_1, 2, bbwz, 20, bbwz, 32)
+    // ir_33 | source=yul | origin_facts=[fact_58]
+    @condition And(Not(IsZero(_from)), Not(IsZero(_to)))
+    @execution Assign(expr=IsZero(__sseir_eval_asm_s_15_2))
+    __sseir_eval_asm_s_15_3 = Eq(__sseir_eval_asm_s_15_2, 0)
+    Goto(bb_asm1_n22)
+
+bb_asm1_n21 [yul]:
+    // predecessors: bb_asm1_n19
+    // ir_54 | source=yul | origin_facts=[fact_89]
+    @condition Not(Ne(__sseir_eval_asm_s_15_3, 0))
+    Require(Not(Ne(__sseir_eval_asm_s_15_3, 0)))
+    @execution-values [0, 0]
+    Revert()
+
+bb_asm1_n22 [yul]:
+    // predecessors: bb_asm1_n20
+    // ir_34 | source=yul | origin_facts=[fact_60]
+    @condition And(
+    And(Not(IsZero(_from)), Not(IsZero(_to))),
+    Not(IsZero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))
+)
+    @execution Assign(expr=mload(mload(0x40)))
+    YvIh = mload(bbwz)
+    // ir_58 | source=yul | origin_facts=[-]
+    YvIh = MemoryRead()
+    Goto(bb_asm1_n23)
+
+bb_asm1_n23 [yul]:
+    // predecessors: bb_asm1_n22
+    // no semantic instructions
+    // terminator origin_facts=[fact_61, fact_63]
+    Branch(IsZero(Eq(Fpzy, YvIh)), bb_asm1_n25, bb_asm1_n24)
+
+bb_asm1_n24 [yul]:
+    // predecessors: bb_asm1_n26, bb_asm1_n23
+    // ir_35 | source=yul | origin_facts=[fact_62]
+    @condition And(
+    And(Not(IsZero(_from)), Not(IsZero(_to))),
+    Not(IsZero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))
+)
+    @execution Assign(expr=IsZero(__sseir_eval_asm_s_18_1))
+    __sseir_eval_asm_s_18_2 = Eq(__sseir_eval_asm_s_18_1, 0)
+    Goto(bb_asm1_n31)
+
+bb_asm1_n25 [yul]:
+    // predecessors: bb_asm1_n23
+    // no semantic instructions
+    // terminator origin_facts=[fact_64, fact_65]
+    Branch(Lt(qVPd, _amount), bb_asm1_n27, bb_asm1_n26)
+
+bb_asm1_n26 [yul]:
+    // predecessors: bb_asm1_n29, bb_asm1_n25
+    // no semantic instructions
+    Goto(bb_asm1_n24)
+
+bb_asm1_n27 [yul]:
+    // predecessors: bb_asm1_n25
+    // ir_36 | source=yul | origin_facts=[fact_66]
+    @condition And(
+    And(
+        And(
+            And(Not(IsZero(_from)), Not(IsZero(_to))),
+            Not(IsZero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))
+        ),
+        IsZero(Eq(Fpzy, YvIh))
+    ),
+    Lt(qVPd, _amount)
+)
+    @execution Assign(expr=timestamp())
+    __sseir_eval_asm_s_20_1 = block.timestamp
+    // ir_37 | source=yul | origin_facts=[fact_67]
+    @condition And(
+    And(
+        And(
+            And(Not(IsZero(_from)), Not(IsZero(_to))),
+            Not(IsZero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))
+        ),
+        IsZero(Eq(Fpzy, YvIh))
+    ),
+    Lt(qVPd, _amount)
+)
+    tfe9zci = __sseir_eval_asm_s_20_1
+    Goto(bb_asm1_n28)
+
+bb_asm1_n28 [yul]:
+    // predecessors: bb_asm1_n27
+    // no semantic instructions
+    // terminator origin_facts=[fact_68, fact_70]
+    Branch(Eq(tfe9zci, Mul(tfe9zci, 1)), bb_asm1_n30, bb_asm1_n29)
+
+bb_asm1_n29 [yul]:
+    // predecessors: bb_asm1_n28
+    // ir_38 | source=yul | origin_facts=[fact_69]
+    @condition And(
+    And(
+        And(
+            And(Not(IsZero(_from)), Not(IsZero(_to))),
+            Not(IsZero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))
+        ),
+        IsZero(Eq(Fpzy, YvIh))
+    ),
+    Lt(qVPd, _amount)
+)
+    __sseir_eval_asm_s_21_2 = Eq(tfe9zci, __sseir_eval_asm_s_21_1)
+    Goto(bb_asm1_n26)
+
+bb_asm1_n30 [yul]:
+    // predecessors: bb_asm1_n28
+    // ir_53 | source=yul | origin_facts=[fact_88]
+    @condition Not(Ne(__sseir_eval_asm_s_21_2, 0))
+    Require(Not(Ne(__sseir_eval_asm_s_21_2, 0)))
+    @execution-values [0, 0]
+    Revert()
+
+bb_asm1_n31 [yul]:
+    // predecessors: bb_asm1_n24
+    // ir_39 | source=yul | origin_facts=[fact_71, fact_39, fact_41, fact_48, fact_49, fact_52, fact_47]
+    @condition And(
+    And(
+        And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+        Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+    ),
+    Not(IsZero(Eq(sload(sSgI.slot), YvIh)))
+)
+    @execution-condition And(
+    And(
+        And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+        Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+    ),
+    Not(IsZero(Eq(Fpzy, YvIh)))
+)
+    @execution StateWrite(expr=Sub(qVPd, _amount))
+    StateWrite(
+        RawStorageLocation(access = XCUz),
+        Sub(sload(Keccak(mload(0x40), 0x40)), _amount)
+    )
+    // ir_40 | source=yul | origin_facts=[fact_72, fact_39, fact_41, fact_48, fact_49, fact_52, fact_47]
+    @condition And(
+    And(
+        And(
+            And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+            Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+        ),
+        IsZero(Eq(sload(sSgI.slot), YvIh))
+    ),
+    Not(Lt(sload(Keccak(mload(0x40), 0x40)), _amount))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+            Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+        ),
+        IsZero(Eq(Fpzy, YvIh))
+    ),
+    Not(Lt(qVPd, _amount))
+)
+    @execution StateWrite(expr=Sub(qVPd, _amount))
+    StateWrite(
+        RawStorageLocation(access = XCUz),
+        Sub(sload(Keccak(mload(0x40), 0x40)), _amount)
+    )
+    // ir_41 | source=yul | origin_facts=[fact_73, fact_39, fact_41, fact_48, fact_49, fact_52, fact_47]
+    @condition And(
+    And(
+        And(
+            And(
+                And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+                Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+            ),
+            IsZero(Eq(sload(sSgI.slot), YvIh))
+        ),
+        Lt(sload(Keccak(mload(0x40), 0x40)), _amount)
+    ),
+    Not(Eq(tfe9zci, Mul(tfe9zci, 1)))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+                Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+            ),
+            IsZero(Eq(Fpzy, YvIh))
+        ),
+        Lt(qVPd, _amount)
+    ),
+    Not(Eq(tfe9zci, Mul(tfe9zci, 1)))
+)
+    @execution StateWrite(expr=Sub(qVPd, _amount))
+    StateWrite(
+        RawStorageLocation(access = XCUz),
+        Sub(sload(Keccak(mload(0x40), 0x40)), _amount)
+    )
+    // ir_42 | source=yul | origin_facts=[fact_74, fact_39, fact_41, fact_48, fact_49, fact_52, fact_47]
+    @condition And(
+    And(
+        And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+        Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+    ),
+    Not(IsZero(Eq(sload(sSgI.slot), YvIh)))
+)
+    @execution-condition And(
+    And(
+        And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+        Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+    ),
+    Not(IsZero(Eq(Fpzy, YvIh)))
+)
+    @execution StateWrite(expr=Sub(qVPd, _amount))
+    StateWrite(
+        MappingLocation(base = UbLX, keys = [_from]),
+        Sub(sload(Keccak(mload(0x40), 0x40)), _amount)
+    )
+    // ir_43 | source=yul | origin_facts=[fact_75, fact_39, fact_41, fact_48, fact_49, fact_52, fact_47]
+    @condition And(
+    And(
+        And(
+            And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+            Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+        ),
+        IsZero(Eq(sload(sSgI.slot), YvIh))
+    ),
+    Not(Lt(sload(Keccak(mload(0x40), 0x40)), _amount))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+            Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+        ),
+        IsZero(Eq(Fpzy, YvIh))
+    ),
+    Not(Lt(qVPd, _amount))
+)
+    @execution StateWrite(expr=Sub(qVPd, _amount))
+    StateWrite(
+        MappingLocation(base = UbLX, keys = [_from]),
+        Sub(sload(Keccak(mload(0x40), 0x40)), _amount)
+    )
+    // ir_44 | source=yul | origin_facts=[fact_76, fact_39, fact_41, fact_48, fact_49, fact_52, fact_47]
+    @condition And(
+    And(
+        And(
+            And(
+                And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+                Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+            ),
+            IsZero(Eq(sload(sSgI.slot), YvIh))
+        ),
+        Lt(sload(Keccak(mload(0x40), 0x40)), _amount)
+    ),
+    Not(Eq(tfe9zci, Mul(tfe9zci, 1)))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+                Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+            ),
+            IsZero(Eq(Fpzy, YvIh))
+        ),
+        Lt(qVPd, _amount)
+    ),
+    Not(Eq(tfe9zci, Mul(tfe9zci, 1)))
+)
+    @execution StateWrite(expr=Sub(qVPd, _amount))
+    StateWrite(
+        MappingLocation(base = UbLX, keys = [_from]),
+        Sub(sload(Keccak(mload(0x40), 0x40)), _amount)
+    )
+    Goto(bb_asm1_n32)
+
+bb_asm1_n32 [yul]:
+    // predecessors: bb_asm1_n31
+    // no semantic instructions
+    Goto(bb_asm1_n33)
+
+bb_asm1_n33 [yul]:
+    // predecessors: bb_asm1_n32
+    // no semantic instructions
+    Goto(bb_asm1_n34)
+
+bb_asm1_n34 [yul]:
+    // predecessors: bb_asm1_n33
+    // no semantic instructions
+    Goto(bb_asm1_n35)
+
+bb_asm1_n35 [yul]:
+    // predecessors: bb_asm1_n34
+    // ir_45 | source=yul | origin_facts=[fact_80, fact_39, fact_78, fact_79, fact_77]
+    @condition And(
+    And(Not(IsZero(_from)), Not(IsZero(_to))),
+    Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+)
+    @execution StateRead(expr=sload(Keccak(mload(0x40), 0x40)))
+    bXFg = StateRead(MappingLocation(base = UbLX, keys = [_to]))
+    Goto(bb_asm1_n36)
+
+bb_asm1_n36 [yul]:
+    // predecessors: bb_asm1_n35
+    // ir_46 | source=yul | origin_facts=[fact_81, fact_39, fact_78, fact_79, fact_77]
+    @condition And(
+    And(Not(IsZero(_from)), Not(IsZero(_to))),
+    Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+)
+    @execution StateWrite(expr=Add(bXFg, _amount))
+    StateWrite(
+        MappingLocation(base = UbLX, keys = [_to]),
+        Add(sload(Keccak(mload(0x40), 0x40)), _amount)
+    )
+    Goto(bb_asm1_n37)
+
+bb_asm1_n37 [yul]:
+    // predecessors: bb_asm1_n36
+    // no semantic instructions
+    Goto(bb_asm1_n38)
+
+bb_asm1_n38 [yul]:
+    // predecessors: bb_asm1_n37
+    // ir_47 | source=yul | origin_facts=[fact_82, fact_39, fact_41, fact_52]
+    @condition And(
+    And(
+        And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+        Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+    ),
+    Not(IsZero(Eq(sload(sSgI.slot), YvIh)))
+)
+    @execution-condition And(
+    And(
+        And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+        Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+    ),
+    Not(IsZero(Eq(Fpzy, YvIh)))
+)
+    @execution EventEmit(args=[mload(0x40), 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to])
+    EventEmit(Transfer, _from, _to, _amount)
+    // ir_48 | source=yul | origin_facts=[fact_83, fact_39, fact_41, fact_49, fact_52, fact_47, fact_48]
+    @condition And(
+    And(
+        And(
+            And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+            Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+        ),
+        IsZero(Eq(sload(sSgI.slot), YvIh))
+    ),
+    Not(Lt(sload(path_conditioned_storage), _amount))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+            Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+        ),
+        IsZero(Eq(Fpzy, YvIh))
+    ),
+    Not(Lt(qVPd, _amount))
+)
+    @execution EventEmit(args=[mload(0x40), 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to])
+    EventEmit(Transfer, _from, _to, _amount)
+    // ir_49 | source=yul | origin_facts=[fact_84, fact_39, fact_41, fact_49, fact_52, fact_47, fact_48]
+    @condition And(
+    And(
+        And(
+            And(
+                And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+                Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+            ),
+            IsZero(Eq(sload(sSgI.slot), YvIh))
+        ),
+        Lt(sload(path_conditioned_storage), _amount)
+    ),
+    Not(Eq(tfe9zci, Mul(tfe9zci, 1)))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(And(Not(IsZero(_from)), Not(IsZero(_to))), Not(IsZero(Xor(basefee(), basefee())))),
+                Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+            ),
+            IsZero(Eq(Fpzy, YvIh))
+        ),
+        Lt(qVPd, _amount)
+    ),
+    Not(Eq(tfe9zci, Mul(tfe9zci, 1)))
+)
+    @execution EventEmit(args=[mload(0x40), 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to])
+    EventEmit(Transfer, _from, _to, _amount)
+    // ir_50 | source=yul | origin_facts=[fact_85, fact_39, fact_41, fact_52]
+    @condition And(
+    And(
+        And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+        Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+    ),
+    Not(IsZero(Eq(sload(sSgI.slot), YvIh)))
+)
+    @execution-condition And(
+    And(
+        And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+        Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+    ),
+    Not(IsZero(Eq(Fpzy, YvIh)))
+)
+    @execution EventEmit(args=[mload(0x40), 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to])
+    EventEmit(Transfer, _from, _to, _amount)
+    // ir_51 | source=yul | origin_facts=[fact_86, fact_39, fact_41, fact_49, fact_52, fact_47, fact_48]
+    @condition And(
+    And(
+        And(
+            And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+            Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+        ),
+        IsZero(Eq(sload(sSgI.slot), YvIh))
+    ),
+    Not(Lt(sload(path_conditioned_storage), _amount))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+            Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+        ),
+        IsZero(Eq(Fpzy, YvIh))
+    ),
+    Not(Lt(qVPd, _amount))
+)
+    @execution EventEmit(args=[mload(0x40), 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to])
+    EventEmit(Transfer, _from, _to, _amount)
+    // ir_52 | source=yul | origin_facts=[fact_87, fact_39, fact_41, fact_49, fact_52, fact_47, fact_48]
+    @condition And(
+    And(
+        And(
+            And(
+                And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+                Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+            ),
+            IsZero(Eq(sload(sSgI.slot), YvIh))
+        ),
+        Lt(sload(path_conditioned_storage), _amount)
+    ),
+    Not(Eq(tfe9zci, Mul(tfe9zci, 1)))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(And(Not(IsZero(_from)), Not(IsZero(_to))), IsZero(Xor(basefee(), basefee()))),
+                Not(IsZero(staticcall(gas(), 2, mload(0x40), 20, mload(0x40), 32)))
+            ),
+            IsZero(Eq(Fpzy, YvIh))
+        ),
+        Lt(qVPd, _amount)
+    ),
+    Not(Eq(tfe9zci, Mul(tfe9zci, 1)))
+)
+    @execution EventEmit(args=[mload(0x40), 32, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, _from, _to])
+    EventEmit(Transfer, _from, _to, _amount)
+    Goto(bb_asm1_n1)
+
+CFGEdges:
+    bb_asm1_n0 -> bb_asm1_n2 [next]
+    bb_asm1_n2 -> bb_asm1_n4 [true: iszero(_from)] predicate=iszero(_from)
+    bb_asm1_n2 -> bb_asm1_n3 [false: !(iszero(_from))] predicate=!(iszero(_from))
+    bb_asm1_n3 -> bb_asm1_n5 [next]
+    bb_asm1_n5 -> bb_asm1_n7 [true: iszero(_to)] predicate=iszero(_to)
+    bb_asm1_n5 -> bb_asm1_n6 [false: !(iszero(_to))] predicate=!(iszero(_to))
+    bb_asm1_n6 -> bb_asm1_n8 [next]
+    bb_asm1_n8 -> bb_asm1_n9 [next]
+    bb_asm1_n9 -> bb_asm1_n10 [next]
+    bb_asm1_n10 -> bb_asm1_n11 [next]
+    bb_asm1_n11 -> bb_asm1_n13 [true: iszero(xor(bfo228g, bfo228g))] predicate=iszero(xor(bfo228g, bfo228g))
+    bb_asm1_n13 -> bb_asm1_n14 [next]
+    bb_asm1_n14 -> bb_asm1_n12 [next]
+    bb_asm1_n11 -> bb_asm1_n12 [false: !(iszero(xor(bfo228g, bfo228g)))] predicate=!(iszero(xor(bfo228g, bfo228g)))
+    bb_asm1_n12 -> bb_asm1_n15 [next]
+    bb_asm1_n15 -> bb_asm1_n16 [next]
+    bb_asm1_n16 -> bb_asm1_n17 [next]
+    bb_asm1_n17 -> bb_asm1_n18 [next]
+    bb_asm1_n18 -> bb_asm1_n19 [next]
+    bb_asm1_n19 -> bb_asm1_n21 [true: iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))] predicate=iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32))
+    bb_asm1_n19 -> bb_asm1_n20 [false: !(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))] predicate=!(iszero(staticcall(gas(), 2, bbwz, 20, bbwz, 32)))
+    bb_asm1_n20 -> bb_asm1_n22 [next]
+    bb_asm1_n22 -> bb_asm1_n23 [next]
+    bb_asm1_n23 -> bb_asm1_n25 [true: iszero(eq(Fpzy, YvIh))] predicate=iszero(eq(Fpzy, YvIh))
+    bb_asm1_n25 -> bb_asm1_n27 [true: lt(qVPd, _amount)] predicate=lt(qVPd, _amount)
+    bb_asm1_n27 -> bb_asm1_n28 [next]
+    bb_asm1_n28 -> bb_asm1_n30 [true: eq(tfe9zci, mul(tfe9zci, 1))] predicate=eq(tfe9zci, mul(tfe9zci, 1))
+    bb_asm1_n28 -> bb_asm1_n29 [false: !(eq(tfe9zci, mul(tfe9zci, 1)))] predicate=!(eq(tfe9zci, mul(tfe9zci, 1)))
+    bb_asm1_n29 -> bb_asm1_n26 [next]
+    bb_asm1_n25 -> bb_asm1_n26 [false: !(lt(qVPd, _amount))] predicate=!(lt(qVPd, _amount))
+    bb_asm1_n26 -> bb_asm1_n24 [next]
+    bb_asm1_n23 -> bb_asm1_n24 [false: !(iszero(eq(Fpzy, YvIh)))] predicate=!(iszero(eq(Fpzy, YvIh)))
+    bb_asm1_n24 -> bb_asm1_n31 [next]
+    bb_asm1_n31 -> bb_asm1_n32 [next]
+    bb_asm1_n32 -> bb_asm1_n33 [next]
+    bb_asm1_n33 -> bb_asm1_n34 [next]
+    bb_asm1_n34 -> bb_asm1_n35 [next]
+    bb_asm1_n35 -> bb_asm1_n36 [next]
+    bb_asm1_n36 -> bb_asm1_n37 [next]
+    bb_asm1_n37 -> bb_asm1_n38 [next]
+    bb_asm1_n38 -> bb_asm1_n1 [next]
+    bb_sol_slither_n0 -> bb_asm1_n0 [fallthrough]
+
+DataObjects:
+    data_1: kind=CallData, pointer=bbwz, size=20, values=[high_bytes(Shl(msg.sender, 96), 20)], encoding=raw_memory, complete=true
+
+
+Function Token.approve(address, uint256)
+    contract = Token
+    signature = approve(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm2_n0)
+
+bb_sol_slither_n16 [solidity]:
+    // predecessors: bb_asm2_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_99]
+    Return(true)
+
+bb_asm2_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm2_n2)
+
+bb_asm2_n1 [yul]:
+    // predecessors: bb_asm2_n11
+    // no semantic instructions
+    Goto(bb_sol_slither_n16)
+
+bb_asm2_n2 [yul]:
+    // predecessors: bb_asm2_n0
+    // ir_62 | source=yul | origin_facts=[-]
+    bbwz = MemoryRead()
+    Goto(bb_asm2_n3)
+
+bb_asm2_n3 [yul]:
+    // predecessors: bb_asm2_n2
+    // no semantic instructions
+    Goto(bb_asm2_n4)
+
+bb_asm2_n4 [yul]:
+    // predecessors: bb_asm2_n3
+    // no semantic instructions
+    Goto(bb_asm2_n5)
+
+bb_asm2_n5 [yul]:
+    // predecessors: bb_asm2_n4
+    // no semantic instructions
+    Goto(bb_asm2_n6)
+
+bb_asm2_n6 [yul]:
+    // predecessors: bb_asm2_n5
+    // no semantic instructions
+    Goto(bb_asm2_n7)
+
+bb_asm2_n7 [yul]:
+    // predecessors: bb_asm2_n6
+    // no semantic instructions
+    Goto(bb_asm2_n8)
+
+bb_asm2_n8 [yul]:
+    // predecessors: bb_asm2_n7
+    // no semantic instructions
+    Goto(bb_asm2_n9)
+
+bb_asm2_n9 [yul]:
+    // predecessors: bb_asm2_n8
+    // ir_59 | source=yul | origin_facts=[fact_97, fact_96, fact_93, fact_94, fact_95, fact_92]
+    StateWrite(MappingLocation(base = wZHA, keys = [msg.sender, _spender]), _amount)
+    Goto(bb_asm2_n10)
+
+bb_asm2_n10 [yul]:
+    // predecessors: bb_asm2_n9
+    // ir_60 | source=yul | origin_facts=[fact_98]
+    @execution EventEmit(args=[bbwz, 0x20, 0x8c5be1e5ebec7d5bd14f714f4f5ec7c46ab3db174da78c3f62f10b71e9aeeaa0, __sseir_eval_asm_s_9_1, _spender])
+    EventEmit(unknownEvent, msg.sender, _spender, _spender)
+    Goto(bb_asm2_n11)
+
+bb_asm2_n11 [yul]:
+    // predecessors: bb_asm2_n10
+    // ir_61 | source=yul | origin_facts=[-]
+    MemoryWrite(bbwz, _amount)
+    Goto(bb_asm2_n1)
+
+CFGEdges:
+    bb_asm2_n0 -> bb_asm2_n2 [next]
+    bb_asm2_n2 -> bb_asm2_n3 [next]
+    bb_asm2_n3 -> bb_asm2_n4 [next]
+    bb_asm2_n4 -> bb_asm2_n5 [next]
+    bb_asm2_n5 -> bb_asm2_n6 [next]
+    bb_asm2_n6 -> bb_asm2_n7 [next]
+    bb_asm2_n7 -> bb_asm2_n8 [next]
+    bb_asm2_n8 -> bb_asm2_n9 [next]
+    bb_asm2_n9 -> bb_asm2_n10 [next]
+    bb_asm2_n10 -> bb_asm2_n11 [next]
+    bb_asm2_n11 -> bb_asm2_n1 [next]
+    bb_sol_slither_n0 -> bb_asm2_n0 [fallthrough]
+    bb_asm2_n1 -> bb_sol_slither_n16 [fallthrough]
+
+
+Function Token._spendAllowance(address, address, uint256)
+    contract = Token
+    signature = _spendAllowance(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm3_n0)
+
+bb_asm3_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm3_n2)
+
+bb_asm3_n1 [yul]:
+    // predecessors: bb_asm3_n33
+    // no semantic instructions
+    Fallthrough
+
+bb_asm3_n2 [yul]:
+    // predecessors: bb_asm3_n0
+    // ir_89 | source=yul | origin_facts=[-]
+    bbwz = MemoryRead()
+    Goto(bb_asm3_n3)
+
+bb_asm3_n3 [yul]:
+    // predecessors: bb_asm3_n2
+    // ir_63 | source=yul | origin_facts=[fact_101]
+    @execution StateRead(expr=sload(qBQC.slot))
+    StateRead(StateVariableLocation(qBQC))
+    Goto(bb_asm3_n4)
+
+bb_asm3_n4 [yul]:
+    // predecessors: bb_asm3_n3
+    // no semantic instructions
+    Goto(bb_asm3_n5)
+
+bb_asm3_n5 [yul]:
+    // predecessors: bb_asm3_n4
+    // ir_90 | source=yul | origin_facts=[-]
+    uAnE = MemoryHash(bbwz, 0x40)
+    Goto(bb_asm3_n6)
+
+bb_asm3_n6 [yul]:
+    // predecessors: bb_asm3_n5
+    // ir_64 | source=yul | origin_facts=[fact_103]
+    @execution Assign(expr=basefee())
+    __sseir_eval_asm_s_5_1 = block.basefee
+    Goto(bb_asm3_n7)
+
+bb_asm3_n7 [yul]:
+    // predecessors: bb_asm3_n6
+    // ir_65 | source=yul | origin_facts=[fact_105]
+    @execution Assign(expr=number())
+    __sseir_eval_asm_s_6_1 = block.number
+    Goto(bb_asm3_n8)
+
+bb_asm3_n8 [yul]:
+    // predecessors: bb_asm3_n7
+    // no semantic instructions
+    // terminator origin_facts=[fact_107, fact_108, fact_110]
+    Branch(Eq(Sub(bcw8ayf, ncwupwx), Sub(bcw8ayf, ncwupwx)), bb_asm3_n10, bb_asm3_n9)
+
+bb_asm3_n9 [yul]:
+    // predecessors: bb_asm3_n11, bb_asm3_n8
+    // ir_66 | source=yul | origin_facts=[fact_109]
+    __sseir_eval_asm_s_7_3 = Eq(__sseir_eval_asm_s_7_2, __sseir_eval_asm_s_7_1)
+    Goto(bb_asm3_n12)
+
+bb_asm3_n10 [yul]:
+    // predecessors: bb_asm3_n8
+    // no semantic instructions
+    Goto(bb_asm3_n11)
+
+bb_asm3_n11 [yul]:
+    // predecessors: bb_asm3_n10
+    // no semantic instructions
+    Goto(bb_asm3_n9)
+
+bb_asm3_n12 [yul]:
+    // predecessors: bb_asm3_n9
+    // no semantic instructions
+    Goto(bb_asm3_n13)
+
+bb_asm3_n13 [yul]:
+    // predecessors: bb_asm3_n12
+    // ir_67 | source=yul | origin_facts=[fact_114, fact_104, fact_106, fact_111, fact_112, fact_113, fact_100, fact_124, fact_125, fact_102, fact_122, fact_123]
+    @condition Not(Eq(Sub(basefee(), number()), Sub(basefee(), number())))
+    @execution StateRead(expr=sload(Jfwv))
+    CCkU = StateRead(RawStorageLocation(access = CCkU))
+    // ir_68 | source=yul | origin_facts=[fact_115, fact_104, fact_106, fact_112, fact_113, fact_111, fact_124, fact_125, fact_100, fact_102, fact_122, fact_123]
+    @condition Eq(Sub(basefee(), number()), Sub(basefee(), number()))
+    @execution StateRead(expr=sload(Jfwv))
+    CCkU = StateRead(MappingLocation(base = wZHA, keys = [qBQC, _owner]))
+    Goto(bb_asm3_n14)
+
+bb_asm3_n14 [yul]:
+    // predecessors: bb_asm3_n13
+    // no semantic instructions
+    Goto(bb_asm3_n15)
+
+bb_asm3_n15 [yul]:
+    // predecessors: bb_asm3_n14
+    // no semantic instructions
+    // terminator origin_facts=[fact_117, fact_118, fact_119]
+    Branch(BitAnd(zfPf, IsZero(_amount)), bb_asm3_n17, bb_asm3_n16)
+
+bb_asm3_n16 [yul]:
+    // predecessors: bb_asm3_n15
+    // no semantic instructions
+    Goto(bb_asm3_n18)
+
+bb_asm3_n17 [yul]:
+    // predecessors: bb_asm3_n15
+    // ir_88 | source=yul | origin_facts=[fact_157, fact_118, fact_116, fact_117, fact_129, fact_136, fact_113, fact_111, fact_112, fact_124, fact_125, fact_100, fact_102, fact_122, fact_123]
+    @condition Not(
+    Ne(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)), 0)
+)
+    @execution-condition Not(Ne(BitAnd(Sub(zfPf, CCkU), IsZero(_amount)), 0))
+    Require(
+        Not(
+            Ne(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)), 0)
+        )
+    )
+    @execution-values [0, 0]
+    Revert()
+
+bb_asm3_n18 [yul]:
+    // predecessors: bb_asm3_n16
+    // no semantic instructions
+    // terminator origin_facts=[fact_120, fact_121]
+    Branch(IsZero(zfPf), bb_asm3_n20, bb_asm3_n19)
+
+bb_asm3_n19 [yul]:
+    // predecessors: bb_asm3_n26, bb_asm3_n18
+    // no semantic instructions
+    Goto(bb_asm3_n27)
+
+bb_asm3_n20 [yul]:
+    // predecessors: bb_asm3_n18
+    // no semantic instructions
+    Goto(bb_asm3_n21)
+
+bb_asm3_n21 [yul]:
+    // predecessors: bb_asm3_n20
+    // no semantic instructions
+    Goto(bb_asm3_n22)
+
+bb_asm3_n22 [yul]:
+    // predecessors: bb_asm3_n21
+    // no semantic instructions
+    Goto(bb_asm3_n23)
+
+bb_asm3_n23 [yul]:
+    // predecessors: bb_asm3_n22
+    // no semantic instructions
+    Goto(bb_asm3_n24)
+
+bb_asm3_n24 [yul]:
+    // predecessors: bb_asm3_n23
+    // no semantic instructions
+    Goto(bb_asm3_n25)
+
+bb_asm3_n25 [yul]:
+    // predecessors: bb_asm3_n24
+    // no semantic instructions
+    Goto(bb_asm3_n26)
+
+bb_asm3_n26 [yul]:
+    // predecessors: bb_asm3_n25
+    // ir_69 | source=yul | origin_facts=[fact_126, fact_116, fact_125, fact_127, fact_129, fact_113, fact_136, fact_102, fact_111, fact_112, fact_122, fact_123, fact_124, fact_100]
+    @condition And(
+    Not(BitAnd(Sub(zfPf, sload(Keccak(mload(0x40), 0x40))), IsZero(_amount))),
+    IsZero(Sub(zfPf, sload(Keccak(mload(0x40), 0x40))))
+)
+    @execution-condition And(Not(BitAnd(Sub(zfPf, CCkU), IsZero(_amount))), IsZero(Sub(zfPf, CCkU)))
+    @execution StateRead(expr=sload(Jfwv))
+    __sseir_eval_asm_s_22_1 = StateRead(MappingLocation(base = wZHA, keys = [_owner, _spender]))
+    // ir_70 | source=yul | origin_facts=[fact_128]
+    @condition And(Not(BitAnd(zfPf, IsZero(_amount))), IsZero(zfPf))
+    __sseir_eval_asm_s_22_2 = Add(__sseir_eval_asm_s_22_1, CCkU)
+    Goto(bb_asm3_n19)
+
+bb_asm3_n27 [yul]:
+    // predecessors: bb_asm3_n19
+    // ir_71 | source=yul | origin_facts=[fact_130]
+    @condition Not(BitAnd(zfPf, IsZero(_amount)))
+    @execution Assign(expr=gas())
+    __sseir_eval_asm_s_23_1 = gasleft()
+    Goto(bb_asm3_n28)
+
+bb_asm3_n28 [yul]:
+    // predecessors: bb_asm3_n27
+    // no semantic instructions
+    Goto(bb_asm3_n29)
+
+bb_asm3_n29 [yul]:
+    // predecessors: bb_asm3_n28
+    // no semantic instructions
+    // terminator origin_facts=[fact_132, fact_134]
+    Branch(Eq(gbj1enk, BitAnd(gbj1enk, gbj1enk)), bb_asm3_n31, bb_asm3_n30)
+
+bb_asm3_n30 [yul]:
+    // predecessors: bb_asm3_n31, bb_asm3_n29
+    // ir_72 | source=yul | origin_facts=[fact_133]
+    @condition Not(BitAnd(zfPf, IsZero(_amount)))
+    __sseir_eval_asm_s_25_2 = Eq(gbj1enk, __sseir_eval_asm_s_25_1)
+    Goto(bb_asm3_n32)
+
+bb_asm3_n31 [yul]:
+    // predecessors: bb_asm3_n29
+    // ir_73 | source=yul | origin_facts=[fact_135]
+    @condition And(Not(BitAnd(zfPf, IsZero(_amount))), Eq(gbj1enk, BitAnd(gbj1enk, gbj1enk)))
+    __sseir_eval_asm_s_26_1 = Sub(zfPf, CCkU)
+    Goto(bb_asm3_n30)
+
+bb_asm3_n32 [yul]:
+    // predecessors: bb_asm3_n30
+    // no semantic instructions
+    // terminator origin_facts=[fact_137, fact_140]
+    Branch(IsZero(Eq(zfPf, BitNot(0))), bb_asm3_n34, bb_asm3_n33)
+
+bb_asm3_n33 [yul]:
+    // predecessors: bb_asm3_n40, bb_asm3_n32
+    // ir_74 | source=yul | origin_facts=[fact_138]
+    @condition Not(BitAnd(zfPf, IsZero(_amount)))
+    __sseir_eval_asm_s_27_2 = Eq(zfPf, __sseir_eval_asm_s_27_1)
+    // ir_75 | source=yul | origin_facts=[fact_139]
+    @condition Not(BitAnd(zfPf, IsZero(_amount)))
+    @execution Assign(expr=IsZero(__sseir_eval_asm_s_27_2))
+    __sseir_eval_asm_s_27_3 = Eq(__sseir_eval_asm_s_27_2, 0)
+    Goto(bb_asm3_n1)
+
+bb_asm3_n34 [yul]:
+    // predecessors: bb_asm3_n32
+    // no semantic instructions
+    // terminator origin_facts=[fact_141, fact_142]
+    Branch(Lt(zfPf, _amount), bb_asm3_n36, bb_asm3_n35)
+
+bb_asm3_n35 [yul]:
+    // predecessors: bb_asm3_n34
+    // no semantic instructions
+    Goto(bb_asm3_n37)
+
+bb_asm3_n36 [yul]:
+    // predecessors: bb_asm3_n34
+    // ir_87 | source=yul | origin_facts=[fact_156]
+    @condition Not(Ne(__sseir_eval_asm_s_28_1, 0))
+    Require(Not(Ne(__sseir_eval_asm_s_28_1, 0)))
+    @execution-values [0, 0]
+    Revert()
+
+bb_asm3_n37 [yul]:
+    // predecessors: bb_asm3_n35
+    // ir_76 | source=yul | origin_facts=[fact_143]
+    @condition And(
+    And(Not(BitAnd(zfPf, IsZero(_amount))), IsZero(Eq(zfPf, BitNot(0)))),
+    Not(Lt(zfPf, _amount))
+)
+    @execution Assign(expr=basefee())
+    __sseir_eval_asm_s_30_1 = block.basefee
+    // ir_77 | source=yul | origin_facts=[fact_144]
+    @condition And(
+    And(Not(BitAnd(zfPf, IsZero(_amount))), IsZero(Eq(zfPf, BitNot(0)))),
+    Not(Lt(zfPf, _amount))
+)
+    bf51h1a = __sseir_eval_asm_s_30_1
+    Goto(bb_asm3_n38)
+
+bb_asm3_n38 [yul]:
+    // predecessors: bb_asm3_n37
+    // no semantic instructions
+    Goto(bb_asm3_n39)
+
+bb_asm3_n39 [yul]:
+    // predecessors: bb_asm3_n38
+    // no semantic instructions
+    // terminator origin_facts=[fact_145, fact_147]
+    Branch(Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a)), bb_asm3_n41, bb_asm3_n40)
+
+bb_asm3_n40 [yul]:
+    // predecessors: bb_asm3_n41, bb_asm3_n39
+    // ir_78 | source=yul | origin_facts=[fact_146]
+    @condition And(
+    And(Not(BitAnd(zfPf, IsZero(_amount))), IsZero(Eq(zfPf, BitNot(0)))),
+    Not(Lt(zfPf, _amount))
+)
+    __sseir_eval_asm_s_32_2 = Eq(bf51h1a, __sseir_eval_asm_s_32_1)
+    Goto(bb_asm3_n33)
+
+bb_asm3_n41 [yul]:
+    // predecessors: bb_asm3_n39
+    // ir_79 | source=yul | origin_facts=[fact_148, fact_104, fact_106, fact_112, fact_116, fact_131, fact_111, fact_124, fact_125, fact_113, fact_129, fact_136, fact_100, fact_102, fact_122, fact_123]
+    @condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Not(Eq(Sub(basefee(), number()), Sub(basefee(), number()))),
+                        Not(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)))
+                    ),
+                    Not(IsZero(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender)))))
+                ),
+                Not(Eq(gas(), BitAnd(gas(), gas())))
+            ),
+            IsZero(Eq(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Not(Eq(Sub(basefee(), number()), Sub(basefee(), number()))),
+                        Not(BitAnd(Sub(zfPf, CCkU), IsZero(_amount)))
+                    ),
+                    Not(IsZero(Sub(zfPf, CCkU)))
+                ),
+                Not(Eq(gas(), BitAnd(gas(), gas())))
+            ),
+            IsZero(Eq(Sub(zfPf, CCkU), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, CCkU), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_26_1, _amount))
+    StateWrite(
+        RawStorageLocation(access = Jfwv),
+        Sub(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount)
+    )
+    // ir_80 | source=yul | origin_facts=[fact_149, fact_104, fact_106, fact_112, fact_116, fact_131, fact_111, fact_124, fact_125, fact_113, fact_129, fact_136, fact_100, fact_102, fact_122, fact_123]
+    @condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Not(Eq(Sub(basefee(), number()), Sub(basefee(), number()))),
+                        Not(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)))
+                    ),
+                    Not(IsZero(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender)))))
+                ),
+                Eq(gas(), BitAnd(gas(), gas()))
+            ),
+            IsZero(Eq(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Not(Eq(Sub(basefee(), number()), Sub(basefee(), number()))),
+                        Not(BitAnd(Sub(zfPf, CCkU), IsZero(_amount)))
+                    ),
+                    Not(IsZero(Sub(zfPf, CCkU)))
+                ),
+                Eq(gas(), BitAnd(gas(), gas()))
+            ),
+            IsZero(Eq(Sub(zfPf, CCkU), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, CCkU), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_26_1, _amount))
+    StateWrite(
+        RawStorageLocation(access = Jfwv),
+        Sub(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount)
+    )
+    // ir_81 | source=yul | origin_facts=[fact_150, fact_104, fact_106, fact_112, fact_116, fact_129, fact_131, fact_111, fact_124, fact_125, fact_113, fact_136, fact_100, fact_102, fact_122, fact_123]
+    @condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Not(Eq(Sub(basefee(), number()), Sub(basefee(), number()))),
+                        Not(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)))
+                    ),
+                    IsZero(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))))
+                ),
+                Not(Eq(gas(), BitAnd(gas(), gas())))
+            ),
+            IsZero(Eq(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Not(Eq(Sub(basefee(), number()), Sub(basefee(), number()))),
+                        Not(BitAnd(Sub(zfPf, CCkU), IsZero(_amount)))
+                    ),
+                    IsZero(Sub(zfPf, CCkU))
+                ),
+                Not(Eq(gas(), BitAnd(gas(), gas())))
+            ),
+            IsZero(Eq(Sub(zfPf, CCkU), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, CCkU), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_26_1, _amount))
+    StateWrite(
+        RawStorageLocation(access = Jfwv),
+        Sub(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount)
+    )
+    // ir_82 | source=yul | origin_facts=[fact_151, fact_104, fact_106, fact_112, fact_116, fact_129, fact_131, fact_111, fact_124, fact_125, fact_113, fact_136, fact_100, fact_102, fact_122, fact_123]
+    @condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Not(Eq(Sub(basefee(), number()), Sub(basefee(), number()))),
+                        Not(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)))
+                    ),
+                    IsZero(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))))
+                ),
+                Eq(gas(), BitAnd(gas(), gas()))
+            ),
+            IsZero(Eq(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Not(Eq(Sub(basefee(), number()), Sub(basefee(), number()))),
+                        Not(BitAnd(Sub(zfPf, CCkU), IsZero(_amount)))
+                    ),
+                    IsZero(Sub(zfPf, CCkU))
+                ),
+                Eq(gas(), BitAnd(gas(), gas()))
+            ),
+            IsZero(Eq(Sub(zfPf, CCkU), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, CCkU), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_26_1, _amount))
+    StateWrite(
+        RawStorageLocation(access = Jfwv),
+        Sub(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount)
+    )
+    // ir_83 | source=yul | origin_facts=[fact_152, fact_104, fact_106, fact_112, fact_116, fact_131, fact_111, fact_124, fact_125, fact_113, fact_129, fact_136, fact_100, fact_102, fact_122, fact_123]
+    @condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Eq(Sub(basefee(), number()), Sub(basefee(), number())),
+                        Not(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)))
+                    ),
+                    Not(IsZero(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender)))))
+                ),
+                Not(Eq(gas(), BitAnd(gas(), gas())))
+            ),
+            IsZero(Eq(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Eq(Sub(basefee(), number()), Sub(basefee(), number())),
+                        Not(BitAnd(Sub(zfPf, CCkU), IsZero(_amount)))
+                    ),
+                    Not(IsZero(Sub(zfPf, CCkU)))
+                ),
+                Not(Eq(gas(), BitAnd(gas(), gas())))
+            ),
+            IsZero(Eq(Sub(zfPf, CCkU), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, CCkU), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_26_1, _amount))
+    StateWrite(
+        MappingLocation(base = wZHA, keys = [qBQC, _owner]),
+        Sub(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount)
+    )
+    // ir_84 | source=yul | origin_facts=[fact_153, fact_104, fact_106, fact_112, fact_116, fact_131, fact_111, fact_124, fact_125, fact_113, fact_129, fact_136, fact_100, fact_102, fact_122, fact_123]
+    @condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Eq(Sub(basefee(), number()), Sub(basefee(), number())),
+                        Not(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)))
+                    ),
+                    Not(IsZero(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender)))))
+                ),
+                Eq(gas(), BitAnd(gas(), gas()))
+            ),
+            IsZero(Eq(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Eq(Sub(basefee(), number()), Sub(basefee(), number())),
+                        Not(BitAnd(Sub(zfPf, CCkU), IsZero(_amount)))
+                    ),
+                    Not(IsZero(Sub(zfPf, CCkU)))
+                ),
+                Eq(gas(), BitAnd(gas(), gas()))
+            ),
+            IsZero(Eq(Sub(zfPf, CCkU), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, CCkU), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_26_1, _amount))
+    StateWrite(
+        MappingLocation(base = wZHA, keys = [qBQC, _owner]),
+        Sub(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount)
+    )
+    // ir_85 | source=yul | origin_facts=[fact_154, fact_104, fact_106, fact_112, fact_116, fact_129, fact_131, fact_111, fact_124, fact_125, fact_113, fact_136, fact_100, fact_102, fact_122, fact_123]
+    @condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Eq(Sub(basefee(), number()), Sub(basefee(), number())),
+                        Not(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)))
+                    ),
+                    IsZero(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))))
+                ),
+                Not(Eq(gas(), BitAnd(gas(), gas())))
+            ),
+            IsZero(Eq(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Eq(Sub(basefee(), number()), Sub(basefee(), number())),
+                        Not(BitAnd(Sub(zfPf, CCkU), IsZero(_amount)))
+                    ),
+                    IsZero(Sub(zfPf, CCkU))
+                ),
+                Not(Eq(gas(), BitAnd(gas(), gas())))
+            ),
+            IsZero(Eq(Sub(zfPf, CCkU), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, CCkU), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_26_1, _amount))
+    StateWrite(
+        MappingLocation(base = wZHA, keys = [qBQC, _owner]),
+        Sub(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount)
+    )
+    // ir_86 | source=yul | origin_facts=[fact_155, fact_104, fact_106, fact_112, fact_116, fact_129, fact_131, fact_111, fact_124, fact_125, fact_113, fact_136, fact_100, fact_102, fact_122, fact_123]
+    @condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Eq(Sub(basefee(), number()), Sub(basefee(), number())),
+                        Not(BitAnd(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), IsZero(_amount)))
+                    ),
+                    IsZero(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))))
+                ),
+                Eq(gas(), BitAnd(gas(), gas()))
+            ),
+            IsZero(Eq(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution-condition And(
+    And(
+        And(
+            And(
+                And(
+                    And(
+                        Eq(Sub(basefee(), number()), Sub(basefee(), number())),
+                        Not(BitAnd(Sub(zfPf, CCkU), IsZero(_amount)))
+                    ),
+                    IsZero(Sub(zfPf, CCkU))
+                ),
+                Eq(gas(), BitAnd(gas(), gas()))
+            ),
+            IsZero(Eq(Sub(zfPf, CCkU), BitNot(0)))
+        ),
+        Not(Lt(Sub(zfPf, CCkU), _amount))
+    ),
+    Eq(bf51h1a, BitAnd(bf51h1a, bf51h1a))
+)
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_26_1, _amount))
+    StateWrite(
+        MappingLocation(base = wZHA, keys = [qBQC, _owner]),
+        Sub(Sub(zfPf, sload(Index(Index(wZHA, _owner), _spender))), _amount)
+    )
+    Goto(bb_asm3_n40)
+
+CFGEdges:
+    bb_asm3_n0 -> bb_asm3_n2 [next]
+    bb_asm3_n2 -> bb_asm3_n3 [next]
+    bb_asm3_n3 -> bb_asm3_n4 [next]
+    bb_asm3_n4 -> bb_asm3_n5 [next]
+    bb_asm3_n5 -> bb_asm3_n6 [next]
+    bb_asm3_n6 -> bb_asm3_n7 [next]
+    bb_asm3_n7 -> bb_asm3_n8 [next]
+    bb_asm3_n8 -> bb_asm3_n10 [true: eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))] predicate=eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx))
+    bb_asm3_n10 -> bb_asm3_n11 [next]
+    bb_asm3_n11 -> bb_asm3_n9 [next]
+    bb_asm3_n8 -> bb_asm3_n9 [false: !(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))] predicate=!(eq(sub(bcw8ayf, ncwupwx), sub(bcw8ayf, ncwupwx)))
+    bb_asm3_n9 -> bb_asm3_n12 [next]
+    bb_asm3_n12 -> bb_asm3_n13 [next]
+    bb_asm3_n13 -> bb_asm3_n14 [next]
+    bb_asm3_n14 -> bb_asm3_n15 [next]
+    bb_asm3_n15 -> bb_asm3_n17 [true: and(zfPf, iszero(_amount))] predicate=and(zfPf, iszero(_amount))
+    bb_asm3_n15 -> bb_asm3_n16 [false: !(and(zfPf, iszero(_amount)))] predicate=!(and(zfPf, iszero(_amount)))
+    bb_asm3_n16 -> bb_asm3_n18 [next]
+    bb_asm3_n18 -> bb_asm3_n20 [true: iszero(zfPf)] predicate=iszero(zfPf)
+    bb_asm3_n20 -> bb_asm3_n21 [next]
+    bb_asm3_n21 -> bb_asm3_n22 [next]
+    bb_asm3_n22 -> bb_asm3_n23 [next]
+    bb_asm3_n23 -> bb_asm3_n24 [next]
+    bb_asm3_n24 -> bb_asm3_n25 [next]
+    bb_asm3_n25 -> bb_asm3_n26 [next]
+    bb_asm3_n26 -> bb_asm3_n19 [next]
+    bb_asm3_n18 -> bb_asm3_n19 [false: !(iszero(zfPf))] predicate=!(iszero(zfPf))
+    bb_asm3_n19 -> bb_asm3_n27 [next]
+    bb_asm3_n27 -> bb_asm3_n28 [next]
+    bb_asm3_n28 -> bb_asm3_n29 [next]
+    bb_asm3_n29 -> bb_asm3_n31 [true: eq(gbj1enk, and(gbj1enk, gbj1enk))] predicate=eq(gbj1enk, and(gbj1enk, gbj1enk))
+    bb_asm3_n31 -> bb_asm3_n30 [next]
+    bb_asm3_n29 -> bb_asm3_n30 [false: !(eq(gbj1enk, and(gbj1enk, gbj1enk)))] predicate=!(eq(gbj1enk, and(gbj1enk, gbj1enk)))
+    bb_asm3_n30 -> bb_asm3_n32 [next]
+    bb_asm3_n32 -> bb_asm3_n34 [true: iszero(eq(zfPf, not(0)))] predicate=iszero(eq(zfPf, not(0)))
+    bb_asm3_n34 -> bb_asm3_n36 [true: lt(zfPf, _amount)] predicate=lt(zfPf, _amount)
+    bb_asm3_n34 -> bb_asm3_n35 [false: !(lt(zfPf, _amount))] predicate=!(lt(zfPf, _amount))
+    bb_asm3_n35 -> bb_asm3_n37 [next]
+    bb_asm3_n37 -> bb_asm3_n38 [next]
+    bb_asm3_n38 -> bb_asm3_n39 [next]
+    bb_asm3_n39 -> bb_asm3_n41 [true: eq(bf51h1a, and(bf51h1a, bf51h1a))] predicate=eq(bf51h1a, and(bf51h1a, bf51h1a))
+    bb_asm3_n41 -> bb_asm3_n40 [next]
+    bb_asm3_n39 -> bb_asm3_n40 [false: !(eq(bf51h1a, and(bf51h1a, bf51h1a)))] predicate=!(eq(bf51h1a, and(bf51h1a, bf51h1a)))
+    bb_asm3_n40 -> bb_asm3_n33 [next]
+    bb_asm3_n32 -> bb_asm3_n33 [false: !(iszero(eq(zfPf, not(0))))] predicate=!(iszero(eq(zfPf, not(0))))
+    bb_asm3_n33 -> bb_asm3_n1 [next]
+    bb_sol_slither_n0 -> bb_asm3_n0 [fallthrough]

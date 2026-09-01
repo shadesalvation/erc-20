@@ -1,0 +1,77 @@
+SemanticProgram semantic-ir/v2
+Source: tests/fixtures/simple_semantic_ir.sol
+
+Function SimpleSemanticIR.deposit(uint256)
+    contract = SimpleSemanticIR
+    signature = deposit(uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_sol_slither_n1)
+
+bb_sol_slither_n1 [solidity]:
+    // predecessors: bb_sol_slither_n0
+    // ir_1 | source=solidity | origin_facts=[fact_1]
+    total_1 = StateRead(StateVariableLocation(total))
+    // ir_2 | source=solidity | origin_facts=[fact_2]
+    TMP_0 = Add(total_1, amount_1)
+    // ir_3 | source=solidity | origin_facts=[fact_3]
+    @execution StateWrite(expr=TMP_0)
+    StateWrite(StateVariableLocation(total), Add(total, amount))
+    Goto(bb_asm1_n0)
+
+bb_asm1_n0 [yul]:
+    // predecessors: bb_sol_slither_n1
+    // no semantic instructions
+    Goto(bb_asm1_n2)
+
+bb_asm1_n1 [yul]:
+    // predecessors: bb_asm1_n5
+    // no semantic instructions
+    Fallthrough
+
+bb_asm1_n2 [yul]:
+    // predecessors: bb_asm1_n0
+    // no semantic instructions
+    Goto(bb_asm1_n3)
+
+bb_asm1_n3 [yul]:
+    // predecessors: bb_asm1_n2
+    // no semantic instructions
+    Goto(bb_asm1_n4)
+
+bb_asm1_n4 [yul]:
+    // predecessors: bb_asm1_n3
+    // no semantic instructions
+    Goto(bb_asm1_n5)
+
+bb_asm1_n5 [yul]:
+    // predecessors: bb_asm1_n4
+    // ir_4 | source=yul | origin_facts=[fact_6, fact_5, fact_4]
+    @execution StateRead(expr=sload(Keccak(0x00, 0x40)))
+    __sseir_eval_asm_s_4_1 = StateRead(MappingLocation(base = balances, keys = [msg.sender]))
+    // ir_5 | source=yul | origin_facts=[fact_7, fact_5, fact_4]
+    @execution StateWrite(expr=Add(__sseir_eval_asm_s_4_1, amount))
+    StateWrite(
+        MappingLocation(base = balances, keys = [msg.sender]),
+        Add(Index(balances, msg.sender), amount)
+    )
+    Goto(bb_asm1_n1)
+
+CFGEdges:
+    bb_asm1_n0 -> bb_asm1_n2 [next]
+    bb_asm1_n2 -> bb_asm1_n3 [next]
+    bb_asm1_n3 -> bb_asm1_n4 [next]
+    bb_asm1_n4 -> bb_asm1_n5 [next]
+    bb_asm1_n5 -> bb_asm1_n1 [next]
+    bb_sol_slither_n0 -> bb_sol_slither_n1 [fallthrough]
+    bb_sol_slither_n1 -> bb_asm1_n0 [fallthrough]
+
+DefUse:
+    value:total_1#1: def=ir_1, uses=[ir_2]
+    input:total: def=input, uses=[ir_1]
+    value:TMP_0#1: def=ir_2, uses=[ir_3]
+    input:amount_1: def=input, uses=[ir_2]
+    value:__sseir_eval_asm_s_4_1#1: def=ir_4, uses=[ir_5]
+    input:msg.sender: def=input, uses=[ir_4, ir_5]
+    input:amount: def=input, uses=[ir_5]

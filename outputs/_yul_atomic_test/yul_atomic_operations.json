@@ -1,0 +1,789 @@
+{
+  "schema": "s-seir-yul-atomic-operation-program/v1",
+  "source": "tests/fixtures/simple_semantic_ir.sol",
+  "functions": [
+    {
+      "schema": "s-seir-yul-atomic-operations/v1",
+      "function_id": "SimpleSemanticIR.deposit(uint256)",
+      "contract": "SimpleSemanticIR",
+      "signature": "deposit(uint256)",
+      "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
+      "assembly_blocks": [
+        {
+          "assembly_block_id": 1,
+          "operations": [
+            {
+              "atom_id": "yul_atom_b1_asm_s_1_2_1",
+              "function_id": "SimpleSemanticIR.deposit(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm1_n2",
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "287:8:0",
+              "source_statement": "mstore(0x00, caller())",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "caller",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_1_1",
+              "results": [
+                "__sseir_eval_asm_s_1_1"
+              ],
+              "arguments": [],
+              "raw_arguments": [],
+              "expression": "caller()",
+              "normalized_expression": "msg.sender",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 1
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_1_2_2",
+              "function_id": "SimpleSemanticIR.deposit(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm1_n2",
+              "stmt_ref": "asm_s_1",
+              "stmt_refs": [
+                "asm_s_1"
+              ],
+              "source_span": "274:22:0",
+              "source_statement": "mstore(0x00, caller())",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "mstore",
+              "atomic_kind": "MemoryWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "0x00",
+                "__sseir_eval_asm_s_1_1"
+              ],
+              "raw_arguments": [
+                "0x00",
+                "caller()"
+              ],
+              "expression": "mstore(0x00, __sseir_eval_asm_s_1_1)",
+              "normalized_expression": "mstore(0x00, __sseir_eval_asm_s_1_1)",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_1_2_1"
+              ],
+              "side_effect": true,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 2
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_2_3_1",
+              "function_id": "SimpleSemanticIR.deposit(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm1_n3",
+              "stmt_ref": "asm_s_2",
+              "stmt_refs": [
+                "asm_s_2"
+              ],
+              "source_span": "309:27:0",
+              "source_statement": "mstore(0x20, balances.slot)",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "mstore",
+              "atomic_kind": "MemoryWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "0x20",
+                "balances.slot"
+              ],
+              "raw_arguments": [
+                "0x20",
+                "balances.slot"
+              ],
+              "expression": "mstore(0x20, balances.slot)",
+              "normalized_expression": "mstore(0x20, balances.slot)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": true,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 3
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_3_4_1",
+              "function_id": "SimpleSemanticIR.deposit(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 4,
+              "cfg_block_id": "bb_asm1_n4",
+              "stmt_ref": "asm_s_3",
+              "stmt_refs": [
+                "asm_s_3"
+              ],
+              "source_span": "368:21:0",
+              "source_statement": "let balanceSlot := keccak256(0x00, 0x40)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "keccak256",
+              "atomic_kind": "MemoryHash",
+              "result": "__sseir_eval_asm_s_3_1",
+              "results": [
+                "__sseir_eval_asm_s_3_1"
+              ],
+              "arguments": [
+                "0x00",
+                "0x40"
+              ],
+              "raw_arguments": [
+                "0x00",
+                "0x40"
+              ],
+              "expression": "keccak256(0x00, 0x40)",
+              "normalized_expression": "keccak256(0x00, 0x40)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 4
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_3_4_2",
+              "function_id": "SimpleSemanticIR.deposit(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 4,
+              "cfg_block_id": "bb_asm1_n4",
+              "stmt_ref": "asm_s_3",
+              "stmt_refs": [
+                "asm_s_3"
+              ],
+              "source_span": "349:40:0",
+              "source_statement": "let balanceSlot := keccak256(0x00, 0x40)",
+              "source_node_type": "YulVariableDeclaration",
+              "context": "value",
+              "operation": "declare_assign",
+              "atomic_kind": "ValueDeclare",
+              "result": "balanceSlot",
+              "results": [
+                "balanceSlot"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_3_1"
+              ],
+              "raw_arguments": [
+                "keccak256(0x00, 0x40)"
+              ],
+              "expression": "balanceSlot := __sseir_eval_asm_s_3_1",
+              "normalized_expression": "balanceSlot = __sseir_eval_asm_s_3_1",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_3_4_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 5
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_4_5_1",
+              "function_id": "SimpleSemanticIR.deposit(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 5,
+              "cfg_block_id": "bb_asm1_n5",
+              "stmt_ref": "asm_s_4",
+              "stmt_refs": [
+                "asm_s_4"
+              ],
+              "source_span": "426:18:0",
+              "source_statement": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "sload",
+              "atomic_kind": "StorageRead",
+              "result": "__sseir_eval_asm_s_4_1",
+              "results": [
+                "__sseir_eval_asm_s_4_1"
+              ],
+              "arguments": [
+                "balanceSlot"
+              ],
+              "raw_arguments": [
+                "balanceSlot"
+              ],
+              "expression": "sload(balanceSlot)",
+              "normalized_expression": "sload(balanceSlot)",
+              "operation_order": 1,
+              "dependencies": [],
+              "side_effect": false,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 6
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_4_5_2",
+              "function_id": "SimpleSemanticIR.deposit(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 5,
+              "cfg_block_id": "bb_asm1_n5",
+              "stmt_ref": "asm_s_4",
+              "stmt_refs": [
+                "asm_s_4"
+              ],
+              "source_span": "422:31:0",
+              "source_statement": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "add",
+              "atomic_kind": "ValueCompute",
+              "result": "__sseir_eval_asm_s_4_2",
+              "results": [
+                "__sseir_eval_asm_s_4_2"
+              ],
+              "arguments": [
+                "__sseir_eval_asm_s_4_1",
+                "amount"
+              ],
+              "raw_arguments": [
+                "sload(balanceSlot)",
+                "amount"
+              ],
+              "expression": "add(__sseir_eval_asm_s_4_1, amount)",
+              "normalized_expression": "(__sseir_eval_asm_s_4_1 + amount)",
+              "operation_order": 2,
+              "dependencies": [
+                "yul_atom_b1_asm_s_4_5_1"
+              ],
+              "side_effect": false,
+              "semantic_sink": false,
+              "control_only": false,
+              "root_operation": false,
+              "sequence": 7
+            },
+            {
+              "atom_id": "yul_atom_b1_asm_s_4_5_3",
+              "function_id": "SimpleSemanticIR.deposit(uint256)",
+              "assembly_block_id": 1,
+              "cfg_node_id": 5,
+              "cfg_block_id": "bb_asm1_n5",
+              "stmt_ref": "asm_s_4",
+              "stmt_refs": [
+                "asm_s_4"
+              ],
+              "source_span": "402:52:0",
+              "source_statement": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+              "source_node_type": "YulExpressionStatement",
+              "context": "statement",
+              "operation": "sstore",
+              "atomic_kind": "StorageWrite",
+              "result": null,
+              "results": [],
+              "arguments": [
+                "balanceSlot",
+                "__sseir_eval_asm_s_4_2"
+              ],
+              "raw_arguments": [
+                "balanceSlot",
+                "add(sload(balanceSlot), amount)"
+              ],
+              "expression": "sstore(balanceSlot, __sseir_eval_asm_s_4_2)",
+              "normalized_expression": "sstore(balanceSlot, __sseir_eval_asm_s_4_2)",
+              "operation_order": 3,
+              "dependencies": [
+                "yul_atom_b1_asm_s_4_5_2"
+              ],
+              "side_effect": true,
+              "semantic_sink": true,
+              "control_only": false,
+              "root_operation": true,
+              "sequence": 8
+            }
+          ],
+          "node_evaluations": [
+            {
+              "cfg_node_id": 2,
+              "cfg_block_id": "bb_asm1_n2",
+              "stmt_ref": "asm_s_1",
+              "context": "statement",
+              "final": "mstore(0x00, caller())",
+              "final_normalized": "mstore(0x00, msg.sender)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_1_2_1",
+                  "temp": "__sseir_eval_asm_s_1_1",
+                  "expression": "caller()",
+                  "expression_normalized": "msg.sender",
+                  "call": "caller",
+                  "raw_args": [],
+                  "evaluated_args": [],
+                  "dependencies": []
+                },
+                {
+                  "order": 2,
+                  "atom_id": "yul_atom_b1_asm_s_1_2_2",
+                  "temp": null,
+                  "expression": "mstore(0x00, __sseir_eval_asm_s_1_1)",
+                  "expression_normalized": "mstore(0x00, __sseir_eval_asm_s_1_1)",
+                  "call": "mstore",
+                  "raw_args": [
+                    "0x00",
+                    "caller()"
+                  ],
+                  "evaluated_args": [
+                    "0x00",
+                    "__sseir_eval_asm_s_1_1"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b1_asm_s_1_2_1"
+                  ]
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_1_2_1",
+                "yul_atom_b1_asm_s_1_2_2"
+              ]
+            },
+            {
+              "cfg_node_id": 3,
+              "cfg_block_id": "bb_asm1_n3",
+              "stmt_ref": "asm_s_2",
+              "context": "statement",
+              "final": "mstore(0x20, balances.slot)",
+              "final_normalized": "mstore(0x20, balances.slot)",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_2_3_1",
+                  "temp": null,
+                  "expression": "mstore(0x20, balances.slot)",
+                  "expression_normalized": "mstore(0x20, balances.slot)",
+                  "call": "mstore",
+                  "raw_args": [
+                    "0x20",
+                    "balances.slot"
+                  ],
+                  "evaluated_args": [
+                    "0x20",
+                    "balances.slot"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_2_3_1"
+              ]
+            },
+            {
+              "cfg_node_id": 4,
+              "cfg_block_id": "bb_asm1_n4",
+              "stmt_ref": "asm_s_3",
+              "context": "value",
+              "final": "__sseir_eval_asm_s_3_1",
+              "final_normalized": "__sseir_eval_asm_s_3_1",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_3_4_1",
+                  "temp": "__sseir_eval_asm_s_3_1",
+                  "expression": "keccak256(0x00, 0x40)",
+                  "expression_normalized": "keccak256(0x00, 0x40)",
+                  "call": "keccak256",
+                  "raw_args": [
+                    "0x00",
+                    "0x40"
+                  ],
+                  "evaluated_args": [
+                    "0x00",
+                    "0x40"
+                  ],
+                  "dependencies": []
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_3_4_1",
+                "yul_atom_b1_asm_s_3_4_2"
+              ]
+            },
+            {
+              "cfg_node_id": 5,
+              "cfg_block_id": "bb_asm1_n5",
+              "stmt_ref": "asm_s_4",
+              "context": "statement",
+              "final": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+              "final_normalized": "sstore(balanceSlot, (sload(balanceSlot) + amount))",
+              "steps": [
+                {
+                  "order": 1,
+                  "atom_id": "yul_atom_b1_asm_s_4_5_1",
+                  "temp": "__sseir_eval_asm_s_4_1",
+                  "expression": "sload(balanceSlot)",
+                  "expression_normalized": "sload(balanceSlot)",
+                  "call": "sload",
+                  "raw_args": [
+                    "balanceSlot"
+                  ],
+                  "evaluated_args": [
+                    "balanceSlot"
+                  ],
+                  "dependencies": []
+                },
+                {
+                  "order": 2,
+                  "atom_id": "yul_atom_b1_asm_s_4_5_2",
+                  "temp": "__sseir_eval_asm_s_4_2",
+                  "expression": "add(__sseir_eval_asm_s_4_1, amount)",
+                  "expression_normalized": "(__sseir_eval_asm_s_4_1 + amount)",
+                  "call": "add",
+                  "raw_args": [
+                    "sload(balanceSlot)",
+                    "amount"
+                  ],
+                  "evaluated_args": [
+                    "__sseir_eval_asm_s_4_1",
+                    "amount"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b1_asm_s_4_5_1"
+                  ]
+                },
+                {
+                  "order": 3,
+                  "atom_id": "yul_atom_b1_asm_s_4_5_3",
+                  "temp": null,
+                  "expression": "sstore(balanceSlot, __sseir_eval_asm_s_4_2)",
+                  "expression_normalized": "sstore(balanceSlot, __sseir_eval_asm_s_4_2)",
+                  "call": "sstore",
+                  "raw_args": [
+                    "balanceSlot",
+                    "add(sload(balanceSlot), amount)"
+                  ],
+                  "evaluated_args": [
+                    "balanceSlot",
+                    "__sseir_eval_asm_s_4_2"
+                  ],
+                  "dependencies": [
+                    "yul_atom_b1_asm_s_4_5_2"
+                  ]
+                }
+              ],
+              "atom_ids": [
+                "yul_atom_b1_asm_s_4_5_1",
+                "yul_atom_b1_asm_s_4_5_2",
+                "yul_atom_b1_asm_s_4_5_3"
+              ]
+            }
+          ]
+        }
+      ],
+      "operations": [
+        {
+          "atom_id": "yul_atom_b1_asm_s_1_2_1",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm1_n2",
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "287:8:0",
+          "source_statement": "mstore(0x00, caller())",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "caller",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_1_1",
+          "results": [
+            "__sseir_eval_asm_s_1_1"
+          ],
+          "arguments": [],
+          "raw_arguments": [],
+          "expression": "caller()",
+          "normalized_expression": "msg.sender",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 1
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_1_2_2",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 2,
+          "cfg_block_id": "bb_asm1_n2",
+          "stmt_ref": "asm_s_1",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "source_span": "274:22:0",
+          "source_statement": "mstore(0x00, caller())",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "mstore",
+          "atomic_kind": "MemoryWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "0x00",
+            "__sseir_eval_asm_s_1_1"
+          ],
+          "raw_arguments": [
+            "0x00",
+            "caller()"
+          ],
+          "expression": "mstore(0x00, __sseir_eval_asm_s_1_1)",
+          "normalized_expression": "mstore(0x00, __sseir_eval_asm_s_1_1)",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_1_2_1"
+          ],
+          "side_effect": true,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 2
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_2_3_1",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 3,
+          "cfg_block_id": "bb_asm1_n3",
+          "stmt_ref": "asm_s_2",
+          "stmt_refs": [
+            "asm_s_2"
+          ],
+          "source_span": "309:27:0",
+          "source_statement": "mstore(0x20, balances.slot)",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "mstore",
+          "atomic_kind": "MemoryWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "0x20",
+            "balances.slot"
+          ],
+          "raw_arguments": [
+            "0x20",
+            "balances.slot"
+          ],
+          "expression": "mstore(0x20, balances.slot)",
+          "normalized_expression": "mstore(0x20, balances.slot)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": true,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 3
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_3_4_1",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 4,
+          "cfg_block_id": "bb_asm1_n4",
+          "stmt_ref": "asm_s_3",
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "source_span": "368:21:0",
+          "source_statement": "let balanceSlot := keccak256(0x00, 0x40)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "keccak256",
+          "atomic_kind": "MemoryHash",
+          "result": "__sseir_eval_asm_s_3_1",
+          "results": [
+            "__sseir_eval_asm_s_3_1"
+          ],
+          "arguments": [
+            "0x00",
+            "0x40"
+          ],
+          "raw_arguments": [
+            "0x00",
+            "0x40"
+          ],
+          "expression": "keccak256(0x00, 0x40)",
+          "normalized_expression": "keccak256(0x00, 0x40)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 4
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_3_4_2",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 4,
+          "cfg_block_id": "bb_asm1_n4",
+          "stmt_ref": "asm_s_3",
+          "stmt_refs": [
+            "asm_s_3"
+          ],
+          "source_span": "349:40:0",
+          "source_statement": "let balanceSlot := keccak256(0x00, 0x40)",
+          "source_node_type": "YulVariableDeclaration",
+          "context": "value",
+          "operation": "declare_assign",
+          "atomic_kind": "ValueDeclare",
+          "result": "balanceSlot",
+          "results": [
+            "balanceSlot"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_3_1"
+          ],
+          "raw_arguments": [
+            "keccak256(0x00, 0x40)"
+          ],
+          "expression": "balanceSlot := __sseir_eval_asm_s_3_1",
+          "normalized_expression": "balanceSlot = __sseir_eval_asm_s_3_1",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_3_4_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 5
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_4_5_1",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 5,
+          "cfg_block_id": "bb_asm1_n5",
+          "stmt_ref": "asm_s_4",
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "source_span": "426:18:0",
+          "source_statement": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "sload",
+          "atomic_kind": "StorageRead",
+          "result": "__sseir_eval_asm_s_4_1",
+          "results": [
+            "__sseir_eval_asm_s_4_1"
+          ],
+          "arguments": [
+            "balanceSlot"
+          ],
+          "raw_arguments": [
+            "balanceSlot"
+          ],
+          "expression": "sload(balanceSlot)",
+          "normalized_expression": "sload(balanceSlot)",
+          "operation_order": 1,
+          "dependencies": [],
+          "side_effect": false,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 6
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_4_5_2",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 5,
+          "cfg_block_id": "bb_asm1_n5",
+          "stmt_ref": "asm_s_4",
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "source_span": "422:31:0",
+          "source_statement": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "add",
+          "atomic_kind": "ValueCompute",
+          "result": "__sseir_eval_asm_s_4_2",
+          "results": [
+            "__sseir_eval_asm_s_4_2"
+          ],
+          "arguments": [
+            "__sseir_eval_asm_s_4_1",
+            "amount"
+          ],
+          "raw_arguments": [
+            "sload(balanceSlot)",
+            "amount"
+          ],
+          "expression": "add(__sseir_eval_asm_s_4_1, amount)",
+          "normalized_expression": "(__sseir_eval_asm_s_4_1 + amount)",
+          "operation_order": 2,
+          "dependencies": [
+            "yul_atom_b1_asm_s_4_5_1"
+          ],
+          "side_effect": false,
+          "semantic_sink": false,
+          "control_only": false,
+          "root_operation": false,
+          "sequence": 7
+        },
+        {
+          "atom_id": "yul_atom_b1_asm_s_4_5_3",
+          "function_id": "SimpleSemanticIR.deposit(uint256)",
+          "assembly_block_id": 1,
+          "cfg_node_id": 5,
+          "cfg_block_id": "bb_asm1_n5",
+          "stmt_ref": "asm_s_4",
+          "stmt_refs": [
+            "asm_s_4"
+          ],
+          "source_span": "402:52:0",
+          "source_statement": "sstore(balanceSlot, add(sload(balanceSlot), amount))",
+          "source_node_type": "YulExpressionStatement",
+          "context": "statement",
+          "operation": "sstore",
+          "atomic_kind": "StorageWrite",
+          "result": null,
+          "results": [],
+          "arguments": [
+            "balanceSlot",
+            "__sseir_eval_asm_s_4_2"
+          ],
+          "raw_arguments": [
+            "balanceSlot",
+            "add(sload(balanceSlot), amount)"
+          ],
+          "expression": "sstore(balanceSlot, __sseir_eval_asm_s_4_2)",
+          "normalized_expression": "sstore(balanceSlot, __sseir_eval_asm_s_4_2)",
+          "operation_order": 3,
+          "dependencies": [
+            "yul_atom_b1_asm_s_4_5_2"
+          ],
+          "side_effect": true,
+          "semantic_sink": true,
+          "control_only": false,
+          "root_operation": true,
+          "sequence": 8
+        }
+      ]
+    }
+  ]
+}

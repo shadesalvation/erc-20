@@ -1,0 +1,2193 @@
+{
+  "schema": "s-seir-function-semantic-facts/v3",
+  "source": "tests/fixtures/yul_atomicization_cases.sol",
+  "result_dir": "outputs",
+  "model_boundary": {
+    "processing_unit": "function",
+    "fact_granularity": "one_atomic_operation_per_fact",
+    "ordering": "function-level CFG partial order plus block-local operation order",
+    "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter only projects each atom to the common schema.",
+    "yul": "S-SEIR alone analyzes Yul; YulSemanticLifter only projects completed S-SEIR results to the common schema.",
+    "bridge": "SemanticFactBridge restores function-level CFG order and control predecessors after both sources already share one schema."
+  },
+  "function_count": 3,
+  "solidity_fact_count": 2,
+  "yul_fact_count": 17,
+  "fact_count": 19,
+  "solidity_facts": [
+    {
+      "fact_id": "fact_13",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "function": "guardedCall",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "rvalue": "ok_1",
+      "reads": [
+        "ok_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "ok_1"
+        ],
+        "resolved_operands": [
+          "ok"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "ok_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "360:9:slither",
+          "source_expression": "ok",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN ok_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_12"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "function": "compute",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "rvalue": "result_1",
+      "reads": [
+        "result_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "result_1"
+        ],
+        "resolved_operands": [
+          "result"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "result_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "686:16:slither",
+          "source_expression": "result",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN result_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_18"
+      ]
+    }
+  ],
+  "yul_facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "slot",
+      "rvalue": "total.slot",
+      "reads": [
+        "total",
+        "slot"
+      ],
+      "writes": [
+        "slot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "slot",
+        "expression": "total.slot"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.update(uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "YulAtomicizationCases",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "total",
+      "reads": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_2"
+        ],
+        "storage_resolution": {
+          "slot": "slot",
+          "slot_versions": [
+            "slot__ssa1"
+          ]
+        }
+      },
+      "function_id": "YulAtomicizationCases.update(uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "anchor_cfg_node": "bb_asm1_n3",
+      "control_predecessors": [
+        "fact_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "YulAtomicizationCases",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "total",
+      "rvalue": "(total + amount)",
+      "reads": [
+        "total",
+        "amount"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        },
+        "value": "(total + amount)"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_3"
+        ],
+        "storage_resolution": {
+          "slot": "slot",
+          "slot_versions": [
+            "slot__ssa1"
+          ]
+        }
+      },
+      "function_id": "YulAtomicizationCases.update(uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "anchor_cfg_node": "bb_asm1_n3",
+      "control_predecessors": [
+        "fact_2"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "gas()",
+        "call": "gas"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "ExternalCall",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "effect",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "reads": [
+        "target",
+        "0",
+        "gas()",
+        "0x00",
+        "0x20"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "target",
+        "call_kind": "call",
+        "arguments": [
+          "gas()",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ],
+        "decoded_input": "MemorySlice(word)",
+        "semantic_inputs": {
+          "sink_kind": "Call",
+          "paths": [
+            {
+              "arguments": {
+                "input": "MemorySlice(word)"
+              }
+            }
+          ]
+        },
+        "value": "0"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "LowLevelCall",
+        "effects": [
+          "eff_4"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "anchor_cfg_node": "bb_asm2_n3",
+      "control_predecessors": [
+        "fact_4"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_2",
+      "rvalue": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+      "reads": [
+        "call",
+        "__sseir_eval_asm_s_2_1",
+        "target"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_2"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_2",
+        "expression": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+        "call": "call",
+        "raw_args": [
+          "gas()",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_1",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_5"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 3
+      },
+      "control_predecessors": [
+        "fact_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_3",
+      "rvalue": "mload(0x00)",
+      "reads": [
+        "mload"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_3"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_3",
+        "expression": "mload(0x00)",
+        "call": "mload",
+        "raw_args": [
+          "0x00"
+        ],
+        "evaluated_args": [
+          "0x00"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 5
+      },
+      "control_predecessors": [
+        "fact_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_4",
+      "rvalue": "eq(__sseir_eval_asm_s_2_3, 1)",
+      "reads": [
+        "eq",
+        "__sseir_eval_asm_s_2_3"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_4"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_4",
+        "expression": "eq(__sseir_eval_asm_s_2_3, 1)",
+        "call": "eq",
+        "raw_args": [
+          "mload(0x00)",
+          "1"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_3",
+          "1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_8"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 6
+      },
+      "control_predecessors": [
+        "fact_7"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_5",
+      "rvalue": "and(__sseir_eval_asm_s_2_4, __sseir_eval_asm_s_2_2)",
+      "reads": [
+        "and",
+        "__sseir_eval_asm_s_2_4",
+        "__sseir_eval_asm_s_2_2"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_5"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_5",
+        "expression": "and(__sseir_eval_asm_s_2_4, __sseir_eval_asm_s_2_2)",
+        "call": "and",
+        "raw_args": [
+          "eq(mload(0x00), 1)",
+          "call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_4",
+          "__sseir_eval_asm_s_2_2"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_9"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 7
+      },
+      "control_predecessors": [
+        "fact_8"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_6",
+      "rvalue": "iszero(__sseir_eval_asm_s_2_5)",
+      "reads": [
+        "iszero",
+        "__sseir_eval_asm_s_2_5"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_6"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_6",
+        "expression": "iszero(__sseir_eval_asm_s_2_5)",
+        "call": "iszero",
+        "raw_args": [
+          "and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_5"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_10"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_8",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_9"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "rvalue": "iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+      "reads": [
+        "iszero",
+        "and",
+        "eq",
+        "mload",
+        "call",
+        "gas",
+        "target"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "expression": "iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))"
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_2"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_9",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 9
+      },
+      "control_predecessors": [
+        "fact_10"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n6"
+      ],
+      "condition": "!(iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))))",
+      "lvalue": "ok",
+      "rvalue": "1",
+      "writes": [
+        "ok"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ok",
+        "expression": "1"
+      },
+      "evidence": {
+        "overlay": "ov_10",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_12"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_10",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 11
+      },
+      "control_predecessors": [
+        "fact_11"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n4"
+      ]
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "Require",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "control",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n5"
+      ],
+      "condition": "!((__sseir_eval_asm_s_2_6 != 0))",
+      "reads": [
+        "!((__sseir_eval_asm_s_2_6 != 0))"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "condition": "!((__sseir_eval_asm_s_2_6 != 0))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_11"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 8,
+        "operation_order": 10
+      },
+      "anchor_cfg_node": "bb_asm2_n5",
+      "control_predecessors": [
+        "fact_11"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "compute",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_1",
+      "rvalue": "sub(c, d)",
+      "reads": [
+        "sub",
+        "c",
+        "d"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_1_1",
+        "expression": "sub(c, d)",
+        "call": "sub",
+        "raw_args": [
+          "c",
+          "d"
+        ],
+        "evaluated_args": [
+          "c",
+          "d"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_2"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "compute",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_2",
+      "rvalue": "mul(a, b)",
+      "reads": [
+        "mul",
+        "a",
+        "b"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_2"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_1_2",
+        "expression": "mul(a, b)",
+        "call": "mul",
+        "raw_args": [
+          "a",
+          "b"
+        ],
+        "evaluated_args": [
+          "a",
+          "b"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 1
+      },
+      "control_predecessors": [
+        "fact_15"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "compute",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_3",
+      "rvalue": "add(__sseir_eval_asm_s_1_2, __sseir_eval_asm_s_1_1)",
+      "reads": [
+        "add",
+        "__sseir_eval_asm_s_1_2",
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_3"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_1_3",
+        "expression": "add(__sseir_eval_asm_s_1_2, __sseir_eval_asm_s_1_1)",
+        "call": "add",
+        "raw_args": [
+          "mul(a, b)",
+          "sub(c, d)"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_1_2",
+          "__sseir_eval_asm_s_1_1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_4"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 2
+      },
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "compute",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "result",
+      "rvalue": "add(mul(a, b), sub(c, d))",
+      "reads": [
+        "add",
+        "mul",
+        "a",
+        "b",
+        "sub",
+        "c",
+        "d"
+      ],
+      "writes": [
+        "result"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "result",
+        "expression": "add(mul(a, b), sub(c, d))"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 3
+      },
+      "control_predecessors": [
+        "fact_17"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact_1",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "slot",
+      "rvalue": "total.slot",
+      "reads": [
+        "total",
+        "slot"
+      ],
+      "writes": [
+        "slot"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "slot",
+        "expression": "total.slot"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.update(uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_2",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "YulAtomicizationCases",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "total",
+      "reads": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "StateVariableRead",
+        "effects": [
+          "eff_2"
+        ],
+        "storage_resolution": {
+          "slot": "slot",
+          "slot_versions": [
+            "slot__ssa1"
+          ]
+        }
+      },
+      "function_id": "YulAtomicizationCases.update(uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "anchor_cfg_node": "bb_asm1_n3",
+      "control_predecessors": [
+        "fact_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "YulAtomicizationCases",
+      "signature": "update(uint256)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "total",
+      "rvalue": "(total + amount)",
+      "reads": [
+        "total",
+        "amount"
+      ],
+      "writes": [
+        "total"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "total",
+        "state_variable": "total",
+        "location": {
+          "kind": "state_variable",
+          "access": "total",
+          "state_variable": "total"
+        },
+        "value": "(total + amount)"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "StateVariableWrite",
+        "effects": [
+          "eff_3"
+        ],
+        "storage_resolution": {
+          "slot": "slot",
+          "slot_versions": [
+            "slot__ssa1"
+          ]
+        }
+      },
+      "function_id": "YulAtomicizationCases.update(uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "anchor_cfg_node": "bb_asm1_n3",
+      "control_predecessors": [
+        "fact_2"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_4",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "gas()",
+      "reads": [
+        "gas"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "gas()",
+        "call": "gas"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "kind": "ExternalCall",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "effect",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "reads": [
+        "target",
+        "0",
+        "gas()",
+        "0x00",
+        "0x20"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "target",
+        "call_kind": "call",
+        "arguments": [
+          "gas()",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ],
+        "decoded_input": "MemorySlice(word)",
+        "semantic_inputs": {
+          "sink_kind": "Call",
+          "paths": [
+            {
+              "arguments": {
+                "input": "MemorySlice(word)"
+              }
+            }
+          ]
+        },
+        "value": "0"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "LowLevelCall",
+        "effects": [
+          "eff_4"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 2
+      },
+      "anchor_cfg_node": "bb_asm2_n3",
+      "control_predecessors": [
+        "fact_4"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_2",
+      "rvalue": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+      "reads": [
+        "call",
+        "__sseir_eval_asm_s_2_1",
+        "target"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_2"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_2",
+        "expression": "call(__sseir_eval_asm_s_2_1, target, 0, 0x00, 0x20, 0x00, 0x20)",
+        "call": "call",
+        "raw_args": [
+          "gas()",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_1",
+          "target",
+          "0",
+          "0x00",
+          "0x20",
+          "0x00",
+          "0x20"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_5"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 3
+      },
+      "control_predecessors": [
+        "fact_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_3",
+      "rvalue": "mload(0x00)",
+      "reads": [
+        "mload"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_3"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_3",
+        "expression": "mload(0x00)",
+        "call": "mload",
+        "raw_args": [
+          "0x00"
+        ],
+        "evaluated_args": [
+          "0x00"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_7"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 5
+      },
+      "control_predecessors": [
+        "fact_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_4",
+      "rvalue": "eq(__sseir_eval_asm_s_2_3, 1)",
+      "reads": [
+        "eq",
+        "__sseir_eval_asm_s_2_3"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_4"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_4",
+        "expression": "eq(__sseir_eval_asm_s_2_3, 1)",
+        "call": "eq",
+        "raw_args": [
+          "mload(0x00)",
+          "1"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_3",
+          "1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_8"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 6
+      },
+      "control_predecessors": [
+        "fact_7"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_5",
+      "rvalue": "and(__sseir_eval_asm_s_2_4, __sseir_eval_asm_s_2_2)",
+      "reads": [
+        "and",
+        "__sseir_eval_asm_s_2_4",
+        "__sseir_eval_asm_s_2_2"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_5"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_5",
+        "expression": "and(__sseir_eval_asm_s_2_4, __sseir_eval_asm_s_2_2)",
+        "call": "and",
+        "raw_args": [
+          "eq(mload(0x00), 1)",
+          "call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_4",
+          "__sseir_eval_asm_s_2_2"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_9"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 7
+      },
+      "control_predecessors": [
+        "fact_8"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_6",
+      "rvalue": "iszero(__sseir_eval_asm_s_2_5)",
+      "reads": [
+        "iszero",
+        "__sseir_eval_asm_s_2_5"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_6"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_6",
+        "expression": "iszero(__sseir_eval_asm_s_2_5)",
+        "call": "iszero",
+        "raw_args": [
+          "and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_2_5"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_10"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_8",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_9"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n3",
+        "bb_asm2_n4"
+      ],
+      "rvalue": "iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))",
+      "reads": [
+        "iszero",
+        "and",
+        "eq",
+        "mload",
+        "call",
+        "gas",
+        "target"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "expression": "iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20)))"
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_2"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_9",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 9
+      },
+      "control_predecessors": [
+        "fact_10"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_4"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n6"
+      ],
+      "condition": "!(iszero(and(eq(mload(0x00), 1), call(gas(), target, 0, 0x00, 0x20, 0x00, 0x20))))",
+      "lvalue": "ok",
+      "rvalue": "1",
+      "writes": [
+        "ok"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "ok",
+        "expression": "1"
+      },
+      "evidence": {
+        "overlay": "ov_10",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_12"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_10",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 5,
+        "operation_order": 11
+      },
+      "control_predecessors": [
+        "fact_11"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n4"
+      ]
+    },
+    {
+      "fact_id": "fact_13",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "function": "guardedCall",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "cfg_nodes": [
+        "bb_sol_slither_n8"
+      ],
+      "rvalue": "ok_1",
+      "reads": [
+        "ok_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "ok_1"
+        ],
+        "resolved_operands": [
+          "ok"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "ok_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "360:9:slither",
+          "source_expression": "ok",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN ok_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_12"
+      ]
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "Require",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "guardedCall",
+      "fact_role": "control",
+      "contract": "YulAtomicizationCases",
+      "signature": "guardedCall(address, bytes32)",
+      "stmt_refs": [
+        "asm_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_asm2_n5"
+      ],
+      "condition": "!((__sseir_eval_asm_s_2_6 != 0))",
+      "reads": [
+        "!((__sseir_eval_asm_s_2_6 != 0))"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "condition": "!((__sseir_eval_asm_s_2_6 != 0))",
+        "on_fail": "revert"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "RequireOverlay",
+        "effects": [
+          "eff_11"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.guardedCall(address, bytes32)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 8,
+        "operation_order": 10
+      },
+      "anchor_cfg_node": "bb_asm2_n5",
+      "control_predecessors": [
+        "fact_11"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm2_n3"
+      ]
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "compute",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_1",
+      "rvalue": "sub(c, d)",
+      "reads": [
+        "sub",
+        "c",
+        "d"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_1_1",
+        "expression": "sub(c, d)",
+        "call": "sub",
+        "raw_args": [
+          "c",
+          "d"
+        ],
+        "evaluated_args": [
+          "c",
+          "d"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_2"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "control_predecessors": [],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "compute",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_2",
+      "rvalue": "mul(a, b)",
+      "reads": [
+        "mul",
+        "a",
+        "b"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_2"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_1_2",
+        "expression": "mul(a, b)",
+        "call": "mul",
+        "raw_args": [
+          "a",
+          "b"
+        ],
+        "evaluated_args": [
+          "a",
+          "b"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_3"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 1
+      },
+      "control_predecessors": [
+        "fact_15"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "compute",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "__sseir_eval_asm_s_1_3",
+      "rvalue": "add(__sseir_eval_asm_s_1_2, __sseir_eval_asm_s_1_1)",
+      "reads": [
+        "add",
+        "__sseir_eval_asm_s_1_2",
+        "__sseir_eval_asm_s_1_1"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_1_3"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_1_3",
+        "expression": "add(__sseir_eval_asm_s_1_2, __sseir_eval_asm_s_1_1)",
+        "call": "add",
+        "raw_args": [
+          "mul(a, b)",
+          "sub(c, d)"
+        ],
+        "evaluated_args": [
+          "__sseir_eval_asm_s_1_2",
+          "__sseir_eval_asm_s_1_1"
+        ]
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_4"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 2
+      },
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "compute",
+      "fact_role": "support",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm3_n2"
+      ],
+      "lvalue": "result",
+      "rvalue": "add(mul(a, b), sub(c, d))",
+      "reads": [
+        "add",
+        "mul",
+        "a",
+        "b",
+        "sub",
+        "c",
+        "d"
+      ],
+      "writes": [
+        "result"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "target": "result",
+        "expression": "add(mul(a, b), sub(c, d))"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_1"
+        ]
+      },
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 3
+      },
+      "control_predecessors": [
+        "fact_17"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
+      "operation_id": "sol_atom_1",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "YulAtomicizationCases.compute(uint256, uint256, uint256, uint256)",
+      "function": "compute",
+      "contract": "YulAtomicizationCases",
+      "signature": "compute(uint256, uint256, uint256, uint256)",
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "rvalue": "result_1",
+      "reads": [
+        "result_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm3_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "result_1"
+        ],
+        "resolved_operands": [
+          "result"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "result_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_1",
+          "source_span": "686:16:slither",
+          "source_expression": "result",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN result_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_18"
+      ]
+    }
+  ]
+}
