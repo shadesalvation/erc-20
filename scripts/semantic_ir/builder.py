@@ -26,6 +26,7 @@ _EFFECT_KINDS = {
     "StateRead", "StateWrite", "Require", "EventEmit", "ExternalCall", "LowLevelCall",
     "PrecompileCall", "StaticCall", "DelegateCall", "InternalCall", "InternalDynamicCall",
     "LibraryCall", "BuiltinCall", "ValueTransferCall", "Return", "Revert", "Delete",
+    "ValueCompute",
 }
 _SUPPORT_KINDS = {"StorageLocationResolve", "IndexAccess", "MemberAccess", "BranchCondition"}
 _TERMINALS = {"Return", "Revert", "Stop"}
@@ -92,12 +93,31 @@ class _ExecutionViewContext:
         )
         self.ssa_aliases = self._collect_ssa_aliases(solidity_table)
         self.memory_writes_by_node: dict[str, list[Json]] = defaultdict(list)
+        self.effects_by_node: dict[str, list[Json]] = defaultdict(list)
+        self.value_producers: dict[str, list[Json]] = defaultdict(list)
+        self.boundary_output_versions: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for effect in self.effects.values():
-            if str(effect.get("kind") or "") not in {"MemoryWrite", "MemoryCopy"}:
-                continue
-            node_id = (effect.get("attrs") or {}).get("cfg_node_id")
+            attrs = effect.get("attrs") or {}
+            node_id = attrs.get("cfg_node_id")
             if node_id is not None:
-                self.memory_writes_by_node[str(node_id)].append(effect)
+                self.effects_by_node[str(node_id)].append(effect)
+                if str(effect.get("kind") or "") in {"MemoryWrite", "MemoryCopy"}:
+                    self.memory_writes_by_node[str(node_id)].append(effect)
+            names = _unique([
+                attrs.get("value") if str(effect.get("kind") or "") in {"MemoryRead", "MemoryHash", "StorageRead"} else None,
+                *(attrs.get("targets") or []),
+            ])
+            for name in names:
+                self.value_producers[name].append(effect)
+            for name, records in (attrs.get("external_output_version_paths") or {}).items():
+                for record in records or []:
+                    if not isinstance(record, dict) or not record.get("version"):
+                        continue
+                    item = dict(record)
+                    item["effect_id"] = effect.get("effect_id")
+                    if item not in self.boundary_output_versions[str(name)]:
+                        self.boundary_output_versions[str(name)].append(item)
+                    self.ssa_aliases[str(item["version"])] = str(name)
 
     @classmethod
     def _collect_ssa_aliases(cls, table: Any) -> dict[str, str]:
@@ -155,17 +175,85 @@ class _ExecutionViewContext:
         return out
 
     def supporting_effects(self, fact: Json) -> list[Json]:
-        """Return memory definitions explicitly cited by a semantic sink."""
+        """Return the transitive, explicitly evidenced memory support closure."""
         out: list[Json] = []
         seen: set[str] = set()
-        for effect in self.effects_for(fact):
-            for node_id in self._memory_source_nodes(effect.get("attrs") or {}):
-                for source in self.memory_writes_by_node.get(node_id, []):
-                    effect_id = str(source.get("effect_id") or "")
-                    if effect_id and effect_id not in seen:
-                        seen.add(effect_id)
-                        out.append(source)
+        queue = list(self.effects_for(fact))
+        primary = {str(effect.get("effect_id") or "") for effect in queue}
+        while queue:
+            effect = queue.pop(0)
+            attrs = effect.get("attrs") or {}
+            related: list[Json] = []
+            for node_id in self._memory_source_nodes(attrs):
+                related.extend(self.memory_writes_by_node.get(node_id, []))
+
+            kind = str(effect.get("kind") or "")
+            node_id = attrs.get("cfg_node_id")
+            values = _unique([
+                attrs.get("value") if kind in {"ValueDef", "MemoryRead", "MemoryHash", "StorageRead"} else None,
+                *(attrs.get("targets") or []),
+            ])
+            if node_id is not None and values:
+                for peer in self.effects_by_node.get(str(node_id), []):
+                    peer_attrs = peer.get("attrs") or {}
+                    peer_values = set(_unique([
+                        peer_attrs.get("value"),
+                        *(peer_attrs.get("targets") or []),
+                    ]))
+                    if peer_values.intersection(values):
+                        related.append(peer)
+
+            if kind == "MemoryWrite":
+                value = str(attrs.get("value") or "")
+                producers = self.value_producers.get(value, [])
+                write_node = int(node_id) if node_id is not None else None
+                eligible = [
+                    producer for producer in producers
+                    if write_node is None
+                    or (producer.get("attrs") or {}).get("cfg_node_id") is None
+                    or int((producer.get("attrs") or {})["cfg_node_id"]) <= write_node
+                ]
+                if eligible:
+                    nearest = max(
+                        int((producer.get("attrs") or {}).get("cfg_node_id") or -1)
+                        for producer in eligible
+                    )
+                    related.extend(
+                        producer for producer in eligible
+                        if int((producer.get("attrs") or {}).get("cfg_node_id") or -1) == nearest
+                    )
+
+            for source in related:
+                effect_id = str(source.get("effect_id") or "")
+                if not effect_id or effect_id in seen or effect_id in primary:
+                    continue
+                seen.add(effect_id)
+                out.append(source)
+                queue.append(source)
         return out
+
+    def external_bindings_for(self, fact: Json) -> dict[str, str]:
+        bindings: dict[str, str] = {}
+        conflicts: set[str] = set()
+        for effect in self.effects_for(fact):
+            for name, version in ((effect.get("attrs") or {}).get("external_value_bindings") or {}).items():
+                name = str(name)
+                version = str(version)
+                if name in bindings and bindings[name] != version:
+                    conflicts.add(name)
+                else:
+                    bindings[name] = version
+        for name in conflicts:
+            bindings.pop(name, None)
+        return bindings
+
+    def boundary_output_bindings(self) -> dict[str, str]:
+        outputs = set(self.boundary_output_versions)
+        return {
+            ssa_name: base
+            for ssa_name, base in self.ssa_aliases.items()
+            if base in outputs
+        }
 
     def supporting_stmt_refs(self, fact: Json) -> list[str]:
         return _unique(
@@ -313,10 +401,25 @@ class SemanticIRBuilder:
         groups, consumed = self._group_facts(facts, control)
         function.fact_groups.extend(groups)
         primary_ids = {group.primary_fact for group in groups}
+        fact_kind_by_id = {
+            str(fact.get("fact_id")): str(fact.get("kind"))
+            for fact in facts if fact.get("fact_id")
+        }
+        strongly_consumed = {
+            support
+            for group in groups
+            if fact_kind_by_id.get(group.primary_fact) != "ValueCompute"
+            for support in group.support_facts
+        }
         materialized_facts = [
             fact for fact in facts
-            if str(fact.get("fact_id") or "") not in consumed
-            or str(fact.get("fact_id") or "") in primary_ids
+            if (
+                str(fact.get("fact_id") or "") not in consumed
+                or (
+                    str(fact.get("fact_id") or "") in primary_ids
+                    and str(fact.get("fact_id") or "") not in strongly_consumed
+                )
+            )
         ]
         execution = _ExecutionViewContext(raw_function, fn, materialized_facts)
         function.value_aliases = dict(execution.ssa_aliases)
@@ -327,7 +430,7 @@ class SemanticIRBuilder:
         }
         terminal_facts: dict[str, list[Json]] = defaultdict(list)
 
-        for fact in facts:
+        for fact in materialized_facts:
             fact_id = str(fact.get("fact_id") or "")
             if fact_id in consumed and not any(group.primary_fact == fact_id for group in groups):
                 continue
@@ -349,9 +452,10 @@ class SemanticIRBuilder:
             function.blocks[block_id].instructions.append(instruction)
 
         self._attach_terminal_facts(function, terminal_facts, arena, execution)
+        self._materialize_boundary_output_bridges(function, execution, arena)
         self._materialize_unlifted_memory_effects(function, execution, facts, arena)
         self._prune_terminal_edges(function)
-        self._attach_branch_fact_origins(function, facts, consumed, arena)
+        self._attach_branch_fact_origins(function, facts, consumed, arena, execution)
         function.expressions = arena.nodes
         self._sort_instructions(function, facts)
         self._rebuild_def_use(function, aliases=function.value_aliases)
@@ -548,6 +652,12 @@ class SemanticIRBuilder:
         support_location = (support.get("semantic") or {}).get("location") or {}
         same_location = bool(location and support_location and self._stable(location) == self._stable(support_location))
         shared_stmt = bool(set(support.get("stmt_refs") or []) & set(primary.get("stmt_refs") or []))
+        support_parent = str((support.get("semantic") or {}).get("parent_effect") or "")
+        primary_effects = {
+            str(effect) for effect in (primary.get("evidence") or {}).get("effects") or []
+        }
+        if support_parent and support_parent in primary_effects:
+            return True
         if support.get("kind") in {"StorageLocationResolve", "IndexAccess", "MemberAccess"}:
             return same_location or slot_definition or shared_stmt
         rvalue = str(support.get("rvalue") or "")
@@ -605,6 +715,11 @@ class SemanticIRBuilder:
         op = self._instruction_op(kind)
         bindings = self._support_bindings(support_facts or [])
         execution_bindings = self._execution_support_bindings(support_facts or [], execution)
+        if execution:
+            execution_bindings = {
+                **execution.external_bindings_for(fact),
+                **execution_bindings,
+            }
         execution_value = execution.execution_expression(fact) if execution else self._fact_execution_expression(fact)
         normalized_value = self._fact_normalized_expression(fact)
         # Support facts are fused out of the instruction stream, so their pure
@@ -964,16 +1079,37 @@ class SemanticIRBuilder:
             for fact in candidates:
                 kind = str(fact.get("kind"))
                 semantic = fact.get("semantic") or {}
+                support_facts = [
+                    function.fact_table[origin]
+                    for origin in fact.get("_origins") or []
+                    if origin != fact.get("fact_id") and origin in function.fact_table
+                ]
+                normalized_bindings = self._support_bindings(support_facts)
+                execution_bindings = self._execution_support_bindings(support_facts, execution)
+                if execution:
+                    normalized_bindings = {
+                        **execution.boundary_output_bindings(),
+                        **normalized_bindings,
+                    }
+                    execution_bindings = {
+                        **execution.external_bindings_for(fact),
+                        **execution.boundary_output_bindings(),
+                        **execution_bindings,
+                    }
                 values = self._fact_arguments(fact)
                 if not values and semantic.get("value") is not None:
                     values = [semantic.get("value")]
                 normalized_value_exprs = [
-                    item for item in (arena.build(value, fact["_origins"]) for value in values) if item
+                    item for item in (
+                        arena.build_with_bindings(value, normalized_bindings, fact["_origins"])
+                        for value in values
+                    ) if item
                 ]
                 execution_values = execution.terminal_values(fact) if execution else []
                 execution_value_exprs = [
                     item for item in (
-                        arena.build(value, fact["_origins"]) for value in (execution_values or values)
+                        arena.build_with_bindings(value, execution_bindings, fact["_origins"])
+                        for value in (execution_values or values)
                     ) if item
                 ]
                 if block.terminator.kind == kind or block.terminator.kind in {"Fallthrough", "Goto"}:
@@ -1014,6 +1150,59 @@ class SemanticIRBuilder:
                         self._instruction(fact, fact["_origins"], arena, function, execution=execution)
                     )
 
+    def _materialize_boundary_output_bridges(
+        self,
+        function: SemanticFunction,
+        execution: _ExecutionViewContext,
+        arena: ExpressionArena,
+    ) -> None:
+        """Join Yul SSA writes back into Solidity-declared function variables."""
+        existing_results = {
+            instruction.result
+            for block in function.blocks.values()
+            for instruction in block.instructions
+            if instruction.result
+        }
+        for base, records in execution.boundary_output_versions.items():
+            versions = _unique(record.get("version") for record in records)
+            if not versions or base in existing_results:
+                continue
+            effects = _unique(record.get("effect_id") for record in records)
+            effect = next(
+                (execution.effects[effect_id] for effect_id in effects if effect_id in execution.effects),
+                None,
+            )
+            if effect is None:
+                continue
+            block_id = self._effect_block(effect, function)
+            arguments = [arena.build(version, []) for version in versions]
+            arguments = [item for item in arguments if item]
+            self._instruction_counter += 1
+            instruction = SemanticInstruction(
+                instruction_id=f"ir_{self._instruction_counter}",
+                op="Phi" if len(versions) > 1 else "Assign",
+                result=base,
+                execution_expr=arguments[0] if len(arguments) == 1 else None,
+                normalized_expr=arguments[0] if len(arguments) == 1 else None,
+                execution_arguments=arguments if len(arguments) > 1 else [],
+                normalized_arguments=arguments if len(arguments) > 1 else [],
+                source_languages=["yul", "solidity"],
+                origin_effects=effects,
+                stmt_refs=_unique(
+                    ref
+                    for effect_id in effects
+                    for ref in (execution.effects.get(effect_id) or {}).get("stmt_refs") or []
+                ),
+                attrs={
+                    "fact_kind": "AssemblyBoundaryOutput",
+                    "source_variable": base,
+                    "path_versions": records,
+                    "reason": "yul_write_to_solidity_declared_variable",
+                },
+            )
+            function.blocks[block_id].instructions.append(instruction)
+            existing_results.add(base)
+
     @staticmethod
     def _prune_terminal_edges(function: SemanticFunction) -> None:
         terminals = {
@@ -1023,7 +1212,14 @@ class SemanticIRBuilder:
         function.edges = [edge for edge in function.edges if edge.source not in terminals]
         function.rebuild_cfg_links()
 
-    def _attach_branch_fact_origins(self, function: SemanticFunction, facts: list[Json], consumed: set[str], arena: ExpressionArena) -> None:
+    def _attach_branch_fact_origins(
+        self,
+        function: SemanticFunction,
+        facts: list[Json],
+        consumed: set[str],
+        arena: ExpressionArena,
+        execution: _ExecutionViewContext | None = None,
+    ) -> None:
         for block in function.blocks.values():
             if block.terminator.kind != "Branch":
                 continue
@@ -1041,8 +1237,12 @@ class SemanticIRBuilder:
                 if normalized_condition:
                     block.terminator.normalized_condition = normalized_condition
                     block.terminator.condition = normalized_condition
-                if not block.terminator.execution_condition:
-                    block.terminator.execution_condition = arena.build(related[-1].get("rvalue"), origins)
+                execution_bindings = execution.external_bindings_for(related[-1]) if execution else {}
+                execution_condition = arena.build_with_bindings(
+                    related[-1].get("rvalue"), execution_bindings, origins
+                )
+                if execution_condition:
+                    block.terminator.execution_condition = execution_condition
 
     @staticmethod
     def _sort_instructions(function: SemanticFunction, facts: list[Json]) -> None:

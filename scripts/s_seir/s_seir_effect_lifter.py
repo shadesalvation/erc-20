@@ -327,6 +327,7 @@ class EffectLifter:
                     block_loop_context,
                 ),
             )
+            self.attach_yul_ssa_context(effects[block_effect_start:], res)
         if include_solidity:
             solidity_stmt_text = {
                 stmt.stmt_id: stmt.text
@@ -1761,6 +1762,142 @@ class EffectLifter:
             if name in versions and definition.version not in versions[name]:
                 versions[name].append(definition.version)
         return {name: vals for name, vals in versions.items() if vals}
+
+    @staticmethod
+    def value_version_paths(
+        res: Any,
+        nid: int,
+        names: list[str],
+        *,
+        created: bool,
+    ) -> dict[str, list[dict[str, Any]]]:
+        """Map each Yul SSA version to the control state which owns it.
+
+        Definitions are read from a node's outgoing observations; reaching
+        operands are read from incoming observations.  This preserves the
+        MemorySSA path/version relation instead of pairing two unrelated lists
+        by position.
+        """
+        observation = getattr(res, "observations", {}).get(nid)
+        states = list(
+            getattr(observation, "outgoing" if created else "incoming", []) or []
+        )
+        out: dict[str, list[dict[str, Any]]] = {}
+        for name in names:
+            records: list[dict[str, Any]] = []
+            seen: set[tuple[str, str]] = set()
+            for state in states:
+                definition = getattr(state, "values", {}).get(name)
+                if not definition:
+                    continue
+                if created and getattr(definition, "node_id", None) != nid:
+                    continue
+                version = str(getattr(definition, "version", "") or "")
+                if not version:
+                    continue
+                local_condition = (
+                    " && ".join(getattr(state, "predicates", ()) or ()) or "entry"
+                )
+                key = (version, local_condition)
+                if key in seen:
+                    continue
+                seen.add(key)
+                records.append({
+                    "version": version,
+                    "local_condition": local_condition,
+                    "path_states": EffectLifter.merge_function_path_prefixes(
+                        getattr(res, "function_path_prefixes", []) or [],
+                        local_condition,
+                    ),
+                })
+            if records:
+                out[name] = records
+        return out
+
+    @staticmethod
+    def external_value_context(res: Any, attrs: dict[str, Any]) -> dict[str, str]:
+        """Return exact Solidity values visible at this assembly boundary.
+
+        Only a unique Slither reaching SSA version is used as a substitution.
+        Parameters without an SSA spelling remain known by their source name;
+        state-variable ``.slot`` expressions are deliberately not rewritten.
+        """
+        boundary = getattr(res, "boundary_context", {}) or {}
+        material = repr(attrs)
+        bindings: dict[str, str] = {}
+        for item in boundary.get("external_reads") or []:
+            name = str(item.get("name") or "")
+            if not name or not EffectLifter.identifier_in_text(name, material):
+                continue
+            expressions = [str(value) for value in item.get("expressions") or []]
+            versions = list(dict.fromkeys(map(str, item.get("reaching_ssa_versions") or [])))
+            if len(versions) == 1 and name in expressions:
+                bindings[name] = versions[0]
+        return bindings
+
+    @staticmethod
+    def identifier_in_text(name: str, text: str) -> bool:
+        import re
+        return bool(re.search(rf"(?<![A-Za-z0-9_$]){re.escape(name)}(?![A-Za-z0-9_$])", text))
+
+    @classmethod
+    def attach_yul_ssa_context(cls, effects: list[EffectNode], res: Any) -> None:
+        """Attach boundary values and exact path-sensitive SSA relations."""
+        for effect in effects:
+            attrs = effect.attrs
+            nid = attrs.get("cfg_node_id")
+            bindings = cls.external_value_context(res, attrs)
+            if bindings:
+                attrs["external_value_bindings"] = bindings
+            if nid is None:
+                continue
+            nid = int(nid)
+            if effect.kind == "ValueDef":
+                names = [str(name) for name in attrs.get("targets") or []]
+                paths = cls.value_version_paths(res, nid, names, created=True)
+                if paths:
+                    attrs["target_version_paths"] = paths
+                expression = str(attrs.get("value") or "")
+                incoming_names = sorted({
+                    str(name)
+                    for state in res.states_at(nid)
+                    for name in getattr(state, "values", {})
+                    if cls.identifier_in_text(str(name), expression)
+                })
+                operand_paths = cls.value_version_paths(
+                    res, nid, incoming_names, created=False
+                )
+                if operand_paths:
+                    attrs["operand_version_paths"] = operand_paths
+                boundary = getattr(res, "boundary_context", {}) or {}
+                outputs = {
+                    str(item.get("name"))
+                    for item in boundary.get("external_writes") or []
+                    if item.get("name")
+                }
+                output_paths = {
+                    name: records for name, records in paths.items() if name in outputs
+                }
+                if output_paths:
+                    attrs["external_output_version_paths"] = output_paths
+            elif effect.kind in {"MemoryRead", "MemoryHash", "StorageRead"}:
+                name = attrs.get("value")
+                if name:
+                    paths = cls.value_version_paths(res, nid, [str(name)], created=True)
+                    if paths:
+                        attrs["value_version_paths"] = paths
+            if effect.kind in {"MemoryHash", "StorageRead", "StorageWrite"}:
+                slot_name = attrs.get("slot") if effect.kind.startswith("Storage") else attrs.get("ptr")
+                if slot_name and cls.simple_identifier(str(slot_name)):
+                    paths = cls.value_version_paths(res, nid, [str(slot_name)], created=False)
+                    if paths:
+                        attrs["slot_version_paths" if effect.kind.startswith("Storage") else "ptr_version_paths"] = paths
+            if effect.kind == "StorageWrite":
+                value = attrs.get("value")
+                if value and cls.simple_identifier(str(value)):
+                    paths = cls.value_version_paths(res, nid, [str(value)], created=False)
+                    if paths:
+                        attrs["value_version_paths"] = paths
 
     @staticmethod
     def reaching_value_versions(res: Any, nid: int, expr: str | None) -> list[str]:

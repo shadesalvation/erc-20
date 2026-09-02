@@ -374,6 +374,96 @@ class SemanticIRBuilderTests(unittest.TestCase):
         self.assertEqual(old_value.definition, state_read.instruction_id)
         self.assertIn(state_write.instruction_id, old_value.uses)
 
+    def test_solidity_reaching_ssa_is_used_inside_yul_execution_view(self):
+        fn = function([block("sol", kind="solidity"), block("asm", stmts=["asm_s1"])], [
+            {"from": "sol", "to": "asm", "kind": "join"},
+        ])
+        fn["effects"] = [{
+            "effect_id": "eff_value", "kind": "ValueDef", "stmt_refs": ["asm_s1"],
+            "attrs": {
+                "cfg_node_id": 1,
+                "targets": ["out"],
+                "value": "add(delta, 1)",
+                "external_value_bindings": {"delta": "delta_3"},
+            },
+        }]
+        facts = [
+            fact("f_phi", "ValuePhi", "sol", source_lang="solidity", lvalue="delta_3", rvalue=["delta_1", "delta_2"]),
+            fact(
+                "f_yul", "ValueCompute", "asm", lvalue="out__ssa1", rvalue="add(delta, 1)",
+                stmt_refs=["asm_s1"], evidence={"effects": ["eff_value"]},
+                semantic={"execution_expression": "add(delta, 1)"},
+            ),
+        ]
+        ir_function = build_semantic_ir_program([fn], {"facts": facts}).functions[0]
+        yul = next(item for item in ir_function.blocks["asm"].instructions if item.result == "out__ssa1")
+        expression = ir_function.expressions[yul.execution_expr]
+        self.assertEqual(ir_function.expressions[expression.operands[0]].name, "delta_3")
+        delta = next(item for item in ir_function.values.values() if item.name == "delta_3")
+        self.assertIn(yul.instruction_id, delta.uses)
+
+    def test_yul_external_output_versions_join_before_solidity_return(self):
+        fn = function(
+            [block("left", stmts=["asm_s1"]), block("right", stmts=["asm_s2"]), block("exit", kind="solidity", terminator={"kind": "Return"})],
+            [
+                {"from": "left", "to": "exit", "kind": "next"},
+                {"from": "right", "to": "exit", "kind": "next"},
+            ],
+        )
+        fn["solidity_atomic_operations"] = {
+            "operations": [{"text": "result_1", "base_name": "result"}],
+        }
+        fn["effects"] = [
+            {
+                "effect_id": "eff_left", "kind": "ValueDef", "stmt_refs": ["asm_s1"],
+                "attrs": {"cfg_node_id": 1, "external_output_version_paths": {
+                    "result": [{"version": "result__ssa1", "local_condition": "flag"}],
+                }},
+            },
+            {
+                "effect_id": "eff_right", "kind": "ValueDef", "stmt_refs": ["asm_s2"],
+                "attrs": {"cfg_node_id": 2, "external_output_version_paths": {
+                    "result": [{"version": "result__ssa2", "local_condition": "!(flag)"}],
+                }},
+            },
+        ]
+        facts = [
+            fact("f_left", "ValueCompute", "left", lvalue="result__ssa1", rvalue="1", stmt_refs=["asm_s1"], evidence={"effects": ["eff_left"]}),
+            fact("f_right", "ValueCompute", "right", lvalue="result__ssa2", rvalue="2", stmt_refs=["asm_s2"], evidence={"effects": ["eff_right"]}),
+            fact("f_return", "Return", "exit", source_lang="solidity", rvalue="result_1", semantic={"value": "result_1"}),
+        ]
+        ir_function = build_semantic_ir_program([fn], {"facts": facts}).functions[0]
+        bridge = next(
+            item for block_value in ir_function.blocks.values() for item in block_value.instructions
+            if item.attrs.get("fact_kind") == "AssemblyBoundaryOutput"
+        )
+        self.assertEqual(bridge.op, "Phi")
+        self.assertEqual(bridge.result, "result")
+        result = next(item for item in ir_function.values.values() if item.name == "result")
+        self.assertIn("terminator:exit", result.uses)
+
+    def test_recursive_memory_support_is_absorbed_by_nested_hash_semantics(self):
+        fn = function([block("entry", stmts=["s1", "s2", "s3", "s4", "s5"])], [])
+        fn["effects"] = [
+            {"effect_id": "m1", "kind": "MemoryWrite", "stmt_refs": ["s1"], "attrs": {"cfg_node_id": 1, "address": "ptr", "value": "user"}},
+            {"effect_id": "m2", "kind": "MemoryWrite", "stmt_refs": ["s2"], "attrs": {"cfg_node_id": 2, "address": "ptr + 32", "value": "ledger.slot"}},
+            {"effect_id": "h1", "kind": "MemoryHash", "stmt_refs": ["s3"], "attrs": {"cfg_node_id": 3, "value": "outer", "memory_read": {"words": [{"definition": {"node_id": 1}}, {"definition": {"node_id": 2}}]}}},
+            {"effect_id": "v1", "kind": "ValueDef", "stmt_refs": ["s3"], "attrs": {"cfg_node_id": 3, "targets": ["outer"], "value": "keccak256(ptr, 64)"}},
+            {"effect_id": "m3", "kind": "MemoryWrite", "stmt_refs": ["s4"], "attrs": {"cfg_node_id": 4, "address": "ptr + 32", "value": "outer"}},
+            {"effect_id": "h2", "kind": "MemoryHash", "stmt_refs": ["s5"], "attrs": {"cfg_node_id": 5, "value": "leaf", "memory_read": {"words": [{"definition": {"node_id": 4}}]}}},
+            {"effect_id": "v2", "kind": "ValueDef", "stmt_refs": ["s5"], "attrs": {"cfg_node_id": 5, "targets": ["leaf"], "value": "keccak256(ptr, 64)"}},
+        ]
+        facts = [fact(
+            "f_leaf", "ValueCompute", "entry", lvalue="leaf", rvalue="keccak256(ptr, 64)",
+            stmt_refs=["s5"], evidence={"effects": ["v2"]},
+        )]
+        ir_function = build_semantic_ir_program([fn], {"facts": facts}).functions[0]
+        low_level = [
+            item for item in ir_function.blocks["entry"].instructions
+            if item.attrs.get("fact_kind") == "LowLevelMemoryInstruction"
+        ]
+        self.assertEqual(low_level, [])
+
 
 if __name__ == "__main__":
     unittest.main()

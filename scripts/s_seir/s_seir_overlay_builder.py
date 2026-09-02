@@ -1416,6 +1416,15 @@ class SemanticOverlayBuilder:
                     'value': value_normalized if effect.kind == 'StorageWrite' else None,
                     'value_yul': value if effect.kind == 'StorageWrite' else None,
                     'value_state_read': value_state_read,
+                    'target_version': self.effect_version_for_condition(
+                        effect, 'value_version_paths', value, condition
+                    ) if effect.kind == 'StorageRead' else None,
+                    'slot_version': self.effect_version_for_condition(
+                        effect, 'slot_version_paths', effect.attrs.get('slot'), condition
+                    ),
+                    'value_version': self.effect_version_for_condition(
+                        effect, 'value_version_paths', value, condition
+                    ) if effect.kind == 'StorageWrite' else None,
                     'notes': slot_expr.get('notes', []),
                 }))
                 continue
@@ -1433,6 +1442,15 @@ class SemanticOverlayBuilder:
                     'value': value_normalized if effect.kind == 'StorageWrite' else None,
                     'value_yul': value if effect.kind == 'StorageWrite' else None,
                     'value_state_read': value_state_read,
+                    'target_version': self.effect_version_for_condition(
+                        effect, 'value_version_paths', value, condition
+                    ) if effect.kind == 'StorageRead' else None,
+                    'slot_version': self.effect_version_for_condition(
+                        effect, 'slot_version_paths', effect.attrs.get('slot'), condition
+                    ),
+                    'value_version': self.effect_version_for_condition(
+                        effect, 'value_version_paths', value, condition
+                    ) if effect.kind == 'StorageWrite' else None,
                 }))
                 continue
             candidates.append({
@@ -1454,6 +1472,8 @@ class SemanticOverlayBuilder:
             'value': value_normalized if effect.kind == 'StorageWrite' else None,
             'value_yul': value if effect.kind == 'StorageWrite' else None,
             'value_state_read': value_state_read,
+            'target_version_paths': effect.attrs.get('value_version_paths') if effect.kind == 'StorageRead' else None,
+            'value_version_paths': effect.attrs.get('value_version_paths') if effect.kind == 'StorageWrite' else None,
             'path_states': effect.attrs.get('path_states'),
             'candidates': candidates,
             'note': 'storage_effect_has_multiple_ssa_slot_versions',
@@ -2405,6 +2425,15 @@ class SemanticOverlayBuilder:
                     'value': value_normalized if effect.kind == 'StorageWrite' else None,
                     'value_yul': value if effect.kind == 'StorageWrite' else None,
                     'value_state_read': value_state_read,
+                    'target_version': self.effect_version_for_condition(
+                        effect, 'value_version_paths', value, merged_condition
+                    ) if effect.kind == 'StorageRead' else None,
+                    'slot_version': self.effect_version_for_condition(
+                        effect, 'slot_version_paths', effect.attrs.get('slot'), merged_condition
+                    ),
+                    'value_version': self.effect_version_for_condition(
+                        effect, 'value_version_paths', value, merged_condition
+                    ) if effect.kind == 'StorageWrite' else None,
                     'target': value if effect.kind == 'StorageRead' else None,
                     'storage_model': 'manual_packed_hash_slot' if manual_packed else None,
                     'state_access': True if manual_packed else None,
@@ -2422,6 +2451,8 @@ class SemanticOverlayBuilder:
             'value': value_normalized if effect.kind == 'StorageWrite' else None,
             'value_yul': value if effect.kind == 'StorageWrite' else None,
             'value_state_read': value_state_read,
+            'target_version_paths': effect.attrs.get('value_version_paths') if effect.kind == 'StorageRead' else None,
+            'value_version_paths': effect.attrs.get('value_version_paths') if effect.kind == 'StorageWrite' else None,
             'path_states': effect.attrs.get('path_states'),
             'candidates': candidates,
             'sink_resolution': slot_expr.get('sink_resolution'),
@@ -2439,6 +2470,36 @@ class SemanticOverlayBuilder:
             if merged not in out:
                 out.append(merged)
         return out
+
+    @classmethod
+    def effect_version_for_condition(
+        cls,
+        effect: EffectNode,
+        field: str,
+        name: Any,
+        condition: Any,
+    ) -> str | None:
+        """Select the SSA version explicitly associated with a sink path."""
+        records_by_name = effect.attrs.get(field) or {}
+        records = records_by_name.get(str(name)) if isinstance(records_by_name, dict) else None
+        if not isinstance(records, list):
+            return None
+        condition_text = str(condition or 'entry')
+        condition_atoms = set(cls.split_path_conditions(condition_text))
+        matches: list[str] = []
+        for record in records:
+            if not isinstance(record, dict) or not record.get('version'):
+                continue
+            full_paths = [str(path) for path in record.get('path_states') or []]
+            local = str(record.get('local_condition') or 'entry')
+            local_atoms = set(cls.split_path_conditions(local))
+            exact = condition_text in full_paths
+            local_match = local == 'entry' or bool(local_atoms) and local_atoms.issubset(condition_atoms)
+            if exact or local_match:
+                version = str(record['version'])
+                if version not in matches:
+                    matches.append(version)
+        return matches[0] if len(matches) == 1 else None
 
     @staticmethod
     def manual_packed_slot_derivation(
@@ -4833,6 +4894,9 @@ class SemanticOverlayBuilder:
                     expr = str(memory_hash['expression'])
                 if atomized_value and atomized_value.get('final'):
                     expr = str(atomized_value.get('final'))
+                version_candidates = self.value_definition_path_candidates(
+                    e, target, e.attrs.get('value'), expr
+                )
                 out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {
                     'target': target,
                     'expression': e.attrs.get('value'),
@@ -4842,6 +4906,11 @@ class SemanticOverlayBuilder:
                     'division_guards': division_guards(e.attrs.get('value')),
                     'memory_hash': memory_hash,
                     'atomized_value': atomized_value,
+                    'path_states': e.attrs.get('path_states'),
+                    'target_version_paths': e.attrs.get('target_version_paths'),
+                    'operand_version_paths': e.attrs.get('operand_version_paths'),
+                    'path_candidates': version_candidates,
+                    'external_value_bindings': e.attrs.get('external_value_bindings'),
                 }))
             elif e.kind == 'Branch':
                 condition_text = e.attrs.get('condition_final_temp') or e.attrs.get('condition_normalized') or normalize_expr(e.attrs.get('condition'))
@@ -4875,11 +4944,69 @@ class SemanticOverlayBuilder:
                     'evaluation_context': e.attrs.get('evaluation_context'),
                     'reads_after_call_output': e.attrs.get('reads_after_call_output'),
                     'value_from_call_output': e.attrs.get('value_from_call_output'),
+                    'path_states': e.attrs.get('path_states'),
+                    'external_value_bindings': e.attrs.get('external_value_bindings'),
                 }
                 if state_read:
                     attrs['state_read'] = state_read
                 out.append(self.ov('EvaluationStep', e.effect_id, e.stmt_refs, self.clean(attrs)))
         return out
+
+    @classmethod
+    def value_definition_path_candidates(
+        cls,
+        effect: EffectNode,
+        target: Any,
+        expression: Any,
+        expression_normalized: Any,
+    ) -> list[dict[str, Any]]:
+        """Project a Yul ValueDef into the SSA version owned by each path."""
+        records_by_target = effect.attrs.get('target_version_paths') or {}
+        records = records_by_target.get(str(target)) if isinstance(records_by_target, dict) else None
+        if not isinstance(records, list):
+            return []
+        out: list[dict[str, Any]] = []
+        seen: set[tuple[str, str]] = set()
+        operand_paths = effect.attrs.get('operand_version_paths') or {}
+        external_bindings = dict(effect.attrs.get('external_value_bindings') or {})
+        for record in records:
+            if not isinstance(record, dict) or not record.get('version'):
+                continue
+            local_condition = str(record.get('local_condition') or 'entry')
+            bindings = dict(external_bindings)
+            for name in operand_paths:
+                version = cls.effect_version_for_condition(
+                    effect, 'operand_version_paths', name, local_condition
+                )
+                if version:
+                    bindings[str(name)] = version
+            execution_expression = cls.rewrite_exact_identifiers(expression, bindings)
+            key = (str(record['version']), local_condition)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(cls.clean({
+                'version': str(record['version']),
+                'target': target,
+                'condition': None if local_condition == 'entry' else local_condition,
+                'local_condition': local_condition,
+                'path_states': record.get('path_states') or [],
+                'execution_expression': execution_expression,
+                'expression_normalized': expression_normalized,
+                'operand_bindings': bindings,
+            }))
+        return out
+
+    @staticmethod
+    def rewrite_exact_identifiers(value: Any, bindings: dict[str, str]) -> Any:
+        text = str(value or '')
+        for name in sorted(bindings, key=len, reverse=True):
+            text = re.sub(
+                rf'(?<![A-Za-z0-9_$]){re.escape(name)}(?![A-Za-z0-9_$])',
+                str(bindings[name]),
+                text,
+            )
+        return text
 
     def condition_evaluation_with_state_reads(
         self,

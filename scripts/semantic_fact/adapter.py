@@ -97,10 +97,13 @@ class SSeirFactAdapter:
         kind = str(overlay.get("kind") or "")
         attrs = overlay.get("attrs") or {}
         if kind in {"PathConditionedStorageRead", "PathConditionedStorageWrite"}:
+            candidates = [
+                candidate for candidate in attrs.get("candidates") or []
+                if isinstance(candidate, dict)
+            ]
             return [
                 self.storage_candidate_fact(fn, overlay, candidate, stmt_lang, effect_by_id)
-                for candidate in attrs.get("candidates") or []
-                if isinstance(candidate, dict)
+                for candidate in self.merge_storage_ssa_candidates(candidates, kind)
             ]
         if kind == "PathConditionedEventEmit":
             return [
@@ -124,6 +127,12 @@ class SSeirFactAdapter:
             return [
                 self.call_candidate_fact(fn, overlay, candidate, stmt_lang)
                 for candidate in attrs.get("candidates") or []
+                if isinstance(candidate, dict)
+            ]
+        if kind == "ExpressionNormalization" and attrs.get("path_candidates"):
+            return [
+                self.value_candidate_fact(fn, overlay, candidate, stmt_lang)
+                for candidate in attrs.get("path_candidates") or []
                 if isinstance(candidate, dict)
             ]
         fact = self.plain_overlay_fact(fn, overlay, stmt_lang, effect_by_id)
@@ -303,7 +312,7 @@ class SSeirFactAdapter:
             target = attrs.get("target") or attrs.get("temp")
             value = attrs.get("value") or attrs.get("expression") or attrs.get("solidity_like")
             return self.fact(fn, overlay, stmt_lang, "ValueCompute", lvalue=target, rvalue=value, reads=rough_reads(value), writes=[target], semantic=pick(attrs, (
-                "target", "temp", "value", "expression", "expression_normalized", "solidity_like", "call", "raw_args", "evaluated_args",
+                "target", "temp", "value", "expression", "expression_normalized", "solidity_like", "call", "raw_args", "evaluated_args", "parent_effect",
             )))
         return None
 
@@ -318,23 +327,103 @@ class SSeirFactAdapter:
         attrs = overlay.get("attrs") or {}
         is_write = str(overlay.get("kind")) == "PathConditionedStorageWrite"
         access = candidate.get("access") or attrs.get("slot")
-        value = candidate.get("value") or attrs.get("value") or attrs.get("value_yul")
+        normalized_value = candidate.get("value") or attrs.get("value") or attrs.get("value_yul")
+        value = candidate.get("value_version") or normalized_value
         kind = "StateWrite" if is_write else "StateRead"
+        target = candidate.get("target_version") or attrs.get("target")
+        slot_version = candidate.get("slot_version")
         return self.fact(
             fn,
             overlay,
             stmt_lang,
             kind,
             condition=candidate.get("condition"),
-            lvalue=access if is_write else attrs.get("target"),
+            lvalue=access if is_write else target,
             rvalue=value if is_write else access,
             reads=self.reads_for_value(value, candidate) if is_write else [access],
             writes=[access] if is_write else [],
             semantic={
                 **self.state_semantic(candidate, "state_write" if is_write else "state_read"),
-                "value": value if is_write else None,
+                "value": normalized_value if is_write else None,
+                "execution_expression": (
+                    value if is_write
+                    else f"sload({slot_version})" if slot_version else None
+                ),
+                "result_version": target if not is_write else None,
+                "value_version": value if is_write else None,
                 "candidate_status": candidate.get("status"),
                 "unresolved_reason": candidate.get("unresolved_reason") or candidate.get("reason"),
+            },
+            extra_evidence={"candidate": clean_dict(candidate)},
+        )
+
+    @classmethod
+    def merge_storage_ssa_candidates(
+        cls,
+        candidates: list[dict[str, Any]],
+        overlay_kind: str,
+    ) -> list[dict[str, Any]]:
+        """Fold function-path prefixes only when they share one sink SSA value."""
+        is_write = overlay_kind == "PathConditionedStorageWrite"
+        grouped: dict[str, list[dict[str, Any]]] = {}
+        passthrough: list[dict[str, Any]] = []
+        for candidate in candidates:
+            version = candidate.get("value_version" if is_write else "target_version")
+            if not version:
+                passthrough.append(candidate)
+                continue
+            key = json.dumps({
+                "version": version,
+                "access": candidate.get("access"),
+                "status": candidate.get("status"),
+                "value": candidate.get("value") if is_write else None,
+            }, sort_keys=True, ensure_ascii=False)
+            grouped.setdefault(key, []).append(candidate)
+        out = list(passthrough)
+        for group in grouped.values():
+            clone = dict(group[0])
+            conditions = list(dict.fromkeys(
+                str(item.get("condition")) for item in group if item.get("condition")
+            ))
+            if len(conditions) > 1:
+                common = cls.common_path_condition(conditions)
+                clone["condition"] = common or " || ".join(f"({item})" for item in conditions)
+                clone["merged_path_conditions"] = conditions
+            elif conditions:
+                clone["condition"] = conditions[0]
+            else:
+                clone.pop("condition", None)
+            out.append(clone)
+        return out
+
+    def value_candidate_fact(
+        self,
+        fn: dict[str, Any],
+        overlay: dict[str, Any],
+        candidate: dict[str, Any],
+        stmt_lang: dict[str, str],
+    ) -> SemanticFact:
+        attrs = overlay.get("attrs") or {}
+        execution_expression = candidate.get("execution_expression") or attrs.get("expression")
+        normalized_expression = candidate.get("expression_normalized") or attrs.get("expression_normalized")
+        target = candidate.get("version") or candidate.get("target") or attrs.get("target")
+        return self.fact(
+            fn,
+            overlay,
+            stmt_lang,
+            "ValueCompute",
+            condition=candidate.get("condition"),
+            lvalue=target,
+            rvalue=execution_expression,
+            reads=rough_reads(execution_expression),
+            writes=clean_list([target]),
+            semantic={
+                "operation": "value_compute",
+                "execution_expression": execution_expression,
+                "normalized_expression": normalized_expression,
+                "source_target": candidate.get("target") or attrs.get("target"),
+                "ssa_version": candidate.get("version"),
+                "operand_bindings": candidate.get("operand_bindings") or {},
             },
             extra_evidence={"candidate": clean_dict(candidate)},
         )
