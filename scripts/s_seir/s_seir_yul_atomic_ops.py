@@ -486,6 +486,22 @@ class YulAtomicOperationExtractor:
             and item.get("yul_function") is None
         ]
 
+    @classmethod
+    def assignment_for_node(
+        cls,
+        table: Json | None,
+        assembly_block_id: int,
+        cfg_node_id: int,
+    ) -> Json | None:
+        """Return the canonical root binding emitted by Yul atomization."""
+        assignments = [
+            item
+            for item in cls.operations_for_node(table, assembly_block_id, cfg_node_id)
+            if item.get("atomic_kind") in {"ValueAssign", "ValueDeclare"}
+            and item.get("root_operation")
+        ]
+        return assignments[0] if len(assignments) == 1 else None
+
     @staticmethod
     def _statement_lookup(unit: Any) -> dict[tuple[int, str, str], str]:
         out: dict[tuple[int, str, str], str] = {}

@@ -1,0 +1,450 @@
+S-SEIR Solidity-like Assembly View
+Note: derived view only; source is not modified and output is not compiled.
+
+Function YulHeavyERC20.constructor(uint256)
+  SourceFunction
+  ```solidity
+  constructor(uint256 initialSupply) {
+          assembly {
+              sstore(_totalSupply.slot, initialSupply)
+  
+              mstore(0x00, caller())
+              mstore(0x20, _balances.slot)
+              sstore(keccak256(0x00, 0x40), initialSupply)
+  
+              mstore(0x00, initialSupply)
+              log3(
+                  0x00,
+                  0x20,
+                  0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,
+                  0,
+                  caller()
+              )
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  constructor(uint256 initialSupply) {
+      assembly /* s-seir solidity-like view */ {
+          _totalSupply = initialSupply; // yul: sstore(_totalSupply.slot, initialSupply)
+          memory[0x00] = msg.sender; // yul: mstore(0x00, caller())
+          memory[0x20] = _balances.slot; // yul: mstore(0x20, _balances.slot)
+          _balances[msg.sender] = initialSupply; // yul: sstore(keccak256(0x00, 0x40), initialSupply)
+          memory[0x00] = initialSupply; // yul: mstore(0x00, initialSupply)
+          emit Transfer(0, msg.sender, initialSupply); // yul: log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0, caller())
+      }
+  }
+  ```
+
+Function YulHeavyERC20.totalSupply()
+  SourceFunction
+  ```solidity
+  function totalSupply() external view returns (uint256 result) {
+          assembly {
+              result := sload(_totalSupply.slot)
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function totalSupply() external view returns (uint256 result) {
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = _totalSupply; // yul: result := sload(_totalSupply.slot)
+      }
+  }
+  ```
+
+Function YulHeavyERC20.balanceOf(address)
+  SourceFunction
+  ```solidity
+  function balanceOf(address account) public view returns (uint256 result) {
+          assembly {
+              mstore(0x00, account)
+              mstore(0x20, _balances.slot)
+              result := sload(keccak256(0x00, 0x40))
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function balanceOf(address account) public view returns (uint256 result) {
+      assembly /* s-seir solidity-like view */ {
+          memory[0x00] = account; // yul: mstore(0x00, account)
+          memory[0x20] = _balances.slot; // yul: mstore(0x20, _balances.slot)
+          __sseir_eval_asm_s_3_1 = keccak256(0x00, 0x40); // yul: result := sload(keccak256(0x00, 0x40))
+          result = __sseir_eval_asm_s_3_2;
+      }
+  }
+  ```
+
+Function YulHeavyERC20.allowance(address, address)
+  SourceFunction
+  ```solidity
+  function allowance(address owner, address spender) external view returns (uint256 result) {
+          assembly {
+              mstore(0x00, owner)
+              mstore(0x20, _allowances.slot)
+              let ownerSlot := keccak256(0x00, 0x40)
+              mstore(0x00, spender)
+              mstore(0x20, ownerSlot)
+              result := sload(keccak256(0x00, 0x40))
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function allowance(address owner, address spender) external view returns (uint256 result) {
+      assembly /* s-seir solidity-like view */ {
+          memory[0x00] = owner; // yul: mstore(0x00, owner)
+          memory[0x20] = _allowances.slot; // yul: mstore(0x20, _allowances.slot)
+          __sseir_eval_asm_s_3_1 = keccak256(0x00, 0x40); // yul: let ownerSlot := keccak256(0x00, 0x40)
+          ownerSlot = __sseir_eval_asm_s_3_1;
+          memory[0x00] = spender; // yul: mstore(0x00, spender)
+          memory[0x20] = ownerSlot; // yul: mstore(0x20, ownerSlot)
+          __sseir_eval_asm_s_6_1 = keccak256(0x00, 0x40); // yul: result := sload(keccak256(0x00, 0x40))
+          result = __sseir_eval_asm_s_6_2;
+      }
+  }
+  ```
+
+Function YulHeavyERC20.approve(address, uint256)
+  SourceFunction
+  ```solidity
+  function approve(address spender, uint256 value) external returns (bool ok) {
+          assembly {
+              mstore(0x00, caller())
+              mstore(0x20, _allowances.slot)
+              let ownerSlot := keccak256(0x00, 0x40)
+              mstore(0x00, spender)
+              mstore(0x20, ownerSlot)
+              sstore(keccak256(0x00, 0x40), value)
+  
+              mstore(0x00, value)
+              log3(
+                  0x00,
+                  0x20,
+                  0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925,
+                  caller(),
+                  spender
+              )
+              ok := 1
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function approve(address spender, uint256 value) external returns (bool ok) {
+      assembly /* s-seir solidity-like view */ {
+          memory[0x00] = msg.sender; // yul: mstore(0x00, caller())
+          memory[0x20] = _allowances.slot; // yul: mstore(0x20, _allowances.slot)
+          __sseir_eval_asm_s_3_1 = keccak256(0x00, 0x40); // yul: let ownerSlot := keccak256(0x00, 0x40)
+          ownerSlot = __sseir_eval_asm_s_3_1;
+          memory[0x00] = spender; // yul: mstore(0x00, spender)
+          memory[0x20] = ownerSlot; // yul: mstore(0x20, ownerSlot)
+          storage[keccak256(abi.encode(spender, ownerSlot))] = value; // yul: sstore(keccak256(0x00, 0x40), value)
+          memory[0x00] = value; // yul: mstore(0x00, value)
+          emit Approval(msg.sender, spender, value); // yul: log3(0x00, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), spender)
+          ok = 1; // yul: ok := 1
+      }
+  }
+  ```
+
+Function YulHeavyERC20.transfer(address, uint256)
+  SourceFunction
+  ```solidity
+  function transfer(address to, uint256 value) external returns (bool ok) {
+          assembly {
+              if iszero(to) { revert(0x00, 0x00) }
+  
+              mstore(0x00, caller())
+              mstore(0x20, _balances.slot)
+              let fromSlot := keccak256(0x00, 0x40)
+              let fromBalance := sload(fromSlot)
+              if lt(fromBalance, value) { revert(0x00, 0x00) }
+  
+              mstore(0x00, to)
+              mstore(0x20, _balances.slot)
+              let toSlot := keccak256(0x00, 0x40)
+  
+              sstore(fromSlot, sub(fromBalance, value))
+              sstore(toSlot, add(sload(toSlot), value))
+  
+              mstore(0x00, value)
+              log3(
+                  0x00,
+                  0x20,
+                  0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,
+                  caller(),
+                  to
+              )
+              ok := 1
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function transfer(address to, uint256 value) external returns (bool ok) {
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = (to == 0); // yul: if iszero(to)
+          require(!((__sseir_eval_asm_s_1_1 != 0))); // yul: revert(0x00, 0x00)
+          if (!(__sseir_eval_asm_s_1_1)) {
+              memory[0x00] = msg.sender; // yul: mstore(0x00, caller())
+              memory[0x20] = _balances.slot; // yul: mstore(0x20, _balances.slot)
+              __sseir_eval_asm_s_5_1 = keccak256(0x00, 0x40); // yul: let fromSlot := keccak256(0x00, 0x40)
+              fromSlot = __sseir_eval_asm_s_5_1;
+              __sseir_eval_asm_s_6_1 = storage[fromSlot]; // yul: let fromBalance := sload(fromSlot)
+              __sseir_eval_asm_s_7_1 = (fromBalance < value); // yul: if lt(fromBalance, value)
+              require(!((__sseir_eval_asm_s_7_1 != 0))); // yul: revert(0x00, 0x00)
+          }
+          if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_7_1)) {
+              memory[0x00] = to; // yul: mstore(0x00, to)
+              memory[0x20] = _balances.slot; // yul: mstore(0x20, _balances.slot)
+              __sseir_eval_asm_s_11_1 = keccak256(0x00, 0x40); // yul: let toSlot := keccak256(0x00, 0x40)
+              toSlot = __sseir_eval_asm_s_11_1;
+              storage[fromSlot] = (fromBalance - value); // yul: sstore(fromSlot, sub(fromBalance, value))
+              storage[toSlot] = (storage[toSlot] + value); // yul: sstore(toSlot, add(sload(toSlot), value))
+              memory[0x00] = value; // yul: mstore(0x00, value)
+              if (!(iszero(to)) && !(lt(fromBalance, value))) {
+                  emit Transfer(msg.sender, to, value); // yul: log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), to)
+              }
+              ok = 1; // yul: ok := 1
+          }
+      }
+  }
+  ```
+
+Function YulHeavyERC20.transferFrom(address, address, uint256)
+  SourceFunction
+  ```solidity
+  function transferFrom(address from, address to, uint256 value) external returns (bool ok) {
+          assembly {
+              if iszero(to) { revert(0x00, 0x00) }
+  
+              mstore(0x00, from)
+              mstore(0x20, _allowances.slot)
+              let ownerSlot := keccak256(0x00, 0x40)
+              mstore(0x00, caller())
+              mstore(0x20, ownerSlot)
+              let allowanceSlot := keccak256(0x00, 0x40)
+              let currentAllowance := sload(allowanceSlot)
+              if lt(currentAllowance, value) { revert(0x00, 0x00) }
+              if iszero(eq(currentAllowance, not(0))) {
+                  sstore(allowanceSlot, sub(currentAllowance, value))
+              }
+  
+              mstore(0x00, from)
+              mstore(0x20, _balances.slot)
+              let fromSlot := keccak256(0x00, 0x40)
+              let fromBalance := sload(fromSlot)
+              if lt(fromBalance, value) { revert(0x00, 0x00) }
+  
+              mstore(0x00, to)
+              mstore(0x20, _balances.slot)
+              let toSlot := keccak256(0x00, 0x40)
+              sstore(fromSlot, sub(fromBalance, value))
+              sstore(toSlot, add(sload(toSlot), value))
+  
+              mstore(0x00, value)
+              log3(
+                  0x00,
+                  0x20,
+                  0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,
+                  from,
+                  to
+              )
+              ok := 1
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function transferFrom(address from, address to, uint256 value) external returns (bool ok) {
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = (to == 0); // yul: if iszero(to)
+          require(!((__sseir_eval_asm_s_1_1 != 0))); // yul: revert(0x00, 0x00)
+          if (!(__sseir_eval_asm_s_1_1)) {
+              memory[0x00] = from; // yul: mstore(0x00, from)
+              memory[0x20] = _allowances.slot; // yul: mstore(0x20, _allowances.slot)
+              __sseir_eval_asm_s_5_1 = keccak256(0x00, 0x40); // yul: let ownerSlot := keccak256(0x00, 0x40)
+              ownerSlot = __sseir_eval_asm_s_5_1;
+              memory[0x00] = msg.sender; // yul: mstore(0x00, caller())
+              memory[0x20] = ownerSlot; // yul: mstore(0x20, ownerSlot)
+              __sseir_eval_asm_s_8_1 = keccak256(0x00, 0x40); // yul: let allowanceSlot := keccak256(0x00, 0x40)
+              allowanceSlot = __sseir_eval_asm_s_8_1;
+              __sseir_eval_asm_s_9_1 = storage[allowanceSlot]; // yul: let currentAllowance := sload(allowanceSlot)
+              __sseir_eval_asm_s_10_1 = (currentAllowance < value); // yul: if lt(currentAllowance, value)
+              require(!((__sseir_eval_asm_s_10_1 != 0))); // yul: revert(0x00, 0x00)
+          }
+          if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_10_1)) {
+              __sseir_eval_asm_s_12_1 = (~0); // yul: if iszero(eq(currentAllowance, not(0)))
+              __sseir_eval_asm_s_12_2 = (currentAllowance == __sseir_eval_asm_s_12_1);
+              __sseir_eval_asm_s_12_3 = (__sseir_eval_asm_s_12_2 == 0);
+          }
+          if (!(__sseir_eval_asm_s_1_1) && !(__sseir_eval_asm_s_10_1) && __sseir_eval_asm_s_12_3) {
+              storage[allowanceSlot] = (currentAllowance - value); // yul: sstore(allowanceSlot, sub(currentAllowance, value))
+          }
+          if (!(__sseir_eval_asm_s_10_1) && !(__sseir_eval_asm_s_1_1)) {
+              memory[0x00] = from; // yul: mstore(0x00, from)
+              memory[0x20] = _balances.slot; // yul: mstore(0x20, _balances.slot)
+              __sseir_eval_asm_s_16_1 = keccak256(0x00, 0x40); // yul: let fromSlot := keccak256(0x00, 0x40)
+              fromSlot = __sseir_eval_asm_s_16_1;
+              fromBalance = __sseir_eval_asm_s_17_1; // yul: let fromBalance := sload(fromSlot)
+              __sseir_eval_asm_s_18_1 = (fromBalance < value); // yul: if lt(fromBalance, value)
+              require(!((__sseir_eval_asm_s_18_1 != 0))); // yul: revert(0x00, 0x00)
+          }
+          if (!(__sseir_eval_asm_s_10_1) && !(__sseir_eval_asm_s_18_1) && !(__sseir_eval_asm_s_1_1)) {
+              memory[0x00] = to; // yul: mstore(0x00, to)
+              memory[0x20] = _balances.slot; // yul: mstore(0x20, _balances.slot)
+              __sseir_eval_asm_s_22_1 = keccak256(0x00, 0x40); // yul: let toSlot := keccak256(0x00, 0x40)
+              toSlot = __sseir_eval_asm_s_22_1;
+              sstore(fromSlot, sub(fromBalance, value)) // yul: sstore(fromSlot, sub(fromBalance, value))
+              sstore(toSlot, add(sload(toSlot), value)) // yul: sstore(toSlot, add(sload(toSlot), value))
+              memory[0x00] = value; // yul: mstore(0x00, value)
+              if (!(iszero(to)) && !(lt(currentAllowance, value)) && !(lt(fromBalance, value))) {
+                  emit Transfer(from, to, value); // yul: log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
+              }
+              ok = 1; // yul: ok := 1
+          }
+      }
+  }
+  ```
+
+Function YulHeavyERC20.burn(uint256)
+  SourceFunction
+  ```solidity
+  function burn(uint256 value) external {
+          assembly {
+              mstore(0x00, caller())
+              mstore(0x20, _balances.slot)
+              let accountSlot := keccak256(0x00, 0x40)
+              let accountBalance := sload(accountSlot)
+              if lt(accountBalance, value) { revert(0x00, 0x00) }
+  
+              sstore(accountSlot, sub(accountBalance, value))
+              sstore(_totalSupply.slot, sub(sload(_totalSupply.slot), value))
+  
+              mstore(0x00, value)
+              log3(
+                  0x00,
+                  0x20,
+                  0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,
+                  caller(),
+                  0
+              )
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function burn(uint256 value) external {
+      assembly /* s-seir solidity-like view */ {
+          memory[0x00] = msg.sender; // yul: mstore(0x00, caller())
+          memory[0x20] = _balances.slot; // yul: mstore(0x20, _balances.slot)
+          __sseir_eval_asm_s_3_1 = keccak256(0x00, 0x40); // yul: let accountSlot := keccak256(0x00, 0x40)
+          accountSlot = __sseir_eval_asm_s_3_1;
+          __sseir_eval_asm_s_4_1 = storage[accountSlot]; // yul: let accountBalance := sload(accountSlot)
+          __sseir_eval_asm_s_5_1 = (accountBalance < value); // yul: if lt(accountBalance, value)
+          require(!((__sseir_eval_asm_s_5_1 != 0))); // yul: revert(0x00, 0x00)
+          if (!(__sseir_eval_asm_s_5_1)) {
+              storage[accountSlot] = (accountBalance - value); // yul: sstore(accountSlot, sub(accountBalance, value))
+              _totalSupply = (_totalSupply - value); // yul: sstore(_totalSupply.slot, sub(sload(_totalSupply.slot), value))
+              memory[0x00] = value; // yul: mstore(0x00, value)
+              emit Transfer(msg.sender, 0, value); // yul: log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), 0)
+          }
+      }
+  }
+  ```
+
+Function YulHeavyERC20.batchBalanceSum(address[])
+  SourceFunction
+  ```solidity
+  function batchBalanceSum(address[] calldata accounts) external view returns (uint256 result) {
+          assembly {
+              for { let i := 0 } lt(i, accounts.length) { i := add(i, 1) } {
+                  let account := calldataload(add(accounts.offset, mul(i, 0x20)))
+                  mstore(0x00, account)
+                  mstore(0x20, _balances.slot)
+                  result := add(result, sload(keccak256(0x00, 0x40)))
+              }
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function batchBalanceSum(address[] calldata accounts) external view returns (uint256 result) {
+      assembly /* s-seir solidity-like view */ {
+          i = 0; // yul: let i := 0
+          for (; (i < accounts.length); i = __sseir_eval_asm_s_7_1) { // yul: for
+              __sseir_eval_asm_s_3_1 = (i * 0x20); // yul: let account := calldataload(add(accounts.offset, mul(i, 0x20)))
+              __sseir_eval_asm_s_3_2 = (accounts.offset + __sseir_eval_asm_s_3_1);
+              __sseir_eval_asm_s_3_3 = calldataload(__sseir_eval_asm_s_3_2);
+              account = __sseir_eval_asm_s_3_3;
+              memory[0x00] = account; // yul: mstore(0x00, account)
+              memory[0x20] = _balances.slot; // yul: mstore(0x20, _balances.slot)
+              __sseir_eval_asm_s_6_1 = keccak256(0x00, 0x40); // yul: result := add(result, sload(keccak256(0x00, 0x40)))
+              __sseir_eval_asm_s_6_3 = (result + __sseir_eval_asm_s_6_2);
+              result = __sseir_eval_asm_s_6_3;
+          }
+      }
+  }
+  ```
+
+Function YulHeavyERC20.hasCode(address)
+  SourceFunction
+  ```solidity
+  function hasCode(address account) external view returns (bool result) {
+          assembly {
+              result := iszero(iszero(extcodesize(account)))
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function hasCode(address account) external view returns (bool result) {
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = account.code.length; // yul: result := iszero(iszero(extcodesize(account)))
+          __sseir_eval_asm_s_1_2 = (__sseir_eval_asm_s_1_1 == 0);
+          __sseir_eval_asm_s_1_3 = (__sseir_eval_asm_s_1_2 == 0);
+          result = __sseir_eval_asm_s_1_3;
+      }
+  }
+  ```
+
+Function YulHeavyERC20.externalBalanceOf(address, address)
+  SourceFunction
+  ```solidity
+  function externalBalanceOf(address token, address account) external view returns (uint256 result) {
+          assembly {
+              let ptr := mload(0x40)
+              mstore(ptr, shl(224, 0x70a08231))
+              mstore(add(ptr, 0x04), account)
+              let success := staticcall(gas(), token, ptr, 0x24, ptr, 0x20)
+              if iszero(and(success, eq(returndatasize(), 0x20))) {
+                  revert(0x00, 0x00)
+              }
+              result := mload(ptr)
+          }
+      }
+  ```
+  SolidityLikeFunction
+  ```solidity
+  function externalBalanceOf(address token, address account) external view returns (uint256 result) {
+      assembly /* s-seir solidity-like view */ {
+          __sseir_eval_asm_s_1_1 = mload(0x40); // yul: let ptr := mload(0x40)
+          ptr = __sseir_eval_asm_s_1_1;
+          memory[ptr] = (0x70a08231 << 224); // yul: mstore(ptr, shl(224, 0x70a08231))
+          memory[ptr + 4] = account; // yul: mstore(add(ptr, 0x04), account)
+          __sseir_eval_asm_s_4_1 = gasleft(); // yul: let success := staticcall(gas(), token, ptr, 0x24, ptr, 0x20)
+          success = __sseir_eval_asm_s_4_2;
+          __sseir_eval_asm_s_5_1 = returndatasize(); // yul: if iszero(and(success, eq(returndatasize(), 0x20)))
+          __sseir_eval_asm_s_5_2 = (__sseir_eval_asm_s_5_1 == 0x20);
+          __sseir_eval_asm_s_5_3 = (success & __sseir_eval_asm_s_5_2);
+          __sseir_eval_asm_s_5_4 = (__sseir_eval_asm_s_5_3 == 0);
+          require(!((__sseir_eval_asm_s_5_4 != 0))); // yul: revert(0x00, 0x00)
+          if (!(__sseir_eval_asm_s_5_4)) {
+              result = __sseir_eval_asm_s_7_1; // yul: result := mload(ptr)
+          }
+      }
+  }
+  ```

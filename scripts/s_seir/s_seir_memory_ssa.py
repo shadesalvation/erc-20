@@ -14,7 +14,7 @@ from types import SimpleNamespace
 from typing import Any
 
 from assembly_cfg_memory_adapter import resolve_memory_read_with_loops as legacy_resolve_memory_read
-from assembly_memory_ssa import analyze_block
+from assembly_memory_ssa import analyze_block, assigned_names, statement_expression
 from assembly_semantic_ir import parse_int_literal, strip_ssa
 from s_seir_model import FunctionUnit
 from s_seir_yul_normalize import call_parts, normalize_expr
@@ -37,6 +37,10 @@ class SSeirMemorySSAView:
     inherited_states: list[Any] = field(default_factory=list)
     bridge_facts: list[dict[str, Any]] = field(default_factory=list)
     persistent_value_names: set[str] = field(default_factory=set)
+    value_phis: dict[tuple[int, str], "CFGValuePhi"] = field(default_factory=dict)
+    memory_phis: dict[tuple[int, str], "CFGMemoryPhi"] = field(default_factory=dict)
+    canonical_value_versions: dict[str, str] = field(default_factory=dict)
+    loop_nodes_by_header: dict[int, set[int]] = field(default_factory=dict)
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self.backend, name)
@@ -55,6 +59,60 @@ class SSeirMemorySSAView:
             for current in current_states:
                 out.append(merge_inherited_state(inherited, current, self.assembly_block_id, self.persistent_value_names))
         return out
+
+    def canonical_value_version(self, version: Any) -> str:
+        text = str(version or "")
+        return self.canonical_value_versions.get(text, text)
+
+    def canonicalize_value_path_records(
+        self,
+        node_id: int,
+        name: str,
+        created: bool,
+        records: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        """Collapse abstract loop iterations onto one static SSA definition.
+
+        A Yul assignment is one static CFG definition even when the worklist
+        visits it through both the entry iteration and a widened backedge
+        state.  Genuine branch alternatives remain separate because their
+        path predicates differ.
+        """
+        normalized: list[dict[str, Any]] = []
+        seen: set[tuple[str, str]] = set()
+        enclosing = [
+            header for header, nodes in self.loop_nodes_by_header.items()
+            if node_id in nodes
+        ]
+        loop_phi = next(
+            (
+                self.value_phis[(header, name)].version
+                for header in sorted(enclosing, key=lambda item: len(self.loop_nodes_by_header[item]))
+                if (header, name) in self.value_phis
+            ),
+            None,
+        )
+        for record in records:
+            item = dict(record)
+            version = self.canonical_value_version(item.get("version"))
+            if not created and loop_phi:
+                definition = getattr(self.backend, "value_definitions", {}).get(version)
+                definition_node = getattr(definition, "node_id", None)
+                # A loop-header phi replaces values entering from outside the
+                # natural loop. A definition made inside the loop remains the
+                # reaching definition for uses it dominates later in the body.
+                if definition_node is None or not any(
+                    int(definition_node) in self.loop_nodes_by_header[header]
+                    for header in enclosing
+                ):
+                    version = loop_phi
+            item["version"] = version
+            key = (version, str(item.get("local_condition") or "entry"))
+            if key in seen:
+                continue
+            seen.add(key)
+            normalized.append(item)
+        return normalized
 
     def query_memory(self, node_id: int, pointer: str, length: str | None = None, reason: str | None = None) -> dict[str, Any]:
         result = legacy_resolve_memory_read(self.backend, node_id, pointer, length, reason)
@@ -192,6 +250,28 @@ class SSeirMemorySSAView:
         return coalesce_byte_cells(cells, size)
 
 
+@dataclass(frozen=True)
+class CFGValuePhi:
+    version: str
+    header_node_id: int
+    name: str
+    inputs: tuple[dict[str, Any], ...]
+    loop_nodes: tuple[int, ...]
+    backedge_sources: tuple[int, ...]
+    phi_role: str = "loop_carried"
+
+
+@dataclass(frozen=True)
+class CFGMemoryPhi:
+    version: str
+    header_node_id: int
+    address: str
+    inputs: tuple[dict[str, Any], ...]
+    loop_nodes: tuple[int, ...]
+    backedge_sources: tuple[int, ...]
+    phi_role: str = "loop_carried_memory"
+
+
 def loop_context_for_block(control: dict[str, Any] | None, block_id: int) -> list[dict[str, Any]]:
     contexts = (control or {}).get("loop_contexts", {})
     return contexts.get(block_id) or contexts.get(str(block_id)) or []
@@ -202,12 +282,442 @@ def boundary_context_for_block(control: dict[str, Any] | None, block_id: int) ->
     return contexts.get(block_id) or contexts.get(str(block_id)) or {}
 
 
+def cfg_predecessors(cfg: Any) -> dict[int, set[int]]:
+    out = {int(node.node_id): set() for node in cfg.nodes}
+    for edge in cfg.edges:
+        out.setdefault(int(edge.target), set()).add(int(edge.source))
+    return out
+
+
+def cfg_successors(cfg: Any) -> dict[int, set[int]]:
+    out = {int(node.node_id): set() for node in cfg.nodes}
+    for edge in cfg.edges:
+        out.setdefault(int(edge.source), set()).add(int(edge.target))
+    return out
+
+
+def natural_loops(cfg: Any) -> tuple[dict[int, set[int]], dict[int, set[int]]]:
+    """Build natural loops from the explicit structured-CFG backedges.
+
+    The legacy Yul CFG labels the post-to-header edge as ``loop back``.  For
+    each such edge, the conventional reverse-predecessor closure yields the
+    natural loop. Multiple latches for the same header are merged.
+    """
+    predecessors = cfg_predecessors(cfg)
+    loops: dict[int, set[int]] = {}
+    latches: dict[int, set[int]] = {}
+    for edge in cfg.edges:
+        if str(edge.label) != "loop back":
+            continue
+        header = int(edge.target)
+        latch = int(edge.source)
+        nodes = {header, latch}
+        work = [latch]
+        while work:
+            current = work.pop()
+            for predecessor in predecessors.get(current, set()):
+                if predecessor in nodes:
+                    continue
+                nodes.add(predecessor)
+                if predecessor != header:
+                    work.append(predecessor)
+        loops.setdefault(header, set()).update(nodes)
+        latches.setdefault(header, set()).add(latch)
+    return loops, latches
+
+
+def yul_identifiers(node: Any, *, function_name: bool = False) -> set[str]:
+    if not isinstance(node, dict):
+        return set()
+    if node.get("nodeType") == "YulIdentifier":
+        name = str(node.get("name") or "")
+        return set() if function_name or not name else {name}
+    out: set[str] = set()
+    for key, value in node.items():
+        if isinstance(value, dict):
+            out.update(yul_identifiers(value, function_name=key == "functionName"))
+        elif isinstance(value, list):
+            for item in value:
+                out.update(yul_identifiers(item, function_name=False))
+    return out
+
+
+def cfg_value_liveness(backend: Any) -> tuple[dict[int, set[str]], dict[int, set[str]]]:
+    """Compute classical backward live-in/live-out sets on the Yul CFG."""
+    cfg = backend.cfg
+    successors = cfg_successors(cfg)
+    uses: dict[int, set[str]] = {}
+    definitions: dict[int, set[str]] = {}
+    for cfg_node in cfg.nodes:
+        node_id = int(cfg_node.node_id)
+        ast_node = backend.node_ast.get(node_id)
+        if not isinstance(ast_node, dict):
+            uses[node_id] = set()
+            definitions[node_id] = set()
+            continue
+        definitions[node_id] = set(assigned_names(ast_node))
+        expression = statement_expression(ast_node) or ast_node.get("condition")
+        uses[node_id] = yul_identifiers(expression)
+
+    live_in = {int(node.node_id): set() for node in cfg.nodes}
+    live_out = {int(node.node_id): set() for node in cfg.nodes}
+    changed = True
+    while changed:
+        changed = False
+        for cfg_node in reversed(cfg.nodes):
+            node_id = int(cfg_node.node_id)
+            new_out = set().union(*(live_in[item] for item in successors.get(node_id, set()))) if successors.get(node_id) else set()
+            new_in = uses[node_id] | (new_out - definitions[node_id])
+            if new_out != live_out[node_id] or new_in != live_in[node_id]:
+                live_out[node_id] = new_out
+                live_in[node_id] = new_in
+                changed = True
+    return live_in, live_out
+
+
+def definition_paths(backend: Any, definition: Any) -> tuple[str, ...]:
+    observation = backend.observations.get(int(definition.node_id))
+    if observation is None:
+        return ()
+    paths = []
+    for state in observation.outgoing:
+        current = getattr(state, "values", {}).get(str(definition.name))
+        if current is None or str(getattr(current, "version", "")) != str(definition.version):
+            continue
+        path = path_text(state)
+        if path not in paths:
+            paths.append(path)
+    return tuple(paths)
+
+
+def canonical_loop_value_versions(
+    backend: Any,
+    loops: dict[int, set[int]],
+) -> dict[str, str]:
+    """Map repeated worklist versions to one static CFG definition.
+
+    The map is restricted to definitions at the same CFG node, for the same
+    source variable, under the same path predicate. It therefore cannot merge
+    definitions from distinct control-flow alternatives.
+    """
+    phi_versions = {
+        str(definition.version)
+        for definition in getattr(backend, "loop_value_phis", {}).values()
+    }
+    loop_nodes = set().union(*loops.values()) if loops else set()
+    groups: dict[tuple[int, str, tuple[str, ...]], list[Any]] = {}
+    for definition in backend.value_definitions.values():
+        if int(definition.node_id) not in loop_nodes or str(definition.version) in phi_versions:
+            continue
+        key = (int(definition.node_id), str(definition.name), definition_paths(backend, definition))
+        groups.setdefault(key, []).append(definition)
+
+    out: dict[str, str] = {}
+    for definitions in groups.values():
+        if len(definitions) < 2:
+            continue
+        def score(definition: Any) -> tuple[int, int]:
+            reaching = {
+                str(getattr(item, "version", ""))
+                for item in getattr(definition, "values_before", {}).values()
+            }
+            phi_reaching = len(reaching.intersection(phi_versions))
+            suffix = re.search(r"(\d+)$", str(definition.version))
+            return phi_reaching, int(suffix.group(1)) if suffix else 0
+
+        canonical = max(definitions, key=score)
+        for definition in definitions:
+            out[str(definition.version)] = str(canonical.version)
+    return out
+
+
+def solidity_entry_value(unit: FunctionUnit, name: str) -> tuple[str, str]:
+    variable = next((item for item in unit.parameters if item.name == name), None)
+    if variable is not None:
+        return name, "function_parameter"
+    variable = next((item for item in unit.returns if item.name == name), None)
+    if variable is not None:
+        type_string = str(variable.type_string or "")
+        if type_string == "bool":
+            return "false", "solidity_named_return_default"
+        if type_string.startswith("address"):
+            return "address(0)", "solidity_named_return_default"
+        if re.match(r"^(?:u?int|bytes\d+|enum\b)", type_string):
+            return "0", "solidity_named_return_default"
+        return f"default({name})", "solidity_named_return_default"
+    return name, "assembly_boundary_value"
+
+
+def loop_preheader_versions(backend: Any, header: int, name: str, latches: set[int]) -> list[dict[str, Any]]:
+    out = []
+    seen = set()
+    observation = backend.observations.get(header)
+    for state in getattr(observation, "incoming", []) or []:
+        predecessor = int(state.trace[-1]) if getattr(state, "trace", ()) else None
+        if predecessor in latches:
+            continue
+        definition = getattr(state, "values", {}).get(name)
+        if definition is None:
+            continue
+        key = (predecessor, str(definition.version))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append({
+            "edge": "preheader",
+            "predecessor": predecessor,
+            "value": str(definition.version),
+            "condition": path_text(state),
+        })
+    return out
+
+
+def loop_backedge_versions(
+    backend: Any,
+    name: str,
+    latches: set[int],
+    canonical_versions: dict[str, str],
+) -> list[dict[str, Any]]:
+    out = []
+    seen = set()
+    for latch in sorted(latches):
+        observation = backend.observations.get(latch)
+        for state in getattr(observation, "outgoing", []) or []:
+            definition = getattr(state, "values", {}).get(name)
+            if definition is None:
+                continue
+            version = canonical_versions.get(str(definition.version), str(definition.version))
+            key = (latch, version, path_text(state))
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append({
+                "edge": "backedge",
+                "predecessor": latch,
+                "value": version,
+                "condition": path_text(state),
+            })
+    return out
+
+
+def linear_memory_location(text: Any) -> tuple[str, int] | None:
+    expression = str(text or "").strip()
+    direct = static_int(expression)
+    if direct is not None:
+        return "<absolute>", direct
+    if is_simple_identifier(expression):
+        return expression, 0
+    name, args = call_parts(expression)
+    if name in {"add", "sub"} and len(args) == 2:
+        left, right = args
+        right_value = static_int(right)
+        left_value = static_int(left)
+        if right_value is not None:
+            base = linear_memory_location(left)
+            if base:
+                return base[0], base[1] + (right_value if name == "add" else -right_value)
+        if name == "add" and left_value is not None:
+            base = linear_memory_location(right)
+            if base:
+                return base[0], base[1] + left_value
+    return None
+
+
+def memory_ranges_overlap(left: tuple[str, int, int], right: tuple[str, int, int]) -> bool:
+    if left[0] != right[0]:
+        return False
+    return max(left[1], right[1]) < min(left[1] + left[2], right[1] + right[2])
+
+
+def yul_memory_accesses(node: Any) -> tuple[list[tuple[str, int, int] | None], list[tuple[str, int, int] | None]]:
+    """Return memory reads and writes in EVM evaluation order classes.
+
+    Reads nested in a write expression are reported before the root write by
+    the caller. Unknown copy/call ranges are represented by ``None`` and are
+    therefore treated conservatively by memory liveness.
+    """
+    reads: list[tuple[str, int, int] | None] = []
+    writes: list[tuple[str, int, int] | None] = []
+
+    def location(expr: Any, width: int) -> tuple[str, int, int] | None:
+        parsed = linear_memory_location(yul_expr_text(expr))
+        return (parsed[0], parsed[1], width) if parsed else None
+
+    def visit(expr: Any, *, root_statement: bool = False) -> None:
+        if not isinstance(expr, dict):
+            return
+        name, args = call_parts(yul_expr_text(expr))
+        raw_name = name or ""
+        if raw_name == "mload" and len(args) == 1:
+            reads.append(location((expr.get("arguments") or [None])[0], 32))
+        elif raw_name == "keccak256" and len(args) == 2:
+            size = static_int(args[1])
+            reads.append(location((expr.get("arguments") or [None])[0], size) if size is not None else None)
+        elif raw_name in {"return", "revert"} and len(args) >= 2:
+            size = static_int(args[1])
+            reads.append(location((expr.get("arguments") or [None])[0], size) if size is not None else None)
+        elif raw_name.startswith("log") and len(args) >= 2:
+            size = static_int(args[1])
+            reads.append(location((expr.get("arguments") or [None])[0], size) if size is not None else None)
+        elif raw_name in {"call", "callcode"} and len(args) >= 7:
+            input_size = static_int(args[4])
+            output_size = static_int(args[6])
+            reads.append(location(expr["arguments"][3], input_size) if input_size is not None else None)
+            writes.append(location(expr["arguments"][5], output_size) if output_size is not None else None)
+        elif raw_name in {"staticcall", "delegatecall"} and len(args) >= 6:
+            input_size = static_int(args[3])
+            output_size = static_int(args[5])
+            reads.append(location(expr["arguments"][2], input_size) if input_size is not None else None)
+            writes.append(location(expr["arguments"][4], output_size) if output_size is not None else None)
+        elif raw_name in {"calldatacopy", "codecopy", "returndatacopy", "mcopy", "extcodecopy"}:
+            writes.append(None)
+
+        for argument in reversed(expr.get("arguments") or []):
+            visit(argument)
+        if root_statement and raw_name in {"mstore", "mstore8"} and len(expr.get("arguments") or []) >= 2:
+            writes.append(location(expr["arguments"][0], 1 if raw_name == "mstore8" else 32))
+
+    visit(statement_expression(node), root_statement=True)
+    return reads, writes
+
+
+def memory_phi_live_at_header(
+    backend: Any,
+    header: int,
+    address: str,
+) -> bool:
+    """Test virtual-memory liveness with a CFG worklist.
+
+    A loop-carried memory version is required only if some path reads the
+    incoming location before a definite same-location overwrite. This is the
+    standard live-on-entry criterion applied to MemorySSA virtual locations.
+    """
+    parsed = linear_memory_location(address)
+    if parsed is None:
+        return True
+    target = (parsed[0], parsed[1], 1)
+    successors = cfg_successors(backend.cfg)
+    work = [(successor, False) for successor in successors.get(header, set()) if successor != header]
+    seen: set[tuple[int, bool]] = set()
+    while work:
+        node_id, killed = work.pop()
+        marker = (node_id, killed)
+        if marker in seen:
+            continue
+        seen.add(marker)
+        ast_node = backend.node_ast.get(node_id)
+        reads, writes = yul_memory_accesses(ast_node) if isinstance(ast_node, dict) else ([], [])
+        if not killed:
+            for read in reads:
+                if read is None or memory_ranges_overlap(target, read):
+                    return True
+            for write in writes:
+                if write is not None and memory_ranges_overlap(target, write):
+                    killed = True
+                    break
+        for successor in successors.get(node_id, set()):
+            if successor != header:
+                work.append((successor, killed))
+    return False
+
+
+def build_cfg_loop_ssa_metadata(
+    backend: Any,
+    unit: FunctionUnit,
+) -> tuple[
+    dict[tuple[int, str], CFGValuePhi],
+    dict[tuple[int, str], CFGMemoryPhi],
+    dict[str, str],
+    dict[int, set[int]],
+]:
+    loops, latches_by_header = natural_loops(backend.cfg)
+    live_in, _live_out = cfg_value_liveness(backend)
+    canonical_versions = canonical_loop_value_versions(backend, loops)
+    value_phis: dict[tuple[int, str], CFGValuePhi] = {}
+    for (header, name), definition in getattr(backend, "loop_value_phis", {}).items():
+        header = int(header)
+        if name not in live_in.get(header, set()):
+            continue
+        latches = latches_by_header.get(header, set())
+        inputs = loop_preheader_versions(backend, header, name, latches)
+        if not inputs:
+            value, source = solidity_entry_value(unit, name)
+            inputs.append({
+                "edge": "preheader",
+                "predecessor": None,
+                "value": value,
+                "source": source,
+                "condition": "entry",
+            })
+        inputs.extend(loop_backedge_versions(backend, name, latches, canonical_versions))
+        unique_inputs = []
+        seen_inputs = set()
+        for item in inputs:
+            key = (item.get("edge"), item.get("predecessor"), item.get("value"), item.get("condition"))
+            if key in seen_inputs:
+                continue
+            seen_inputs.add(key)
+            unique_inputs.append(item)
+        value_phis[(header, name)] = CFGValuePhi(
+            version=str(definition.version),
+            header_node_id=header,
+            name=str(name),
+            inputs=tuple(unique_inputs),
+            loop_nodes=tuple(sorted(loops.get(header, {header}))),
+            backedge_sources=tuple(sorted(latches)),
+        )
+
+    # The existing MemorySSA remains authoritative for aliasing and reaching
+    # definitions. Expose its loop phis with explicit predecessor inputs; do
+    # not reinterpret them as runtime mstore operations.
+    memory_phis: dict[tuple[int, str], CFGMemoryPhi] = {}
+    seen_memory_locations: set[tuple[int, tuple[str, int] | str]] = set()
+    for (header, address), definition in sorted(getattr(backend, "loop_memory_phis", {}).items()):
+        header = int(header)
+        location = linear_memory_location(address) or str(address)
+        memory_key = (header, location)
+        if memory_key in seen_memory_locations or not memory_phi_live_at_header(backend, header, address):
+            continue
+        seen_memory_locations.add(memory_key)
+        latches = latches_by_header.get(header, set())
+        inputs = []
+        for state in getattr(backend.observations.get(header), "incoming", []) or []:
+            predecessor = int(state.trace[-1]) if getattr(state, "trace", ()) else None
+            if predecessor in latches:
+                continue
+            reaching = getattr(state, "memory", {}).get(address)
+            if reaching is not None:
+                inputs.append({"edge": "preheader", "predecessor": predecessor, "value": str(reaching.version), "condition": path_text(state)})
+        for latch in sorted(latches):
+            for state in getattr(backend.observations.get(latch), "outgoing", []) or []:
+                reaching = getattr(state, "memory", {}).get(address)
+                if reaching is not None:
+                    inputs.append({"edge": "backedge", "predecessor": latch, "value": str(reaching.version), "condition": path_text(state)})
+        unique_inputs = []
+        seen_inputs = set()
+        for item in inputs:
+            key = (item.get("edge"), item.get("predecessor"), item.get("value"), item.get("condition"))
+            if key not in seen_inputs:
+                seen_inputs.add(key)
+                unique_inputs.append(item)
+        memory_phis[(header, address)] = CFGMemoryPhi(
+            version=str(definition.version),
+            header_node_id=header,
+            address=str(address),
+            inputs=tuple(unique_inputs),
+            loop_nodes=tuple(sorted(loops.get(header, {header}))),
+            backedge_sources=tuple(sorted(latches)),
+        )
+    return value_phis, memory_phis, canonical_versions, loops
+
+
 def build_memory_ssa_views(unit: FunctionUnit, control: dict[str, Any] | None = None) -> dict[int, SSeirMemorySSAView]:
     views: dict[int, SSeirMemorySSAView] = {}
     prior_snapshots: list[Any] = []
     prior_block = None
     for block in unit.assembly_blocks:
         backend = analyze_block(block)
+        value_phis, memory_phis, canonical_versions, loop_nodes = build_cfg_loop_ssa_metadata(backend, unit)
         bridge_facts = []
         inherited = []
         if prior_block is not None and prior_snapshots:
@@ -230,6 +740,10 @@ def build_memory_ssa_views(unit: FunctionUnit, control: dict[str, Any] | None = 
             inherited_states=inherited,
             bridge_facts=bridge_facts,
             persistent_value_names=function_level_value_names(unit),
+            value_phis=value_phis,
+            memory_phis=memory_phis,
+            canonical_value_versions=canonical_versions,
+            loop_nodes_by_header=loop_nodes,
         )
         prior_snapshots = exit_snapshots_for_backend(backend)
         prior_block = block

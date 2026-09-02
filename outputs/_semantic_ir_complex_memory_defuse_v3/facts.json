@@ -1,0 +1,3593 @@
+{
+  "schema": "s-seir-function-semantic-facts/v3",
+  "source": "tests/fixtures/semantic_ir_memory_defuse_complex.sol",
+  "result_dir": "outputs/_semantic_ir_complex_memory_defuse_v3",
+  "model_boundary": {
+    "processing_unit": "function",
+    "fact_granularity": "one_atomic_operation_per_fact",
+    "ordering": "function-level CFG partial order plus block-local operation order",
+    "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter only projects each atom to the common schema.",
+    "yul": "S-SEIR alone analyzes Yul; YulSemanticLifter only projects completed S-SEIR results to the common schema.",
+    "bridge": "SemanticFactBridge restores function-level CFG order and control predecessors after both sources already share one schema."
+  },
+  "function_count": 1,
+  "solidity_fact_count": 6,
+  "yul_fact_count": 18,
+  "fact_count": 24,
+  "solidity_facts": [
+    {
+      "fact_id": "fact_1",
+      "operation_id": "sol_atom_2",
+      "kind": "ValueAssign",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "delta_1",
+      "rvalue": "amount_1",
+      "reads": [
+        "amount_1"
+      ],
+      "writes": [
+        "delta_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "value_assign",
+        "atomic_operation": "Assignment",
+        "atomic_operation_count": 1,
+        "result_ssa": "delta_1",
+        "operand_ssa": [
+          "amount_1"
+        ],
+        "resolved_operands": [
+          "amount"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "360:22:slither",
+          "source_expression": "delta = amount",
+          "slithir_kind": "Assignment",
+          "slithir_text": "delta_1(uint256) := amount_1(uint256)",
+          "physical_reference": "delta_1"
+        }
+      },
+      "control_predecessors": []
+    },
+    {
+      "fact_id": "fact_2",
+      "operation_id": "sol_atom_3",
+      "kind": "BranchCondition",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "control",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "rvalue": "discount_1",
+      "reads": [
+        "discount_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "branch_condition",
+        "atomic_operation": "Condition",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "discount_1"
+        ],
+        "resolved_operands": [
+          "discount"
+        ],
+        "checked": true,
+        "runtime_operation": false,
+        "predicate": "discount"
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "396:8:slither",
+          "source_expression": "discount",
+          "slithir_kind": "Condition",
+          "slithir_text": "CONDITION discount_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_1"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "operation_id": "sol_atom_4",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "condition": "discount",
+      "lvalue": "TMP_0",
+      "rvalue": "amount_1 - 1",
+      "reads": [
+        "amount_1",
+        "1"
+      ],
+      "writes": [
+        "TMP_0"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n2"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "value_compute",
+        "atomic_operation": "Binary",
+        "atomic_operation_count": 1,
+        "operator": "-",
+        "result_ssa": "TMP_0",
+        "operand_ssa": [
+          "amount_1",
+          "1"
+        ],
+        "resolved_operands": [
+          "amount",
+          "1"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4",
+          "source_span": "420:18:slither",
+          "source_expression": "amount - 1",
+          "slithir_kind": "Binary",
+          "slithir_text": "TMP_0(uint256) = amount_1 (c)- 1",
+          "physical_reference": "TMP_0"
+        }
+      },
+      "control_predecessors": [
+        "fact_2"
+      ]
+    },
+    {
+      "fact_id": "fact_4",
+      "operation_id": "sol_atom_5",
+      "kind": "ValueAssign",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "condition": "discount",
+      "lvalue": "delta_2",
+      "rvalue": "TMP_0",
+      "reads": [
+        "TMP_0"
+      ],
+      "writes": [
+        "delta_2"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n2"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "value_assign",
+        "atomic_operation": "Assignment",
+        "atomic_operation_count": 1,
+        "result_ssa": "delta_2",
+        "operand_ssa": [
+          "TMP_0"
+        ],
+        "resolved_operands": [
+          "(amount - 1)"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5",
+          "source_span": "420:18:slither",
+          "source_expression": "delta = amount - 1",
+          "slithir_kind": "Assignment",
+          "slithir_text": "delta_2(uint256) := TMP_0(uint256)",
+          "physical_reference": "delta_2"
+        }
+      },
+      "control_predecessors": [
+        "fact_3"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "operation_id": "sol_atom_6",
+      "kind": "ValuePhi",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "lvalue": "delta_3",
+      "rvalue": [
+        "delta_2",
+        "delta_1"
+      ],
+      "reads": [
+        "delta_2",
+        "delta_1"
+      ],
+      "writes": [
+        "delta_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n2",
+        "bb_sol_slither_n3"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "phi",
+        "atomic_operation": "Phi",
+        "atomic_operation_count": 1,
+        "result_ssa": "delta_3",
+        "operand_ssa": [
+          "delta_2",
+          "delta_1"
+        ],
+        "resolved_operands": [
+          "(amount - 1)",
+          "amount"
+        ],
+        "checked": true,
+        "runtime_operation": false,
+        "phi_role": "function_cfg_merge",
+        "inputs": [
+          "delta_2",
+          "delta_1"
+        ],
+        "origin_nodes": [
+          {
+            "node_id": 1,
+            "node_type": "NodeType.VARIABLE",
+            "function": "SemanticIRMemoryDefUseComplex.update(address,uint256,uint256,bool,bool)"
+          },
+          {
+            "node_id": 3,
+            "node_type": "NodeType.EXPRESSION",
+            "function": "SemanticIRMemoryDefUseComplex.update(address,uint256,uint256,bool,bool)"
+          }
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_6",
+          "source_span": "392:57:slither",
+          "slithir_kind": "Phi",
+          "slithir_text": "delta_3(uint256) := ϕ(['delta_2', 'delta_1'])",
+          "physical_reference": "delta_3"
+        }
+      },
+      "control_predecessors": [
+        "fact_2",
+        "fact_4"
+      ]
+    },
+    {
+      "fact_id": "fact_24",
+      "operation_id": "sol_atom_7",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "cfg_nodes": [
+        "bb_sol_slither_n28"
+      ],
+      "rvalue": "result_1",
+      "reads": [
+        "result_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 22,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "result_1"
+        ],
+        "resolved_operands": [
+          "result"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "result_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_7",
+          "source_span": "333:16:slither",
+          "source_expression": "result",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN result_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_23"
+      ]
+    }
+  ],
+  "yul_facts": [
+    {
+      "fact_id": "fact_6",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "free__ssa1",
+      "rvalue": "mload(0x40)",
+      "reads": [
+        "mload"
+      ],
+      "writes": [
+        "free__ssa1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "mload(0x40)",
+        "normalized_expression": "mload(0x40)",
+        "source_target": "free",
+        "ssa_version": "free__ssa1"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ],
+        "candidate": {
+          "version": "free__ssa1",
+          "target": "free",
+          "local_condition": "entry",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "execution_expression": "mload(0x40)",
+          "expression_normalized": "mload(0x40)"
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_3:free__ssa1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 6,
+        "operation_order": 6
+      },
+      "control_predecessors": [
+        "fact_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "add(free, 0x20)",
+      "reads": [
+        "add",
+        "free"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "add(free, 0x20)",
+        "expression_normalized": "(free + 0x20)",
+        "call": "add",
+        "raw_args": [
+          "free",
+          "0x20"
+        ],
+        "evaluated_args": [
+          "free",
+          "0x20"
+        ],
+        "parent_effect": "eff_9"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_10"
+        ]
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "ptr__ssa2",
+      "rvalue": "add(free__ssa1, 0x20)",
+      "reads": [
+        "add",
+        "free__ssa1"
+      ],
+      "writes": [
+        "ptr__ssa2"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "add(free__ssa1, 0x20)",
+        "normalized_expression": "__sseir_eval_asm_s_2_1",
+        "source_target": "ptr",
+        "ssa_version": "ptr__ssa2",
+        "operand_bindings": {
+          "free": "free__ssa1"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ],
+        "candidate": {
+          "version": "ptr__ssa2",
+          "target": "ptr",
+          "local_condition": "entry",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "execution_expression": "add(free__ssa1, 0x20)",
+          "expression_normalized": "__sseir_eval_asm_s_2_1",
+          "operand_bindings": {
+            "free": "free__ssa1"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_5:ptr__ssa2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 9
+      },
+      "control_predecessors": [
+        "fact_7"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n6"
+      ],
+      "lvalue": "outerSlot__ssa3",
+      "rvalue": "keccak256(ptr__ssa2, 0x40)",
+      "reads": [
+        "ptr__ssa2"
+      ],
+      "writes": [
+        "outerSlot__ssa3"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+        "normalized_expression": "keccak256(abi.encode(user, ledger.slot))",
+        "source_target": "outerSlot",
+        "ssa_version": "outerSlot__ssa3",
+        "operand_bindings": {
+          "ptr": "ptr__ssa2"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ],
+        "candidate": {
+          "version": "outerSlot__ssa3",
+          "target": "outerSlot",
+          "local_condition": "entry",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+          "expression_normalized": "keccak256(abi.encode(user, ledger.slot))",
+          "operand_bindings": {
+            "ptr": "ptr__ssa2"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_6:outerSlot__ssa3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 10
+      },
+      "control_predecessors": [
+        "fact_8"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n5"
+      ]
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n8",
+        "bb_asm1_n9"
+      ],
+      "rvalue": "normalizeBucket",
+      "reads": [
+        "normalizeBucket"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "expression": "normalizeBucket"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_13"
+        ]
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 12,
+        "operation_order": 12
+      },
+      "control_predecessors": [
+        "fact_9"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n7"
+      ]
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "leafSlot__ssa4",
+      "rvalue": "keccak256(ptr__ssa2, 0x40)",
+      "reads": [
+        "ptr__ssa2"
+      ],
+      "writes": [
+        "leafSlot__ssa4"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+        "normalized_expression": "keccak256(ptr, 0x40)",
+        "source_target": "leafSlot",
+        "ssa_version": "leafSlot__ssa4",
+        "operand_bindings": {
+          "ptr": "ptr__ssa2"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_14"
+        ],
+        "candidate": {
+          "version": "leafSlot__ssa4",
+          "target": "leafSlot",
+          "condition": "!(normalizeBucket)",
+          "local_condition": "!(normalizeBucket)",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ],
+          "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+          "expression_normalized": "keccak256(ptr, 0x40)",
+          "operand_bindings": {
+            "ptr": "ptr__ssa2"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_8:leafSlot__ssa4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 16,
+        "operation_order": 13
+      },
+      "control_predecessors": [
+        "fact_10"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n11"
+      ]
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "leafSlot__ssa5",
+      "rvalue": "keccak256(ptr__ssa2, 0x40)",
+      "reads": [
+        "ptr__ssa2"
+      ],
+      "writes": [
+        "leafSlot__ssa5"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+        "normalized_expression": "keccak256(ptr, 0x40)",
+        "source_target": "leafSlot",
+        "ssa_version": "leafSlot__ssa5",
+        "operand_bindings": {
+          "ptr": "ptr__ssa2"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_14"
+        ],
+        "candidate": {
+          "version": "leafSlot__ssa5",
+          "target": "leafSlot",
+          "condition": "normalizeBucket",
+          "local_condition": "normalizeBucket",
+          "path_states": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+          "expression_normalized": "keccak256(ptr, 0x40)",
+          "operand_bindings": {
+            "ptr": "ptr__ssa2"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_8:leafSlot__ssa5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 16,
+        "operation_order": 13
+      },
+      "control_predecessors": [
+        "fact_11"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n11"
+      ]
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n13"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "oldValue__ssa6",
+      "rvalue": "sload(leafSlot__ssa4)",
+      "reads": [
+        "sload",
+        "leafSlot__ssa4"
+      ],
+      "writes": [
+        "oldValue__ssa6"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "sload(leafSlot__ssa4)",
+        "normalized_expression": "sload(leafSlot)",
+        "source_target": "oldValue",
+        "ssa_version": "oldValue__ssa6",
+        "operand_bindings": {
+          "leafSlot": "leafSlot__ssa4"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_16"
+        ],
+        "candidate": {
+          "version": "oldValue__ssa6",
+          "target": "oldValue",
+          "condition": "!(normalizeBucket)",
+          "local_condition": "!(normalizeBucket)",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ],
+          "execution_expression": "sload(leafSlot__ssa4)",
+          "expression_normalized": "sload(leafSlot)",
+          "operand_bindings": {
+            "leafSlot": "leafSlot__ssa4"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_9:oldValue__ssa6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 17,
+        "operation_order": 15
+      },
+      "control_predecessors": [
+        "fact_12"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n12"
+      ]
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n13"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "oldValue__ssa7",
+      "rvalue": "sload(leafSlot__ssa5)",
+      "reads": [
+        "sload",
+        "leafSlot__ssa5"
+      ],
+      "writes": [
+        "oldValue__ssa7"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "sload(leafSlot__ssa5)",
+        "normalized_expression": "sload(leafSlot)",
+        "source_target": "oldValue",
+        "ssa_version": "oldValue__ssa7",
+        "operand_bindings": {
+          "leafSlot": "leafSlot__ssa5"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_16"
+        ],
+        "candidate": {
+          "version": "oldValue__ssa7",
+          "target": "oldValue",
+          "condition": "normalizeBucket",
+          "local_condition": "normalizeBucket",
+          "path_states": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "execution_expression": "sload(leafSlot__ssa5)",
+          "expression_normalized": "sload(leafSlot)",
+          "operand_bindings": {
+            "leafSlot": "leafSlot__ssa5"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_9:oldValue__ssa7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 17,
+        "operation_order": 15
+      },
+      "control_predecessors": [
+        "fact_13"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n12"
+      ]
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12",
+        "bb_asm1_n13"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "oldValue__ssa6",
+      "rvalue": "ledger[user][bucket]",
+      "reads": [
+        "ledger[user][bucket]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "ledger[user][bucket]",
+        "state_variable": "ledger",
+        "keys": [
+          "user",
+          "bucket"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[user][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "user",
+            "bucket"
+          ]
+        },
+        "execution_expression": "sload(leafSlot__ssa4)",
+        "result_version": "oldValue__ssa6"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "PathConditionedStorageRead",
+        "effects": [
+          "eff_15",
+          "eff_17"
+        ],
+        "candidate": {
+          "condition": "!(normalizeBucket)",
+          "access": "ledger[user][bucket]",
+          "key": "bucket",
+          "keys": [
+            "user",
+            "bucket"
+          ],
+          "base": "outerSlot",
+          "base_key": "outerSlot",
+          "state_variable": "ledger",
+          "slot_kind": "nested_mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "packed_semantics": [
+            "bucket",
+            "outerSlot"
+          ],
+          "slot_derivation": {
+            "kind": "nested_mapping_slot",
+            "hash": "keccak256",
+            "encoding": "abi.encode",
+            "expression": "ledger[user][bucket]",
+            "key": "bucket",
+            "base": "outerSlot",
+            "base_key": "outerSlot",
+            "base_expression": "ledger[user]",
+            "state_variable": "ledger",
+            "notes": [
+              "nested_mapping_slot_from_byte_axis"
+            ]
+          },
+          "notes": [
+            "nested_mapping_slot_from_byte_axis"
+          ],
+          "overlay_kind": "MappingRead",
+          "target_version": "oldValue__ssa6",
+          "slot_version": "leafSlot__ssa4",
+          "target": "oldValue",
+          "merged_path_conditions": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ]
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_1:!(normalizeBucket)",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 17,
+        "operation_order": 16
+      },
+      "anchor_cfg_node": "bb_asm1_n13",
+      "control_predecessors": [
+        "fact_14"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n12"
+      ]
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12",
+        "bb_asm1_n13"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "oldValue__ssa7",
+      "rvalue": "ledger[user][1]",
+      "reads": [
+        "ledger[user][1]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "ledger[user][1]",
+        "state_variable": "ledger",
+        "keys": [
+          "user",
+          "1"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[user][1]",
+          "state_variable": "ledger",
+          "keys": [
+            "user",
+            "1"
+          ]
+        },
+        "execution_expression": "sload(leafSlot__ssa5)",
+        "result_version": "oldValue__ssa7"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "PathConditionedStorageRead",
+        "effects": [
+          "eff_15",
+          "eff_17"
+        ],
+        "candidate": {
+          "condition": "normalizeBucket",
+          "access": "ledger[user][1]",
+          "key": "1",
+          "keys": [
+            "user",
+            "1"
+          ],
+          "base": "outerSlot",
+          "base_key": "outerSlot",
+          "state_variable": "ledger",
+          "slot_kind": "nested_mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "packed_semantics": [
+            "1",
+            "outerSlot"
+          ],
+          "slot_derivation": {
+            "kind": "nested_mapping_slot",
+            "hash": "keccak256",
+            "encoding": "abi.encode",
+            "expression": "ledger[user][1]",
+            "key": "1",
+            "base": "outerSlot",
+            "base_key": "outerSlot",
+            "base_expression": "ledger[user]",
+            "state_variable": "ledger",
+            "notes": [
+              "nested_mapping_slot_from_byte_axis"
+            ]
+          },
+          "notes": [
+            "nested_mapping_slot_from_byte_axis"
+          ],
+          "overlay_kind": "MappingRead",
+          "target_version": "oldValue__ssa7",
+          "slot_version": "leafSlot__ssa5",
+          "target": "oldValue",
+          "merged_path_conditions": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ]
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_1:normalizeBucket",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 17,
+        "operation_order": 16
+      },
+      "anchor_cfg_node": "bb_asm1_n13",
+      "control_predecessors": [
+        "fact_15"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n12"
+      ]
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n14"
+      ],
+      "lvalue": "__sseir_eval_asm_s_12_1",
+      "rvalue": "add(oldValue, delta)",
+      "reads": [
+        "add",
+        "oldValue",
+        "delta"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_12_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_12_1",
+        "expression": "add(oldValue, delta)",
+        "expression_normalized": "(oldValue + delta)",
+        "call": "add",
+        "raw_args": [
+          "oldValue",
+          "delta"
+        ],
+        "evaluated_args": [
+          "oldValue",
+          "delta"
+        ],
+        "parent_effect": "eff_18"
+      },
+      "evidence": {
+        "overlay": "ov_10",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_19"
+        ]
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_10",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 18,
+        "operation_order": 17
+      },
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n13"
+      ]
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n14"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "newValue__ssa8",
+      "rvalue": "add(oldValue__ssa6, delta_3)",
+      "reads": [
+        "add",
+        "oldValue__ssa6",
+        "delta_3"
+      ],
+      "writes": [
+        "newValue__ssa8"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "add(oldValue__ssa6, delta_3)",
+        "normalized_expression": "__sseir_eval_asm_s_12_1",
+        "source_target": "newValue",
+        "ssa_version": "newValue__ssa8",
+        "operand_bindings": {
+          "delta": "delta_3",
+          "oldValue": "oldValue__ssa6"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_11",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_18"
+        ],
+        "candidate": {
+          "version": "newValue__ssa8",
+          "target": "newValue",
+          "condition": "!(normalizeBucket)",
+          "local_condition": "!(normalizeBucket)",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ],
+          "execution_expression": "add(oldValue__ssa6, delta_3)",
+          "expression_normalized": "__sseir_eval_asm_s_12_1",
+          "operand_bindings": {
+            "delta": "delta_3",
+            "oldValue": "oldValue__ssa6"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_11:newValue__ssa8",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 18,
+        "operation_order": 18
+      },
+      "control_predecessors": [
+        "fact_17"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n13"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n14"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "newValue__ssa9",
+      "rvalue": "add(oldValue__ssa7, delta_3)",
+      "reads": [
+        "add",
+        "oldValue__ssa7",
+        "delta_3"
+      ],
+      "writes": [
+        "newValue__ssa9"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "add(oldValue__ssa7, delta_3)",
+        "normalized_expression": "__sseir_eval_asm_s_12_1",
+        "source_target": "newValue",
+        "ssa_version": "newValue__ssa9",
+        "operand_bindings": {
+          "delta": "delta_3",
+          "oldValue": "oldValue__ssa7"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_11",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_18"
+        ],
+        "candidate": {
+          "version": "newValue__ssa9",
+          "target": "newValue",
+          "condition": "normalizeBucket",
+          "local_condition": "normalizeBucket",
+          "path_states": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "execution_expression": "add(oldValue__ssa7, delta_3)",
+          "expression_normalized": "__sseir_eval_asm_s_12_1",
+          "operand_bindings": {
+            "delta": "delta_3",
+            "oldValue": "oldValue__ssa7"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_11:newValue__ssa9",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 18,
+        "operation_order": 18
+      },
+      "control_predecessors": [
+        "fact_18"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n13"
+      ]
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_13"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12",
+        "bb_asm1_n15"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "ledger[user][bucket]",
+      "rvalue": "newValue__ssa8",
+      "reads": [
+        "newValue__ssa8"
+      ],
+      "writes": [
+        "ledger[user][bucket]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "ledger[user][bucket]",
+        "state_variable": "ledger",
+        "keys": [
+          "user",
+          "bucket"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[user][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "user",
+            "bucket"
+          ]
+        },
+        "value": "newValue",
+        "execution_expression": "newValue__ssa8",
+        "value_version": "newValue__ssa8"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "PathConditionedStorageWrite",
+        "effects": [
+          "eff_15",
+          "eff_20"
+        ],
+        "candidate": {
+          "condition": "!(normalizeBucket)",
+          "access": "ledger[user][bucket]",
+          "key": "bucket",
+          "keys": [
+            "user",
+            "bucket"
+          ],
+          "base": "outerSlot",
+          "base_key": "outerSlot",
+          "state_variable": "ledger",
+          "slot_kind": "nested_mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "packed_semantics": [
+            "bucket",
+            "outerSlot"
+          ],
+          "slot_derivation": {
+            "kind": "nested_mapping_slot",
+            "hash": "keccak256",
+            "encoding": "abi.encode",
+            "expression": "ledger[user][bucket]",
+            "key": "bucket",
+            "base": "outerSlot",
+            "base_key": "outerSlot",
+            "base_expression": "ledger[user]",
+            "state_variable": "ledger",
+            "notes": [
+              "nested_mapping_slot_from_byte_axis"
+            ]
+          },
+          "notes": [
+            "nested_mapping_slot_from_byte_axis"
+          ],
+          "overlay_kind": "MappingWrite",
+          "value": "newValue",
+          "value_yul": "newValue",
+          "slot_version": "leafSlot__ssa4",
+          "value_version": "newValue__ssa8",
+          "merged_path_conditions": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ]
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_2:!(normalizeBucket)",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 19,
+        "operation_order": 19
+      },
+      "anchor_cfg_node": "bb_asm1_n15",
+      "control_predecessors": [
+        "fact_19"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n14"
+      ]
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_13"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12",
+        "bb_asm1_n15"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "ledger[user][1]",
+      "rvalue": "newValue__ssa9",
+      "reads": [
+        "newValue__ssa9"
+      ],
+      "writes": [
+        "ledger[user][1]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "ledger[user][1]",
+        "state_variable": "ledger",
+        "keys": [
+          "user",
+          "1"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[user][1]",
+          "state_variable": "ledger",
+          "keys": [
+            "user",
+            "1"
+          ]
+        },
+        "value": "newValue",
+        "execution_expression": "newValue__ssa9",
+        "value_version": "newValue__ssa9"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "PathConditionedStorageWrite",
+        "effects": [
+          "eff_15",
+          "eff_20"
+        ],
+        "candidate": {
+          "condition": "normalizeBucket",
+          "access": "ledger[user][1]",
+          "key": "1",
+          "keys": [
+            "user",
+            "1"
+          ],
+          "base": "outerSlot",
+          "base_key": "outerSlot",
+          "state_variable": "ledger",
+          "slot_kind": "nested_mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "packed_semantics": [
+            "1",
+            "outerSlot"
+          ],
+          "slot_derivation": {
+            "kind": "nested_mapping_slot",
+            "hash": "keccak256",
+            "encoding": "abi.encode",
+            "expression": "ledger[user][1]",
+            "key": "1",
+            "base": "outerSlot",
+            "base_key": "outerSlot",
+            "base_expression": "ledger[user]",
+            "state_variable": "ledger",
+            "notes": [
+              "nested_mapping_slot_from_byte_axis"
+            ]
+          },
+          "notes": [
+            "nested_mapping_slot_from_byte_axis"
+          ],
+          "overlay_kind": "MappingWrite",
+          "value": "newValue",
+          "value_yul": "newValue",
+          "slot_version": "leafSlot__ssa5",
+          "value_version": "newValue__ssa9",
+          "merged_path_conditions": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ]
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_2:normalizeBucket",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 19,
+        "operation_order": 19
+      },
+      "anchor_cfg_node": "bb_asm1_n15",
+      "control_predecessors": [
+        "fact_20"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n14"
+      ]
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_14"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n16"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "result__ssa10",
+      "rvalue": "newValue__ssa8",
+      "reads": [
+        "newValue__ssa8"
+      ],
+      "writes": [
+        "result__ssa10"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "newValue__ssa8",
+        "normalized_expression": "newValue",
+        "source_target": "result",
+        "ssa_version": "result__ssa10",
+        "operand_bindings": {
+          "newValue": "newValue__ssa8"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_12",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_21"
+        ],
+        "candidate": {
+          "version": "result__ssa10",
+          "target": "result",
+          "condition": "!(normalizeBucket)",
+          "local_condition": "!(normalizeBucket)",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ],
+          "execution_expression": "newValue__ssa8",
+          "expression_normalized": "newValue",
+          "operand_bindings": {
+            "newValue": "newValue__ssa8"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_12:result__ssa10",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 20,
+        "operation_order": 20
+      },
+      "control_predecessors": [
+        "fact_21"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n15"
+      ]
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_14"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n16"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "result__ssa11",
+      "rvalue": "newValue__ssa9",
+      "reads": [
+        "newValue__ssa9"
+      ],
+      "writes": [
+        "result__ssa11"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "newValue__ssa9",
+        "normalized_expression": "newValue",
+        "source_target": "result",
+        "ssa_version": "result__ssa11",
+        "operand_bindings": {
+          "newValue": "newValue__ssa9"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_12",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_21"
+        ],
+        "candidate": {
+          "version": "result__ssa11",
+          "target": "result",
+          "condition": "normalizeBucket",
+          "local_condition": "normalizeBucket",
+          "path_states": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "execution_expression": "newValue__ssa9",
+          "expression_normalized": "newValue",
+          "operand_bindings": {
+            "newValue": "newValue__ssa9"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_12:result__ssa11",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 20,
+        "operation_order": 20
+      },
+      "control_predecessors": [
+        "fact_22"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n15"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact_1",
+      "operation_id": "sol_atom_2",
+      "kind": "ValueAssign",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n1"
+      ],
+      "lvalue": "delta_1",
+      "rvalue": "amount_1",
+      "reads": [
+        "amount_1"
+      ],
+      "writes": [
+        "delta_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n0"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 1,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "value_assign",
+        "atomic_operation": "Assignment",
+        "atomic_operation_count": 1,
+        "result_ssa": "delta_1",
+        "operand_ssa": [
+          "amount_1"
+        ],
+        "resolved_operands": [
+          "amount"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_2",
+          "source_span": "360:22:slither",
+          "source_expression": "delta = amount",
+          "slithir_kind": "Assignment",
+          "slithir_text": "delta_1(uint256) := amount_1(uint256)",
+          "physical_reference": "delta_1"
+        }
+      },
+      "control_predecessors": []
+    },
+    {
+      "fact_id": "fact_2",
+      "operation_id": "sol_atom_3",
+      "kind": "BranchCondition",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "control",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n2"
+      ],
+      "rvalue": "discount_1",
+      "reads": [
+        "discount_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 2,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "branch_condition",
+        "atomic_operation": "Condition",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "discount_1"
+        ],
+        "resolved_operands": [
+          "discount"
+        ],
+        "checked": true,
+        "runtime_operation": false,
+        "predicate": "discount"
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_3",
+          "source_span": "396:8:slither",
+          "source_expression": "discount",
+          "slithir_kind": "Condition",
+          "slithir_text": "CONDITION discount_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_1"
+      ]
+    },
+    {
+      "fact_id": "fact_3",
+      "operation_id": "sol_atom_4",
+      "kind": "ValueCompute",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "condition": "discount",
+      "lvalue": "TMP_0",
+      "rvalue": "amount_1 - 1",
+      "reads": [
+        "amount_1",
+        "1"
+      ],
+      "writes": [
+        "TMP_0"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n2"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "value_compute",
+        "atomic_operation": "Binary",
+        "atomic_operation_count": 1,
+        "operator": "-",
+        "result_ssa": "TMP_0",
+        "operand_ssa": [
+          "amount_1",
+          "1"
+        ],
+        "resolved_operands": [
+          "amount",
+          "1"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_4",
+          "source_span": "420:18:slither",
+          "source_expression": "amount - 1",
+          "slithir_kind": "Binary",
+          "slithir_text": "TMP_0(uint256) = amount_1 (c)- 1",
+          "physical_reference": "TMP_0"
+        }
+      },
+      "control_predecessors": [
+        "fact_2"
+      ]
+    },
+    {
+      "fact_id": "fact_4",
+      "operation_id": "sol_atom_5",
+      "kind": "ValueAssign",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "support",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_3"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n3"
+      ],
+      "condition": "discount",
+      "lvalue": "delta_2",
+      "rvalue": "TMP_0",
+      "reads": [
+        "TMP_0"
+      ],
+      "writes": [
+        "delta_2"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n2"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 3,
+        "operation_order": 1
+      },
+      "semantic": {
+        "operation": "value_assign",
+        "atomic_operation": "Assignment",
+        "atomic_operation_count": 1,
+        "result_ssa": "delta_2",
+        "operand_ssa": [
+          "TMP_0"
+        ],
+        "resolved_operands": [
+          "(amount - 1)"
+        ],
+        "checked": true,
+        "runtime_operation": true
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_5",
+          "source_span": "420:18:slither",
+          "source_expression": "delta = amount - 1",
+          "slithir_kind": "Assignment",
+          "slithir_text": "delta_2(uint256) := TMP_0(uint256)",
+          "physical_reference": "delta_2"
+        }
+      },
+      "control_predecessors": [
+        "fact_3"
+      ]
+    },
+    {
+      "fact_id": "fact_5",
+      "operation_id": "sol_atom_6",
+      "kind": "ValuePhi",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "analysis_support",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "sol_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_sol_slither_n4"
+      ],
+      "lvalue": "delta_3",
+      "rvalue": [
+        "delta_2",
+        "delta_1"
+      ],
+      "reads": [
+        "delta_2",
+        "delta_1"
+      ],
+      "writes": [
+        "delta_3"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_sol_slither_n2",
+        "bb_sol_slither_n3"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 4,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "phi",
+        "atomic_operation": "Phi",
+        "atomic_operation_count": 1,
+        "result_ssa": "delta_3",
+        "operand_ssa": [
+          "delta_2",
+          "delta_1"
+        ],
+        "resolved_operands": [
+          "(amount - 1)",
+          "amount"
+        ],
+        "checked": true,
+        "runtime_operation": false,
+        "phi_role": "function_cfg_merge",
+        "inputs": [
+          "delta_2",
+          "delta_1"
+        ],
+        "origin_nodes": [
+          {
+            "node_id": 1,
+            "node_type": "NodeType.VARIABLE",
+            "function": "SemanticIRMemoryDefUseComplex.update(address,uint256,uint256,bool,bool)"
+          },
+          {
+            "node_id": 3,
+            "node_type": "NodeType.EXPRESSION",
+            "function": "SemanticIRMemoryDefUseComplex.update(address,uint256,uint256,bool,bool)"
+          }
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_6",
+          "source_span": "392:57:slither",
+          "slithir_kind": "Phi",
+          "slithir_text": "delta_3(uint256) := ϕ(['delta_2', 'delta_1'])",
+          "physical_reference": "delta_3"
+        }
+      },
+      "control_predecessors": [
+        "fact_2",
+        "fact_4"
+      ]
+    },
+    {
+      "fact_id": "fact_6",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_1"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n2"
+      ],
+      "lvalue": "free__ssa1",
+      "rvalue": "mload(0x40)",
+      "reads": [
+        "mload"
+      ],
+      "writes": [
+        "free__ssa1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "mload(0x40)",
+        "normalized_expression": "mload(0x40)",
+        "source_target": "free",
+        "ssa_version": "free__ssa1"
+      },
+      "evidence": {
+        "overlay": "ov_3",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_7"
+        ],
+        "candidate": {
+          "version": "free__ssa1",
+          "target": "free",
+          "local_condition": "entry",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "execution_expression": "mload(0x40)",
+          "expression_normalized": "mload(0x40)"
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_3:free__ssa1",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 6,
+        "operation_order": 6
+      },
+      "control_predecessors": [
+        "fact_5"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n0"
+      ]
+    },
+    {
+      "fact_id": "fact_7",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "__sseir_eval_asm_s_2_1",
+      "rvalue": "add(free, 0x20)",
+      "reads": [
+        "add",
+        "free"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_2_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_2_1",
+        "expression": "add(free, 0x20)",
+        "expression_normalized": "(free + 0x20)",
+        "call": "add",
+        "raw_args": [
+          "free",
+          "0x20"
+        ],
+        "evaluated_args": [
+          "free",
+          "0x20"
+        ],
+        "parent_effect": "eff_9"
+      },
+      "evidence": {
+        "overlay": "ov_4",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_10"
+        ]
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 8
+      },
+      "control_predecessors": [
+        "fact_6"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_8",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_2"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n3"
+      ],
+      "lvalue": "ptr__ssa2",
+      "rvalue": "add(free__ssa1, 0x20)",
+      "reads": [
+        "add",
+        "free__ssa1"
+      ],
+      "writes": [
+        "ptr__ssa2"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "add(free__ssa1, 0x20)",
+        "normalized_expression": "__sseir_eval_asm_s_2_1",
+        "source_target": "ptr",
+        "ssa_version": "ptr__ssa2",
+        "operand_bindings": {
+          "free": "free__ssa1"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_5",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_9"
+        ],
+        "candidate": {
+          "version": "ptr__ssa2",
+          "target": "ptr",
+          "local_condition": "entry",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "execution_expression": "add(free__ssa1, 0x20)",
+          "expression_normalized": "__sseir_eval_asm_s_2_1",
+          "operand_bindings": {
+            "free": "free__ssa1"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_5:ptr__ssa2",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 7,
+        "operation_order": 9
+      },
+      "control_predecessors": [
+        "fact_7"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n2"
+      ]
+    },
+    {
+      "fact_id": "fact_9",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_5"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n6"
+      ],
+      "lvalue": "outerSlot__ssa3",
+      "rvalue": "keccak256(ptr__ssa2, 0x40)",
+      "reads": [
+        "ptr__ssa2"
+      ],
+      "writes": [
+        "outerSlot__ssa3"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+        "normalized_expression": "keccak256(abi.encode(user, ledger.slot))",
+        "source_target": "outerSlot",
+        "ssa_version": "outerSlot__ssa3",
+        "operand_bindings": {
+          "ptr": "ptr__ssa2"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_6",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_11"
+        ],
+        "candidate": {
+          "version": "outerSlot__ssa3",
+          "target": "outerSlot",
+          "local_condition": "entry",
+          "path_states": [
+            "!(discount)",
+            "discount"
+          ],
+          "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+          "expression_normalized": "keccak256(abi.encode(user, ledger.slot))",
+          "operand_bindings": {
+            "ptr": "ptr__ssa2"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_6:outerSlot__ssa3",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 10,
+        "operation_order": 10
+      },
+      "control_predecessors": [
+        "fact_8"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n5"
+      ]
+    },
+    {
+      "fact_id": "fact_10",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_7"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n8",
+        "bb_asm1_n9"
+      ],
+      "rvalue": "normalizeBucket",
+      "reads": [
+        "normalizeBucket"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "expression": "normalizeBucket"
+      },
+      "evidence": {
+        "overlay": "ov_7",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_13"
+        ]
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 12,
+        "operation_order": 12
+      },
+      "control_predecessors": [
+        "fact_9"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n7"
+      ]
+    },
+    {
+      "fact_id": "fact_11",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "leafSlot__ssa4",
+      "rvalue": "keccak256(ptr__ssa2, 0x40)",
+      "reads": [
+        "ptr__ssa2"
+      ],
+      "writes": [
+        "leafSlot__ssa4"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+        "normalized_expression": "keccak256(ptr, 0x40)",
+        "source_target": "leafSlot",
+        "ssa_version": "leafSlot__ssa4",
+        "operand_bindings": {
+          "ptr": "ptr__ssa2"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_14"
+        ],
+        "candidate": {
+          "version": "leafSlot__ssa4",
+          "target": "leafSlot",
+          "condition": "!(normalizeBucket)",
+          "local_condition": "!(normalizeBucket)",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ],
+          "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+          "expression_normalized": "keccak256(ptr, 0x40)",
+          "operand_bindings": {
+            "ptr": "ptr__ssa2"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_8:leafSlot__ssa4",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 16,
+        "operation_order": 13
+      },
+      "control_predecessors": [
+        "fact_10"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n11"
+      ]
+    },
+    {
+      "fact_id": "fact_12",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "leafSlot__ssa5",
+      "rvalue": "keccak256(ptr__ssa2, 0x40)",
+      "reads": [
+        "ptr__ssa2"
+      ],
+      "writes": [
+        "leafSlot__ssa5"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+        "normalized_expression": "keccak256(ptr, 0x40)",
+        "source_target": "leafSlot",
+        "ssa_version": "leafSlot__ssa5",
+        "operand_bindings": {
+          "ptr": "ptr__ssa2"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_8",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_14"
+        ],
+        "candidate": {
+          "version": "leafSlot__ssa5",
+          "target": "leafSlot",
+          "condition": "normalizeBucket",
+          "local_condition": "normalizeBucket",
+          "path_states": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "execution_expression": "keccak256(ptr__ssa2, 0x40)",
+          "expression_normalized": "keccak256(ptr, 0x40)",
+          "operand_bindings": {
+            "ptr": "ptr__ssa2"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_8:leafSlot__ssa5",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 16,
+        "operation_order": 13
+      },
+      "control_predecessors": [
+        "fact_11"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n11"
+      ]
+    },
+    {
+      "fact_id": "fact_13",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n13"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "oldValue__ssa6",
+      "rvalue": "sload(leafSlot__ssa4)",
+      "reads": [
+        "sload",
+        "leafSlot__ssa4"
+      ],
+      "writes": [
+        "oldValue__ssa6"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "sload(leafSlot__ssa4)",
+        "normalized_expression": "sload(leafSlot)",
+        "source_target": "oldValue",
+        "ssa_version": "oldValue__ssa6",
+        "operand_bindings": {
+          "leafSlot": "leafSlot__ssa4"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_16"
+        ],
+        "candidate": {
+          "version": "oldValue__ssa6",
+          "target": "oldValue",
+          "condition": "!(normalizeBucket)",
+          "local_condition": "!(normalizeBucket)",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ],
+          "execution_expression": "sload(leafSlot__ssa4)",
+          "expression_normalized": "sload(leafSlot)",
+          "operand_bindings": {
+            "leafSlot": "leafSlot__ssa4"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_9:oldValue__ssa6",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 17,
+        "operation_order": 15
+      },
+      "control_predecessors": [
+        "fact_12"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n12"
+      ]
+    },
+    {
+      "fact_id": "fact_14",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n13"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "oldValue__ssa7",
+      "rvalue": "sload(leafSlot__ssa5)",
+      "reads": [
+        "sload",
+        "leafSlot__ssa5"
+      ],
+      "writes": [
+        "oldValue__ssa7"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "sload(leafSlot__ssa5)",
+        "normalized_expression": "sload(leafSlot)",
+        "source_target": "oldValue",
+        "ssa_version": "oldValue__ssa7",
+        "operand_bindings": {
+          "leafSlot": "leafSlot__ssa5"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_9",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_16"
+        ],
+        "candidate": {
+          "version": "oldValue__ssa7",
+          "target": "oldValue",
+          "condition": "normalizeBucket",
+          "local_condition": "normalizeBucket",
+          "path_states": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "execution_expression": "sload(leafSlot__ssa5)",
+          "expression_normalized": "sload(leafSlot)",
+          "operand_bindings": {
+            "leafSlot": "leafSlot__ssa5"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_9:oldValue__ssa7",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 17,
+        "operation_order": 15
+      },
+      "control_predecessors": [
+        "fact_13"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n12"
+      ]
+    },
+    {
+      "fact_id": "fact_15",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12",
+        "bb_asm1_n13"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "oldValue__ssa6",
+      "rvalue": "ledger[user][bucket]",
+      "reads": [
+        "ledger[user][bucket]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "ledger[user][bucket]",
+        "state_variable": "ledger",
+        "keys": [
+          "user",
+          "bucket"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[user][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "user",
+            "bucket"
+          ]
+        },
+        "execution_expression": "sload(leafSlot__ssa4)",
+        "result_version": "oldValue__ssa6"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "PathConditionedStorageRead",
+        "effects": [
+          "eff_15",
+          "eff_17"
+        ],
+        "candidate": {
+          "condition": "!(normalizeBucket)",
+          "access": "ledger[user][bucket]",
+          "key": "bucket",
+          "keys": [
+            "user",
+            "bucket"
+          ],
+          "base": "outerSlot",
+          "base_key": "outerSlot",
+          "state_variable": "ledger",
+          "slot_kind": "nested_mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "packed_semantics": [
+            "bucket",
+            "outerSlot"
+          ],
+          "slot_derivation": {
+            "kind": "nested_mapping_slot",
+            "hash": "keccak256",
+            "encoding": "abi.encode",
+            "expression": "ledger[user][bucket]",
+            "key": "bucket",
+            "base": "outerSlot",
+            "base_key": "outerSlot",
+            "base_expression": "ledger[user]",
+            "state_variable": "ledger",
+            "notes": [
+              "nested_mapping_slot_from_byte_axis"
+            ]
+          },
+          "notes": [
+            "nested_mapping_slot_from_byte_axis"
+          ],
+          "overlay_kind": "MappingRead",
+          "target_version": "oldValue__ssa6",
+          "slot_version": "leafSlot__ssa4",
+          "target": "oldValue",
+          "merged_path_conditions": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ]
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_1:!(normalizeBucket)",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 17,
+        "operation_order": 16
+      },
+      "anchor_cfg_node": "bb_asm1_n13",
+      "control_predecessors": [
+        "fact_14"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n12"
+      ]
+    },
+    {
+      "fact_id": "fact_16",
+      "kind": "StateRead",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_11"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12",
+        "bb_asm1_n13"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "oldValue__ssa7",
+      "rvalue": "ledger[user][1]",
+      "reads": [
+        "ledger[user][1]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_read",
+        "access": "ledger[user][1]",
+        "state_variable": "ledger",
+        "keys": [
+          "user",
+          "1"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[user][1]",
+          "state_variable": "ledger",
+          "keys": [
+            "user",
+            "1"
+          ]
+        },
+        "execution_expression": "sload(leafSlot__ssa5)",
+        "result_version": "oldValue__ssa7"
+      },
+      "evidence": {
+        "overlay": "ov_1",
+        "overlay_kind": "PathConditionedStorageRead",
+        "effects": [
+          "eff_15",
+          "eff_17"
+        ],
+        "candidate": {
+          "condition": "normalizeBucket",
+          "access": "ledger[user][1]",
+          "key": "1",
+          "keys": [
+            "user",
+            "1"
+          ],
+          "base": "outerSlot",
+          "base_key": "outerSlot",
+          "state_variable": "ledger",
+          "slot_kind": "nested_mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "packed_semantics": [
+            "1",
+            "outerSlot"
+          ],
+          "slot_derivation": {
+            "kind": "nested_mapping_slot",
+            "hash": "keccak256",
+            "encoding": "abi.encode",
+            "expression": "ledger[user][1]",
+            "key": "1",
+            "base": "outerSlot",
+            "base_key": "outerSlot",
+            "base_expression": "ledger[user]",
+            "state_variable": "ledger",
+            "notes": [
+              "nested_mapping_slot_from_byte_axis"
+            ]
+          },
+          "notes": [
+            "nested_mapping_slot_from_byte_axis"
+          ],
+          "overlay_kind": "MappingRead",
+          "target_version": "oldValue__ssa7",
+          "slot_version": "leafSlot__ssa5",
+          "target": "oldValue",
+          "merged_path_conditions": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ]
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_1:normalizeBucket",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 17,
+        "operation_order": 16
+      },
+      "anchor_cfg_node": "bb_asm1_n13",
+      "control_predecessors": [
+        "fact_15"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n12"
+      ]
+    },
+    {
+      "fact_id": "fact_17",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n14"
+      ],
+      "lvalue": "__sseir_eval_asm_s_12_1",
+      "rvalue": "add(oldValue, delta)",
+      "reads": [
+        "add",
+        "oldValue",
+        "delta"
+      ],
+      "writes": [
+        "__sseir_eval_asm_s_12_1"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "temp": "__sseir_eval_asm_s_12_1",
+        "expression": "add(oldValue, delta)",
+        "expression_normalized": "(oldValue + delta)",
+        "call": "add",
+        "raw_args": [
+          "oldValue",
+          "delta"
+        ],
+        "evaluated_args": [
+          "oldValue",
+          "delta"
+        ],
+        "parent_effect": "eff_18"
+      },
+      "evidence": {
+        "overlay": "ov_10",
+        "overlay_kind": "EvaluationStep",
+        "effects": [
+          "eff_19"
+        ]
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_10",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 18,
+        "operation_order": 17
+      },
+      "control_predecessors": [
+        "fact_16"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n13"
+      ]
+    },
+    {
+      "fact_id": "fact_18",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n14"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "newValue__ssa8",
+      "rvalue": "add(oldValue__ssa6, delta_3)",
+      "reads": [
+        "add",
+        "oldValue__ssa6",
+        "delta_3"
+      ],
+      "writes": [
+        "newValue__ssa8"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "add(oldValue__ssa6, delta_3)",
+        "normalized_expression": "__sseir_eval_asm_s_12_1",
+        "source_target": "newValue",
+        "ssa_version": "newValue__ssa8",
+        "operand_bindings": {
+          "delta": "delta_3",
+          "oldValue": "oldValue__ssa6"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_11",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_18"
+        ],
+        "candidate": {
+          "version": "newValue__ssa8",
+          "target": "newValue",
+          "condition": "!(normalizeBucket)",
+          "local_condition": "!(normalizeBucket)",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ],
+          "execution_expression": "add(oldValue__ssa6, delta_3)",
+          "expression_normalized": "__sseir_eval_asm_s_12_1",
+          "operand_bindings": {
+            "delta": "delta_3",
+            "oldValue": "oldValue__ssa6"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_11:newValue__ssa8",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 18,
+        "operation_order": 18
+      },
+      "control_predecessors": [
+        "fact_17"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n13"
+      ]
+    },
+    {
+      "fact_id": "fact_19",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_12"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n14"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "newValue__ssa9",
+      "rvalue": "add(oldValue__ssa7, delta_3)",
+      "reads": [
+        "add",
+        "oldValue__ssa7",
+        "delta_3"
+      ],
+      "writes": [
+        "newValue__ssa9"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "add(oldValue__ssa7, delta_3)",
+        "normalized_expression": "__sseir_eval_asm_s_12_1",
+        "source_target": "newValue",
+        "ssa_version": "newValue__ssa9",
+        "operand_bindings": {
+          "delta": "delta_3",
+          "oldValue": "oldValue__ssa7"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_11",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_18"
+        ],
+        "candidate": {
+          "version": "newValue__ssa9",
+          "target": "newValue",
+          "condition": "normalizeBucket",
+          "local_condition": "normalizeBucket",
+          "path_states": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "execution_expression": "add(oldValue__ssa7, delta_3)",
+          "expression_normalized": "__sseir_eval_asm_s_12_1",
+          "operand_bindings": {
+            "delta": "delta_3",
+            "oldValue": "oldValue__ssa7"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_11:newValue__ssa9",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 18,
+        "operation_order": 18
+      },
+      "control_predecessors": [
+        "fact_18"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n13"
+      ]
+    },
+    {
+      "fact_id": "fact_20",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_13"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12",
+        "bb_asm1_n15"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "ledger[user][bucket]",
+      "rvalue": "newValue__ssa8",
+      "reads": [
+        "newValue__ssa8"
+      ],
+      "writes": [
+        "ledger[user][bucket]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "ledger[user][bucket]",
+        "state_variable": "ledger",
+        "keys": [
+          "user",
+          "bucket"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[user][bucket]",
+          "state_variable": "ledger",
+          "keys": [
+            "user",
+            "bucket"
+          ]
+        },
+        "value": "newValue",
+        "execution_expression": "newValue__ssa8",
+        "value_version": "newValue__ssa8"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "PathConditionedStorageWrite",
+        "effects": [
+          "eff_15",
+          "eff_20"
+        ],
+        "candidate": {
+          "condition": "!(normalizeBucket)",
+          "access": "ledger[user][bucket]",
+          "key": "bucket",
+          "keys": [
+            "user",
+            "bucket"
+          ],
+          "base": "outerSlot",
+          "base_key": "outerSlot",
+          "state_variable": "ledger",
+          "slot_kind": "nested_mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "packed_semantics": [
+            "bucket",
+            "outerSlot"
+          ],
+          "slot_derivation": {
+            "kind": "nested_mapping_slot",
+            "hash": "keccak256",
+            "encoding": "abi.encode",
+            "expression": "ledger[user][bucket]",
+            "key": "bucket",
+            "base": "outerSlot",
+            "base_key": "outerSlot",
+            "base_expression": "ledger[user]",
+            "state_variable": "ledger",
+            "notes": [
+              "nested_mapping_slot_from_byte_axis"
+            ]
+          },
+          "notes": [
+            "nested_mapping_slot_from_byte_axis"
+          ],
+          "overlay_kind": "MappingWrite",
+          "value": "newValue",
+          "value_yul": "newValue",
+          "slot_version": "leafSlot__ssa4",
+          "value_version": "newValue__ssa8",
+          "merged_path_conditions": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ]
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_2:!(normalizeBucket)",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 19,
+        "operation_order": 19
+      },
+      "anchor_cfg_node": "bb_asm1_n15",
+      "control_predecessors": [
+        "fact_19"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n14"
+      ]
+    },
+    {
+      "fact_id": "fact_21",
+      "kind": "StateWrite",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "effect",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_10",
+        "asm_s_13"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n12",
+        "bb_asm1_n15"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "ledger[user][1]",
+      "rvalue": "newValue__ssa9",
+      "reads": [
+        "newValue__ssa9"
+      ],
+      "writes": [
+        "ledger[user][1]"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "state_write",
+        "access": "ledger[user][1]",
+        "state_variable": "ledger",
+        "keys": [
+          "user",
+          "1"
+        ],
+        "location": {
+          "kind": "mapping",
+          "access": "ledger[user][1]",
+          "state_variable": "ledger",
+          "keys": [
+            "user",
+            "1"
+          ]
+        },
+        "value": "newValue",
+        "execution_expression": "newValue__ssa9",
+        "value_version": "newValue__ssa9"
+      },
+      "evidence": {
+        "overlay": "ov_2",
+        "overlay_kind": "PathConditionedStorageWrite",
+        "effects": [
+          "eff_15",
+          "eff_20"
+        ],
+        "candidate": {
+          "condition": "normalizeBucket",
+          "access": "ledger[user][1]",
+          "key": "1",
+          "keys": [
+            "user",
+            "1"
+          ],
+          "base": "outerSlot",
+          "base_key": "outerSlot",
+          "state_variable": "ledger",
+          "slot_kind": "nested_mapping_slot",
+          "result_type": "uint256",
+          "terminal_storage_value": true,
+          "packed_semantics": [
+            "1",
+            "outerSlot"
+          ],
+          "slot_derivation": {
+            "kind": "nested_mapping_slot",
+            "hash": "keccak256",
+            "encoding": "abi.encode",
+            "expression": "ledger[user][1]",
+            "key": "1",
+            "base": "outerSlot",
+            "base_key": "outerSlot",
+            "base_expression": "ledger[user]",
+            "state_variable": "ledger",
+            "notes": [
+              "nested_mapping_slot_from_byte_axis"
+            ]
+          },
+          "notes": [
+            "nested_mapping_slot_from_byte_axis"
+          ],
+          "overlay_kind": "MappingWrite",
+          "value": "newValue",
+          "value_yul": "newValue",
+          "slot_version": "leafSlot__ssa5",
+          "value_version": "newValue__ssa9",
+          "merged_path_conditions": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ]
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_2:normalizeBucket",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 19,
+        "operation_order": 19
+      },
+      "anchor_cfg_node": "bb_asm1_n15",
+      "control_predecessors": [
+        "fact_20"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n14"
+      ]
+    },
+    {
+      "fact_id": "fact_22",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_14"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n16"
+      ],
+      "condition": "!(normalizeBucket)",
+      "lvalue": "result__ssa10",
+      "rvalue": "newValue__ssa8",
+      "reads": [
+        "newValue__ssa8"
+      ],
+      "writes": [
+        "result__ssa10"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "newValue__ssa8",
+        "normalized_expression": "newValue",
+        "source_target": "result",
+        "ssa_version": "result__ssa10",
+        "operand_bindings": {
+          "newValue": "newValue__ssa8"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_12",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_21"
+        ],
+        "candidate": {
+          "version": "result__ssa10",
+          "target": "result",
+          "condition": "!(normalizeBucket)",
+          "local_condition": "!(normalizeBucket)",
+          "path_states": [
+            "!(discount) && !(normalizeBucket)",
+            "discount && !(normalizeBucket)"
+          ],
+          "execution_expression": "newValue__ssa8",
+          "expression_normalized": "newValue",
+          "operand_bindings": {
+            "newValue": "newValue__ssa8"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_12:result__ssa10",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 20,
+        "operation_order": 20
+      },
+      "control_predecessors": [
+        "fact_21"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n15"
+      ]
+    },
+    {
+      "fact_id": "fact_23",
+      "kind": "ValueCompute",
+      "source_lang": "yul",
+      "origin": "yul_sseir",
+      "function": "update",
+      "fact_role": "support",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "stmt_refs": [
+        "asm_s_14"
+      ],
+      "cfg_nodes": [
+        "bb_asm1_n16"
+      ],
+      "condition": "normalizeBucket",
+      "lvalue": "result__ssa11",
+      "rvalue": "newValue__ssa9",
+      "reads": [
+        "newValue__ssa9"
+      ],
+      "writes": [
+        "result__ssa11"
+      ],
+      "semantic": {
+        "atomic_operation_count": 1,
+        "operation": "value_compute",
+        "execution_expression": "newValue__ssa9",
+        "normalized_expression": "newValue",
+        "source_target": "result",
+        "ssa_version": "result__ssa11",
+        "operand_bindings": {
+          "newValue": "newValue__ssa9"
+        }
+      },
+      "evidence": {
+        "overlay": "ov_12",
+        "overlay_kind": "ExpressionNormalization",
+        "effects": [
+          "eff_21"
+        ],
+        "candidate": {
+          "version": "result__ssa11",
+          "target": "result",
+          "condition": "normalizeBucket",
+          "local_condition": "normalizeBucket",
+          "path_states": [
+            "!(discount) && normalizeBucket",
+            "discount && normalizeBucket"
+          ],
+          "execution_expression": "newValue__ssa9",
+          "expression_normalized": "newValue",
+          "operand_bindings": {
+            "newValue": "newValue__ssa9"
+          }
+        }
+      },
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "operation_id": "yul_overlay:ov_12:result__ssa11",
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 20,
+        "operation_order": 20
+      },
+      "control_predecessors": [
+        "fact_22"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n15"
+      ]
+    },
+    {
+      "fact_id": "fact_24",
+      "operation_id": "sol_atom_7",
+      "kind": "Return",
+      "source_lang": "solidity",
+      "origin": "solidity_atomic_operation",
+      "fact_role": "effect",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "function": "update",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "cfg_nodes": [
+        "bb_sol_slither_n28"
+      ],
+      "rvalue": "result_1",
+      "reads": [
+        "result_1"
+      ],
+      "cfg_predecessor_blocks": [
+        "bb_asm1_n1"
+      ],
+      "order": {
+        "kind": "cfg_partial_order",
+        "cfg_block_order": 22,
+        "operation_order": 0
+      },
+      "semantic": {
+        "operation": "return",
+        "atomic_operation": "Return",
+        "atomic_operation_count": 1,
+        "operand_ssa": [
+          "result_1"
+        ],
+        "resolved_operands": [
+          "result"
+        ],
+        "checked": true,
+        "runtime_operation": true,
+        "values": [
+          "result_1"
+        ]
+      },
+      "evidence": {
+        "atomic_operation": {
+          "atom_id": "sol_atom_7",
+          "source_span": "333:16:slither",
+          "source_expression": "result",
+          "slithir_kind": "Return",
+          "slithir_text": "RETURN result_1"
+        }
+      },
+      "control_predecessors": [
+        "fact_23"
+      ]
+    }
+  ]
+}

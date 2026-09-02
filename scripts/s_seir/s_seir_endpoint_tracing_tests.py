@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+from types import SimpleNamespace
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,6 +29,21 @@ class Backend:
 
     def states_at(self, _node_id: int):
         return [self.state]
+
+
+def effect_chain_cfg(effects: list[EffectNode]):
+    """Explicit CFG used by unit tests for cross-statement data flow."""
+    node_ids = sorted({
+        int(effect.attrs["cfg_node_id"])
+        for effect in effects
+        if effect.attrs.get("cfg_node_id") is not None
+    })
+    nodes = [SimpleNamespace(node_id=node_id) for node_id in node_ids]
+    edges = [
+        SimpleNamespace(source=source, target=target, label="fallthrough")
+        for source, target in zip(node_ids, node_ids[1:])
+    ]
+    return SimpleNamespace(nodes=nodes, edges=edges, entry=node_ids[0], exit=node_ids[-1])
 
 
 @dataclass
@@ -169,7 +185,7 @@ def test_path_conditioned_staticcall_is_lifted_to_precompile() -> None:
         "path_states": ["ready && call_ok"],
         "memory_read": {"complete": False, "has_unknown": True, "words": [{"value": "unknown"}]},
     }, "eff_read")
-    EffectLifter.attach_cross_statement_call_outputs([call, read])
+    EffectLifter.attach_cross_statement_call_outputs([call, read], cfg=effect_chain_cfg([call, read]))
     assert read.attrs["memory_read"]["words"][0]["value"] == "call_output_word(eff_call, 0)"
 
     builder = SemanticOverlayBuilder()
@@ -244,7 +260,7 @@ def test_returndatasize_pointer_has_call_output_and_memoryssa_candidates() -> No
         "path_states": ["entry"],
         "memory_read": {"complete": False, "has_unknown": True},
     }, "eff_read")
-    EffectLifter.attach_cross_statement_call_outputs([call, read], returndata_memory_resolver)
+    EffectLifter.attach_cross_statement_call_outputs([call, read], returndata_memory_resolver, effect_chain_cfg([call, read]))
     candidates = read.attrs["returndatasize_pointer_candidates"]
     assert [item["returndata_size"] for item in candidates] == ["0x20", "0x00"], candidates
     assert candidates[0]["value"] == "call_output_word(eff_call, 0)", candidates
@@ -277,7 +293,7 @@ def test_returndatasize_alias_is_traced_through_value_def() -> None:
         "path_states": ["entry"],
         "memory_read": {"complete": False, "has_unknown": True},
     }, "eff_read")
-    EffectLifter.attach_cross_statement_call_outputs([call, alias, read], returndata_memory_resolver)
+    EffectLifter.attach_cross_statement_call_outputs([call, alias, read], returndata_memory_resolver, effect_chain_cfg([call, alias, read]))
     assert len(read.attrs["returndatasize_pointer_candidates"]) == 2
 
 
@@ -290,7 +306,7 @@ def test_returndatasize_unknown_call_shape_stays_unresolved() -> None:
         "path_states": ["entry"],
         "memory_read": {"complete": False, "has_unknown": True},
     }, "eff_read")
-    EffectLifter.attach_cross_statement_call_outputs([call, read], returndata_memory_resolver)
+    EffectLifter.attach_cross_statement_call_outputs([call, read], returndata_memory_resolver, effect_chain_cfg([call, read]))
     assert "returndatasize_pointer_candidates" not in read.attrs
 
 
@@ -304,7 +320,7 @@ def test_returndatasize_uses_nearest_compatible_precompile_call() -> None:
         "path_states": ["entry"],
         "memory_read": {"complete": False, "has_unknown": True},
     }, "eff_read")
-    EffectLifter.attach_cross_statement_call_outputs([first, nearest, read], returndata_memory_resolver)
+    EffectLifter.attach_cross_statement_call_outputs([first, nearest, read], returndata_memory_resolver, effect_chain_cfg([first, nearest, read]))
     candidates = read.attrs["returndatasize_pointer_candidates"]
     assert {item["call_effect"] for item in candidates} == {"eff_nearest"}, candidates
     assert {item["precompile"] for item in candidates} == {"ecrecover"}, candidates
@@ -535,7 +551,7 @@ def test_call_output_expands_returned_and_preserved_memory_paths() -> None:
         "path_states": ["!(iszero(eq(mload(returndatasize()), owner)))"],
         "memory_read": {"complete": True, "has_unknown": False, "byte_slice": stale_slice},
     }, "eff_hash")
-    EffectLifter.attach_cross_statement_call_outputs([call, sink])
+    EffectLifter.attach_cross_statement_call_outputs([call, sink], cfg=effect_chain_cfg([call, sink]))
     paths = sink.attrs["memory_read"]["byte_slice"]["path_slices"]
     assert len(paths) == 2, paths
     returned = next(item for item in paths if item["call_memory_outcome"] == "returndata_copied")
@@ -589,7 +605,7 @@ def test_unproven_call_output_does_not_replace_memoryssa() -> None:
             "path_slices": [{"path": "entry", "complete": True, "slices": list(original)}],
         }},
     }, "eff_hash")
-    EffectLifter.attach_cross_statement_call_outputs([call, sink])
+    EffectLifter.attach_cross_statement_call_outputs([call, sink], cfg=effect_chain_cfg([call, sink]))
     resolved = sink.attrs["memory_read"]["byte_slice"]["path_slices"][0]["slices"]
     assert resolved[0]["source_value"] == "old", resolved
     assert not sink.attrs["memory_read"]["byte_slice"].get("call_output_path_expansion")

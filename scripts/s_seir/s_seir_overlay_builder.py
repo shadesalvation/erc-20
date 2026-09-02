@@ -2845,6 +2845,9 @@ class SemanticOverlayBuilder:
             'input_size': effect.attrs.get('input_size'),
             'output_ptr': effect.attrs.get('output_ptr'),
             'output_size': effect.attrs.get('output_size'),
+            'result': effect.attrs.get('result'),
+            'success_result': effect.attrs.get('success_result'),
+            'result_versions': effect.attrs.get('result_versions'),
             'cfg_node_id': effect.attrs.get('cfg_node_id'),
         })
 
@@ -3461,14 +3464,15 @@ class SemanticOverlayBuilder:
             if not output_expr:
                 continue
             output_ptr = self.norm_ptr(overlay.attrs.get('output_ptr'))
-            call_node = self.int_node(overlay.attrs.get('cfg_node_id'))
             for read in reads:
                 if self.norm_ptr(read.attrs.get('read_from')) != output_ptr:
                     continue
-                read_node = self.int_node(read.attrs.get('cfg_node_id'))
-                if call_node is not None and read_node is not None and read_node <= call_node:
-                    continue
-                if self.memory_rewritten_between(writes, output_ptr, call_node, read_node):
+                linked_effects = {
+                    str(item.get('effect_id'))
+                    for item in read.attrs.get('reads_after_call_output') or []
+                    if isinstance(item, dict) and item.get('effect_id')
+                }
+                if not linked_effects.intersection(map(str, overlay.effects)):
                     continue
                 target = read.attrs.get('value')
                 out.append(self.ov('PrecompileOutputRead', [overlay.effects[0], read.effect_id], read.stmt_refs, {
@@ -3554,7 +3558,6 @@ class SemanticOverlayBuilder:
     ) -> list[SemanticOverlay]:
         out: list[SemanticOverlay] = []
         output_ptr = self.norm_ptr(overlay.attrs.get('output_ptr'))
-        call_node = self.int_node(overlay.attrs.get('cfg_node_id'))
         native_candidates = [
             candidate for candidate in overlay.attrs.get('candidates') or []
             if (candidate.get('native_precompile') or {}).get('output_word_expression')
@@ -3564,10 +3567,12 @@ class SemanticOverlayBuilder:
         for read in reads:
             if self.norm_ptr(read.attrs.get('read_from')) != output_ptr:
                 continue
-            read_node = self.int_node(read.attrs.get('cfg_node_id'))
-            if call_node is not None and read_node is not None and read_node <= call_node:
-                continue
-            if self.memory_rewritten_between(writes, output_ptr, call_node, read_node):
+            linked_effects = {
+                str(item.get('effect_id'))
+                for item in read.attrs.get('reads_after_call_output') or []
+                if isinstance(item, dict) and item.get('effect_id')
+            }
+            if not linked_effects.intersection(map(str, overlay.effects)):
                 continue
             target = read.attrs.get('value')
             candidates = []
@@ -4851,6 +4856,15 @@ class SemanticOverlayBuilder:
         value_defs_by_name = self.value_defs_by_name(effects)
         value_defs_by_version = self.value_defs_by_version(effects)
         order = {effect.effect_id: index for index, effect in enumerate(effects)}
+        call_output_by_stmt_target: dict[tuple[str, str], EffectNode] = {}
+        for effect in effects:
+            if effect.kind != 'MemoryRead' or not effect.attrs.get('value_from_call_output'):
+                continue
+            target = effect.attrs.get('value')
+            if not target:
+                continue
+            for ref in effect.stmt_refs:
+                call_output_by_stmt_target[(str(ref), str(target))] = effect
         memory_hash_by_stmt_target: dict[tuple[str, str], dict[str, Any]] = {}
         for e in effects:
             if e.kind != 'MemoryHash':
@@ -4864,7 +4878,29 @@ class SemanticOverlayBuilder:
             for ref in e.stmt_refs:
                 memory_hash_by_stmt_target[(str(ref), str(target))] = rendered
         for e in effects:
-            if e.kind == 'ValueDef':
+            if e.kind == 'ValuePhi':
+                inputs = list(e.attrs.get('inputs') or [])
+                out.append(self.ov('ValuePhi', e.effect_id, e.stmt_refs, {
+                    'target': e.attrs.get('target'),
+                    'version': e.attrs.get('version'),
+                    'inputs': inputs,
+                    'phi_role': e.attrs.get('phi_role') or 'loop_carried',
+                    'cfg_node_id': e.attrs.get('cfg_node_id'),
+                    'loop_nodes': e.attrs.get('loop_nodes') or [],
+                    'backedge_sources': e.attrs.get('backedge_sources') or [],
+                    'runtime_operation': False,
+                }))
+            elif e.kind == 'MemoryRead' and e.attrs.get('value_from_call_output'):
+                call_expr = str(e.attrs.get('value_from_call_output'))
+                out.append(self.ov('CallOutputRead', e.effect_id, e.stmt_refs, self.clean({
+                    'target': e.attrs.get('value'),
+                    'expression': call_expr,
+                    'execution_expression': call_expr,
+                    'expression_normalized': call_expr,
+                    'call_output': (e.attrs.get('reads_after_call_output') or [None])[0],
+                    'path_states': e.attrs.get('path_states'),
+                })))
+            elif e.kind == 'ValueDef':
                 target = e.attrs.get('targets', [None])[0]
                 if self.is_storage_pointer_slot_target(target):
                     pointer = str(target).removesuffix('.slot')
@@ -4880,6 +4916,29 @@ class SemanticOverlayBuilder:
                     continue
                 atomized_value = e.attrs.get('atomized_value') if isinstance(e.attrs.get('atomized_value'), dict) else None
                 expr = self.normalize_expression_with_memory_arrays(type_env, e.attrs.get('value'))
+                call_output = None if atomized_value else next(
+                    (
+                        call_output_by_stmt_target.get((str(ref), str(target)))
+                        for ref in e.stmt_refs
+                        if call_output_by_stmt_target.get((str(ref), str(target)))
+                    ),
+                    None,
+                )
+                if call_output is not None:
+                    call_expr = str(call_output.attrs.get('value_from_call_output'))
+                    version_candidates = self.value_definition_path_candidates(
+                        e, target, call_expr, call_expr
+                    )
+                    out.append(self.ov('CallOutputRead', [e.effect_id, call_output.effect_id], e.stmt_refs, self.clean({
+                        'target': target,
+                        'expression': call_expr,
+                        'expression_normalized': call_expr,
+                        'call_output': (call_output.attrs.get('reads_after_call_output') or [None])[0],
+                        'path_states': e.attrs.get('path_states'),
+                        'target_version_paths': e.attrs.get('target_version_paths'),
+                        'path_candidates': version_candidates,
+                    })))
+                    continue
                 memory_hash = None
                 if target:
                     memory_hash = next(
@@ -4900,6 +4959,7 @@ class SemanticOverlayBuilder:
                 out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {
                     'target': target,
                     'expression': e.attrs.get('value'),
+                    'execution_expression': expr,
                     'expression_normalized': expr,
                     'solidity_like': f"{target} = {expr};" if target else None,
                     'context': 'value',
@@ -4925,14 +4985,26 @@ class SemanticOverlayBuilder:
                 }))
             elif e.kind == 'EvaluationStep':
                 temp = e.attrs.get('temp')
+                if temp and any(
+                    read.attrs.get('value') == temp and read.attrs.get('value_from_call_output')
+                    for read in effects
+                    if read.kind == 'MemoryRead'
+                ):
+                    continue
+                operand_bindings = self.unique_effect_version_bindings(e, 'operand_version_paths')
                 if e.attrs.get('value_from_call_output'):
                     expr = e.attrs.get('value_from_call_output')
+                    execution_expression = expr
                     state_read = None
                 else:
-                    expr, state_read = self.normalize_expression_with_state_reads(type_env, e.attrs.get('expression'), value_defs_by_name)
+                    execution_expression = self.rewrite_exact_identifiers(
+                        e.attrs.get('expression'), operand_bindings
+                    )
+                    expr, state_read = self.normalize_expression_with_state_reads(type_env, execution_expression, value_defs_by_name)
                 attrs = {
                     'temp': temp,
                     'expression': e.attrs.get('expression'),
+                    'execution_expression': execution_expression,
                     'expression_normalized': expr,
                     'solidity_like': f"{temp} = {expr};" if temp else None,
                     'order': e.attrs.get('order'),
@@ -4946,10 +5018,27 @@ class SemanticOverlayBuilder:
                     'value_from_call_output': e.attrs.get('value_from_call_output'),
                     'path_states': e.attrs.get('path_states'),
                     'external_value_bindings': e.attrs.get('external_value_bindings'),
+                    'operand_bindings': operand_bindings,
                 }
                 if state_read:
                     attrs['state_read'] = state_read
                 out.append(self.ov('EvaluationStep', e.effect_id, e.stmt_refs, self.clean(attrs)))
+        return out
+
+    @staticmethod
+    def unique_effect_version_bindings(effect: EffectNode, field: str) -> dict[str, str]:
+        records_by_name = effect.attrs.get(field) or {}
+        if not isinstance(records_by_name, dict):
+            return {}
+        out: dict[str, str] = {}
+        for name, records in records_by_name.items():
+            versions = list(dict.fromkeys(
+                str(record.get('version'))
+                for record in records or []
+                if isinstance(record, dict) and record.get('version')
+            ))
+            if len(versions) == 1:
+                out[str(name)] = versions[0]
         return out
 
     @classmethod

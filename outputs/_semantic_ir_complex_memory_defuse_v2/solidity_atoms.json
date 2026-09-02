@@ -1,0 +1,538 @@
+{
+  "schema": "s-seir-solidity-atomic-operations/v2",
+  "source": "tests/fixtures/semantic_ir_memory_defuse_complex.sol",
+  "function_count": 1,
+  "operation_count": 7,
+  "functions": [
+    {
+      "schema": "s-seir-solidity-atomic-operations/v2",
+      "function_id": "SemanticIRMemoryDefUseComplex.update(address, uint256, uint256, bool, bool)",
+      "contract": "SemanticIRMemoryDefUseComplex",
+      "function": "update",
+      "signature": "update(address, uint256, uint256, bool, bool)",
+      "operation_count": 7,
+      "operations": [
+        {
+          "order": 0,
+          "kind": "Phi",
+          "text": "ledger_1(mapping(address => mapping(uint256 => uint256))) := ϕ(['ledger_0'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "StateIRVariable",
+            "text": "ledger_1",
+            "name": "ledger",
+            "base_name": "ledger",
+            "type": "mapping(address => mapping(uint256 => uint256))",
+            "is_state": true,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "StateIRVariable",
+              "text": "ledger_0",
+              "name": "ledger",
+              "base_name": "ledger",
+              "type": "mapping(address => mapping(uint256 => uint256))",
+              "is_state": true,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "phi_origin_nodes": [],
+          "phi_callback": false,
+          "atom_id": "sol_atom_1",
+          "sequence": 1,
+          "block_order": 0,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n0",
+          "cfg_node_id": 0,
+          "cfg_node_type": "NodeType.ENTRYPOINT",
+          "source_span": "350:824:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result": "ledger",
+          "result_ssa": "ledger_1",
+          "expression": "ledger",
+          "resolved_reads": [
+            "ledger"
+          ],
+          "writes": [
+            "ledger"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": false,
+          "cfg_predecessor_blocks": [],
+          "phi_scope": "analysis_boundary",
+          "phi_role": "function_entry_input",
+          "depends_on_atoms": []
+        },
+        {
+          "order": 0,
+          "kind": "Assignment",
+          "text": "delta_1(uint256) := amount_1(uint256)",
+          "ssa": true,
+          "source_expression": "delta = amount",
+          "lvalue": {
+            "kind": "LocalIRVariable",
+            "text": "delta_1",
+            "name": "delta",
+            "base_name": "delta",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "rvalue": {
+            "kind": "LocalIRVariable",
+            "text": "amount_1",
+            "name": "amount",
+            "base_name": "amount",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "amount_1",
+              "name": "amount",
+              "base_name": "amount",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_2",
+          "sequence": 2,
+          "block_order": 1,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n1",
+          "cfg_node_id": 1,
+          "cfg_node_type": "NodeType.VARIABLE",
+          "source_span": "360:22:slither",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ValueAssign",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "delta",
+          "result_ssa": "delta_1",
+          "expression": "amount",
+          "resolved_reads": [
+            "amount"
+          ],
+          "writes": [
+            "delta"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 0,
+          "kind": "Condition",
+          "text": "CONDITION discount_1",
+          "ssa": true,
+          "source_expression": "discount",
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "discount_1",
+              "name": "discount",
+              "base_name": "discount",
+              "type": "bool",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_3",
+          "sequence": 3,
+          "block_order": 2,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n2",
+          "cfg_node_id": 2,
+          "cfg_node_type": "NodeType.IF",
+          "source_span": "396:8:slither",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "ControlPredicate",
+          "semantic_atom": false,
+          "runtime_operation": false,
+          "result_ssa": "",
+          "expression": "discount",
+          "resolved_reads": [
+            "discount"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "control_only": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 0,
+          "kind": "Binary",
+          "text": "TMP_0(uint256) = amount_1 (c)- 1",
+          "ssa": true,
+          "source_expression": "amount - 1",
+          "lvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_0",
+            "name": "TMP_0",
+            "base_name": "TMP_0",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_left": {
+            "kind": "LocalIRVariable",
+            "text": "amount_1",
+            "name": "amount",
+            "base_name": "amount",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "variable_right": {
+            "kind": "Constant",
+            "text": "1",
+            "name": "1",
+            "base_name": "1",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": true,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "amount_1",
+              "name": "amount",
+              "base_name": "amount",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "Constant",
+              "text": "1",
+              "name": "1",
+              "base_name": "1",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": true,
+              "is_solidity_builtin": false
+            }
+          ],
+          "operator": "-",
+          "checked": true,
+          "atom_id": "sol_atom_4",
+          "sequence": 4,
+          "block_order": 3,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "420:18:slither",
+          "stmt_refs": [
+            "sol_s_3"
+          ],
+          "path_conditions": [
+            "discount"
+          ],
+          "condition": "discount",
+          "atomic_kind": "ValueCompute",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "TMP_0",
+          "result_ssa": "TMP_0",
+          "expression": "(amount - 1)",
+          "resolved_reads": [
+            "amount",
+            "1"
+          ],
+          "writes": [
+            "TMP_0"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "depends_on_atoms": []
+        },
+        {
+          "order": 1,
+          "kind": "Assignment",
+          "text": "delta_2(uint256) := TMP_0(uint256)",
+          "ssa": true,
+          "source_expression": "delta = amount - 1",
+          "lvalue": {
+            "kind": "LocalIRVariable",
+            "text": "delta_2",
+            "name": "delta",
+            "base_name": "delta",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "rvalue": {
+            "kind": "TemporaryVariableSSA",
+            "text": "TMP_0",
+            "name": "TMP_0",
+            "base_name": "TMP_0",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "TemporaryVariableSSA",
+              "text": "TMP_0",
+              "name": "TMP_0",
+              "base_name": "TMP_0",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_5",
+          "sequence": 5,
+          "block_order": 3,
+          "operation_order": 1,
+          "cfg_block_id": "bb_sol_slither_n3",
+          "cfg_node_id": 3,
+          "cfg_node_type": "NodeType.EXPRESSION",
+          "source_span": "420:18:slither",
+          "stmt_refs": [
+            "sol_s_3"
+          ],
+          "path_conditions": [
+            "discount"
+          ],
+          "condition": "discount",
+          "atomic_kind": "ValueAssign",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result": "delta",
+          "result_ssa": "delta_2",
+          "expression": "(amount - 1)",
+          "resolved_reads": [
+            "(amount - 1)"
+          ],
+          "writes": [
+            "delta"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2"
+          ],
+          "depends_on_atoms": [
+            "sol_atom_4"
+          ],
+          "previous_atom_id": "sol_atom_4"
+        },
+        {
+          "order": 0,
+          "kind": "Phi",
+          "text": "delta_3(uint256) := ϕ(['delta_1', 'delta_2'])",
+          "ssa": true,
+          "lvalue": {
+            "kind": "LocalIRVariable",
+            "text": "delta_3",
+            "name": "delta",
+            "base_name": "delta",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false
+          },
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "delta_1",
+              "name": "delta",
+              "base_name": "delta",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            },
+            {
+              "kind": "LocalIRVariable",
+              "text": "delta_2",
+              "name": "delta",
+              "base_name": "delta",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "phi_origin_nodes": [
+            {
+              "node_id": 1,
+              "node_type": "NodeType.VARIABLE",
+              "function": "SemanticIRMemoryDefUseComplex.update(address,uint256,uint256,bool,bool)"
+            },
+            {
+              "node_id": 3,
+              "node_type": "NodeType.EXPRESSION",
+              "function": "SemanticIRMemoryDefUseComplex.update(address,uint256,uint256,bool,bool)"
+            }
+          ],
+          "phi_callback": false,
+          "atom_id": "sol_atom_6",
+          "sequence": 6,
+          "block_order": 4,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n4",
+          "cfg_node_id": 4,
+          "cfg_node_type": "NodeType.ENDIF",
+          "source_span": "392:57:slither",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "path_conditions": [],
+          "atomic_kind": "PhiMerge",
+          "semantic_atom": true,
+          "runtime_operation": false,
+          "result": "delta",
+          "result_ssa": "delta_3",
+          "expression": "delta",
+          "resolved_reads": [
+            "amount",
+            "(amount - 1)"
+          ],
+          "writes": [
+            "delta"
+          ],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n2",
+            "bb_sol_slither_n3"
+          ],
+          "phi_scope": "function",
+          "phi_role": "function_cfg_merge",
+          "depends_on_atoms": [
+            "sol_atom_2",
+            "sol_atom_5"
+          ]
+        },
+        {
+          "order": 0,
+          "kind": "Return",
+          "text": "RETURN result_1",
+          "ssa": true,
+          "source_expression": "result",
+          "read": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "result_1",
+              "name": "result",
+              "base_name": "result",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "values": [
+            {
+              "kind": "LocalIRVariable",
+              "text": "result_1",
+              "name": "result",
+              "base_name": "result",
+              "type": "uint256",
+              "is_state": false,
+              "is_reference": false,
+              "is_constant": false,
+              "is_solidity_builtin": false
+            }
+          ],
+          "checked": true,
+          "atom_id": "sol_atom_7",
+          "sequence": 7,
+          "block_order": 5,
+          "operation_order": 0,
+          "cfg_block_id": "bb_sol_slither_n28",
+          "cfg_node_id": 28,
+          "cfg_node_type": "NodeType.RETURN",
+          "source_span": "333:16:slither",
+          "stmt_refs": [],
+          "path_conditions": [],
+          "atomic_kind": "Return",
+          "semantic_atom": true,
+          "runtime_operation": true,
+          "result_ssa": "",
+          "expression": "result",
+          "resolved_reads": [
+            "result"
+          ],
+          "writes": [],
+          "storage_reads": [],
+          "source": "slithir_ssa",
+          "fact_eligible": true,
+          "cfg_predecessor_blocks": [
+            "bb_asm1_n1"
+          ],
+          "depends_on_atoms": []
+        }
+      ]
+    }
+  ]
+}

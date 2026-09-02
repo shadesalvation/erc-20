@@ -135,6 +135,12 @@ class SSeirFactAdapter:
                 for candidate in attrs.get("path_candidates") or []
                 if isinstance(candidate, dict)
             ]
+        if kind == "CallOutputRead" and attrs.get("path_candidates"):
+            return [
+                self.call_output_candidate_fact(fn, overlay, candidate, stmt_lang)
+                for candidate in attrs.get("path_candidates") or []
+                if isinstance(candidate, dict)
+            ]
         fact = self.plain_overlay_fact(fn, overlay, stmt_lang, effect_by_id)
         return [fact] if fact else []
 
@@ -304,15 +310,59 @@ class SSeirFactAdapter:
             return self.fact(fn, overlay, stmt_lang, "MemoryObjectConstruct", lvalue=attrs.get("result"), rvalue=attrs.get("allocation_source"), writes=[attrs.get("result")], semantic=pick(attrs, (
                 "result", "array_type", "element_type", "length_expr", "length_expr_normalized", "element_writes", "free_memory_pointer_update",
             )))
+        if kind == "ValuePhi":
+            inputs = [
+                item.get("value")
+                for item in attrs.get("inputs") or []
+                if isinstance(item, dict) and item.get("value") is not None
+            ]
+            version = attrs.get("version") or attrs.get("target")
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "ValuePhi",
+                lvalue=version,
+                rvalue=inputs,
+                reads=inputs,
+                writes=clean_list([version]),
+                semantic={
+                    "operation": "phi",
+                    "phi_role": attrs.get("phi_role") or "loop_carried",
+                    "source_target": attrs.get("target"),
+                    "inputs": attrs.get("inputs") or [],
+                    "runtime_operation": False,
+                },
+            )
+        if kind == "CallOutputRead":
+            target = attrs.get("target")
+            expression = attrs.get("execution_expression") or attrs.get("expression")
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "ValueCompute",
+                lvalue=target,
+                rvalue=expression,
+                reads=clean_list([expression]),
+                writes=clean_list([target]),
+                semantic={
+                    "operation": "call_output_read",
+                    "execution_expression": expression,
+                    "call_output": attrs.get("call_output"),
+                },
+            )
         if kind in {"StructMemoryMutation", "StructInitializationFragment", "MemoryRegionWrite", "CursorBasedMemoryWrite"}:
             target = attrs.get("target") or attrs.get("region_base") or attrs.get("object")
             value = attrs.get("value") or attrs.get("value_normalized") or attrs.get("fields")
             return self.fact(fn, overlay, stmt_lang, "MemoryObjectWrite", lvalue=target, rvalue=value, reads=flat_list(value), writes=[target], semantic=attrs)
         if kind in {"ExpressionNormalization", "EvaluationStep"}:
+            if kind == "ExpressionNormalization" and attrs.get("context") == "condition":
+                return None
             target = attrs.get("target") or attrs.get("temp")
-            value = attrs.get("value") or attrs.get("expression") or attrs.get("solidity_like")
+            value = attrs.get("execution_expression") or attrs.get("value") or attrs.get("expression") or attrs.get("solidity_like")
             return self.fact(fn, overlay, stmt_lang, "ValueCompute", lvalue=target, rvalue=value, reads=rough_reads(value), writes=[target], semantic=pick(attrs, (
-                "target", "temp", "value", "expression", "expression_normalized", "solidity_like", "call", "raw_args", "evaluated_args", "parent_effect",
+                "target", "temp", "value", "expression", "execution_expression", "expression_normalized", "solidity_like", "call", "raw_args", "evaluated_args", "parent_effect", "operand_bindings",
             )))
         return None
 
@@ -424,6 +474,36 @@ class SSeirFactAdapter:
                 "source_target": candidate.get("target") or attrs.get("target"),
                 "ssa_version": candidate.get("version"),
                 "operand_bindings": candidate.get("operand_bindings") or {},
+            },
+            extra_evidence={"candidate": clean_dict(candidate)},
+        )
+
+    def call_output_candidate_fact(
+        self,
+        fn: dict[str, Any],
+        overlay: dict[str, Any],
+        candidate: dict[str, Any],
+        stmt_lang: dict[str, str],
+    ) -> SemanticFact:
+        attrs = overlay.get("attrs") or {}
+        expression = candidate.get("execution_expression") or attrs.get("expression")
+        target = candidate.get("version") or candidate.get("target") or attrs.get("target")
+        return self.fact(
+            fn,
+            overlay,
+            stmt_lang,
+            "ValueCompute",
+            condition=candidate.get("condition"),
+            lvalue=target,
+            rvalue=expression,
+            reads=clean_list([expression]),
+            writes=clean_list([target]),
+            semantic={
+                "operation": "call_output_read",
+                "execution_expression": expression,
+                "source_target": candidate.get("target") or attrs.get("target"),
+                "ssa_version": candidate.get("version"),
+                "call_output": attrs.get("call_output"),
             },
             extra_evidence={"candidate": clean_dict(candidate)},
         )

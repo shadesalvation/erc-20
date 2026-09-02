@@ -1,0 +1,1284 @@
+SemanticProgram semantic-ir/v2
+Source: 人工构造样例/10_大量Yul_统一语义模型/contracts/YulHeavyERC20.sol
+
+Function YulHeavyERC20.constructor(uint256)
+    contract = YulHeavyERC20
+    signature = constructor(uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm1_n0)
+
+bb_asm1_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm1_n2)
+
+bb_asm1_n1 [yul]:
+    // predecessors: bb_asm1_n7
+    // no semantic instructions
+    Fallthrough
+
+bb_asm1_n2 [yul]:
+    // predecessors: bb_asm1_n0
+    // ir_1 | source=yul | origin_facts=[fact_1]
+    StateWrite(StateVariableLocation(_totalSupply), initialSupply)
+    Goto(bb_asm1_n3)
+
+bb_asm1_n3 [yul]:
+    // predecessors: bb_asm1_n2
+    // no semantic instructions
+    Goto(bb_asm1_n4)
+
+bb_asm1_n4 [yul]:
+    // predecessors: bb_asm1_n3
+    // no semantic instructions
+    Goto(bb_asm1_n5)
+
+bb_asm1_n5 [yul]:
+    // predecessors: bb_asm1_n4
+    // ir_2 | source=yul | origin_facts=[fact_3, fact_2]
+    StateWrite(MappingLocation(base = _balances, keys = [msg.sender]), initialSupply)
+    Goto(bb_asm1_n6)
+
+bb_asm1_n6 [yul]:
+    // predecessors: bb_asm1_n5
+    // no semantic instructions
+    Goto(bb_asm1_n7)
+
+bb_asm1_n7 [yul]:
+    // predecessors: bb_asm1_n6
+    // ir_3 | source=yul | origin_facts=[fact_4]
+    @execution EventEmit(args=[0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0, __sseir_eval_asm_s_6_1])
+    EventEmit(Transfer, 0, msg.sender, initialSupply)
+    Goto(bb_asm1_n1)
+
+CFGEdges:
+    bb_asm1_n0 -> bb_asm1_n2 [next]
+    bb_asm1_n2 -> bb_asm1_n3 [next]
+    bb_asm1_n3 -> bb_asm1_n4 [next]
+    bb_asm1_n4 -> bb_asm1_n5 [next]
+    bb_asm1_n5 -> bb_asm1_n6 [next]
+    bb_asm1_n6 -> bb_asm1_n7 [next]
+    bb_asm1_n7 -> bb_asm1_n1 [next]
+    bb_sol_slither_n0 -> bb_asm1_n0 [fallthrough]
+
+
+Function YulHeavyERC20.totalSupply()
+    contract = YulHeavyERC20
+    signature = totalSupply()
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm2_n0)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_asm2_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_7, fact_6]
+    Return(__sseir_eval_asm_s_1_1)
+
+bb_asm2_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm2_n2)
+
+bb_asm2_n1 [yul]:
+    // predecessors: bb_asm2_n2
+    // no semantic instructions
+    Goto(bb_sol_slither_n4)
+
+bb_asm2_n2 [yul]:
+    // predecessors: bb_asm2_n0
+    // ir_4 | source=yul | origin_facts=[fact_5]
+    @execution StateRead(expr=sload(_totalSupply.slot))
+    __sseir_eval_asm_s_1_1 = StateRead(StateVariableLocation(_totalSupply))
+    // ir_5 | source=yul, solidity | origin_facts=[-]
+    result = result__ssa1
+    Goto(bb_asm2_n1)
+
+CFGEdges:
+    bb_asm2_n0 -> bb_asm2_n2 [next]
+    bb_asm2_n2 -> bb_asm2_n1 [next]
+    bb_sol_slither_n0 -> bb_asm2_n0 [fallthrough]
+    bb_asm2_n1 -> bb_sol_slither_n4 [fallthrough]
+
+
+Function YulHeavyERC20.balanceOf(address)
+    contract = YulHeavyERC20
+    signature = balanceOf(address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm3_n0)
+
+bb_sol_slither_n6 [solidity]:
+    // predecessors: bb_asm3_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_12, fact_11]
+    Return(__sseir_eval_asm_s_3_2)
+
+bb_asm3_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm3_n2)
+
+bb_asm3_n1 [yul]:
+    // predecessors: bb_asm3_n4
+    // no semantic instructions
+    Goto(bb_sol_slither_n6)
+
+bb_asm3_n2 [yul]:
+    // predecessors: bb_asm3_n0
+    // no semantic instructions
+    Goto(bb_asm3_n3)
+
+bb_asm3_n3 [yul]:
+    // predecessors: bb_asm3_n2
+    // no semantic instructions
+    Goto(bb_asm3_n4)
+
+bb_asm3_n4 [yul]:
+    // predecessors: bb_asm3_n3
+    // ir_6 | source=yul | origin_facts=[fact_8, fact_9]
+    __sseir_eval_asm_s_3_1 = Keccak(0x00, 0x40)
+    // ir_7 | source=yul | origin_facts=[fact_10, fact_9]
+    @execution StateRead(expr=sload(__sseir_eval_asm_s_3_1))
+    __sseir_eval_asm_s_3_2 = StateRead(MappingLocation(base = _balances, keys = [account]))
+    // ir_8 | source=yul, solidity | origin_facts=[-]
+    result = result__ssa1
+    // ir_9 | source=yul | origin_facts=[-]
+    __sseir_eval_asm_s_3_1 = MemoryHash(0x00, 0x40)
+    Goto(bb_asm3_n1)
+
+CFGEdges:
+    bb_asm3_n0 -> bb_asm3_n2 [next]
+    bb_asm3_n2 -> bb_asm3_n3 [next]
+    bb_asm3_n3 -> bb_asm3_n4 [next]
+    bb_asm3_n4 -> bb_asm3_n1 [next]
+    bb_sol_slither_n0 -> bb_asm3_n0 [fallthrough]
+    bb_asm3_n1 -> bb_sol_slither_n6 [fallthrough]
+
+
+Function YulHeavyERC20.allowance(address, address)
+    contract = YulHeavyERC20
+    signature = allowance(address, address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm4_n0)
+
+bb_sol_slither_n10 [solidity]:
+    // predecessors: bb_asm4_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_18, fact_17]
+    Return(__sseir_eval_asm_s_6_2)
+
+bb_asm4_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm4_n2)
+
+bb_asm4_n1 [yul]:
+    // predecessors: bb_asm4_n7
+    // no semantic instructions
+    Goto(bb_sol_slither_n10)
+
+bb_asm4_n2 [yul]:
+    // predecessors: bb_asm4_n0
+    // no semantic instructions
+    Goto(bb_asm4_n3)
+
+bb_asm4_n3 [yul]:
+    // predecessors: bb_asm4_n2
+    // no semantic instructions
+    Goto(bb_asm4_n4)
+
+bb_asm4_n4 [yul]:
+    // predecessors: bb_asm4_n3
+    // ir_10 | source=yul | origin_facts=[fact_13, fact_14]
+    __sseir_eval_asm_s_3_1 = Keccak(0x00, 0x40)
+    // ir_11 | source=yul | origin_facts=[fact_14, fact_13]
+    @execution Assign(expr=__sseir_eval_asm_s_3_1)
+    ownerSlot__ssa1 = Keccak(0x00, 0x40)
+    Goto(bb_asm4_n5)
+
+bb_asm4_n5 [yul]:
+    // predecessors: bb_asm4_n4
+    // no semantic instructions
+    Goto(bb_asm4_n6)
+
+bb_asm4_n6 [yul]:
+    // predecessors: bb_asm4_n5
+    // no semantic instructions
+    Goto(bb_asm4_n7)
+
+bb_asm4_n7 [yul]:
+    // predecessors: bb_asm4_n6
+    // ir_12 | source=yul | origin_facts=[fact_16]
+    @execution StateRead(expr=sload(__sseir_eval_asm_s_6_1))
+    __sseir_eval_asm_s_6_2 = StateRead(
+        MappingLocation(base = <unknown>, keys = [Keccak(abi.encode(spender, ownerSlot))])
+    )
+    // ir_13 | source=yul, solidity | origin_facts=[-]
+    result = result__ssa2
+    // ir_14 | source=yul | origin_facts=[-]
+    __sseir_eval_asm_s_6_1 = MemoryHash(0x00, 0x40)
+    Goto(bb_asm4_n1)
+
+CFGEdges:
+    bb_asm4_n0 -> bb_asm4_n2 [next]
+    bb_asm4_n2 -> bb_asm4_n3 [next]
+    bb_asm4_n3 -> bb_asm4_n4 [next]
+    bb_asm4_n4 -> bb_asm4_n5 [next]
+    bb_asm4_n5 -> bb_asm4_n6 [next]
+    bb_asm4_n6 -> bb_asm4_n7 [next]
+    bb_asm4_n7 -> bb_asm4_n1 [next]
+    bb_sol_slither_n0 -> bb_asm4_n0 [fallthrough]
+    bb_asm4_n1 -> bb_sol_slither_n10 [fallthrough]
+
+
+Function YulHeavyERC20.approve(address, uint256)
+    contract = YulHeavyERC20
+    signature = approve(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm5_n0)
+
+bb_sol_slither_n13 [solidity]:
+    // predecessors: bb_asm5_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_24, fact_23]
+    Return(1)
+
+bb_asm5_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm5_n2)
+
+bb_asm5_n1 [yul]:
+    // predecessors: bb_asm5_n10
+    // no semantic instructions
+    Goto(bb_sol_slither_n13)
+
+bb_asm5_n2 [yul]:
+    // predecessors: bb_asm5_n0
+    // no semantic instructions
+    Goto(bb_asm5_n3)
+
+bb_asm5_n3 [yul]:
+    // predecessors: bb_asm5_n2
+    // no semantic instructions
+    Goto(bb_asm5_n4)
+
+bb_asm5_n4 [yul]:
+    // predecessors: bb_asm5_n3
+    // ir_15 | source=yul | origin_facts=[fact_19, fact_20]
+    __sseir_eval_asm_s_3_1 = Keccak(0x00, 0x40)
+    // ir_16 | source=yul | origin_facts=[fact_20, fact_19]
+    @execution Assign(expr=__sseir_eval_asm_s_3_1)
+    ownerSlot__ssa1 = Keccak(0x00, 0x40)
+    Goto(bb_asm5_n5)
+
+bb_asm5_n5 [yul]:
+    // predecessors: bb_asm5_n4
+    // no semantic instructions
+    Goto(bb_asm5_n6)
+
+bb_asm5_n6 [yul]:
+    // predecessors: bb_asm5_n5
+    // no semantic instructions
+    Goto(bb_asm5_n7)
+
+bb_asm5_n7 [yul]:
+    // predecessors: bb_asm5_n6
+    // ir_17 | source=yul | origin_facts=[fact_21]
+    StateWrite(
+        MappingLocation(base = <unknown>, keys = [Keccak(abi.encode(spender, ownerSlot))]),
+        value
+    )
+    Goto(bb_asm5_n8)
+
+bb_asm5_n8 [yul]:
+    // predecessors: bb_asm5_n7
+    // no semantic instructions
+    Goto(bb_asm5_n9)
+
+bb_asm5_n9 [yul]:
+    // predecessors: bb_asm5_n8
+    // ir_18 | source=yul | origin_facts=[fact_22]
+    @execution EventEmit(args=[0x00, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, __sseir_eval_asm_s_8_1, spender])
+    EventEmit(Approval, msg.sender, spender, value)
+    Goto(bb_asm5_n10)
+
+bb_asm5_n10 [yul]:
+    // predecessors: bb_asm5_n9
+    // ir_19 | source=yul, solidity | origin_facts=[-]
+    ok = ok__ssa2
+    Goto(bb_asm5_n1)
+
+CFGEdges:
+    bb_asm5_n0 -> bb_asm5_n2 [next]
+    bb_asm5_n2 -> bb_asm5_n3 [next]
+    bb_asm5_n3 -> bb_asm5_n4 [next]
+    bb_asm5_n4 -> bb_asm5_n5 [next]
+    bb_asm5_n5 -> bb_asm5_n6 [next]
+    bb_asm5_n6 -> bb_asm5_n7 [next]
+    bb_asm5_n7 -> bb_asm5_n8 [next]
+    bb_asm5_n8 -> bb_asm5_n9 [next]
+    bb_asm5_n9 -> bb_asm5_n10 [next]
+    bb_asm5_n10 -> bb_asm5_n1 [next]
+    bb_sol_slither_n0 -> bb_asm5_n0 [fallthrough]
+    bb_asm5_n1 -> bb_sol_slither_n13 [fallthrough]
+
+
+Function YulHeavyERC20.transfer(address, uint256)
+    contract = YulHeavyERC20
+    signature = transfer(address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm6_n0)
+
+bb_sol_slither_n24 [solidity]:
+    // predecessors: bb_asm6_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_38, fact_37]
+    Return(1)
+
+bb_asm6_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm6_n2)
+
+bb_asm6_n1 [yul]:
+    // predecessors: bb_asm6_n19
+    // no semantic instructions
+    Goto(bb_sol_slither_n24)
+
+bb_asm6_n2 [yul]:
+    // predecessors: bb_asm6_n0
+    // no semantic instructions
+    // terminator origin_facts=[fact_25]
+    @execution-condition IsZero(to)
+    Branch(Eq(to, 0x00), bb_asm6_n4, bb_asm6_n3)
+
+bb_asm6_n3 [yul]:
+    // predecessors: bb_asm6_n2
+    // no semantic instructions
+    Goto(bb_asm6_n5)
+
+bb_asm6_n4 [yul]:
+    // predecessors: bb_asm6_n2
+    // ir_30 | source=yul | origin_facts=[fact_40, fact_25]
+    @condition Not(Ne(IsZero(to), 0x00))
+    Require(Not(Ne(IsZero(to), 0x00)))
+    @execution-values [0x00, 0x00]
+    Revert()
+
+bb_asm6_n5 [yul]:
+    // predecessors: bb_asm6_n3
+    // no semantic instructions
+    Goto(bb_asm6_n6)
+
+bb_asm6_n6 [yul]:
+    // predecessors: bb_asm6_n5
+    // no semantic instructions
+    Goto(bb_asm6_n7)
+
+bb_asm6_n7 [yul]:
+    // predecessors: bb_asm6_n6
+    // ir_20 | source=yul | origin_facts=[fact_26, fact_27]
+    @condition Not(IsZero(to))
+    __sseir_eval_asm_s_5_1 = Keccak(0x00, 0x40)
+    // ir_21 | source=yul | origin_facts=[fact_27, fact_26]
+    @condition Not(IsZero(to))
+    @execution Assign(expr=__sseir_eval_asm_s_5_1)
+    fromSlot__ssa1 = Keccak(0x00, 0x40)
+    Goto(bb_asm6_n8)
+
+bb_asm6_n8 [yul]:
+    // predecessors: bb_asm6_n7
+    // ir_22 | source=yul | origin_facts=[fact_28]
+    @condition Not(IsZero(to))
+    @execution StateRead(expr=sload(fromSlot))
+    __sseir_eval_asm_s_6_1 = StateRead(MappingLocation(base = <unknown>, keys = [fromSlot]))
+    Goto(bb_asm6_n9)
+
+bb_asm6_n9 [yul]:
+    // predecessors: bb_asm6_n8
+    // no semantic instructions
+    // terminator origin_facts=[fact_30]
+    @execution-condition Lt(fromBalance__ssa2, value)
+    Branch(Lt(fromBalance, value), bb_asm6_n11, bb_asm6_n10)
+
+bb_asm6_n10 [yul]:
+    // predecessors: bb_asm6_n9
+    // no semantic instructions
+    Goto(bb_asm6_n12)
+
+bb_asm6_n11 [yul]:
+    // predecessors: bb_asm6_n9
+    // ir_29 | source=yul | origin_facts=[fact_39]
+    @condition Not(Ne(__sseir_eval_asm_s_7_1, 0x00))
+    Require(Not(Ne(__sseir_eval_asm_s_7_1, 0x00)))
+    @execution-values [0x00, 0x00]
+    Revert()
+
+bb_asm6_n12 [yul]:
+    // predecessors: bb_asm6_n10
+    // no semantic instructions
+    Goto(bb_asm6_n13)
+
+bb_asm6_n13 [yul]:
+    // predecessors: bb_asm6_n12
+    // no semantic instructions
+    Goto(bb_asm6_n14)
+
+bb_asm6_n14 [yul]:
+    // predecessors: bb_asm6_n13
+    // ir_23 | source=yul | origin_facts=[fact_31, fact_32]
+    @condition And(Not(IsZero(to)), Not(Lt(fromBalance, value)))
+    __sseir_eval_asm_s_11_1 = Keccak(0x00, 0x40)
+    // ir_24 | source=yul | origin_facts=[fact_32, fact_31]
+    @condition And(Not(IsZero(to)), Not(Lt(fromBalance, value)))
+    @execution Assign(expr=__sseir_eval_asm_s_11_1)
+    toSlot__ssa3 = Keccak(0x00, 0x40)
+    Goto(bb_asm6_n15)
+
+bb_asm6_n15 [yul]:
+    // predecessors: bb_asm6_n14
+    // ir_25 | source=yul | origin_facts=[fact_33]
+    @condition And(Not(IsZero(to)), Not(Lt(fromBalance, value)))
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_6_1, value))
+    StateWrite(
+        MappingLocation(base = <unknown>, keys = [fromSlot]),
+        Sub(fromBalance, value)
+    )
+    Goto(bb_asm6_n16)
+
+bb_asm6_n16 [yul]:
+    // predecessors: bb_asm6_n15
+    // ir_26 | source=yul | origin_facts=[fact_34]
+    @condition And(Not(IsZero(to)), Not(Lt(fromBalance, value)))
+    @execution StateRead(expr=sload(toSlot))
+    __sseir_eval_asm_s_13_1 = StateRead(MappingLocation(base = <unknown>, keys = [toSlot]))
+    // ir_27 | source=yul | origin_facts=[fact_35]
+    @condition And(Not(IsZero(to)), Not(Lt(fromBalance, value)))
+    @execution StateWrite(expr=Add(__sseir_eval_asm_s_13_1, value))
+    StateWrite(
+        MappingLocation(base = <unknown>, keys = [toSlot]),
+        Add(Index(storage, toSlot), value)
+    )
+    Goto(bb_asm6_n17)
+
+bb_asm6_n17 [yul]:
+    // predecessors: bb_asm6_n16
+    // no semantic instructions
+    Goto(bb_asm6_n18)
+
+bb_asm6_n18 [yul]:
+    // predecessors: bb_asm6_n17
+    // ir_28 | source=yul | origin_facts=[fact_36]
+    @condition And(Not(IsZero(to)), Not(Lt(fromBalance, value)))
+    @execution EventEmit(args=[0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, __sseir_eval_asm_s_15_1, to])
+    EventEmit(Transfer, msg.sender, to, value)
+    Goto(bb_asm6_n19)
+
+bb_asm6_n19 [yul]:
+    // predecessors: bb_asm6_n18
+    // ir_31 | source=yul, solidity | origin_facts=[-]
+    ok = ok__ssa4
+    Goto(bb_asm6_n1)
+
+CFGEdges:
+    bb_asm6_n0 -> bb_asm6_n2 [next]
+    bb_asm6_n2 -> bb_asm6_n4 [true: iszero(to)] predicate=iszero(to)
+    bb_asm6_n2 -> bb_asm6_n3 [false: !(iszero(to))] predicate=!(iszero(to))
+    bb_asm6_n3 -> bb_asm6_n5 [next]
+    bb_asm6_n5 -> bb_asm6_n6 [next]
+    bb_asm6_n6 -> bb_asm6_n7 [next]
+    bb_asm6_n7 -> bb_asm6_n8 [next]
+    bb_asm6_n8 -> bb_asm6_n9 [next]
+    bb_asm6_n9 -> bb_asm6_n11 [true: lt(fromBalance, value)] predicate=lt(fromBalance, value)
+    bb_asm6_n9 -> bb_asm6_n10 [false: !(lt(fromBalance, value))] predicate=!(lt(fromBalance, value))
+    bb_asm6_n10 -> bb_asm6_n12 [next]
+    bb_asm6_n12 -> bb_asm6_n13 [next]
+    bb_asm6_n13 -> bb_asm6_n14 [next]
+    bb_asm6_n14 -> bb_asm6_n15 [next]
+    bb_asm6_n15 -> bb_asm6_n16 [next]
+    bb_asm6_n16 -> bb_asm6_n17 [next]
+    bb_asm6_n17 -> bb_asm6_n18 [next]
+    bb_asm6_n18 -> bb_asm6_n19 [next]
+    bb_asm6_n19 -> bb_asm6_n1 [next]
+    bb_sol_slither_n0 -> bb_asm6_n0 [fallthrough]
+    bb_asm6_n1 -> bb_sol_slither_n24 [fallthrough]
+
+
+Function YulHeavyERC20.transferFrom(address, address, uint256)
+    contract = YulHeavyERC20
+    signature = transferFrom(address, address, uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm7_n0)
+
+bb_sol_slither_n40 [solidity]:
+    // predecessors: bb_asm7_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_74]
+    Return(ok)
+
+bb_asm7_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm7_n2)
+
+bb_asm7_n1 [yul]:
+    // predecessors: bb_asm7_n32
+    // no semantic instructions
+    Goto(bb_sol_slither_n40)
+
+bb_asm7_n2 [yul]:
+    // predecessors: bb_asm7_n0
+    // no semantic instructions
+    // terminator origin_facts=[fact_41]
+    @execution-condition IsZero(to)
+    Branch(Eq(to, 0x00), bb_asm7_n4, bb_asm7_n3)
+
+bb_asm7_n3 [yul]:
+    // predecessors: bb_asm7_n2
+    // no semantic instructions
+    Goto(bb_asm7_n5)
+
+bb_asm7_n4 [yul]:
+    // predecessors: bb_asm7_n2
+    // ir_55 | source=yul | origin_facts=[fact_77, fact_41]
+    @condition Not(Ne(IsZero(to), 0x00))
+    Require(Not(Ne(IsZero(to), 0x00)))
+    @execution-values [0x00, 0x00]
+    Revert()
+
+bb_asm7_n5 [yul]:
+    // predecessors: bb_asm7_n3
+    // no semantic instructions
+    Goto(bb_asm7_n6)
+
+bb_asm7_n6 [yul]:
+    // predecessors: bb_asm7_n5
+    // no semantic instructions
+    Goto(bb_asm7_n7)
+
+bb_asm7_n7 [yul]:
+    // predecessors: bb_asm7_n6
+    // ir_32 | source=yul | origin_facts=[fact_42, fact_43]
+    @condition Not(IsZero(to))
+    __sseir_eval_asm_s_5_1 = Keccak(0x00, 0x40)
+    // ir_33 | source=yul | origin_facts=[fact_43, fact_42]
+    @condition Not(IsZero(to))
+    @execution Assign(expr=__sseir_eval_asm_s_5_1)
+    ownerSlot__ssa1 = Keccak(0x00, 0x40)
+    Goto(bb_asm7_n8)
+
+bb_asm7_n8 [yul]:
+    // predecessors: bb_asm7_n7
+    // no semantic instructions
+    Goto(bb_asm7_n9)
+
+bb_asm7_n9 [yul]:
+    // predecessors: bb_asm7_n8
+    // no semantic instructions
+    Goto(bb_asm7_n10)
+
+bb_asm7_n10 [yul]:
+    // predecessors: bb_asm7_n9
+    // ir_34 | source=yul | origin_facts=[fact_44, fact_45]
+    @condition Not(IsZero(to))
+    __sseir_eval_asm_s_8_1 = Keccak(0x00, 0x40)
+    // ir_35 | source=yul | origin_facts=[fact_45, fact_44]
+    @condition Not(IsZero(to))
+    @execution Assign(expr=__sseir_eval_asm_s_8_1)
+    allowanceSlot__ssa2 = Keccak(0x00, 0x40)
+    Goto(bb_asm7_n11)
+
+bb_asm7_n11 [yul]:
+    // predecessors: bb_asm7_n10
+    // ir_36 | source=yul | origin_facts=[fact_46]
+    @condition Not(IsZero(to))
+    @execution StateRead(expr=sload(allowanceSlot))
+    __sseir_eval_asm_s_9_1 = StateRead(MappingLocation(base = <unknown>, keys = [allowanceSlot]))
+    Goto(bb_asm7_n12)
+
+bb_asm7_n12 [yul]:
+    // predecessors: bb_asm7_n11
+    // no semantic instructions
+    // terminator origin_facts=[fact_48]
+    @execution-condition Lt(currentAllowance__ssa3, value)
+    Branch(Lt(currentAllowance, value), bb_asm7_n14, bb_asm7_n13)
+
+bb_asm7_n13 [yul]:
+    // predecessors: bb_asm7_n12
+    // no semantic instructions
+    Goto(bb_asm7_n15)
+
+bb_asm7_n14 [yul]:
+    // predecessors: bb_asm7_n12
+    // ir_54 | source=yul | origin_facts=[fact_76]
+    @condition Not(Ne(__sseir_eval_asm_s_10_1, 0x00))
+    Require(Not(Ne(__sseir_eval_asm_s_10_1, 0x00)))
+    @execution-values [0x00, 0x00]
+    Revert()
+
+bb_asm7_n15 [yul]:
+    // predecessors: bb_asm7_n13
+    // no semantic instructions
+    // terminator origin_facts=[fact_49, fact_50]
+    @execution-condition Eq(currentAllowance__ssa3, __sseir_eval_asm_s_12_1)
+    Branch(Eq(currentAllowance, __sseir_eval_asm_s_12_1), bb_asm7_n17, bb_asm7_n16)
+
+bb_asm7_n16 [yul]:
+    // predecessors: bb_asm7_n17, bb_asm7_n15
+    // ir_37 | source=yul | origin_facts=[fact_50, fact_47, fact_49]
+    @condition And(Not(IsZero(to)), Not(Lt(currentAllowance, value)))
+    @execution Assign(expr=Eq(__sseir_eval_asm_s_9_1, BitNot(0x00)))
+    __sseir_eval_asm_s_12_2 = Eq(currentAllowance, BitNot(0x00))
+    // ir_38 | source=yul | origin_facts=[fact_51, fact_49, fact_50, fact_47]
+    @condition And(Not(IsZero(to)), Not(Lt(currentAllowance, value)))
+    @execution Assign(expr=IsZero(__sseir_eval_asm_s_12_2))
+    __sseir_eval_asm_s_12_3 = Eq(Eq(__sseir_eval_asm_s_9_1, BitNot(0x00)), 0x00)
+    Goto(bb_asm7_n18)
+
+bb_asm7_n17 [yul]:
+    // predecessors: bb_asm7_n15
+    // ir_39 | source=yul | origin_facts=[fact_52]
+    @condition And(
+    And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+    IsZero(Eq(currentAllowance, BitNot(0x00)))
+)
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_9_1, value))
+    StateWrite(
+        MappingLocation(base = <unknown>, keys = [allowanceSlot]),
+        Sub(currentAllowance, value)
+    )
+    Goto(bb_asm7_n16)
+
+bb_asm7_n18 [yul]:
+    // predecessors: bb_asm7_n16
+    // no semantic instructions
+    Goto(bb_asm7_n19)
+
+bb_asm7_n19 [yul]:
+    // predecessors: bb_asm7_n18
+    // no semantic instructions
+    Goto(bb_asm7_n20)
+
+bb_asm7_n20 [yul]:
+    // predecessors: bb_asm7_n19
+    // no semantic instructions
+    Goto(bb_asm7_n21)
+
+bb_asm7_n21 [yul]:
+    // predecessors: bb_asm7_n20
+    // ir_40 | source=yul | origin_facts=[fact_56, fact_54, fact_58, fact_53]
+    @condition And(
+    And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+    Not(IsZero(Eq(currentAllowance, BitNot(0x00))))
+)
+    @execution StateRead(expr=sload(fromSlot))
+    __sseir_eval_asm_s_17_1 = StateRead(MappingLocation(base = <unknown>, keys = [fromSlot__ssa4]))
+    // ir_41 | source=yul | origin_facts=[fact_57, fact_55, fact_59, fact_53]
+    @condition And(
+    And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+    IsZero(Eq(currentAllowance, BitNot(0x00)))
+)
+    @execution StateRead(expr=sload(fromSlot))
+    __sseir_eval_asm_s_17_1 = StateRead(MappingLocation(base = <unknown>, keys = [fromSlot__ssa5]))
+    Goto(bb_asm7_n22)
+
+bb_asm7_n22 [yul]:
+    // predecessors: bb_asm7_n21
+    // no semantic instructions
+    // terminator origin_facts=[fact_60]
+    Branch(Lt(fromBalance, value), bb_asm7_n24, bb_asm7_n23)
+
+bb_asm7_n23 [yul]:
+    // predecessors: bb_asm7_n22
+    // no semantic instructions
+    Goto(bb_asm7_n25)
+
+bb_asm7_n24 [yul]:
+    // predecessors: bb_asm7_n22
+    // ir_53 | source=yul | origin_facts=[fact_75]
+    @condition Not(Ne(__sseir_eval_asm_s_18_1, 0x00))
+    Require(Not(Ne(__sseir_eval_asm_s_18_1, 0x00)))
+    @execution-values [0x00, 0x00]
+    Revert()
+
+bb_asm7_n25 [yul]:
+    // predecessors: bb_asm7_n23
+    // no semantic instructions
+    Goto(bb_asm7_n26)
+
+bb_asm7_n26 [yul]:
+    // predecessors: bb_asm7_n25
+    // no semantic instructions
+    Goto(bb_asm7_n27)
+
+bb_asm7_n27 [yul]:
+    // predecessors: bb_asm7_n26
+    // ir_42 | source=yul | origin_facts=[fact_61]
+    @condition And(And(Not(IsZero(to)), Not(Lt(currentAllowance, value))), Not(Lt(fromBalance, value)))
+    __sseir_eval_asm_s_22_1 = Keccak(0x00, 0x40)
+    Goto(bb_asm7_n28)
+
+bb_asm7_n28 [yul]:
+    // predecessors: bb_asm7_n27
+    // ir_43 | source=yul | origin_facts=[fact_64, fact_54, fact_53]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        Not(IsZero(Eq(currentAllowance, BitNot(0x00))))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    StateWrite(
+        MappingLocation(base = <unknown>, keys = [fromSlot__ssa4]),
+        Sub(fromBalance, value)
+    )
+    // ir_44 | source=yul | origin_facts=[fact_65, fact_55, fact_53]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        IsZero(Eq(currentAllowance, BitNot(0x00)))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    StateWrite(
+        MappingLocation(base = <unknown>, keys = [fromSlot__ssa5]),
+        Sub(fromBalance, value)
+    )
+    Goto(bb_asm7_n29)
+
+bb_asm7_n29 [yul]:
+    // predecessors: bb_asm7_n28
+    // ir_45 | source=yul | origin_facts=[fact_66, fact_62]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        Not(IsZero(Eq(currentAllowance, BitNot(0x00))))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    @execution StateRead(expr=sload(toSlot))
+    __sseir_eval_asm_s_24_1 = StateRead(MappingLocation(base = <unknown>, keys = [toSlot__ssa8]))
+    // ir_46 | source=yul | origin_facts=[fact_67, fact_63]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        IsZero(Eq(currentAllowance, BitNot(0x00)))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    @execution StateRead(expr=sload(toSlot))
+    __sseir_eval_asm_s_24_1 = StateRead(MappingLocation(base = <unknown>, keys = [toSlot__ssa9]))
+    // ir_47 | source=yul | origin_facts=[fact_68, fact_62]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        Not(IsZero(Eq(currentAllowance, BitNot(0x00))))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    StateWrite(
+        MappingLocation(base = <unknown>, keys = [toSlot__ssa8]),
+        Add(sload(toSlot), value)
+    )
+    // ir_48 | source=yul | origin_facts=[fact_69, fact_63]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        IsZero(Eq(currentAllowance, BitNot(0x00)))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    StateWrite(
+        MappingLocation(base = <unknown>, keys = [toSlot__ssa9]),
+        Add(sload(toSlot), value)
+    )
+    Goto(bb_asm7_n30)
+
+bb_asm7_n30 [yul]:
+    // predecessors: bb_asm7_n29
+    // no semantic instructions
+    Goto(bb_asm7_n31)
+
+bb_asm7_n31 [yul]:
+    // predecessors: bb_asm7_n30
+    // ir_49 | source=yul | origin_facts=[fact_70]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        Not(IsZero(Eq(currentAllowance, BitNot(0x00))))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    @execution EventEmit(args=[0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to])
+    EventEmit(Transfer, from, to, value)
+    // ir_50 | source=yul | origin_facts=[fact_71]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        IsZero(Eq(currentAllowance, BitNot(0x00)))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    @execution EventEmit(args=[0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to])
+    EventEmit(Transfer, from, to, value)
+    Goto(bb_asm7_n32)
+
+bb_asm7_n32 [yul]:
+    // predecessors: bb_asm7_n31
+    // ir_51 | source=yul | origin_facts=[fact_72]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        Not(IsZero(Eq(currentAllowance, BitNot(0x00))))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    ok__ssa10 = 1
+    // ir_52 | source=yul | origin_facts=[fact_73]
+    @condition And(
+    And(
+        And(Not(IsZero(to)), Not(Lt(currentAllowance, value))),
+        IsZero(Eq(currentAllowance, BitNot(0x00)))
+    ),
+    Not(Lt(fromBalance, value))
+)
+    ok__ssa11 = 1
+    // ir_56 | source=yul, solidity | origin_facts=[-]
+    ok = Phi(ok__ssa10, ok__ssa11)
+    Goto(bb_asm7_n1)
+
+CFGEdges:
+    bb_asm7_n0 -> bb_asm7_n2 [next]
+    bb_asm7_n2 -> bb_asm7_n4 [true: iszero(to)] predicate=iszero(to)
+    bb_asm7_n2 -> bb_asm7_n3 [false: !(iszero(to))] predicate=!(iszero(to))
+    bb_asm7_n3 -> bb_asm7_n5 [next]
+    bb_asm7_n5 -> bb_asm7_n6 [next]
+    bb_asm7_n6 -> bb_asm7_n7 [next]
+    bb_asm7_n7 -> bb_asm7_n8 [next]
+    bb_asm7_n8 -> bb_asm7_n9 [next]
+    bb_asm7_n9 -> bb_asm7_n10 [next]
+    bb_asm7_n10 -> bb_asm7_n11 [next]
+    bb_asm7_n11 -> bb_asm7_n12 [next]
+    bb_asm7_n12 -> bb_asm7_n14 [true: lt(currentAllowance, value)] predicate=lt(currentAllowance, value)
+    bb_asm7_n12 -> bb_asm7_n13 [false: !(lt(currentAllowance, value))] predicate=!(lt(currentAllowance, value))
+    bb_asm7_n13 -> bb_asm7_n15 [next]
+    bb_asm7_n15 -> bb_asm7_n17 [true: iszero(eq(currentAllowance, not(0)))] predicate=iszero(eq(currentAllowance, not(0)))
+    bb_asm7_n17 -> bb_asm7_n16 [next]
+    bb_asm7_n15 -> bb_asm7_n16 [false: !(iszero(eq(currentAllowance, not(0))))] predicate=!(iszero(eq(currentAllowance, not(0))))
+    bb_asm7_n16 -> bb_asm7_n18 [next]
+    bb_asm7_n18 -> bb_asm7_n19 [next]
+    bb_asm7_n19 -> bb_asm7_n20 [next]
+    bb_asm7_n20 -> bb_asm7_n21 [next]
+    bb_asm7_n21 -> bb_asm7_n22 [next]
+    bb_asm7_n22 -> bb_asm7_n24 [true: lt(fromBalance, value)] predicate=lt(fromBalance, value)
+    bb_asm7_n22 -> bb_asm7_n23 [false: !(lt(fromBalance, value))] predicate=!(lt(fromBalance, value))
+    bb_asm7_n23 -> bb_asm7_n25 [next]
+    bb_asm7_n25 -> bb_asm7_n26 [next]
+    bb_asm7_n26 -> bb_asm7_n27 [next]
+    bb_asm7_n27 -> bb_asm7_n28 [next]
+    bb_asm7_n28 -> bb_asm7_n29 [next]
+    bb_asm7_n29 -> bb_asm7_n30 [next]
+    bb_asm7_n30 -> bb_asm7_n31 [next]
+    bb_asm7_n31 -> bb_asm7_n32 [next]
+    bb_asm7_n32 -> bb_asm7_n1 [next]
+    bb_sol_slither_n0 -> bb_asm7_n0 [fallthrough]
+    bb_asm7_n1 -> bb_sol_slither_n40 [fallthrough]
+
+
+Function YulHeavyERC20.burn(uint256)
+    contract = YulHeavyERC20
+    signature = burn(uint256)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm8_n0)
+
+bb_asm8_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm8_n2)
+
+bb_asm8_n1 [yul]:
+    // predecessors: bb_asm8_n12
+    // no semantic instructions
+    Fallthrough
+
+bb_asm8_n2 [yul]:
+    // predecessors: bb_asm8_n0
+    // no semantic instructions
+    Goto(bb_asm8_n3)
+
+bb_asm8_n3 [yul]:
+    // predecessors: bb_asm8_n2
+    // no semantic instructions
+    Goto(bb_asm8_n4)
+
+bb_asm8_n4 [yul]:
+    // predecessors: bb_asm8_n3
+    // ir_57 | source=yul | origin_facts=[fact_78, fact_79]
+    __sseir_eval_asm_s_3_1 = Keccak(0x00, 0x40)
+    // ir_58 | source=yul | origin_facts=[fact_79, fact_78]
+    @execution Assign(expr=__sseir_eval_asm_s_3_1)
+    accountSlot__ssa1 = Keccak(0x00, 0x40)
+    Goto(bb_asm8_n5)
+
+bb_asm8_n5 [yul]:
+    // predecessors: bb_asm8_n4
+    // ir_59 | source=yul | origin_facts=[fact_80]
+    @execution StateRead(expr=sload(accountSlot))
+    __sseir_eval_asm_s_4_1 = StateRead(MappingLocation(base = <unknown>, keys = [accountSlot]))
+    Goto(bb_asm8_n6)
+
+bb_asm8_n6 [yul]:
+    // predecessors: bb_asm8_n5
+    // no semantic instructions
+    // terminator origin_facts=[fact_82]
+    @execution-condition Lt(accountBalance__ssa2, value)
+    Branch(Lt(accountBalance, value), bb_asm8_n8, bb_asm8_n7)
+
+bb_asm8_n7 [yul]:
+    // predecessors: bb_asm8_n6
+    // no semantic instructions
+    Goto(bb_asm8_n9)
+
+bb_asm8_n8 [yul]:
+    // predecessors: bb_asm8_n6
+    // ir_64 | source=yul | origin_facts=[fact_87, fact_82, fact_81]
+    @condition Not(Ne(Lt(__sseir_eval_asm_s_4_1, value), 0x00))
+    Require(Not(Ne(Lt(__sseir_eval_asm_s_4_1, value), 0x00)))
+    @execution-values [0x00, 0x00]
+    Revert()
+
+bb_asm8_n9 [yul]:
+    // predecessors: bb_asm8_n7
+    // ir_60 | source=yul | origin_facts=[fact_83]
+    @condition Not(Lt(accountBalance, value))
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_4_1, value))
+    StateWrite(
+        MappingLocation(base = <unknown>, keys = [accountSlot]),
+        Sub(accountBalance, value)
+    )
+    Goto(bb_asm8_n10)
+
+bb_asm8_n10 [yul]:
+    // predecessors: bb_asm8_n9
+    // ir_61 | source=yul | origin_facts=[fact_84]
+    @condition Not(Lt(accountBalance, value))
+    @execution StateRead(expr=sload(_totalSupply.slot))
+    __sseir_eval_asm_s_8_1 = StateRead(StateVariableLocation(_totalSupply))
+    // ir_62 | source=yul | origin_facts=[fact_85]
+    @condition Not(Lt(accountBalance, value))
+    @execution StateWrite(expr=Sub(__sseir_eval_asm_s_8_1, value))
+    StateWrite(StateVariableLocation(_totalSupply), Sub(_totalSupply, value))
+    Goto(bb_asm8_n11)
+
+bb_asm8_n11 [yul]:
+    // predecessors: bb_asm8_n10
+    // no semantic instructions
+    Goto(bb_asm8_n12)
+
+bb_asm8_n12 [yul]:
+    // predecessors: bb_asm8_n11
+    // ir_63 | source=yul | origin_facts=[fact_86]
+    @condition Not(Lt(accountBalance, value))
+    @execution EventEmit(args=[0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, __sseir_eval_asm_s_10_1, 0x00])
+    EventEmit(Transfer, msg.sender, 0x00, value)
+    Goto(bb_asm8_n1)
+
+CFGEdges:
+    bb_asm8_n0 -> bb_asm8_n2 [next]
+    bb_asm8_n2 -> bb_asm8_n3 [next]
+    bb_asm8_n3 -> bb_asm8_n4 [next]
+    bb_asm8_n4 -> bb_asm8_n5 [next]
+    bb_asm8_n5 -> bb_asm8_n6 [next]
+    bb_asm8_n6 -> bb_asm8_n8 [true: lt(accountBalance, value)] predicate=lt(accountBalance, value)
+    bb_asm8_n6 -> bb_asm8_n7 [false: !(lt(accountBalance, value))] predicate=!(lt(accountBalance, value))
+    bb_asm8_n7 -> bb_asm8_n9 [next]
+    bb_asm8_n9 -> bb_asm8_n10 [next]
+    bb_asm8_n10 -> bb_asm8_n11 [next]
+    bb_asm8_n11 -> bb_asm8_n12 [next]
+    bb_asm8_n12 -> bb_asm8_n1 [next]
+    bb_sol_slither_n0 -> bb_asm8_n0 [fallthrough]
+
+
+Function YulHeavyERC20.batchBalanceSum(address[])
+    contract = YulHeavyERC20
+    signature = batchBalanceSum(address[])
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm9_n0)
+
+bb_sol_slither_n14 [solidity]:
+    // predecessors: bb_asm9_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_91]
+    Return(result__ssa7)
+
+bb_asm9_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm9_n2)
+
+bb_asm9_n1 [yul]:
+    // predecessors: bb_asm9_n4
+    // no semantic instructions
+    Goto(bb_sol_slither_n14)
+
+bb_asm9_n2 [yul]:
+    // predecessors: bb_asm9_n0
+    // ir_65 | source=yul | origin_facts=[fact_88]
+    i__ssa1 = 0
+    Goto(bb_asm9_n3)
+
+bb_asm9_n3 [yul]:
+    // predecessors: bb_asm9_n2, bb_asm9_n10
+    // no semantic instructions
+    Branch(OpaqueExpression("for condition lt(i, accounts.length)"), bb_asm9_n6, bb_asm9_n4)
+
+bb_asm9_n4 [yul]:
+    // predecessors: bb_asm9_n3
+    // no semantic instructions
+    Goto(bb_asm9_n1)
+
+bb_asm9_n5 [yul]:
+    // predecessors: bb_asm9_n9
+    // ir_66 | source=yul | origin_facts=[fact_89]
+    i__ssa6 = Phi(
+        OpaqueExpression("{'edge': 'preheader', 'predecessor': 2, 'value': 'i__ssa1', 'condition': 'entry'}"),
+        OpaqueExpression("{'edge': 'backedge', 'predecessor': 10, 'value': 'i__ssa10', 'condition': 'lt(i, accounts.length)'}")
+    )
+    // ir_67 | source=yul | origin_facts=[fact_90]
+    result__ssa7 = Phi(
+        OpaqueExpression("{'edge': 'preheader', 'value': '0', 'source': 'solidity_named_return_default', 'condition': 'entry'}"),
+        OpaqueExpression("{'edge': 'backedge', 'predecessor': 10, 'value': 'result__ssa9', 'condition': 'lt(i, accounts.length)'}")
+    )
+    Goto(bb_asm9_n10)
+
+bb_asm9_n6 [yul]:
+    // predecessors: bb_asm9_n3
+    // ir_68 | source=yul | origin_facts=[fact_93, fact_92]
+    @condition Lt(i, accounts.length)
+    __sseir_eval_asm_s_3_2 = Add(accounts.offset, Mul(i__ssa6, 0x20))
+    // ir_69 | source=yul | origin_facts=[fact_94, fact_93, fact_95, fact_92]
+    @condition Lt(i, accounts.length)
+    @execution Assign(expr=calldataload(__sseir_eval_asm_s_3_2))
+    __sseir_eval_asm_s_3_3 = calldataload(Add(accounts.offset, Mul(i__ssa6, 0x20)))
+    // ir_70 | source=yul | origin_facts=[fact_95, fact_92, fact_93, fact_94]
+    @condition Lt(i, accounts.length)
+    @execution Assign(expr=__sseir_eval_asm_s_3_3)
+    account__ssa8 = calldataload(Add(accounts.offset, Mul(i__ssa6, 0x20)))
+    Goto(bb_asm9_n7)
+
+bb_asm9_n7 [yul]:
+    // predecessors: bb_asm9_n6
+    // no semantic instructions
+    Goto(bb_asm9_n8)
+
+bb_asm9_n8 [yul]:
+    // predecessors: bb_asm9_n7
+    // no semantic instructions
+    Goto(bb_asm9_n9)
+
+bb_asm9_n9 [yul]:
+    // predecessors: bb_asm9_n8
+    // ir_71 | source=yul | origin_facts=[fact_96, fact_97]
+    @condition Lt(i, accounts.length)
+    __sseir_eval_asm_s_6_1 = Keccak(0, 0x40)
+    // ir_73 | source=yul | origin_facts=[fact_99, fact_96, fact_97, fact_100]
+    @condition Lt(i, accounts.length)
+    @execution Assign(expr=Add(result__ssa7, __sseir_eval_asm_s_6_2))
+    __sseir_eval_asm_s_6_3 = Add(result, __sseir_eval_asm_s_6_2)
+    // ir_74 | source=yul | origin_facts=[fact_100, fact_96, fact_97, fact_99]
+    @condition Lt(i, accounts.length)
+    @execution Assign(expr=__sseir_eval_asm_s_6_3)
+    result__ssa9 = Add(result__ssa7, __sseir_eval_asm_s_6_2)
+    // ir_72 | source=yul | origin_facts=[fact_98, fact_97]
+    @condition Lt(i, accounts.length)
+    @execution StateRead(expr=sload(__sseir_eval_asm_s_6_1))
+    __sseir_eval_asm_s_6_2 = StateRead(MappingLocation(base = _balances, keys = [account]))
+    // ir_77 | source=yul, solidity | origin_facts=[-]
+    result = result__ssa9
+    // ir_78 | source=yul | origin_facts=[-]
+    __sseir_eval_asm_s_6_1 = MemoryHash(0, 0x40)
+    Goto(bb_asm9_n5)
+
+bb_asm9_n10 [yul]:
+    // predecessors: bb_asm9_n5
+    // ir_75 | source=yul | origin_facts=[fact_101, fact_102]
+    @condition Lt(i, accounts.length)
+    @execution Assign(expr=Add(i__ssa6, 1))
+    __sseir_eval_asm_s_7_1 = Add(i, 1)
+    // ir_76 | source=yul | origin_facts=[fact_102, fact_101]
+    @condition Lt(i, accounts.length)
+    @execution Assign(expr=__sseir_eval_asm_s_7_1)
+    i__ssa10 = Add(i__ssa6, 1)
+    Goto(bb_asm9_n3)
+
+CFGEdges:
+    bb_asm9_n0 -> bb_asm9_n2 [next]
+    bb_asm9_n2 -> bb_asm9_n3 [next]
+    bb_asm9_n3 -> bb_asm9_n6 [true: lt(i, accounts.length)] predicate=lt(i, accounts.length)
+    bb_asm9_n6 -> bb_asm9_n7 [next]
+    bb_asm9_n7 -> bb_asm9_n8 [next]
+    bb_asm9_n8 -> bb_asm9_n9 [next]
+    bb_asm9_n9 -> bb_asm9_n5 [next]
+    bb_asm9_n5 -> bb_asm9_n10 [next]
+    bb_asm9_n10 -> bb_asm9_n3 [loop back]
+    bb_asm9_n3 -> bb_asm9_n4 [loop exit: !(lt(i, accounts.length))]
+    bb_asm9_n4 -> bb_asm9_n1 [next]
+    bb_sol_slither_n0 -> bb_asm9_n0 [fallthrough]
+    bb_asm9_n1 -> bb_sol_slither_n14 [fallthrough]
+
+
+Function YulHeavyERC20.hasCode(address)
+    contract = YulHeavyERC20
+    signature = hasCode(address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm10_n0)
+
+bb_sol_slither_n4 [solidity]:
+    // predecessors: bb_asm10_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_107, fact_106, fact_105, fact_104, fact_103]
+    Return(IsZero(IsZero(extcodesize(account))))
+
+bb_asm10_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm10_n2)
+
+bb_asm10_n1 [yul]:
+    // predecessors: bb_asm10_n2
+    // no semantic instructions
+    Goto(bb_sol_slither_n4)
+
+bb_asm10_n2 [yul]:
+    // predecessors: bb_asm10_n0
+    // ir_79 | source=yul, solidity | origin_facts=[-]
+    result = result__ssa1
+    Goto(bb_asm10_n1)
+
+CFGEdges:
+    bb_asm10_n0 -> bb_asm10_n2 [next]
+    bb_asm10_n2 -> bb_asm10_n1 [next]
+    bb_sol_slither_n0 -> bb_asm10_n0 [fallthrough]
+    bb_asm10_n1 -> bb_sol_slither_n4 [fallthrough]
+
+
+Function YulHeavyERC20.externalBalanceOf(address, address)
+    contract = YulHeavyERC20
+    signature = externalBalanceOf(address, address)
+
+bb_sol_slither_n0 [solidity]:
+    // no semantic instructions
+    Goto(bb_asm11_n0)
+
+bb_sol_slither_n13 [solidity]:
+    // predecessors: bb_asm11_n1
+    // no semantic instructions
+    // terminator origin_facts=[fact_119, fact_118, fact_117]
+    Return(call_output_word(__sseir_eval_asm_s_4_2, 0x00))
+
+bb_asm11_n0 [yul]:
+    // predecessors: bb_sol_slither_n0
+    // no semantic instructions
+    Goto(bb_asm11_n2)
+
+bb_asm11_n1 [yul]:
+    // predecessors: bb_asm11_n9
+    // no semantic instructions
+    Goto(bb_sol_slither_n13)
+
+bb_asm11_n2 [yul]:
+    // predecessors: bb_asm11_n0
+    // ir_80 | source=yul | origin_facts=[fact_108, fact_109]
+    __sseir_eval_asm_s_1_1 = mload(0x40)
+    // ir_81 | source=yul | origin_facts=[fact_109, fact_108]
+    @execution Assign(expr=__sseir_eval_asm_s_1_1)
+    ptr__ssa1 = mload(0x40)
+    Goto(bb_asm11_n3)
+
+bb_asm11_n3 [yul]:
+    // predecessors: bb_asm11_n2
+    // no semantic instructions
+    Goto(bb_asm11_n4)
+
+bb_asm11_n4 [yul]:
+    // predecessors: bb_asm11_n3
+    // no semantic instructions
+    Goto(bb_asm11_n5)
+
+bb_asm11_n5 [yul]:
+    // predecessors: bb_asm11_n4
+    // ir_82 | source=yul | origin_facts=[fact_111, fact_110, fact_112]
+    @execution ExternalCall(expr=staticcall(gas(), token, ptr, 0x24, ptr, 0x20), args=[gas(), token, ptr, 0x24, ptr, 0x20])
+    __sseir_eval_asm_s_4_2 = ExternalCall(
+        target=token,
+        gas=gasleft(),
+        selector_signature=balanceOf(address),
+        selector=0x70a08231,
+        data=data_1
+    )
+    @data-objects [data_1]
+    Goto(bb_asm11_n6)
+
+bb_asm11_n6 [yul]:
+    // predecessors: bb_asm11_n5
+    // no semantic instructions
+    // terminator origin_facts=[fact_113, fact_114, fact_115, fact_116]
+    @execution-condition IsZero(__sseir_eval_asm_s_5_3)
+    Branch(Eq(__sseir_eval_asm_s_5_3, 0x00), bb_asm11_n8, bb_asm11_n7)
+
+bb_asm11_n7 [yul]:
+    // predecessors: bb_asm11_n6
+    // no semantic instructions
+    Goto(bb_asm11_n9)
+
+bb_asm11_n8 [yul]:
+    // predecessors: bb_asm11_n6
+    // ir_83 | source=yul | origin_facts=[fact_120, fact_116, fact_115, fact_112, fact_114, fact_113]
+    @condition Not(Ne(IsZero(BitAnd(__sseir_eval_asm_s_4_2, Eq(returndatasize(), 0x20))), 0x00))
+    Require(
+        Not(Ne(IsZero(BitAnd(__sseir_eval_asm_s_4_2, Eq(returndatasize(), 0x20))), 0x00))
+    )
+    @execution-values [0x00, 0x00]
+    Revert()
+
+bb_asm11_n9 [yul]:
+    // predecessors: bb_asm11_n7
+    // ir_84 | source=yul, solidity | origin_facts=[-]
+    result = result__ssa3
+    Goto(bb_asm11_n1)
+
+CFGEdges:
+    bb_asm11_n0 -> bb_asm11_n2 [next]
+    bb_asm11_n2 -> bb_asm11_n3 [next]
+    bb_asm11_n3 -> bb_asm11_n4 [next]
+    bb_asm11_n4 -> bb_asm11_n5 [next]
+    bb_asm11_n5 -> bb_asm11_n6 [next]
+    bb_asm11_n6 -> bb_asm11_n8 [true: iszero(and(success, eq(returndatasize(), 0x20)))] predicate=iszero(and(success, eq(returndatasize(), 0x20)))
+    bb_asm11_n6 -> bb_asm11_n7 [false: !(iszero(and(success, eq(returndatasize(), 0x20))))] predicate=!(iszero(and(success, eq(returndatasize(), 0x20))))
+    bb_asm11_n7 -> bb_asm11_n9 [next]
+    bb_asm11_n9 -> bb_asm11_n1 [next]
+    bb_sol_slither_n0 -> bb_asm11_n0 [fallthrough]
+    bb_asm11_n1 -> bb_sol_slither_n13 [fallthrough]
+
+DataObjects:
+    data_1: kind=CallData, pointer=ptr, size=0x24, selector=0x70a08231, values=[account], encoding=abi, complete=true

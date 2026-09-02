@@ -83,6 +83,8 @@ class EffectLifter:
                 ],
             })
             for d in getattr(res, "memory_definitions", {}).values():
+                if getattr(d, "kind", None) == "loop_phi":
+                    continue
                 ref = self.ref(res, d.node_id, lookup, text_lookup, label)
                 for read_expr, read_slot in self.sload_reads_in_expr(getattr(d, "value", None)):
                     nested_inline_hash = self.inline_keccak_hash_effect(ref, res, d.node_id, read_slot, block_loop_context)
@@ -115,6 +117,36 @@ class EffectLifter:
                     "cfg_node_id": d.node_id,
                     "path_states": self.node_path_states(res, d.node_id),
                 }))
+            for phi in getattr(res, "value_phis", {}).values():
+                ref = self.ref(res, phi.header_node_id, lookup, text_lookup, label)
+                attrs = {
+                    "target": phi.name,
+                    "version": phi.version,
+                    "inputs": [dict(item) for item in phi.inputs],
+                    "phi_role": phi.phi_role,
+                    "cfg_node_id": phi.header_node_id,
+                    "loop_nodes": list(phi.loop_nodes),
+                    "backedge_sources": list(phi.backedge_sources),
+                    "language": "yul",
+                    "runtime_operation": False,
+                }
+                facts.append({"kind": "ValuePhi", **attrs})
+                effects.append(self.effect("ValuePhi", [ref], attrs))
+            for phi in getattr(res, "memory_phis", {}).values():
+                ref = self.ref(res, phi.header_node_id, lookup, text_lookup, label)
+                attrs = {
+                    "address": phi.address,
+                    "version": phi.version,
+                    "inputs": [dict(item) for item in phi.inputs],
+                    "phi_role": phi.phi_role,
+                    "cfg_node_id": phi.header_node_id,
+                    "loop_nodes": list(phi.loop_nodes),
+                    "backedge_sources": list(phi.backedge_sources),
+                    "language": "yul",
+                    "runtime_operation": False,
+                }
+                facts.append({"kind": "MemoryPhi", **attrs})
+                effects.append(self.effect("MemoryPhi", [ref], attrs))
             for rec in getattr(res, "loop_records", {}).values():
                 fact = {
                     "kind": "LoopMemoryRecord",
@@ -175,10 +207,20 @@ class EffectLifter:
                     atomized_value = self.atomized_value_for_node(
                         unit, block.block_id, nid, stmt, value_expr, direct_semantic_call
                     )
+                    atomic_assignment = YulAtomicOperationExtractor.assignment_for_node(
+                        getattr(unit, "_sseir_yul_atomic_operations", None),
+                        block.block_id,
+                        nid,
+                    )
+                    canonical_value = raw_value
+                    if atomized_value and atomic_assignment:
+                        assigned_inputs = list(atomic_assignment.get("arguments") or [])
+                        if len(assigned_inputs) == 1:
+                            canonical_value = str(assigned_inputs[0])
                     value_attrs = {
                         "targets": names,
-                        "value": raw_value,
-                        "value_normalized": normalize_expr(raw_value),
+                        "value": canonical_value,
+                        "value_normalized": normalize_expr(canonical_value),
                         "cfg_node_id": nid,
                         "language": "yul",
                         "path_states": self.node_path_states(res, nid),
@@ -186,6 +228,7 @@ class EffectLifter:
                     }
                     if atomized_value:
                         value_attrs["atomized_value"] = atomized_value
+                        value_attrs["atomic_assignment_id"] = atomic_assignment.get("atom_id") if atomic_assignment else None
                     value_effect = self.effect("ValueDef", [stmt], value_attrs)
                     if atomized_value:
                         effects.extend(self.evaluation_effects(
@@ -198,6 +241,11 @@ class EffectLifter:
                             context="value",
                         ))
                     effects.append(value_effect)
+                    if atomized_value:
+                        # The atomic table has already emitted the root call
+                        # and the final binding. Do not lift the original AST
+                        # call a second time below.
+                        call, vals = None, []
                 if call == "mload" and len(vals) == 1:
                     effects.append(self.effect("MemoryRead", [stmt], {
                         "read_from": vals[0],
@@ -282,6 +330,12 @@ class EffectLifter:
                     }))
                 elif call in {"call", "staticcall", "delegatecall", "callcode"}:
                     attrs = {"op": call, "args": vals, "cfg_node_id": nid, "path_states": self.node_path_states(res, nid)}
+                    if names:
+                        attrs["result"] = names[0]
+                        attrs["result_versions"] = self.created_value_versions(res, nid, names)
+                        versions = list(attrs["result_versions"].get(names[0]) or [])
+                        if len(versions) == 1:
+                            attrs["success_result"] = versions[0]
                     self.attach_call_memory(attrs, res, nid, vals, call, block_loop_context)
                     effects.append(self.effect({"call": "Call", "staticcall": "StaticCall", "delegatecall": "DelegateCall", "callcode": "CallCode"}[call], [stmt], attrs))
                 elif call and call.startswith("log") and call[3:].isdigit():
@@ -326,6 +380,7 @@ class EffectLifter:
                     reason,
                     block_loop_context,
                 ),
+                cfg=getattr(res, "cfg", None),
             )
             self.attach_yul_ssa_context(effects[block_effect_start:], res)
         if include_solidity:
@@ -964,6 +1019,7 @@ class EffectLifter:
             call = step.get("call")
             vals = [str(v) for v in step.get("raw_args") or []]
             nested_attr = "nested_in_condition" if context == "condition" else "nested_in_value"
+            emit_generic_step = True
             if call == "mload" and len(vals) == 1:
                 matching_outputs = [
                     item for item in previous_output_writes
@@ -1017,6 +1073,7 @@ class EffectLifter:
                     nested_attr: True,
                     "evaluation_step": dict(attrs),
                 }))
+                emit_generic_step = False
             elif call in {"call", "staticcall", "delegatecall", "callcode"}:
                 call_attrs = {
                     "op": call,
@@ -1030,6 +1087,7 @@ class EffectLifter:
                 }
                 self.attach_call_memory(call_attrs, res, nid, vals, call, block_loop_context)
                 out.append(self.effect({"call": "Call", "staticcall": "StaticCall", "delegatecall": "DelegateCall", "callcode": "CallCode"}[call], [stmt], call_attrs))
+                emit_generic_step = False
                 output_ptr = call_attrs.get("output_ptr")
                 output_size = call_attrs.get("output_size")
                 if output_ptr is not None:
@@ -1040,7 +1098,8 @@ class EffectLifter:
                         "output_size": output_size,
                         "effect_kind": {"call": "Call", "staticcall": "StaticCall", "delegatecall": "DelegateCall", "callcode": "CallCode"}[call],
                     })
-            out.append(self.effect("EvaluationStep", [stmt], attrs))
+            if emit_generic_step:
+                out.append(self.effect("EvaluationStep", [stmt], attrs))
         return out
 
     @staticmethod
@@ -1074,8 +1133,6 @@ class EffectLifter:
         value_expr: Any,
         direct_semantic_call: bool,
     ) -> dict[str, Any] | None:
-        if direct_semantic_call:
-            return None
         table = getattr(unit, "_sseir_yul_atomic_operations", None)
         atomic = YulAtomicOperationExtractor.evaluation_for_node(table, assembly_block_id, node_id)
         if atomic and atomic.get("steps"):
@@ -1136,6 +1193,7 @@ class EffectLifter:
         cls,
         effects: list[EffectNode],
         memory_resolver: Any | None = None,
+        cfg: Any | None = None,
     ) -> None:
         """Connect a later mload to the closest compatible CALL output range.
 
@@ -1157,31 +1215,34 @@ class EffectLifter:
             if read_node is None:
                 continue
             read_ptr = read.attrs.get("read_from")
-            if cls.is_returndatasize_pointer(read_ptr, effects, read):
+            if cls.is_returndatasize_pointer(read_ptr, effects, read, cfg=cfg):
                 cls.attach_returndatasize_candidates(
                     read,
                     calls,
                     effects,
                     memory_resolver,
+                    cfg,
                 )
                 continue
             compatible = []
             for call in calls:
                 call_node = cls.effect_node_id(call)
-                if call_node is None or call_node >= read_node:
+                if call_node is None or not cls.cfg_dominates(cfg, call_node, read_node):
                     continue
                 if not cls.same_memory_pointer(read_ptr, call.attrs.get("output_ptr")):
                     continue
                 if not cls.effect_paths_compatible(call, read):
                     continue
-                if cls.memory_pointer_rewritten_between(writes, read_ptr, call_node, read_node):
+                if cls.memory_pointer_rewritten_between(writes, read_ptr, call_node, read_node, cfg):
                     continue
                 compatible.append(call)
             if not compatible:
                 continue
-            call = max(compatible, key=lambda item: cls.effect_node_id(item) or -1)
+            call = cls.latest_cfg_effect(compatible, cfg)
+            if call is None:
+                continue
             call_output = {
-                "call_temp": call.attrs.get("result") or call.effect_id,
+                "call_temp": call.attrs.get("success_result") or call.attrs.get("result") or call.effect_id,
                 "call": call.attrs.get("op"),
                 "output_ptr": call.attrs.get("output_ptr"),
                 "output_size": call.attrs.get("output_size"),
@@ -1193,7 +1254,7 @@ class EffectLifter:
             read.attrs["reads_after_call_output"] = [call_output]
             read.attrs["value_from_call_output"] = f"call_output_word({call_output['call_temp']}, 0)"
             cls.override_memory_read_with_call_output(query, call_output)
-        cls.attach_call_output_ranges(effects, calls, writes)
+        cls.attach_call_output_ranges(effects, calls, writes, cfg)
 
     @classmethod
     def attach_call_output_ranges(
@@ -1201,6 +1262,7 @@ class EffectLifter:
         effects: list[EffectNode],
         calls: list[EffectNode],
         writes: list[EffectNode],
+        cfg: Any | None = None,
     ) -> None:
         """Expand later MemorySSA sink queries with exact CALL-output paths.
 
@@ -1245,13 +1307,13 @@ class EffectLifter:
                     call_node = cls.effect_node_id(call)
                     output_ptr = int_text(str(call.attrs.get("output_ptr") or ""))
                     output_size = int_text(str(call.attrs.get("output_size") or ""))
-                    if call_node is None or call_node >= consumer_node or output_ptr is None or not output_size:
+                    if call_node is None or not cls.cfg_dominates(cfg, call_node, consumer_node) or output_ptr is None or not output_size:
                         continue
                     if not cls.ranges_overlap(query_ptr, query_size, output_ptr, output_size):
                         continue
                     if not any(cls.path_condition_implies(path, producer_path) for producer_path in call.attrs.get("path_states") or ["entry"]):
                         continue
-                    if cls.memory_range_rewritten_between(writes, output_ptr, output_size, call_node, consumer_node):
+                    if cls.memory_range_rewritten_between(writes, output_ptr, output_size, call_node, consumer_node, cfg):
                         continue
                     guarded_value = cls.guarded_call_output_value(path, call)
                     if guarded_value is None:
@@ -1260,7 +1322,11 @@ class EffectLifter:
                 if not candidates:
                     expanded_path_items.append(item)
                     continue
-                call, value = max(candidates, key=lambda pair: (cls.effect_node_id(pair[0]) or -1, order.get(pair[0].effect_id, -1)))
+                selected = cls.latest_cfg_effect([pair[0] for pair in candidates], cfg)
+                if selected is None:
+                    expanded_path_items.append(item)
+                    continue
+                call, value = next(pair for pair in candidates if pair[0] is selected)
                 fixed_size = cls.fixed_call_returndata_size(call)
                 if fixed_size is None:
                     expanded_path_items.append(item)
@@ -1316,11 +1382,12 @@ class EffectLifter:
         size: int,
         start_node: int,
         end_node: int,
+        cfg: Any | None = None,
     ) -> bool:
         for write in writes:
             node = cls.effect_node_id(write)
             address = int_text(str(write.attrs.get("address") or ""))
-            if node is None or address is None or not start_node < node < end_node:
+            if node is None or address is None or not cls.cfg_strictly_between(cfg, start_node, node, end_node):
                 continue
             width = 1 if write.attrs.get("write_kind") == "mstore8" else 32
             if cls.ranges_overlap(pointer, size, address, width):
@@ -1447,18 +1514,18 @@ class EffectLifter:
         calls: list[EffectNode],
         effects: list[EffectNode],
         memory_resolver: Any | None,
+        cfg: Any | None,
     ) -> None:
         read_node = cls.effect_node_id(read)
         if read_node is None:
             return
-        effect_order = {effect.effect_id: index for index, effect in enumerate(effects)}
         read_paths = read.attrs.get('path_states') or ['entry']
         selected: dict[str, EffectNode] = {}
         for read_path in read_paths:
             compatible = [
                 call for call in calls
                 if cls.effect_node_id(call) is not None
-                and cls.effect_node_id(call) <= read_node
+                and cls.cfg_dominates(cfg, cls.effect_node_id(call), read_node)
                 and any(
                     cls.path_condition_implies(read_path, producer_path)
                     for producer_path in (call.attrs.get('path_states') or ['entry'])
@@ -1466,11 +1533,9 @@ class EffectLifter:
             ]
             if not compatible:
                 continue
-            nearest = max(
-                compatible,
-                key=lambda item: (cls.effect_node_id(item) or -1, effect_order.get(item.effect_id, -1)),
-            )
-            selected[str(read_path)] = nearest
+            nearest = cls.latest_cfg_effect(compatible, cfg)
+            if nearest is not None:
+                selected[str(read_path)] = nearest
         candidates: list[dict[str, Any]] = []
         seen: set[tuple[str, str, int]] = set()
         for read_path, call in selected.items():
@@ -1479,7 +1544,7 @@ class EffectLifter:
             if fixed_size is None or call.attrs.get('op') != 'staticcall':
                 continue
             call_node = cls.effect_node_id(call)
-            call_temp = call.attrs.get('result') or call.effect_id
+            call_temp = call.attrs.get('success_result') or call.attrs.get('result') or call.effect_id
             for size in (fixed_size, 0):
                 key = (read_path, call.effect_id, size)
                 if key in seen:
@@ -1559,6 +1624,7 @@ class EffectLifter:
         effects: list[EffectNode],
         read: EffectNode,
         seen: set[str] | None = None,
+        cfg: Any | None = None,
     ) -> bool:
         text = str(pointer or '').strip()
         name, args = call_parts(text)
@@ -1576,19 +1642,22 @@ class EffectLifter:
             if effect.kind != 'ValueDef' or text not in (effect.attrs.get('targets') or []):
                 continue
             node = cls.effect_node_id(effect)
-            if read_node is not None and node is not None and node > read_node:
+            if read_node is not None and node is not None and not cls.cfg_dominates(cfg, node, read_node):
                 continue
             if not cls.effect_paths_compatible(effect, read):
                 continue
             definitions.append(effect)
         if not definitions:
             return False
-        latest = max(definitions, key=lambda item: cls.effect_node_id(item) or -1)
+        latest = cls.latest_cfg_effect(definitions, cfg)
+        if latest is None:
+            return False
         return cls.is_returndatasize_pointer(
             latest.attrs.get('value'),
             effects,
             read,
             seen,
+            cfg,
         )
 
     @staticmethod
@@ -1597,6 +1666,99 @@ class EffectLifter:
             return int(effect.attrs.get("cfg_node_id"))
         except (TypeError, ValueError):
             return None
+
+    @staticmethod
+    def cfg_successors(cfg: Any | None) -> dict[int, set[int]]:
+        if cfg is None:
+            return {}
+        out = {int(node.node_id): set() for node in getattr(cfg, "nodes", [])}
+        for edge in getattr(cfg, "edges", []):
+            out.setdefault(int(edge.source), set()).add(int(edge.target))
+        return out
+
+    @classmethod
+    def cfg_reaches(cls, cfg: Any | None, source: int, target: int) -> bool:
+        if source == target:
+            return True
+        if cfg is None:
+            return False
+        successors = cls.cfg_successors(cfg)
+        work = [source]
+        seen = {source}
+        while work:
+            current = work.pop()
+            for successor in successors.get(current, set()):
+                if successor == target:
+                    return True
+                if successor not in seen:
+                    seen.add(successor)
+                    work.append(successor)
+        return False
+
+    @classmethod
+    def cfg_dominators(cls, cfg: Any | None) -> dict[int, set[int]]:
+        """Compute classical iterative dominator sets for one Yul CFG."""
+        if cfg is None:
+            return {}
+        nodes = {int(node.node_id) for node in getattr(cfg, "nodes", [])}
+        entry = int(getattr(cfg, "entry"))
+        predecessors = {node: set() for node in nodes}
+        for edge in getattr(cfg, "edges", []):
+            predecessors.setdefault(int(edge.target), set()).add(int(edge.source))
+        dominators = {node: ({node} if node == entry else set(nodes)) for node in nodes}
+        changed = True
+        while changed:
+            changed = False
+            for node in nodes - {entry}:
+                preds = predecessors.get(node, set())
+                common = set.intersection(*(dominators[pred] for pred in preds)) if preds else set()
+                updated = {node} | common
+                if updated != dominators[node]:
+                    dominators[node] = updated
+                    changed = True
+        return dominators
+
+    @classmethod
+    def cfg_dominates(cls, cfg: Any | None, source: int, target: int) -> bool:
+        if source == target:
+            return True
+        if cfg is None:
+            # No ordering claim is made without a CFG.
+            return False
+        return source in cls.cfg_dominators(cfg).get(target, set())
+
+    @classmethod
+    def cfg_strictly_between(
+        cls,
+        cfg: Any | None,
+        start: int,
+        middle: int,
+        end: int,
+    ) -> bool:
+        if middle in {start, end}:
+            return False
+        return cls.cfg_reaches(cfg, start, middle) and cls.cfg_reaches(cfg, middle, end)
+
+    @classmethod
+    def latest_cfg_effect(
+        cls,
+        effects: list[EffectNode],
+        cfg: Any | None,
+    ) -> EffectNode | None:
+        """Select the unique nearest dominating producer in CFG order."""
+        if not effects:
+            return None
+        dominators = cls.cfg_dominators(cfg)
+        ranked = [
+            (len(dominators.get(node, set())), candidate)
+            for candidate in effects
+            if (node := cls.effect_node_id(candidate)) is not None
+        ]
+        if not ranked:
+            return None
+        best_depth = max(depth for depth, _candidate in ranked)
+        best = [candidate for depth, candidate in ranked if depth == best_depth]
+        return best[0] if len(best) == 1 else None
 
     @classmethod
     def effect_paths_compatible(cls, producer: EffectNode, consumer: EffectNode) -> bool:
@@ -1626,10 +1788,11 @@ class EffectLifter:
         pointer: Any,
         start_node: int,
         end_node: int,
+        cfg: Any | None = None,
     ) -> bool:
         for write in writes:
             node = cls.effect_node_id(write)
-            if node is None or not start_node < node < end_node:
+            if node is None or not cls.cfg_strictly_between(cfg, start_node, node, end_node):
                 continue
             if cls.same_memory_pointer(pointer, write.attrs.get("address")):
                 return True
@@ -1811,6 +1974,9 @@ class EffectLifter:
                     ),
                 })
             if records:
+                canonicalize = getattr(res, "canonicalize_value_path_records", None)
+                if callable(canonicalize):
+                    records = canonicalize(nid, name, created, records)
                 out[name] = records
         return out
 
@@ -1886,6 +2052,23 @@ class EffectLifter:
                     paths = cls.value_version_paths(res, nid, [str(name)], created=True)
                     if paths:
                         attrs["value_version_paths"] = paths
+            if effect.kind in {"EvaluationStep", "Branch"}:
+                expression = str(
+                    attrs.get("expression")
+                    or attrs.get("condition")
+                    or ""
+                )
+                incoming_names = sorted({
+                    str(name)
+                    for state in res.states_at(nid)
+                    for name in getattr(state, "values", {})
+                    if cls.identifier_in_text(str(name), expression)
+                })
+                operand_paths = cls.value_version_paths(
+                    res, nid, incoming_names, created=False
+                )
+                if operand_paths:
+                    attrs["operand_version_paths"] = operand_paths
             if effect.kind in {"MemoryHash", "StorageRead", "StorageWrite"}:
                 slot_name = attrs.get("slot") if effect.kind.startswith("Storage") else attrs.get("ptr")
                 if slot_name and cls.simple_identifier(str(slot_name)):

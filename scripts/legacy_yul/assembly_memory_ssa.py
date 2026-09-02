@@ -219,6 +219,10 @@ class MemorySSAResult:
     memory_definitions: dict[str, MemoryDefinition]
     value_definitions: dict[str, ValueDefinition]
     function_summaries: dict[str, LocalFunctionSummary] = field(default_factory=dict)
+    loop_memory_phis: dict[tuple[int, str], MemoryDefinition] = field(default_factory=dict)
+    loop_value_phis: dict[tuple[int, str], ValueDefinition] = field(default_factory=dict)
+    loop_join_memory_phis: dict[tuple[int, str], MemoryDefinition] = field(default_factory=dict)
+    loop_join_value_phis: dict[tuple[int, str], ValueDefinition] = field(default_factory=dict)
     truncated: bool = False
 
     def states_at(self, node_id: int) -> list[PathState]:
@@ -607,7 +611,7 @@ class MemorySSAAnalyzer:
             state.loop_bases.pop(nested_header, None)
         state.predicates = base_predicates
         widened_memory: dict[str, MemoryDefinition] = {}
-        for address in set(base_memory) | set(state.memory):
+        for address in sorted(set(base_memory) | set(state.memory)):
             before = base_memory.get(address)
             after = state.memory.get(address)
             if before is not None and after is not None and before.version == after.version:
@@ -628,7 +632,7 @@ class MemorySSAAnalyzer:
             widened_memory[address] = phi
 
         widened_values: dict[str, ValueDefinition] = {}
-        for name in set(base_values) | set(state.values):
+        for name in sorted(set(base_values) | set(state.values)):
             before = base_values.get(name)
             after = state.values.get(name)
             if before is not None and after is not None and before.version == after.version:
@@ -758,6 +762,10 @@ class MemorySSAAnalyzer:
             self.memory_definitions,
             self.value_definitions,
             function_summaries=self.function_summaries,
+            loop_memory_phis=self.loop_memory_phis,
+            loop_value_phis=self.loop_value_phis,
+            loop_join_memory_phis=self.loop_join_memory_phis,
+            loop_join_value_phis=self.loop_join_value_phis,
             truncated=self.truncated,
         )
 

@@ -102,11 +102,104 @@ class SemanticFactBridge:
             fact.setdefault("control_predecessors", [])
             fact["cfg_predecessor_blocks"] = block_predecessors.get(cfg_node, [])
 
+        self._bind_yul_outputs_to_solidity_returns(facts, semantic_input.control)
         facts.sort(key=self._sort_key)
         self._propagate_dominating_guards(facts, semantic_input.control)
         self._propagate_terminal_branch_guards(facts, semantic_input.control)
         self._link_control_predecessors(facts, block_predecessors)
         return facts
+
+    @classmethod
+    def _block_dominators(cls, control: Json) -> dict[str, set[str]]:
+        blocks = {
+            str(block.get("block_id")): block
+            for block in control.get("blocks") or []
+            if isinstance(block, dict) and block.get("block_id")
+        }
+        predecessors = {block_id: set() for block_id in blocks}
+        for edge in control.get("edges") or []:
+            if not isinstance(edge, dict):
+                continue
+            source = str(edge.get("from") or "")
+            target = str(edge.get("to") or "")
+            if source not in blocks or target not in blocks or cls._is_terminal_block(blocks[source]):
+                continue
+            predecessors[target].add(source)
+        roots = [block_id for block_id, preds in predecessors.items() if not preds]
+        all_blocks = set(blocks)
+        dominators = {
+            block_id: ({block_id} if block_id in roots else set(all_blocks))
+            for block_id in blocks
+        }
+        changed = True
+        while changed:
+            changed = False
+            for block_id in blocks:
+                if block_id in roots:
+                    continue
+                preds = predecessors[block_id]
+                common = set.intersection(*(dominators[pred] for pred in preds)) if preds else set()
+                updated = {block_id} | common
+                if updated != dominators[block_id]:
+                    dominators[block_id] = updated
+                    changed = True
+        return dominators
+
+    @classmethod
+    def _bind_yul_outputs_to_solidity_returns(cls, facts: list[Json], control: Json) -> None:
+        """Join Yul writes to Solidity named returns at the function boundary.
+
+        Only a unique nearest producer whose CFG block dominates the return is
+        accepted. This mirrors ordinary SSA def-use construction and avoids
+        selecting a source merely because it appears earlier in source text.
+        """
+        dominators = cls._block_dominators(control)
+        producers: dict[str, list[Json]] = {}
+        for fact in facts:
+            if fact.get("source_lang") != "yul" or fact.get("kind") not in {"ValueCompute", "ValuePhi"}:
+                continue
+            semantic = fact.get("semantic") or {}
+            source_target = str(semantic.get("source_target") or "")
+            if source_target and fact.get("lvalue"):
+                producers.setdefault(source_target, []).append(fact)
+
+        for fact in facts:
+            if fact.get("source_lang") != "solidity" or fact.get("kind") != "Return":
+                continue
+            semantic = fact.get("semantic") or {}
+            source_values = [str(value) for value in semantic.get("resolved_operands") or []]
+            if len(source_values) != 1:
+                continue
+            source_name = source_values[0]
+            target_block = cls._primary_cfg_node(fact)
+            if not target_block:
+                continue
+            candidates = []
+            for producer in producers.get(source_name, []):
+                producer_block = cls._primary_cfg_node(producer)
+                if producer_block and producer_block in dominators.get(target_block, set()):
+                    candidates.append(producer)
+            if not candidates:
+                continue
+            depth = {
+                id(candidate): len(dominators.get(cls._primary_cfg_node(candidate), set()))
+                for candidate in candidates
+            }
+            best_depth = max(depth.values())
+            nearest = [candidate for candidate in candidates if depth[id(candidate)] == best_depth]
+            if len(nearest) != 1:
+                continue
+            producer = nearest[0]
+            version = producer.get("lvalue")
+            fact["rvalue"] = version
+            fact["reads"] = [version]
+            semantic["values"] = [version]
+            semantic["yul_boundary_binding"] = {
+                "source_name": source_name,
+                "producer_fact": producer.get("fact_id"),
+                "producer_cfg_node": cls._primary_cfg_node(producer),
+                "proof": "producer_dominates_return",
+            }
 
     @staticmethod
     def _block_predecessors(control: Json) -> dict[str, list[str]]:
@@ -503,5 +596,15 @@ def renumber_and_relink_facts(facts: list[Json], prefix: str = "fact") -> list[J
                 id_map.get(str(value), str(value))
                 for value in item.get(field) or []
             ]
+        semantic = item.get("semantic")
+        if isinstance(semantic, dict):
+            binding = semantic.get("yul_boundary_binding")
+            if isinstance(binding, dict) and binding.get("producer_fact"):
+                binding = dict(binding)
+                old_producer = str(binding["producer_fact"])
+                binding["producer_fact"] = id_map.get(old_producer, old_producer)
+                semantic = dict(semantic)
+                semantic["yul_boundary_binding"] = binding
+                item["semantic"] = semantic
         out.append(item)
     return out

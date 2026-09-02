@@ -1,0 +1,707 @@
+AssemblyBlock 1: YulHeavyERC20.constructor(uint256 initialSupply)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(0x00, caller()) aliases=[0x00[literal]] origin=N3 src=667:22:0
+  mem_2 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N4 src=702:28:0
+  mem_3 = mstore(0x00, initialSupply) aliases=[0x00[literal]] origin=N6 src=801:27:0
+ValueDefinitions:
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N2 [statement] sstore(_totalSupply.slot, initialSupply)
+    effect: hard sink: sstore
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N3 [statement] mstore(0x00, caller())
+    effect: mem_1: mstore(0x00, caller()) aliases=[0x00]
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[0x00=mem_1] values=[-]
+  N4 [statement] mstore(0x20, _balances.slot)
+    effect: mem_2: mstore(32, _balances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[entry] memory=[0x00=mem_1] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N5 [statement] sstore(keccak256(0x00, 0x40), initialSupply)
+    effect: hard sink: sstore
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N6 [statement] mstore(0x00, initialSupply)
+    effect: mem_3: mstore(0x00, initialSupply) aliases=[0x00]
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N7 [statement] log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0, caller())
+    effect: hard sink: log3
+    in:  path=[entry] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+
+AssemblyBlock 2: YulHeavyERC20.totalSupply()
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+ValueDefinitions:
+  result__ssa1 = sload(_totalSupply.slot) origin=N2 src=1149:34:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[-] values=[result=result__ssa1]
+    out: path=[entry] memory=[-] values=[result=result__ssa1]
+  N2 [statement] result := sload(_totalSupply.slot)
+    effect: value defs: result__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[result=result__ssa1]
+
+AssemblyBlock 3: YulHeavyERC20.balanceOf(address account)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(0x00, account) aliases=[0x00[literal]] origin=N2 src=1311:21:0
+  mem_2 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N3 src=1345:28:0
+ValueDefinitions:
+  result__ssa1 = sload(keccak256(0x00, 0x40)) origin=N4 src=1386:38:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[result=result__ssa1]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[result=result__ssa1]
+  N2 [statement] mstore(0x00, account)
+    effect: mem_1: mstore(0x00, account) aliases=[0x00]
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[0x00=mem_1] values=[-]
+  N3 [statement] mstore(0x20, _balances.slot)
+    effect: mem_2: mstore(32, _balances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[entry] memory=[0x00=mem_1] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N4 [statement] result := sload(keccak256(0x00, 0x40))
+    effect: value defs: result__ssa1
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[result=result__ssa1]
+
+AssemblyBlock 4: YulHeavyERC20.allowance(address owner, address spender)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(0x00, owner) aliases=[0x00[literal]] origin=N2 src=1569:19:0
+  mem_2 = mstore(32, _allowances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N3 src=1601:30:0
+  mem_3 = mstore(0x00, spender) aliases=[0x00[literal]] origin=N5 src=1695:21:0
+  mem_4 = mstore(32, ownerSlot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N6 src=1729:23:0
+ValueDefinitions:
+  ownerSlot__ssa1 = keccak256(0x00, 0x40) origin=N4 src=1644:38:0
+  result__ssa2 = sload(keccak256(0x00, 0x40)) origin=N7 src=1765:38:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1, result=result__ssa2]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1, result=result__ssa2]
+  N2 [statement] mstore(0x00, owner)
+    effect: mem_1: mstore(0x00, owner) aliases=[0x00]
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[0x00=mem_1] values=[-]
+  N3 [statement] mstore(0x20, _allowances.slot)
+    effect: mem_2: mstore(32, _allowances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[entry] memory=[0x00=mem_1] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N4 [statement] let ownerSlot := keccak256(0x00, 0x40)
+    effect: value defs: ownerSlot__ssa1
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+  N5 [statement] mstore(0x00, spender)
+    effect: mem_3: mstore(0x00, spender) aliases=[0x00]
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+  N6 [statement] mstore(0x20, ownerSlot)
+    effect: mem_4: mstore(32, ownerSlot) aliases=[32, add(0x00,32)]
+    in:  path=[entry] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+  N7 [statement] result := sload(keccak256(0x00, 0x40))
+    effect: value defs: result__ssa2
+    in:  path=[entry] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1, result=result__ssa2]
+
+AssemblyBlock 5: YulHeavyERC20.approve(address spender, uint256 value)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(0x00, caller()) aliases=[0x00[literal]] origin=N2 src=1934:22:0
+  mem_2 = mstore(32, _allowances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N3 src=1969:30:0
+  mem_3 = mstore(0x00, spender) aliases=[0x00[literal]] origin=N5 src=2063:21:0
+  mem_4 = mstore(32, ownerSlot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N6 src=2097:23:0
+  mem_5 = mstore(0x00, value) aliases=[0x00[literal]] origin=N8 src=2183:19:0
+ValueDefinitions:
+  ownerSlot__ssa1 = keccak256(0x00, 0x40) origin=N4 src=2012:38:0
+  ok__ssa2 = 1 origin=N10 src=2425:7:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[ok=ok__ssa2, ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[ok=ok__ssa2, ownerSlot=ownerSlot__ssa1]
+  N2 [statement] mstore(0x00, caller())
+    effect: mem_1: mstore(0x00, caller()) aliases=[0x00]
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[0x00=mem_1] values=[-]
+  N3 [statement] mstore(0x20, _allowances.slot)
+    effect: mem_2: mstore(32, _allowances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[entry] memory=[0x00=mem_1] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N4 [statement] let ownerSlot := keccak256(0x00, 0x40)
+    effect: value defs: ownerSlot__ssa1
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+  N5 [statement] mstore(0x00, spender)
+    effect: mem_3: mstore(0x00, spender) aliases=[0x00]
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+  N6 [statement] mstore(0x20, ownerSlot)
+    effect: mem_4: mstore(32, ownerSlot) aliases=[32, add(0x00,32)]
+    in:  path=[entry] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+  N7 [statement] sstore(keccak256(0x00, 0x40), value)
+    effect: hard sink: sstore
+    in:  path=[entry] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+  N8 [statement] mstore(0x00, value)
+    effect: mem_5: mstore(0x00, value) aliases=[0x00]
+    in:  path=[entry] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+  N9 [statement] log3(0x00, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), spender)
+    effect: hard sink: log3
+    in:  path=[entry] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+  N10 [statement] ok := 1
+    effect: value defs: ok__ssa2
+    in:  path=[entry] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[ok=ok__ssa2, ownerSlot=ownerSlot__ssa1]
+
+AssemblyBlock 6: YulHeavyERC20.transfer(address to, uint256 value)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(0x00, caller()) aliases=[0x00[literal]] origin=N5 src=2609:22:0
+  mem_2 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N6 src=2644:28:0
+  mem_3 = mstore(0x00, to) aliases=[0x00[literal]] origin=N12 src=2844:16:0
+  mem_4 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N13 src=2873:28:0
+  mem_5 = mstore(0x00, value) aliases=[0x00[literal]] origin=N17 src=3072:19:0
+ValueDefinitions:
+  fromSlot__ssa1 = keccak256(0x00, 0x40) origin=N7 src=2685:37:0
+  fromBalance__ssa2 = sload(fromSlot) origin=N8 src=2735:34:0
+  toSlot__ssa3 = keccak256(0x00, 0x40) origin=N14 src=2914:35:0
+  ok__ssa4 = 1 origin=N19 src=3309:7:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[iszero(to)] memory=[-] values=[-]
+    in:  path=[!(iszero(to)) && lt(fromBalance, value)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, ok=ok__ssa4, toSlot=toSlot__ssa3]
+    out: path=[iszero(to)] memory=[-] values=[-]
+    out: path=[!(iszero(to)) && lt(fromBalance, value)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, ok=ok__ssa4, toSlot=toSlot__ssa3]
+  N2 [condition] if iszero(to)
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N3 [merge] if merge
+    in:  path=[!(iszero(to))] memory=[-] values=[-]
+    out: path=[!(iszero(to))] memory=[-] values=[-]
+  N4 [terminal] revert(0x00, 0x00)
+    effect: hard sink: revert
+    in:  path=[iszero(to)] memory=[-] values=[-]
+    out: path=[iszero(to)] memory=[-] values=[-]
+  N5 [statement] mstore(0x00, caller())
+    effect: mem_1: mstore(0x00, caller()) aliases=[0x00]
+    in:  path=[!(iszero(to))] memory=[-] values=[-]
+    out: path=[!(iszero(to))] memory=[0x00=mem_1] values=[-]
+  N6 [statement] mstore(0x20, _balances.slot)
+    effect: mem_2: mstore(32, _balances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[!(iszero(to))] memory=[0x00=mem_1] values=[-]
+    out: path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N7 [statement] let fromSlot := keccak256(0x00, 0x40)
+    effect: value defs: fromSlot__ssa1
+    in:  path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromSlot=fromSlot__ssa1]
+  N8 [statement] let fromBalance := sload(fromSlot)
+    effect: value defs: fromBalance__ssa2
+    in:  path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromSlot=fromSlot__ssa1]
+    out: path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+  N9 [condition] if lt(fromBalance, value)
+    in:  path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+    out: path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+  N10 [merge] if merge
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+  N11 [terminal] revert(0x00, 0x00)
+    effect: hard sink: revert
+    in:  path=[!(iszero(to)) && lt(fromBalance, value)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+    out: path=[!(iszero(to)) && lt(fromBalance, value)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+  N12 [statement] mstore(0x00, to)
+    effect: mem_3: mstore(0x00, to) aliases=[0x00]
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+  N13 [statement] mstore(0x20, _balances.slot)
+    effect: mem_4: mstore(32, _balances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+  N14 [statement] let toSlot := keccak256(0x00, 0x40)
+    effect: value defs: toSlot__ssa3
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+  N15 [statement] sstore(fromSlot, sub(fromBalance, value))
+    effect: hard sink: sstore
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+  N16 [statement] sstore(toSlot, add(sload(toSlot), value))
+    effect: hard sink: sstore
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+  N17 [statement] mstore(0x00, value)
+    effect: mem_5: mstore(0x00, value) aliases=[0x00]
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+  N18 [statement] log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), to)
+    effect: hard sink: log3
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+  N19 [statement] ok := 1
+    effect: value defs: ok__ssa4
+    in:  path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, toSlot=toSlot__ssa3]
+    out: path=[!(iszero(to)) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[fromBalance=fromBalance__ssa2, fromSlot=fromSlot__ssa1, ok=ok__ssa4, toSlot=toSlot__ssa3]
+
+AssemblyBlock 7: YulHeavyERC20.transferFrom(address from, address to, uint256 value)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(0x00, from) aliases=[0x00[literal]] origin=N5 src=3511:18:0
+  mem_2 = mstore(32, _allowances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N6 src=3542:30:0
+  mem_3 = mstore(0x00, caller()) aliases=[0x00[literal]] origin=N8 src=3636:22:0
+  mem_4 = mstore(32, ownerSlot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N9 src=3671:23:0
+  mem_5 = mstore(0x00, from) aliases=[0x00[literal]] origin=N18 src=4022:18:0
+  mem_6 = mstore(0x00, from) aliases=[0x00[literal]] origin=N18 src=4022:18:0
+  mem_7 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N19 src=4053:28:0
+  mem_8 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N19 src=4053:28:0
+  mem_9 = mstore(0x00, to) aliases=[0x00[literal]] origin=N25 src=4253:16:0
+  mem_10 = mstore(0x00, to) aliases=[0x00[literal]] origin=N25 src=4253:16:0
+  mem_11 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N26 src=4282:28:0
+  mem_12 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N26 src=4282:28:0
+  mem_13 = mstore(0x00, value) aliases=[0x00[literal]] origin=N30 src=4480:19:0
+  mem_14 = mstore(0x00, value) aliases=[0x00[literal]] origin=N30 src=4480:19:0
+ValueDefinitions:
+  ownerSlot__ssa1 = keccak256(0x00, 0x40) origin=N7 src=3585:38:0
+  allowanceSlot__ssa2 = keccak256(0x00, 0x40) origin=N10 src=3707:42:0
+  currentAllowance__ssa3 = sload(allowanceSlot) origin=N11 src=3762:44:0
+  fromSlot__ssa4 = keccak256(0x00, 0x40) origin=N20 src=4094:37:0
+  fromSlot__ssa5 = keccak256(0x00, 0x40) origin=N20 src=4094:37:0
+  fromBalance__ssa6 = sload(fromSlot) origin=N21 src=4144:34:0
+  fromBalance__ssa7 = sload(fromSlot) origin=N21 src=4144:34:0
+  toSlot__ssa8 = keccak256(0x00, 0x40) origin=N27 src=4323:35:0
+  toSlot__ssa9 = keccak256(0x00, 0x40) origin=N27 src=4323:35:0
+  ok__ssa10 = 1 origin=N32 src=4713:7:0
+  ok__ssa11 = 1 origin=N32 src=4713:7:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[iszero(to)] memory=[-] values=[-]
+    in:  path=[!(iszero(to)) && lt(currentAllowance, value)] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && lt(fromBalance, value)] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && lt(fromBalance, value)] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_13, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ok=ok__ssa10, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_14, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ok=ok__ssa11, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+    out: path=[iszero(to)] memory=[-] values=[-]
+    out: path=[!(iszero(to)) && lt(currentAllowance, value)] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && lt(fromBalance, value)] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && lt(fromBalance, value)] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_13, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ok=ok__ssa10, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_14, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ok=ok__ssa11, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+  N2 [condition] if iszero(to)
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N3 [merge] if merge
+    in:  path=[!(iszero(to))] memory=[-] values=[-]
+    out: path=[!(iszero(to))] memory=[-] values=[-]
+  N4 [terminal] revert(0x00, 0x00)
+    effect: hard sink: revert
+    in:  path=[iszero(to)] memory=[-] values=[-]
+    out: path=[iszero(to)] memory=[-] values=[-]
+  N5 [statement] mstore(0x00, from)
+    effect: mem_1: mstore(0x00, from) aliases=[0x00]
+    in:  path=[!(iszero(to))] memory=[-] values=[-]
+    out: path=[!(iszero(to))] memory=[0x00=mem_1] values=[-]
+  N6 [statement] mstore(0x20, _allowances.slot)
+    effect: mem_2: mstore(32, _allowances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[!(iszero(to))] memory=[0x00=mem_1] values=[-]
+    out: path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N7 [statement] let ownerSlot := keccak256(0x00, 0x40)
+    effect: value defs: ownerSlot__ssa1
+    in:  path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+  N8 [statement] mstore(0x00, caller())
+    effect: mem_3: mstore(0x00, caller()) aliases=[0x00]
+    in:  path=[!(iszero(to))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to))] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+  N9 [statement] mstore(0x20, ownerSlot)
+    effect: mem_4: mstore(32, ownerSlot) aliases=[32, add(0x00,32)]
+    in:  path=[!(iszero(to))] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+  N10 [statement] let allowanceSlot := keccak256(0x00, 0x40)
+    effect: value defs: allowanceSlot__ssa2
+    in:  path=[!(iszero(to))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, ownerSlot=ownerSlot__ssa1]
+  N11 [statement] let currentAllowance := sload(allowanceSlot)
+    effect: value defs: currentAllowance__ssa3
+    in:  path=[!(iszero(to))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+  N12 [condition] if lt(currentAllowance, value)
+    in:  path=[!(iszero(to))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+  N13 [merge] if merge
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+  N14 [terminal] revert(0x00, 0x00)
+    effect: hard sink: revert
+    in:  path=[!(iszero(to)) && lt(currentAllowance, value)] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && lt(currentAllowance, value)] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+  N15 [condition] if iszero(eq(currentAllowance, not(0)))
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+  N16 [merge] if merge
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+  N17 [statement] sstore(allowanceSlot, sub(currentAllowance, value))
+    effect: hard sink: sstore
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+  N18 [statement] mstore(0x00, from)
+    effect: mem_6: mstore(0x00, from) aliases=[0x00]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_3, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_6, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+  N19 [statement] mstore(0x20, _balances.slot)
+    effect: mem_8: mstore(32, _balances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_5, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_6, 32=mem_4, add(0x00,32)=mem_4] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+  N20 [statement] let fromSlot := keccak256(0x00, 0x40)
+    effect: value defs: fromSlot__ssa5
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+  N21 [statement] let fromBalance := sload(fromSlot)
+    effect: value defs: fromBalance__ssa7
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+  N22 [condition] if lt(fromBalance, value)
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0))))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0)))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+  N23 [merge] if merge
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+  N24 [terminal] revert(0x00, 0x00)
+    effect: hard sink: revert
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && lt(fromBalance, value)] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && lt(fromBalance, value)] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && lt(fromBalance, value)] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && lt(fromBalance, value)] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+  N25 [statement] mstore(0x00, to)
+    effect: mem_10: mstore(0x00, to) aliases=[0x00]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_5, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_6, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+  N26 [statement] mstore(0x20, _balances.slot)
+    effect: mem_12: mstore(32, _balances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_7, add(0x00,32)=mem_7] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_8, add(0x00,32)=mem_8] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+  N27 [statement] let toSlot := keccak256(0x00, 0x40)
+    effect: value defs: toSlot__ssa9
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+  N28 [statement] sstore(fromSlot, sub(fromBalance, value))
+    effect: hard sink: sstore
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+  N29 [statement] sstore(toSlot, add(sload(toSlot), value))
+    effect: hard sink: sstore
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+  N30 [statement] mstore(0x00, value)
+    effect: mem_14: mstore(0x00, value) aliases=[0x00]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_9, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_10, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_13, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_14, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+  N31 [statement] log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
+    effect: hard sink: log3
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_13, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_14, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_13, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_14, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+  N32 [statement] ok := 1
+    effect: value defs: ok__ssa11
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_13, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    in:  path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_14, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value))] memory=[0x00=mem_13, 32=mem_11, add(0x00,32)=mem_11] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa6, fromSlot=fromSlot__ssa4, ok=ok__ssa10, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa8]
+    out: path=[!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value))] memory=[0x00=mem_14, 32=mem_12, add(0x00,32)=mem_12] values=[allowanceSlot=allowanceSlot__ssa2, currentAllowance=currentAllowance__ssa3, fromBalance=fromBalance__ssa7, fromSlot=fromSlot__ssa5, ok=ok__ssa11, ownerSlot=ownerSlot__ssa1, toSlot=toSlot__ssa9]
+
+AssemblyBlock 8: YulHeavyERC20.burn(uint256 value)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(0x00, caller()) aliases=[0x00[literal]] origin=N2 src=4813:22:0
+  mem_2 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N3 src=4848:28:0
+  mem_3 = mstore(0x00, value) aliases=[0x00[literal]] origin=N11 src=5197:19:0
+ValueDefinitions:
+  accountSlot__ssa1 = keccak256(0x00, 0x40) origin=N4 src=4889:40:0
+  accountBalance__ssa2 = sload(accountSlot) origin=N5 src=4942:40:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[lt(accountBalance, value)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    in:  path=[!(lt(accountBalance, value))] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    out: path=[lt(accountBalance, value)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    out: path=[!(lt(accountBalance, value))] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+  N2 [statement] mstore(0x00, caller())
+    effect: mem_1: mstore(0x00, caller()) aliases=[0x00]
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[0x00=mem_1] values=[-]
+  N3 [statement] mstore(0x20, _balances.slot)
+    effect: mem_2: mstore(32, _balances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[entry] memory=[0x00=mem_1] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+  N4 [statement] let accountSlot := keccak256(0x00, 0x40)
+    effect: value defs: accountSlot__ssa1
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[-]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountSlot=accountSlot__ssa1]
+  N5 [statement] let accountBalance := sload(accountSlot)
+    effect: value defs: accountBalance__ssa2
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountSlot=accountSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+  N6 [condition] if lt(accountBalance, value)
+    in:  path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    out: path=[entry] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+  N7 [merge] if merge
+    in:  path=[!(lt(accountBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    out: path=[!(lt(accountBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+  N8 [terminal] revert(0x00, 0x00)
+    effect: hard sink: revert
+    in:  path=[lt(accountBalance, value)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    out: path=[lt(accountBalance, value)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+  N9 [statement] sstore(accountSlot, sub(accountBalance, value))
+    effect: hard sink: sstore
+    in:  path=[!(lt(accountBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    out: path=[!(lt(accountBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+  N10 [statement] sstore(_totalSupply.slot, sub(sload(_totalSupply.slot), value))
+    effect: hard sink: sstore
+    in:  path=[!(lt(accountBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    out: path=[!(lt(accountBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+  N11 [statement] mstore(0x00, value)
+    effect: mem_3: mstore(0x00, value) aliases=[0x00]
+    in:  path=[!(lt(accountBalance, value))] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    out: path=[!(lt(accountBalance, value))] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+  N12 [statement] log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), 0)
+    effect: hard sink: log3
+    in:  path=[!(lt(accountBalance, value))] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+    out: path=[!(lt(accountBalance, value))] memory=[0x00=mem_3, 32=mem_2, add(0x00,32)=mem_2] values=[accountBalance=accountBalance__ssa2, accountSlot=accountSlot__ssa1]
+
+AssemblyBlock 9: YulHeavyERC20.batchBalanceSum(address[] accounts)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(0x00, account) aliases=[0x00[literal]] origin=N7 src=5727:21:0
+  mem_2 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N8 src=5765:28:0
+  mem_3 = loop_phi(32, unknown(loop-carried-memory)) aliases=[32] origin=N3 src=5568:307:0
+  mem_4 = loop_phi(add(0x00,32), unknown(loop-carried-memory)) aliases=[add(0x00,32)] origin=N3 src=5568:307:0
+  mem_5 = loop_phi(0x00, unknown(loop-carried-memory)) aliases=[0x00] origin=N3 src=5568:307:0
+  mem_6 = mstore(0x00, account) aliases=[0x00[literal]] origin=N7 src=5727:21:0
+  mem_7 = mstore(32, _balances.slot) aliases=[0x20[literal], add(0x00, 32)[literal-zero-base]] origin=N8 src=5765:28:0
+ValueDefinitions:
+  i__ssa1 = 0 origin=N2 src=5574:10:0
+  account__ssa2 = calldataload(add(accounts.offset, mul(i, 0x20))) origin=N6 src=5647:63:0
+  result__ssa3 = add(result, sload(keccak256(0x00, 0x40))) origin=N9 src=5810:51:0
+  i__ssa4 = add(i, 1) origin=N10 src=5612:14:0
+  account__ssa5 = loop_phi(account) origin=N3 src=5568:307:0
+  result__ssa6 = loop_phi(result) origin=N3 src=5568:307:0
+  i__ssa7 = loop_phi(i) origin=N3 src=5568:307:0
+  account__ssa8 = calldataload(add(accounts.offset, mul(i, 0x20))) origin=N6 src=5647:63:0
+  result__ssa9 = add(result, sload(keccak256(0x00, 0x40))) origin=N9 src=5810:51:0
+  i__ssa10 = add(i, 1) origin=N10 src=5612:14:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[-] values=[i=i__ssa1]
+    in:  path=[entry] memory=[0x00=mem_5, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa5, i=i__ssa7, result=result__ssa6]
+    out: path=[entry] memory=[-] values=[i=i__ssa1]
+    out: path=[entry] memory=[0x00=mem_5, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa5, i=i__ssa7, result=result__ssa6]
+  N2 [statement] let i := 0
+    effect: value defs: i__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[i=i__ssa1]
+  N3 [loop-condition] for condition lt(i, accounts.length)
+    in:  path=[entry] memory=[-] values=[i=i__ssa1]
+    in:  path=[entry] memory=[0x00=mem_5, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa5, i=i__ssa7, result=result__ssa6]
+    out: path=[entry] memory=[-] values=[i=i__ssa1]
+    out: path=[entry] memory=[0x00=mem_5, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa5, i=i__ssa7, result=result__ssa6]
+  N4 [loop-merge] for exit
+    in:  path=[entry] memory=[-] values=[i=i__ssa1]
+    in:  path=[entry] memory=[0x00=mem_5, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa5, i=i__ssa7, result=result__ssa6]
+    out: path=[entry] memory=[-] values=[i=i__ssa1]
+    out: path=[entry] memory=[0x00=mem_5, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa5, i=i__ssa7, result=result__ssa6]
+  N5 [loop-post] for post
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[account=account__ssa2, i=i__ssa1, result=result__ssa3]
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_6, 32=mem_7, add(0x00,32)=mem_7] values=[account=account__ssa8, i=i__ssa7, result=result__ssa9]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[account=account__ssa2, i=i__ssa1, result=result__ssa3]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_6, 32=mem_7, add(0x00,32)=mem_7] values=[account=account__ssa8, i=i__ssa7, result=result__ssa9]
+  N6 [statement] let account := calldataload(add(accounts.offset, mul(i, 0x20)))
+    effect: value defs: account__ssa8
+    in:  path=[lt(i, accounts.length)] memory=[-] values=[i=i__ssa1]
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_5, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa5, i=i__ssa7, result=result__ssa6]
+    out: path=[lt(i, accounts.length)] memory=[-] values=[account=account__ssa2, i=i__ssa1]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_5, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa8, i=i__ssa7, result=result__ssa6]
+  N7 [statement] mstore(0x00, account)
+    effect: mem_6: mstore(0x00, account) aliases=[0x00]
+    in:  path=[lt(i, accounts.length)] memory=[-] values=[account=account__ssa2, i=i__ssa1]
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_5, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa8, i=i__ssa7, result=result__ssa6]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_1] values=[account=account__ssa2, i=i__ssa1]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_6, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa8, i=i__ssa7, result=result__ssa6]
+  N8 [statement] mstore(0x20, _balances.slot)
+    effect: mem_7: mstore(32, _balances.slot) aliases=[32, add(0x00,32)]
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_1] values=[account=account__ssa2, i=i__ssa1]
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_6, 32=mem_3, add(0x00,32)=mem_4] values=[account=account__ssa8, i=i__ssa7, result=result__ssa6]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[account=account__ssa2, i=i__ssa1]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_6, 32=mem_7, add(0x00,32)=mem_7] values=[account=account__ssa8, i=i__ssa7, result=result__ssa6]
+  N9 [statement] result := add(result, sload(keccak256(0x00, 0x40)))
+    effect: value defs: result__ssa9
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[account=account__ssa2, i=i__ssa1]
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_6, 32=mem_7, add(0x00,32)=mem_7] values=[account=account__ssa8, i=i__ssa7, result=result__ssa6]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[account=account__ssa2, i=i__ssa1, result=result__ssa3]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_6, 32=mem_7, add(0x00,32)=mem_7] values=[account=account__ssa8, i=i__ssa7, result=result__ssa9]
+  N10 [statement] i := add(i, 1)
+    effect: value defs: i__ssa10
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[account=account__ssa2, i=i__ssa1, result=result__ssa3]
+    in:  path=[lt(i, accounts.length)] memory=[0x00=mem_6, 32=mem_7, add(0x00,32)=mem_7] values=[account=account__ssa8, i=i__ssa7, result=result__ssa9]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_1, 32=mem_2, add(0x00,32)=mem_2] values=[account=account__ssa2, i=i__ssa4, result=result__ssa3]
+    out: path=[lt(i, accounts.length)] memory=[0x00=mem_6, 32=mem_7, add(0x00,32)=mem_7] values=[account=account__ssa8, i=i__ssa10, result=result__ssa9]
+
+AssemblyBlock 10: YulHeavyERC20.hasCode(address account)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+ValueDefinitions:
+  result__ssa1 = iszero(iszero(extcodesize(account))) origin=N2 src=6000:46:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[entry] memory=[-] values=[result=result__ssa1]
+    out: path=[entry] memory=[-] values=[result=result__ssa1]
+  N2 [statement] result := iszero(iszero(extcodesize(account)))
+    effect: value defs: result__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[result=result__ssa1]
+
+AssemblyBlock 11: YulHeavyERC20.externalBalanceOf(address token, address account)
+MemoryTrackerScope: assembly_block_isolated + cfg_path_memory_ssa
+PathStateTruncated: False
+LocalFunctionSummaries:
+  none
+MemoryDefinitions:
+  mem_1 = mstore(ptr, shl(224, 0x70a08231)) aliases=[ptr[identifier]] origin=N3 src=6234:33:0
+  mem_2 = mstore(add(ptr,4), account) aliases=[add(ptr, 4)[identifier], add(ptr, 0x04)[original]] origin=N4 src=6280:31:0
+ValueDefinitions:
+  ptr__ssa1 = mload(0x40) origin=N2 src=6199:22:0
+  success__ssa2 = staticcall(gas(), token, ptr, 0x24, ptr, 0x20) origin=N5 src=6324:61:0
+  result__ssa3 = mload(ptr) origin=N9 src=6513:20:0
+NodeStates:
+  N0 [entry] entry
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[-]
+  N1 [exit] exit
+    in:  path=[iszero(and(success, eq(returndatasize(), 0x20)))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+    in:  path=[!(iszero(and(success, eq(returndatasize(), 0x20))))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, result=result__ssa3, success=success__ssa2]
+    out: path=[iszero(and(success, eq(returndatasize(), 0x20)))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+    out: path=[!(iszero(and(success, eq(returndatasize(), 0x20))))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, result=result__ssa3, success=success__ssa2]
+  N2 [statement] let ptr := mload(0x40)
+    effect: value defs: ptr__ssa1
+    in:  path=[entry] memory=[-] values=[-]
+    out: path=[entry] memory=[-] values=[ptr=ptr__ssa1]
+  N3 [statement] mstore(ptr, shl(224, 0x70a08231))
+    effect: mem_1: mstore(ptr, shl(224, 0x70a08231)) aliases=[ptr]
+    in:  path=[entry] memory=[-] values=[ptr=ptr__ssa1]
+    out: path=[entry] memory=[ptr=mem_1] values=[ptr=ptr__ssa1]
+  N4 [statement] mstore(add(ptr, 0x04), account)
+    effect: mem_2: mstore(add(ptr,4), account) aliases=[add(ptr,4), add(ptr,0x04)]
+    in:  path=[entry] memory=[ptr=mem_1] values=[ptr=ptr__ssa1]
+    out: path=[entry] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1]
+  N5 [statement] let success := staticcall(gas(), token, ptr, 0x24, ptr, 0x20)
+    effect: value defs: success__ssa2
+    in:  path=[entry] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1]
+    out: path=[entry] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+  N6 [condition] if iszero(and(success, eq(returndatasize(), 0x20)))
+    in:  path=[entry] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+    out: path=[entry] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+  N7 [merge] if merge
+    in:  path=[!(iszero(and(success, eq(returndatasize(), 0x20))))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+    out: path=[!(iszero(and(success, eq(returndatasize(), 0x20))))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+  N8 [terminal] revert(0x00, 0x00)
+    effect: hard sink: revert
+    in:  path=[iszero(and(success, eq(returndatasize(), 0x20)))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+    out: path=[iszero(and(success, eq(returndatasize(), 0x20)))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+  N9 [statement] result := mload(ptr)
+    effect: value defs: result__ssa3
+    in:  path=[!(iszero(and(success, eq(returndatasize(), 0x20))))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, success=success__ssa2]
+    out: path=[!(iszero(and(success, eq(returndatasize(), 0x20))))] memory=[add(ptr,0x04)=mem_2, add(ptr,4)=mem_2, ptr=mem_1] values=[ptr=ptr__ssa1, result=result__ssa3, success=success__ssa2]
