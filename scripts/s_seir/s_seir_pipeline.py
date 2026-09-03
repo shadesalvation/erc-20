@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path as _SSEIRPath
 import sys as _sseir_sys
 _SSEIR_ROOT = _SSEIRPath(__file__).resolve().parents[1]
-for _sseir_path in (_SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
+for _sseir_path in (_SSEIR_ROOT, _SSEIR_ROOT / "legacy_yul", _SSEIR_ROOT / "s_seir"):
     _sseir_text = str(_sseir_path)
     if _sseir_text not in _sseir_sys.path:
         _sseir_sys.path.insert(0, _sseir_text)
@@ -31,6 +31,7 @@ from s_seir_solidity_like_export import write_solidity_like_text
 from s_seir_storage_layout import apply_storage_layout, extract_storage_layout
 from s_seir_security_facts import SecurityFactBuilder
 from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload, write_json as write_semantic_fact_json
+from semantic_ir import build_semantic_ir_program, write_semantic_ir_json, write_semantic_ir_text
 from s_seir_type_env import TypeEnv
 
 def json_ready(v:Any)->Any:
@@ -183,15 +184,26 @@ def render_text(functions):
     return '\n'.join(lines)
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('source',type=Path); ap.add_argument('-o','--output',type=Path,default=Path('outputs/sseir.json')); ap.add_argument('--text-output',type=Path,default=Path('outputs/sseir.txt')); ap.add_argument('--semantic-facts-output',type=Path,default=Path('outputs/semantic_facts.json')); ap.add_argument('--solidity-atomic-output',type=Path,help='Optional audit output for the transient Solidity atomic-operation table.'); ap.add_argument('--debug-output',type=Path,help='Optional full analysis output including MemorySSA/SinkResolver query traces.'); ap.add_argument('--cfg-dot-dir',type=Path); ap.add_argument('--llm-assembly-output',type=Path); ap.add_argument('--llm-assembly-text-output',type=Path); ap.add_argument('--llm-assembly-compact-output',type=Path); ap.add_argument('--llm-assembly-compact-text-output',type=Path); ap.add_argument('--solidity-like-output',type=Path); ap.add_argument('--branch-preprocessed-output',type=Path); ap.add_argument('--branch-report-output',type=Path); ap.add_argument('--no-branch-preprocess',action='store_true'); ap.add_argument('--solc-bin'); ap.add_argument('--slither-bin'); ap.add_argument('--workdir',type=Path,default=Path('.'))
+    ap=argparse.ArgumentParser(); ap.add_argument('source',type=Path); ap.add_argument('-o','--output',type=Path,default=Path('outputs/sseir.json')); ap.add_argument('--text-output',type=Path,default=Path('outputs/sseir.txt')); ap.add_argument('--semantic-facts-output',type=Path,default=Path('outputs/semantic_facts.json')); ap.add_argument('--semantic-ir-output',type=Path,default=Path('outputs/semantic_ir.json'),help='Mutable function-level Semantic IR JSON constructed only from unified Semantic Facts.'); ap.add_argument('--semantic-ir-text-output',type=Path,default=Path('outputs/semantic_ir.txt'),help='Human-auditable Semantic IR text view.'); ap.add_argument('--semantic-ir-analysis-indexes',action='store_true',help='Include optional CFG def-use indexes in Semantic IR JSON.'); ap.add_argument('--solidity-atomic-output',type=Path,help='Optional audit output for the transient Solidity atomic-operation table.'); ap.add_argument('--debug-output',type=Path,help='Optional full analysis output including MemorySSA/SinkResolver query traces.'); ap.add_argument('--cfg-dot-dir',type=Path); ap.add_argument('--llm-assembly-output',type=Path); ap.add_argument('--llm-assembly-text-output',type=Path); ap.add_argument('--llm-assembly-compact-output',type=Path); ap.add_argument('--llm-assembly-compact-text-output',type=Path); ap.add_argument('--solidity-like-output',type=Path); ap.add_argument('--branch-preprocessed-output',type=Path); ap.add_argument('--branch-report-output',type=Path); ap.add_argument('--no-branch-preprocess',action='store_true'); ap.add_argument('--solc-bin'); ap.add_argument('--slither-bin'); ap.add_argument('--workdir',type=Path,default=Path('.'))
     a=ap.parse_args(); fns=build_sseir(a.source,a.solc_bin,a.slither_bin,a.workdir.resolve(),branch_preprocess=not a.no_branch_preprocess,branch_preprocess_output=a.branch_preprocessed_output,branch_report_output=a.branch_report_output)
     a.output.parent.mkdir(parents=True,exist_ok=True); a.text_output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps([x.to_semantic_dict() for x in fns],indent=2,ensure_ascii=False),encoding='utf-8'); a.text_output.write_text(render_text(fns),encoding='utf-8')
     print(f'Wrote {a.output}'); print(f'Wrote {a.text_output}')
+    facts=None
+    if a.semantic_facts_output or a.semantic_ir_output or a.semantic_ir_text_output:
+        fact_output=a.semantic_facts_output or a.semantic_ir_output or a.semantic_ir_text_output
+        facts=build_function_level_semantic_fact_payload(fns,source=str(a.source),result_dir=str(fact_output.parent))
     if a.semantic_facts_output:
-        facts=build_function_level_semantic_fact_payload(fns,source=str(a.source),result_dir=str(a.semantic_facts_output.parent))
         write_semantic_fact_json(a.semantic_facts_output,facts)
         print(f'Wrote {a.semantic_facts_output}')
+    if a.semantic_ir_output or a.semantic_ir_text_output:
+        program=build_semantic_ir_program(fns,facts,source=str(a.source))
+    if a.semantic_ir_output:
+        write_semantic_ir_json(a.semantic_ir_output,program,include_analysis_indexes=a.semantic_ir_analysis_indexes)
+        print(f'Wrote {a.semantic_ir_output}')
+    if a.semantic_ir_text_output:
+        write_semantic_ir_text(a.semantic_ir_text_output,program,include_analysis_indexes=a.semantic_ir_analysis_indexes)
+        print(f'Wrote {a.semantic_ir_text_output}')
     if a.solidity_atomic_output:
         write_solidity_atomic_operation_json(fns,a.solidity_atomic_output,source=str(a.source))
         print(f'Wrote {a.solidity_atomic_output}')

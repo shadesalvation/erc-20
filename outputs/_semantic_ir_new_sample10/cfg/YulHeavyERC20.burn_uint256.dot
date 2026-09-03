@@ -1,0 +1,32 @@
+digraph "YulHeavyERC20.burn_uint256" {
+  graph [rankdir=TB, bgcolor="#ffffff", labelloc=t, fontsize=14, fontname="Consolas", label="YulHeavyERC20.burn(uint256)"];
+  node [fontname="Consolas"];
+  edge [fontname="Consolas"];
+  "__cfg_notes" [shape=note, style="filled", fillcolor="#f6f8fa", color="#d0d7de", fontsize="9", label="CFG notes:\nfunction_level_control_skeleton\nyul_cfg_embedded_from_assembly_ast_cfg\nprecise_solidity_cfg_adapter_unavailable\nslither_error: ModuleNotFoundError: No module named 'slither'"];
+  "bb_asm8_n0" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n0\nkind=yul\nassembly_block=8\nyul_node=0\nentry\nterm=YulNode: entry"];
+  "bb_asm8_n1" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n1\nkind=yul\nassembly_block=8\nyul_node=1\nexit\nterm=YulNode: exit"];
+  "bb_asm8_n2" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n2\nkind=yul\nassembly_block=8\nyul_node=2\nstmts=asm_s_1\nasm_s_1: mstore(0x00, caller())\nterm=YulNode: mstore(0x00, caller())"];
+  "bb_asm8_n3" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n3\nkind=yul\nassembly_block=8\nyul_node=3\nstmts=asm_s_2\nasm_s_2: mstore(0x20, _balances.slot)\nterm=YulNode: mstore(0x20, _balances.slot)"];
+  "bb_asm8_n4" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n4\nkind=yul\nassembly_block=8\nyul_node=4\nstmts=asm_s_3\nasm_s_3: let accountSlot := keccak256(0x00, 0x40)\nterm=YulNode: let accountSlot := keccak256(0x00, 0x40)"];
+  "bb_asm8_n5" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n5\nkind=yul\nassembly_block=8\nyul_node=5\nstmts=asm_s_4\nasm_s_4: let accountBalance := sload(accountSlot)\nterm=YulNode: let accountBalance := sload(accountSlot)"];
+  "bb_asm8_n6" [shape="diamond", style="rounded,filled", fontname="Consolas", fontsize="10", color="#7a4bb3", fillcolor="#ffefd0", label="bb_asm8_n6\nkind=yul\nassembly_block=8\nyul_node=6\nstmts=asm_s_5\nasm_s_5: if lt(accountBalance, value)\nterm=Branch: lt(accountBalance, value)"];
+  "bb_asm8_n7" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n7\nkind=yul\nassembly_block=8\nyul_node=7\nstmts=asm_s_5\nasm_s_5: if lt(accountBalance, value)\nterm=YulNode: if merge"];
+  "bb_asm8_n8" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#b73d3d", fillcolor="#ffe7e7", peripheries="2", label="bb_asm8_n8\nkind=yul\nassembly_block=8\nyul_node=8\nstmts=asm_s_6\nasm_s_6: revert(0x00, 0x00)\nterm=Revert: revert(0x00, 0x00)"];
+  "bb_asm8_n9" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n9\nkind=yul\nassembly_block=8\nyul_node=9\nstmts=asm_s_7\nasm_s_7: sstore(accountSlot, sub(accountBalance, value))\nterm=YulNode: sstore(accountSlot, sub(accountBalance, value))"];
+  "bb_asm8_n10" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n10\nkind=yul\nassembly_block=8\nyul_node=10\nstmts=asm_s_8\nasm_s_8: sstore(_totalSupply.slot, sub(sload(_totalSupply.slot), value))\nterm=YulNode: sstore(_totalSupply.slot, sub(sload(_totalSupply.slot), value))"];
+  "bb_asm8_n11" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n11\nkind=yul\nassembly_block=8\nyul_node=11\nstmts=asm_s_9\nasm_s_9: mstore(0x00, value)\nterm=YulNode: mstore(0x00, value)"];
+  "bb_asm8_n12" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="bb_asm8_n12\nkind=yul\nassembly_block=8\nyul_node=12\nstmts=asm_s_10\nasm_s_10: log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), 0)\nterm=YulNode: log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), 0)"];
+  "bb_asm8_n0" -> "bb_asm8_n2" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm8_n2" -> "bb_asm8_n3" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm8_n3" -> "bb_asm8_n4" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm8_n4" -> "bb_asm8_n5" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm8_n5" -> "bb_asm8_n6" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm8_n6" -> "bb_asm8_n8" [fontname="Consolas", fontsize="9", label="true: lt(accountBalance, value)", color="#586069"];
+  "bb_asm8_n8" -> "bb_asm8_n1" [fontname="Consolas", fontsize="9", label="terminate: revert", color="#586069"];
+  "bb_asm8_n6" -> "bb_asm8_n7" [fontname="Consolas", fontsize="9", label="false: !(lt(accountBalance, value))", color="#586069"];
+  "bb_asm8_n7" -> "bb_asm8_n9" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm8_n9" -> "bb_asm8_n10" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm8_n10" -> "bb_asm8_n11" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm8_n11" -> "bb_asm8_n12" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+  "bb_asm8_n12" -> "bb_asm8_n1" [fontname="Consolas", fontsize="9", label="next", color="#586069"];
+}

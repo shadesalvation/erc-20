@@ -1,0 +1,676 @@
+SemanticProgram semantic-ir/v1
+Source: 人工构造样例/10_大量Yul_统一语义模型/contracts/YulHeavyERC20.sol
+
+Function YulHeavyERC20.constructor(uint256)
+    signature = constructor(uint256)
+
+bb_asm1_n0:
+    Goto(bb_asm1_n2)
+
+bb_asm1_n1:
+    Unresolved
+
+bb_asm1_n2:
+    StateWrite(loc_1, initialSupply) origin_facts=[fact_1]
+    Goto(bb_asm1_n3)
+
+bb_asm1_n3:
+    Goto(bb_asm1_n4)
+
+bb_asm1_n4:
+    Goto(bb_asm1_n5)
+
+bb_asm1_n5:
+    StateWrite(loc_2, initialSupply) origin_facts=[fact_3, fact_2]
+    Goto(bb_asm1_n6)
+
+bb_asm1_n6:
+    Goto(bb_asm1_n7)
+
+bb_asm1_n7:
+    EventEmit(0, msg.sender, initialSupply) origin_facts=[fact_4]
+    Goto(bb_asm1_n1)
+
+CFGEdges:
+    bb_asm1_n0 -> bb_asm1_n2 [next]
+    bb_asm1_n2 -> bb_asm1_n3 [next]
+    bb_asm1_n3 -> bb_asm1_n4 [next]
+    bb_asm1_n4 -> bb_asm1_n5 [next]
+    bb_asm1_n5 -> bb_asm1_n6 [next]
+    bb_asm1_n6 -> bb_asm1_n7 [next]
+    bb_asm1_n7 -> bb_asm1_n1 [next]
+
+Locations:
+    loc_1 = StateVariableLocation(base = _totalSupply, keys = []) origin_facts=[fact_1]
+    loc_2 = MappingLocation(base = _balances, keys = [msg.sender]) origin_facts=[fact_3, fact_2]
+
+
+Function YulHeavyERC20.totalSupply()
+    signature = totalSupply()
+
+bb_asm2_n0:
+    Goto(bb_asm2_n2)
+
+bb_asm2_n1:
+    Unresolved
+
+bb_asm2_n2:
+    result = StateRead(loc_3) origin_facts=[fact_6, fact_5]
+    Goto(bb_asm2_n1)
+
+CFGEdges:
+    bb_asm2_n0 -> bb_asm2_n2 [next]
+    bb_asm2_n2 -> bb_asm2_n1 [next]
+
+Locations:
+    loc_3 = StateVariableLocation(base = _totalSupply, keys = []) origin_facts=[fact_6, fact_5]
+
+
+Function YulHeavyERC20.balanceOf(address)
+    signature = balanceOf(address)
+
+bb_asm3_n0:
+    Goto(bb_asm3_n2)
+
+bb_asm3_n1:
+    Unresolved
+
+bb_asm3_n2:
+    Goto(bb_asm3_n3)
+
+bb_asm3_n3:
+    Goto(bb_asm3_n4)
+
+bb_asm3_n4:
+    result = StateRead(loc_4) origin_facts=[fact_9, fact_7, fact_8]
+    Goto(bb_asm3_n1)
+
+CFGEdges:
+    bb_asm3_n0 -> bb_asm3_n2 [next]
+    bb_asm3_n2 -> bb_asm3_n3 [next]
+    bb_asm3_n3 -> bb_asm3_n4 [next]
+    bb_asm3_n4 -> bb_asm3_n1 [next]
+
+Locations:
+    loc_4 = MappingLocation(base = _balances, keys = [account]) origin_facts=[fact_9, fact_7, fact_8]
+
+
+Function YulHeavyERC20.allowance(address, address)
+    signature = allowance(address, address)
+
+bb_asm4_n0:
+    Goto(bb_asm4_n2)
+
+bb_asm4_n1:
+    Unresolved
+
+bb_asm4_n2:
+    Goto(bb_asm4_n3)
+
+bb_asm4_n3:
+    Goto(bb_asm4_n4)
+
+bb_asm4_n4:
+    ownerSlot = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_10]
+    Goto(bb_asm4_n5)
+
+bb_asm4_n5:
+    Goto(bb_asm4_n6)
+
+bb_asm4_n6:
+    Goto(bb_asm4_n7)
+
+bb_asm4_n7:
+    result = StateRead(loc_5) origin_facts=[fact_14, fact_11, fact_12, fact_13]
+    Goto(bb_asm4_n1)
+
+CFGEdges:
+    bb_asm4_n0 -> bb_asm4_n2 [next]
+    bb_asm4_n2 -> bb_asm4_n3 [next]
+    bb_asm4_n3 -> bb_asm4_n4 [next]
+    bb_asm4_n4 -> bb_asm4_n5 [next]
+    bb_asm4_n5 -> bb_asm4_n6 [next]
+    bb_asm4_n6 -> bb_asm4_n7 [next]
+    bb_asm4_n7 -> bb_asm4_n1 [next]
+
+Locations:
+    loc_5 = MappingLocation(base = _allowances, keys = [owner, spender]) origin_facts=[fact_14, fact_11, fact_12, fact_13]
+
+
+Function YulHeavyERC20.approve(address, uint256)
+    signature = approve(address, uint256)
+
+bb_asm5_n0:
+    Goto(bb_asm5_n2)
+
+bb_asm5_n1:
+    Unresolved
+
+bb_asm5_n2:
+    Goto(bb_asm5_n3)
+
+bb_asm5_n3:
+    Goto(bb_asm5_n4)
+
+bb_asm5_n4:
+    ownerSlot = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_15]
+    Goto(bb_asm5_n5)
+
+bb_asm5_n5:
+    Goto(bb_asm5_n6)
+
+bb_asm5_n6:
+    Goto(bb_asm5_n7)
+
+bb_asm5_n7:
+    StateWrite(loc_6, value) origin_facts=[fact_18, fact_16, fact_17]
+    Goto(bb_asm5_n8)
+
+bb_asm5_n8:
+    Goto(bb_asm5_n9)
+
+bb_asm5_n9:
+    EventEmit(msg.sender, spender, value) origin_facts=[fact_19]
+    Goto(bb_asm5_n10)
+
+bb_asm5_n10:
+    ok = ValueCompute(1) origin_facts=[fact_20]
+    Goto(bb_asm5_n1)
+
+CFGEdges:
+    bb_asm5_n0 -> bb_asm5_n2 [next]
+    bb_asm5_n2 -> bb_asm5_n3 [next]
+    bb_asm5_n3 -> bb_asm5_n4 [next]
+    bb_asm5_n4 -> bb_asm5_n5 [next]
+    bb_asm5_n5 -> bb_asm5_n6 [next]
+    bb_asm5_n6 -> bb_asm5_n7 [next]
+    bb_asm5_n7 -> bb_asm5_n8 [next]
+    bb_asm5_n8 -> bb_asm5_n9 [next]
+    bb_asm5_n9 -> bb_asm5_n10 [next]
+    bb_asm5_n10 -> bb_asm5_n1 [next]
+
+Locations:
+    loc_6 = MappingLocation(base = _allowances, keys = [msg.sender, spender]) origin_facts=[fact_18, fact_16, fact_17]
+
+
+Function YulHeavyERC20.transfer(address, uint256)
+    signature = transfer(address, uint256)
+
+bb_asm6_n0:
+    Goto(bb_asm6_n2)
+
+bb_asm6_n1:
+    Unresolved
+
+bb_asm6_n2:
+    __sseir_eval_asm_s_1_1 = ValueCompute(IsZero(to)) origin_facts=[fact_21, fact_22]
+    Branch(IsZero(to), bb_asm6_n4, bb_asm6_n3)
+
+bb_asm6_n3:
+    Goto(bb_asm6_n5)
+
+bb_asm6_n4:
+    Require(Not(Ne(__sseir_eval_asm_s_1_1, 0))) origin_facts=[fact_37]
+    Goto(bb_asm6_n1)
+
+bb_asm6_n5:
+    Goto(bb_asm6_n6)
+
+bb_asm6_n6:
+    Goto(bb_asm6_n7)
+
+bb_asm6_n7:
+    fromSlot = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_23]
+    Goto(bb_asm6_n8)
+
+bb_asm6_n8:
+    fromBalance = StateRead(loc_7) origin_facts=[fact_26, fact_24, fact_25]
+    Goto(bb_asm6_n9)
+
+bb_asm6_n9:
+    __sseir_eval_asm_s_7_1 = ValueCompute(Lt(fromBalance, value)) origin_facts=[fact_27, fact_28]
+    Branch(Lt(fromBalance, value), bb_asm6_n11, bb_asm6_n10)
+
+bb_asm6_n10:
+    Goto(bb_asm6_n12)
+
+bb_asm6_n11:
+    Require(Not(Ne(__sseir_eval_asm_s_7_1, 0))) origin_facts=[fact_36]
+    Goto(bb_asm6_n1)
+
+bb_asm6_n12:
+    Goto(bb_asm6_n13)
+
+bb_asm6_n13:
+    Goto(bb_asm6_n14)
+
+bb_asm6_n14:
+    toSlot = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_29]
+    Goto(bb_asm6_n15)
+
+bb_asm6_n15:
+    StateWrite(loc_7, Sub(fromBalance, value)) origin_facts=[fact_31]
+    Goto(bb_asm6_n16)
+
+bb_asm6_n16:
+    _ = StateRead(loc_8) origin_facts=[fact_32, fact_30]
+    StateWrite(loc_8, Opaque((_balances[to] + value))) origin_facts=[fact_33]
+    Goto(bb_asm6_n17)
+
+bb_asm6_n17:
+    Goto(bb_asm6_n18)
+
+bb_asm6_n18:
+    EventEmit(msg.sender, to, value) origin_facts=[fact_34]
+    Goto(bb_asm6_n19)
+
+bb_asm6_n19:
+    ok = ValueCompute(1) origin_facts=[fact_35]
+    Goto(bb_asm6_n1)
+
+CFGEdges:
+    bb_asm6_n0 -> bb_asm6_n2 [next]
+    bb_asm6_n2 -> bb_asm6_n4 [true: iszero(to)]
+    bb_asm6_n4 -> bb_asm6_n1 [terminate: revert]
+    bb_asm6_n2 -> bb_asm6_n3 [false: !(iszero(to))]
+    bb_asm6_n3 -> bb_asm6_n5 [next]
+    bb_asm6_n5 -> bb_asm6_n6 [next]
+    bb_asm6_n6 -> bb_asm6_n7 [next]
+    bb_asm6_n7 -> bb_asm6_n8 [next]
+    bb_asm6_n8 -> bb_asm6_n9 [next]
+    bb_asm6_n9 -> bb_asm6_n11 [true: lt(fromBalance, value)]
+    bb_asm6_n11 -> bb_asm6_n1 [terminate: revert]
+    bb_asm6_n9 -> bb_asm6_n10 [false: !(lt(fromBalance, value))]
+    bb_asm6_n10 -> bb_asm6_n12 [next]
+    bb_asm6_n12 -> bb_asm6_n13 [next]
+    bb_asm6_n13 -> bb_asm6_n14 [next]
+    bb_asm6_n14 -> bb_asm6_n15 [next]
+    bb_asm6_n15 -> bb_asm6_n16 [next]
+    bb_asm6_n16 -> bb_asm6_n17 [next]
+    bb_asm6_n17 -> bb_asm6_n18 [next]
+    bb_asm6_n18 -> bb_asm6_n19 [next]
+    bb_asm6_n19 -> bb_asm6_n1 [next]
+
+Locations:
+    loc_7 = MappingLocation(base = _balances, keys = [msg.sender]) origin_facts=[fact_26, fact_24, fact_25, fact_31]
+    loc_8 = MappingLocation(base = _balances, keys = [to]) origin_facts=[fact_32, fact_30, fact_33]
+
+
+Function YulHeavyERC20.transferFrom(address, address, uint256)
+    signature = transferFrom(address, address, uint256)
+
+bb_asm7_n0:
+    Goto(bb_asm7_n2)
+
+bb_asm7_n1:
+    Unresolved
+
+bb_asm7_n2:
+    __sseir_eval_asm_s_1_1 = ValueCompute(IsZero(to)) origin_facts=[fact_38, fact_39]
+    Branch(IsZero(to), bb_asm7_n4, bb_asm7_n3)
+
+bb_asm7_n3:
+    Goto(bb_asm7_n5)
+
+bb_asm7_n4:
+    Require(Not(Ne(__sseir_eval_asm_s_1_1, 0))) origin_facts=[fact_69]
+    Goto(bb_asm7_n1)
+
+bb_asm7_n5:
+    Goto(bb_asm7_n6)
+
+bb_asm7_n6:
+    Goto(bb_asm7_n7)
+
+bb_asm7_n7:
+    ownerSlot = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_40]
+    Goto(bb_asm7_n8)
+
+bb_asm7_n8:
+    Goto(bb_asm7_n9)
+
+bb_asm7_n9:
+    Goto(bb_asm7_n10)
+
+bb_asm7_n10:
+    allowanceSlot = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_42]
+    Goto(bb_asm7_n11)
+
+bb_asm7_n11:
+    currentAllowance = StateRead(loc_9) origin_facts=[fact_45, fact_41, fact_43, fact_44]
+    Goto(bb_asm7_n12)
+
+bb_asm7_n12:
+    __sseir_eval_asm_s_10_1 = ValueCompute(Lt(currentAllowance, value)) origin_facts=[fact_46, fact_47]
+    Branch(Lt(currentAllowance, value), bb_asm7_n14, bb_asm7_n13)
+
+bb_asm7_n13:
+    Goto(bb_asm7_n15)
+
+bb_asm7_n14:
+    Require(Not(Ne(__sseir_eval_asm_s_10_1, 0))) origin_facts=[fact_68]
+    Goto(bb_asm7_n1)
+
+bb_asm7_n15:
+    __sseir_eval_asm_s_12_1 = ValueCompute(BitNot(0)) origin_facts=[fact_48]
+    __sseir_eval_asm_s_12_2 = ValueCompute(Eq(currentAllowance, __sseir_eval_asm_s_12_1)) origin_facts=[fact_49]
+    __sseir_eval_asm_s_12_3 = ValueCompute(IsZero(__sseir_eval_asm_s_12_2)) origin_facts=[fact_50]
+    _ = ValueCompute(IsZero(Eq(currentAllowance, BitNot(0)))) origin_facts=[fact_51]
+    Branch(IsZero(Eq(currentAllowance, BitNot(0))), bb_asm7_n17, bb_asm7_n16)
+
+bb_asm7_n16:
+    Goto(bb_asm7_n18)
+
+bb_asm7_n17:
+    StateWrite(loc_9, Sub(currentAllowance, value)) origin_facts=[fact_52]
+    Goto(bb_asm7_n16)
+
+bb_asm7_n18:
+    Goto(bb_asm7_n19)
+
+bb_asm7_n19:
+    Goto(bb_asm7_n20)
+
+bb_asm7_n20:
+    fromSlot = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_53]
+    Goto(bb_asm7_n21)
+
+bb_asm7_n21:
+    fromBalance = StateRead(loc_10) origin_facts=[fact_56, fact_54, fact_55]
+    Goto(bb_asm7_n22)
+
+bb_asm7_n22:
+    __sseir_eval_asm_s_18_1 = ValueCompute(Lt(fromBalance, value)) origin_facts=[fact_57, fact_58]
+    Branch(Lt(fromBalance, value), bb_asm7_n24, bb_asm7_n23)
+
+bb_asm7_n23:
+    Goto(bb_asm7_n25)
+
+bb_asm7_n24:
+    Require(Not(Ne(__sseir_eval_asm_s_18_1, 0))) origin_facts=[fact_67]
+    Goto(bb_asm7_n1)
+
+bb_asm7_n25:
+    Goto(bb_asm7_n26)
+
+bb_asm7_n26:
+    Goto(bb_asm7_n27)
+
+bb_asm7_n27:
+    toSlot = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_59]
+    Goto(bb_asm7_n28)
+
+bb_asm7_n28:
+    StateWrite(loc_10, Sub(fromBalance, value)) origin_facts=[fact_61]
+    Goto(bb_asm7_n29)
+
+bb_asm7_n29:
+    _ = StateRead(loc_11) origin_facts=[fact_62, fact_60]
+    StateWrite(loc_11, Opaque((_balances[to] + value))) origin_facts=[fact_63]
+    Goto(bb_asm7_n30)
+
+bb_asm7_n30:
+    Goto(bb_asm7_n31)
+
+bb_asm7_n31:
+    EventEmit(from, to, value) origin_facts=[fact_64]
+    EventEmit(from, to, value) origin_facts=[fact_65]
+    Goto(bb_asm7_n32)
+
+bb_asm7_n32:
+    ok = ValueCompute(1) origin_facts=[fact_66]
+    Goto(bb_asm7_n1)
+
+CFGEdges:
+    bb_asm7_n0 -> bb_asm7_n2 [next]
+    bb_asm7_n2 -> bb_asm7_n4 [true: iszero(to)]
+    bb_asm7_n4 -> bb_asm7_n1 [terminate: revert]
+    bb_asm7_n2 -> bb_asm7_n3 [false: !(iszero(to))]
+    bb_asm7_n3 -> bb_asm7_n5 [next]
+    bb_asm7_n5 -> bb_asm7_n6 [next]
+    bb_asm7_n6 -> bb_asm7_n7 [next]
+    bb_asm7_n7 -> bb_asm7_n8 [next]
+    bb_asm7_n8 -> bb_asm7_n9 [next]
+    bb_asm7_n9 -> bb_asm7_n10 [next]
+    bb_asm7_n10 -> bb_asm7_n11 [next]
+    bb_asm7_n11 -> bb_asm7_n12 [next]
+    bb_asm7_n12 -> bb_asm7_n14 [true: lt(currentAllowance, value)]
+    bb_asm7_n14 -> bb_asm7_n1 [terminate: revert]
+    bb_asm7_n12 -> bb_asm7_n13 [false: !(lt(currentAllowance, value))]
+    bb_asm7_n13 -> bb_asm7_n15 [next]
+    bb_asm7_n15 -> bb_asm7_n17 [true: iszero(eq(currentAllowance, not(0)))]
+    bb_asm7_n17 -> bb_asm7_n16 [next]
+    bb_asm7_n15 -> bb_asm7_n16 [false: !(iszero(eq(currentAllowance, not(0))))]
+    bb_asm7_n16 -> bb_asm7_n18 [next]
+    bb_asm7_n18 -> bb_asm7_n19 [next]
+    bb_asm7_n19 -> bb_asm7_n20 [next]
+    bb_asm7_n20 -> bb_asm7_n21 [next]
+    bb_asm7_n21 -> bb_asm7_n22 [next]
+    bb_asm7_n22 -> bb_asm7_n24 [true: lt(fromBalance, value)]
+    bb_asm7_n24 -> bb_asm7_n1 [terminate: revert]
+    bb_asm7_n22 -> bb_asm7_n23 [false: !(lt(fromBalance, value))]
+    bb_asm7_n23 -> bb_asm7_n25 [next]
+    bb_asm7_n25 -> bb_asm7_n26 [next]
+    bb_asm7_n26 -> bb_asm7_n27 [next]
+    bb_asm7_n27 -> bb_asm7_n28 [next]
+    bb_asm7_n28 -> bb_asm7_n29 [next]
+    bb_asm7_n29 -> bb_asm7_n30 [next]
+    bb_asm7_n30 -> bb_asm7_n31 [next]
+    bb_asm7_n31 -> bb_asm7_n32 [next]
+    bb_asm7_n32 -> bb_asm7_n1 [next]
+
+Locations:
+    loc_9 = MappingLocation(base = _allowances, keys = [from, msg.sender]) origin_facts=[fact_45, fact_41, fact_43, fact_44, fact_52]
+    loc_10 = MappingLocation(base = _balances, keys = [from]) origin_facts=[fact_56, fact_54, fact_55, fact_61]
+    loc_11 = MappingLocation(base = _balances, keys = [to]) origin_facts=[fact_62, fact_60, fact_63]
+
+
+Function YulHeavyERC20.burn(uint256)
+    signature = burn(uint256)
+
+bb_asm8_n0:
+    Goto(bb_asm8_n2)
+
+bb_asm8_n1:
+    Unresolved
+
+bb_asm8_n2:
+    Goto(bb_asm8_n3)
+
+bb_asm8_n3:
+    Goto(bb_asm8_n4)
+
+bb_asm8_n4:
+    accountSlot = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_70]
+    Goto(bb_asm8_n5)
+
+bb_asm8_n5:
+    accountBalance = StateRead(loc_12) origin_facts=[fact_73, fact_71, fact_72]
+    Goto(bb_asm8_n6)
+
+bb_asm8_n6:
+    __sseir_eval_asm_s_5_1 = ValueCompute(Lt(accountBalance, value)) origin_facts=[fact_74, fact_75]
+    Branch(Lt(accountBalance, value), bb_asm8_n8, bb_asm8_n7)
+
+bb_asm8_n7:
+    Goto(bb_asm8_n9)
+
+bb_asm8_n8:
+    Require(Not(Ne(__sseir_eval_asm_s_5_1, 0))) origin_facts=[fact_80]
+    Goto(bb_asm8_n1)
+
+bb_asm8_n9:
+    StateWrite(loc_12, Sub(accountBalance, value)) origin_facts=[fact_76]
+    Goto(bb_asm8_n10)
+
+bb_asm8_n10:
+    _ = StateRead(loc_13) origin_facts=[fact_77]
+    StateWrite(loc_13, Sub(_totalSupply, value)) origin_facts=[fact_78]
+    Goto(bb_asm8_n11)
+
+bb_asm8_n11:
+    Goto(bb_asm8_n12)
+
+bb_asm8_n12:
+    EventEmit(msg.sender, 0, value) origin_facts=[fact_79]
+    Goto(bb_asm8_n1)
+
+CFGEdges:
+    bb_asm8_n0 -> bb_asm8_n2 [next]
+    bb_asm8_n2 -> bb_asm8_n3 [next]
+    bb_asm8_n3 -> bb_asm8_n4 [next]
+    bb_asm8_n4 -> bb_asm8_n5 [next]
+    bb_asm8_n5 -> bb_asm8_n6 [next]
+    bb_asm8_n6 -> bb_asm8_n8 [true: lt(accountBalance, value)]
+    bb_asm8_n8 -> bb_asm8_n1 [terminate: revert]
+    bb_asm8_n6 -> bb_asm8_n7 [false: !(lt(accountBalance, value))]
+    bb_asm8_n7 -> bb_asm8_n9 [next]
+    bb_asm8_n9 -> bb_asm8_n10 [next]
+    bb_asm8_n10 -> bb_asm8_n11 [next]
+    bb_asm8_n11 -> bb_asm8_n12 [next]
+    bb_asm8_n12 -> bb_asm8_n1 [next]
+
+Locations:
+    loc_12 = MappingLocation(base = _balances, keys = [msg.sender]) origin_facts=[fact_73, fact_71, fact_72, fact_76]
+    loc_13 = StateVariableLocation(base = _totalSupply, keys = []) origin_facts=[fact_77, fact_78]
+
+
+Function YulHeavyERC20.batchBalanceSum(address[])
+    signature = batchBalanceSum(address[])
+
+bb_asm9_n0:
+    Goto(bb_asm9_n2)
+
+bb_asm9_n1:
+    Unresolved
+
+bb_asm9_n2:
+    i = ValueCompute(0) origin_facts=[fact_81]
+    Goto(bb_asm9_n3)
+
+bb_asm9_n3:
+    Branch(Opaque(for condition lt(i, accounts.length)), bb_asm9_n6, bb_asm9_n4)
+
+bb_asm9_n4:
+    Goto(bb_asm9_n1)
+
+bb_asm9_n5:
+    Goto(bb_asm9_n10)
+
+bb_asm9_n6:
+    __sseir_eval_asm_s_3_1 = ValueCompute(Mul(i, 0x20)) origin_facts=[fact_82]
+    __sseir_eval_asm_s_3_2 = ValueCompute(Add(accounts.offset, __sseir_eval_asm_s_3_1)) origin_facts=[fact_83]
+    __sseir_eval_asm_s_3_3 = ValueCompute(calldataload(__sseir_eval_asm_s_3_2)) origin_facts=[fact_84]
+    account = ValueCompute(calldataload(Add(accounts.offset, Mul(i, 0x20)))) origin_facts=[fact_85]
+    Goto(bb_asm9_n7)
+
+bb_asm9_n7:
+    Goto(bb_asm9_n8)
+
+bb_asm9_n8:
+    Goto(bb_asm9_n9)
+
+bb_asm9_n9:
+    __sseir_eval_asm_s_6_1 = ValueCompute(Keccak(0x00, 0x40)) origin_facts=[fact_86]
+    __sseir_eval_asm_s_6_2 = StateRead(loc_14) origin_facts=[fact_88, fact_87, fact_89]
+    __sseir_eval_asm_s_6_3 = ValueCompute(Add(result, __sseir_eval_asm_s_6_2)) origin_facts=[fact_90]
+    result = ValueCompute(Add(result, sload(Keccak(0x00, 0x40)))) origin_facts=[fact_91]
+    Goto(bb_asm9_n5)
+
+bb_asm9_n10:
+    __sseir_eval_asm_s_7_1 = ValueCompute(Add(i, 1)) origin_facts=[fact_92, fact_93]
+    Goto(bb_asm9_n3)
+
+CFGEdges:
+    bb_asm9_n0 -> bb_asm9_n2 [next]
+    bb_asm9_n2 -> bb_asm9_n3 [next]
+    bb_asm9_n3 -> bb_asm9_n6 [true: lt(i, accounts.length)]
+    bb_asm9_n6 -> bb_asm9_n7 [next]
+    bb_asm9_n7 -> bb_asm9_n8 [next]
+    bb_asm9_n8 -> bb_asm9_n9 [next]
+    bb_asm9_n9 -> bb_asm9_n5 [next]
+    bb_asm9_n5 -> bb_asm9_n10 [next]
+    bb_asm9_n10 -> bb_asm9_n3 [loop back]
+    bb_asm9_n3 -> bb_asm9_n4 [loop exit: !(lt(i, accounts.length))]
+    bb_asm9_n4 -> bb_asm9_n1 [next]
+
+Locations:
+    loc_14 = MappingLocation(base = _balances, keys = [account]) origin_facts=[fact_88, fact_87, fact_89]
+
+
+Function YulHeavyERC20.hasCode(address)
+    signature = hasCode(address)
+
+bb_asm10_n0:
+    Goto(bb_asm10_n2)
+
+bb_asm10_n1:
+    Unresolved
+
+bb_asm10_n2:
+    __sseir_eval_asm_s_1_1 = ValueCompute(extcodesize(account)) origin_facts=[fact_94]
+    __sseir_eval_asm_s_1_2 = ValueCompute(IsZero(__sseir_eval_asm_s_1_1)) origin_facts=[fact_95]
+    __sseir_eval_asm_s_1_3 = ValueCompute(IsZero(__sseir_eval_asm_s_1_2)) origin_facts=[fact_96]
+    result = ValueCompute(Ne(account.code.length, 0)) origin_facts=[fact_97]
+    result = ValueCompute(IsZero(IsZero(extcodesize(account)))) origin_facts=[fact_98]
+    Goto(bb_asm10_n1)
+
+CFGEdges:
+    bb_asm10_n0 -> bb_asm10_n2 [next]
+    bb_asm10_n2 -> bb_asm10_n1 [next]
+
+
+Function YulHeavyERC20.externalBalanceOf(address, address)
+    signature = externalBalanceOf(address, address)
+
+bb_asm11_n0:
+    Goto(bb_asm11_n2)
+
+bb_asm11_n1:
+    Unresolved
+
+bb_asm11_n2:
+    ptr = ValueCompute(mload(0x40)) origin_facts=[fact_99]
+    Goto(bb_asm11_n3)
+
+bb_asm11_n3:
+    Goto(bb_asm11_n4)
+
+bb_asm11_n4:
+    Goto(bb_asm11_n5)
+
+bb_asm11_n5:
+    success = ValueCompute(staticcall(gas(), token, ptr, 0x24, ptr, 0x20)) origin_facts=[fact_100]
+    ExternalCall(account) origin_facts=[fact_101]
+    Goto(bb_asm11_n6)
+
+bb_asm11_n6:
+    __sseir_eval_asm_s_5_1 = ValueCompute(returndatasize()) origin_facts=[fact_102]
+    __sseir_eval_asm_s_5_2 = ValueCompute(Eq(__sseir_eval_asm_s_5_1, 0x20)) origin_facts=[fact_103]
+    __sseir_eval_asm_s_5_3 = ValueCompute(BitAnd(success, __sseir_eval_asm_s_5_2)) origin_facts=[fact_104]
+    __sseir_eval_asm_s_5_4 = ValueCompute(IsZero(__sseir_eval_asm_s_5_3)) origin_facts=[fact_105]
+    _ = ValueCompute(IsZero(BitAnd(success, Eq(returndatasize(), 0x20)))) origin_facts=[fact_106]
+    Branch(IsZero(BitAnd(success, Eq(returndatasize(), 0x20))), bb_asm11_n8, bb_asm11_n7)
+
+bb_asm11_n7:
+    Goto(bb_asm11_n9)
+
+bb_asm11_n8:
+    Require(Not(Ne(__sseir_eval_asm_s_5_4, 0))) origin_facts=[fact_108]
+    Goto(bb_asm11_n1)
+
+bb_asm11_n9:
+    result = ValueCompute(mload(ptr)) origin_facts=[fact_107]
+    Goto(bb_asm11_n1)
+
+CFGEdges:
+    bb_asm11_n0 -> bb_asm11_n2 [next]
+    bb_asm11_n2 -> bb_asm11_n3 [next]
+    bb_asm11_n3 -> bb_asm11_n4 [next]
+    bb_asm11_n4 -> bb_asm11_n5 [next]
+    bb_asm11_n5 -> bb_asm11_n6 [next]
+    bb_asm11_n6 -> bb_asm11_n8 [true: iszero(and(success, eq(returndatasize(), 0x20)))]
+    bb_asm11_n8 -> bb_asm11_n1 [terminate: revert]
+    bb_asm11_n6 -> bb_asm11_n7 [false: !(iszero(and(success, eq(returndatasize(), 0x20))))]
+    bb_asm11_n7 -> bb_asm11_n9 [next]
+    bb_asm11_n9 -> bb_asm11_n1 [next]
