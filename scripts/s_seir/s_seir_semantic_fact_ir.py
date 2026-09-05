@@ -117,6 +117,7 @@ class SemanticFactIRBridge:
                 })
 
         self._normalize_require_guards(fact_cfg, semantic_nodes, raw_to_fact)
+        self._normalize_branch_conditions(fact_cfg, semantic_nodes)
         for block in fact_cfg["blocks"]:
             block["semantic_ids"].sort(key=lambda item: self._node_order(semantic_nodes, item))
         fact_ssa, semantic_edges, boundary_links, ssa_diagnostics = self._build_fact_ssa(
@@ -185,8 +186,33 @@ class SemanticFactIRBridge:
             failing[0]["kind"] = "false"
             failing[0]["guard"] = f"!({condition})"
 
+    @staticmethod
+    def _normalize_branch_conditions(fact_cfg: Json, nodes: list[Json]) -> None:
+        """Replace a raw Yul branch spelling with its completed S-SEIR form."""
+        by_id = fact_cfg.get("block_by_id") or {}
+        edges = fact_cfg.get("edges") or []
+        for node in nodes:
+            semantic = node.get("semantic") or {}
+            if node.get("kind") != "ValueCompute" or semantic.get("context") != "condition":
+                continue
+            condition = str(node.get("rvalue") or "").strip()
+            block_id = (node.get("placement") or {}).get("anchor_block")
+            block = by_id.get(str(block_id)) if block_id else None
+            if not condition or not block or str((block.get("terminator") or {}).get("kind") or "").lower() != "branch":
+                continue
+            block["terminator"]["condition"] = condition
+            for edge in edges:
+                if edge.get("from") != block_id:
+                    continue
+                edge["guard"] = SemanticFactIRBridge._edge_guard(block["terminator"], str(edge.get("kind") or ""))
+
     def _build_fact_cfg(self, function_id: str, control: Json) -> tuple[Json, dict[str, str]]:
         raw_blocks = [item for item in control.get("blocks") or [] if isinstance(item, dict) and item.get("block_id")]
+        outgoing_kinds: dict[str, list[str]] = {}
+        for edge in control.get("edges") or []:
+            if not isinstance(edge, dict) or not edge.get("from"):
+                continue
+            outgoing_kinds.setdefault(str(edge["from"]), []).append(str(edge.get("kind") or "next"))
         raw_to_fact: dict[str, str] = {}
         blocks: list[Json] = []
         for index, raw in enumerate(raw_blocks):
@@ -206,7 +232,9 @@ class SemanticFactIRBridge:
                 "kind": kind,
                 "origin": origin,
                 "stmt_refs": list(raw.get("stmts") or []),
-                "terminator": self._terminator_view(raw.get("terminator") or {}),
+                "terminator": self._terminator_view(
+                    raw.get("terminator") or {}, outgoing_kinds.get(raw_id) or []
+                ),
                 "semantic_ids": [],
                 "predecessors": [],
                 "successors": [],
@@ -230,12 +258,13 @@ class SemanticFactIRBridge:
             if self._is_terminal_terminator(source_block.get("terminator") or {}):
                 continue
             kind = str(raw.get("kind") or "next")
+            fact_source = next((item for item in blocks if item.get("_raw_id") == str(source_block.get("block_id") or "")), {})
             edges.append({
                 "edge_id": f"e{index + 1}",
                 "from": source,
                 "to": target,
                 "kind": kind,
-                "guard": self._edge_guard(source_block.get("terminator") or {}, kind),
+                "guard": self._edge_guard(fact_source.get("terminator") or {}, kind),
             })
         block_by_id = {str(block["block_id"]): block for block in blocks}
         for edge in edges:
@@ -253,11 +282,26 @@ class SemanticFactIRBridge:
         }, raw_to_fact)
 
     @staticmethod
-    def _terminator_view(value: Json) -> Json:
+    def _terminator_view(value: Json, outgoing_edge_kinds: list[str] | None = None) -> Json:
+        node_kind = value.get("node_kind")
+        condition = value.get("condition")
+        # The Yul CFG marks loop headers structurally and records the real
+        # predicate on their ``true:`` control edge.  Its display condition is
+        # intentionally prefixed with "for condition", so SFIR must project
+        # the edge payload rather than treat that label as an expression.
+        if node_kind == "loop-condition":
+            true_conditions = {
+                kind.split(":", 1)[1].strip()
+                for kind in outgoing_edge_kinds or []
+                if kind.startswith("true:") and kind.split(":", 1)[1].strip()
+            }
+            if len(true_conditions) == 1:
+                condition = next(iter(true_conditions))
         return _clean({
             "kind": value.get("kind"),
-            "condition": value.get("condition"),
+            "condition": condition,
             "text": value.get("text"),
+            "node_kind": node_kind,
         })
 
     @staticmethod
@@ -269,7 +313,11 @@ class SemanticFactIRBridge:
         condition = str(terminator.get("condition") or "").strip()
         if not condition:
             return None
-        if edge_kind in {"false", "exit", "zero"} or edge_kind.startswith("false:"):
+        if (
+            edge_kind in {"false", "exit", "zero"}
+            or edge_kind.startswith("false:")
+            or edge_kind.startswith("loop exit:")
+        ):
             return f"!({condition})"
         if edge_kind.startswith("case:"):
             return f"({condition}) == {edge_kind.split(':', 1)[1]}"

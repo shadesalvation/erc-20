@@ -74,6 +74,9 @@ class YulSemanticLifter:
         # canonical downstream; the derivation remains upstream provenance.
         out = self._compose_value_expressions(out, overlays)
         out = self._select_canonical_high_semantics(out, overlays)
+        out = self._drop_completed_call_buffer_temporaries(
+            out, overlays, fn_dict.get("control") or {}
+        )
         out = self._drop_covered_derivation_steps(out, overlays)
         out = self._dedupe_location_facts(out)
         out = self._canonicalize_path_conditioned_events(out)
@@ -352,9 +355,10 @@ class YulSemanticLifter:
                     covered_generic_ids.add(str(candidate.get("operation_id") or ""))
 
         # A calldata-word overlay and its generic normalization cite the same
-        # completed ValueDef effect.  That effect identity, together with the
-        # CFG anchor and target, is the replacement proof; no expression-text
-        # match is used.
+        # completed ValueDef effect.  Its evaluation steps are structurally
+        # tied to that same ValueDef through ``parent_effect``.  That effect
+        # identity, together with the CFG anchor and target, is the
+        # replacement proof; no expression-text match is used.
         for high in facts:
             high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
             if high_overlay.get("kind") != "CalldataWordRead":
@@ -378,11 +382,221 @@ class YulSemanticLifter:
                     and high_effects == candidate_effects
                 ):
                     covered_generic_ids.add(str(candidate.get("operation_id") or ""))
+            for candidate in facts:
+                candidate_overlay = overlays.get(str((candidate.get("evidence") or {}).get("overlay") or "")) or {}
+                if candidate_overlay.get("kind") != "EvaluationStep":
+                    continue
+                candidate_attrs = candidate_overlay.get("attrs") or {}
+                candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                if (
+                    str(candidate_attrs.get("parent_effect") or "") in high_effects
+                    and candidate_anchor == high_anchor
+                ):
+                    covered_evaluation_ids.add(str(candidate.get("operation_id") or ""))
+
+        # A CALL-family overlay owns its status result when S-SEIR proved that
+        # the surrounding Yul assignment binds the direct call expression.
+        # Suppress precisely that ValueDef projection; do not use textual call
+        # matching and do not suppress unrelated expressions in the block.
+        for high in facts:
+            high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
+            if high_overlay.get("kind") not in {"ExternalCall", "LowLevelCall", "StaticCallOverlay", "DelegateCallOverlay"}:
+                continue
+            high_attrs = high_overlay.get("attrs") or {}
+            result = str(high_attrs.get("result") or high.get("lvalue") or "")
+            result_effect = str(high_attrs.get("result_value_effect") or "")
+            high_anchor = (high.get("semantic_provenance") or {}).get("anchor_cfg_node")
+            if not result or not result_effect:
+                continue
+            for candidate in facts:
+                candidate_overlay = overlays.get(str((candidate.get("evidence") or {}).get("overlay") or "")) or {}
+                if candidate_overlay.get("kind") != "ExpressionNormalization":
+                    continue
+                candidate_effects = {str(value) for value in candidate_overlay.get("effects") or [] if value}
+                candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                if (
+                    str(candidate_overlay.get("attrs", {}).get("target") or candidate.get("lvalue") or "") == result
+                    and candidate_anchor == high_anchor
+                    and candidate_effects == {result_effect}
+                ):
+                    covered_generic_ids.add(str(candidate.get("operation_id") or ""))
         return [
             fact for fact in facts
             if str(fact.get("operation_id") or "") not in covered_generic_ids
             and str(fact.get("operation_id") or "") not in covered_evaluation_ids
         ]
+
+    @classmethod
+    def _drop_completed_call_buffer_temporaries(
+        cls,
+        facts: list[Json],
+        overlays: dict[str, Json],
+        control: Json,
+    ) -> list[Json]:
+        """Suppress an internal buffer definition only after a completed call owns it.
+
+        A raw Yul pointer assignment is not a public deobfuscation fact when
+        its only observable role is a fully recovered call payload buffer.
+        The proof is deliberately structural: S-SEIR's call overlay must own
+        the same ``input_ptr`` and have a resolved ``decoded_input``; the
+        pointer definition must dominate every such call; and no remaining
+        fact may consume that pointer except an output read explicitly linked
+        back to one of those calls.  This keeps the raw memory evidence inside
+        S-SEIR while preventing it from becoming a duplicate SFIR operation.
+
+        No expression spelling (including ``mload(0x40)``) is used here.
+        Unresolved calls, aliased/redefined pointers, and pointers with any
+        other semantic use remain visible in SFIR.
+        """
+        call_kinds = {
+            "ExternalCall",
+            "LowLevelCall",
+            "StaticCallOverlay",
+            "DelegateCallOverlay",
+        }
+        fact_overlay = {
+            str(fact.get("operation_id") or ""): overlays.get(
+                str((fact.get("evidence") or {}).get("overlay") or "")
+            ) or {}
+            for fact in facts
+        }
+        dominators = cls._control_dominators(control)
+
+        completed_by_pointer: dict[str, list[tuple[Json, Json, str]]] = {}
+        for fact in facts:
+            overlay = fact_overlay[str(fact.get("operation_id") or "")]
+            if overlay.get("kind") not in call_kinds:
+                continue
+            attrs = overlay.get("attrs") or {}
+            pointer = str(attrs.get("input_ptr") or "").strip()
+            decoded_input = attrs.get("decoded_input")
+            overlay_id = str(overlay.get("overlay_id") or "")
+            anchor = str((fact.get("semantic_provenance") or {}).get("anchor_cfg_node") or "")
+            if not pointer or not decoded_input or not overlay_id or not anchor:
+                continue
+            completed_by_pointer.setdefault(pointer, []).append((fact, overlay, anchor))
+
+        generic_by_target: dict[str, list[Json]] = {}
+        for fact in facts:
+            overlay = fact_overlay[str(fact.get("operation_id") or "")]
+            if overlay.get("kind") != "ExpressionNormalization":
+                continue
+            target = str((overlay.get("attrs") or {}).get("target") or fact.get("lvalue") or "").strip()
+            if target:
+                generic_by_target.setdefault(target, []).append(fact)
+
+        covered_ids: set[str] = set()
+        for pointer, calls in completed_by_pointer.items():
+            definitions = generic_by_target.get(pointer) or []
+            # A single reaching semantic definition is required.  Without
+            # value-version evidence at this boundary, multiple definitions
+            # remain explicit rather than being guessed equivalent.
+            if len(definitions) != 1:
+                continue
+            definition = definitions[0]
+            definition_id = str(definition.get("operation_id") or "")
+            definition_anchor = str((definition.get("semantic_provenance") or {}).get("anchor_cfg_node") or "")
+            if not definition_id or not definition_anchor:
+                continue
+            if not all(cls._dominates(dominators, definition_anchor, call_anchor) for _, _, call_anchor in calls):
+                continue
+
+            completed_call_ids = {
+                str(call_overlay.get("overlay_id") or "")
+                for _, call_overlay, _ in calls
+            }
+            if cls._has_uncovered_pointer_use(
+                pointer, definition_id, facts, fact_overlay, completed_call_ids
+            ):
+                continue
+            covered_ids.add(definition_id)
+
+        return [
+            fact for fact in facts
+            if str(fact.get("operation_id") or "") not in covered_ids
+        ]
+
+    @staticmethod
+    def _has_uncovered_pointer_use(
+        pointer: str,
+        definition_id: str,
+        facts: list[Json],
+        fact_overlay: dict[str, Json],
+        completed_call_ids: set[str],
+    ) -> bool:
+        """Return whether a pointer escapes the recovered call abstraction."""
+        call_kinds = {
+            "ExternalCall",
+            "LowLevelCall",
+            "StaticCallOverlay",
+            "DelegateCallOverlay",
+        }
+        for fact in facts:
+            operation_id = str(fact.get("operation_id") or "")
+            if operation_id == definition_id:
+                continue
+            overlay = fact_overlay.get(operation_id) or {}
+            attrs = overlay.get("attrs") or {}
+            overlay_id = str(overlay.get("overlay_id") or "")
+            if (
+                overlay.get("kind") in call_kinds
+                and overlay_id in completed_call_ids
+                and str(attrs.get("input_ptr") or "").strip() == pointer
+            ):
+                continue
+            if (
+                overlay.get("kind") == "CallOutputRead"
+                and str(attrs.get("source_call_overlay") or "") in completed_call_ids
+            ):
+                continue
+            if pointer in {str(value) for value in fact.get("reads") or [] if value}:
+                return True
+        return False
+
+    @staticmethod
+    def _control_dominators(control: Json) -> dict[str, set[str]]:
+        """Compute CFG dominators for semantic anchors without source ordering."""
+        nodes = {
+            str(block.get("block_id"))
+            for block in control.get("blocks") or []
+            if isinstance(block, dict) and block.get("block_id")
+        }
+        if not nodes:
+            return {}
+        predecessors: dict[str, set[str]] = {node: set() for node in nodes}
+        for edge in control.get("edges") or []:
+            if not isinstance(edge, dict):
+                continue
+            source = str(edge.get("from") or "")
+            target = str(edge.get("to") or "")
+            if source in nodes and target in nodes:
+                predecessors[target].add(source)
+        entries = {node for node in nodes if not predecessors[node]}
+        if not entries:
+            return {}
+        dominators = {
+            node: {node} if node in entries else set(nodes)
+            for node in nodes
+        }
+        changed = True
+        while changed:
+            changed = False
+            for node in nodes - entries:
+                incoming = predecessors[node]
+                if not incoming:
+                    continue
+                common = set.intersection(*(dominators[parent] for parent in incoming))
+                updated = common | {node}
+                if updated != dominators[node]:
+                    dominators[node] = updated
+                    changed = True
+        return dominators
+
+    @staticmethod
+    def _dominates(dominators: dict[str, set[str]], definition: str, use: str) -> bool:
+        # Same-block ordering is intentionally not inferred at the SFIR
+        # boundary.  It needs S-SEIR value-version evidence, so retain it.
+        return definition != use and definition in dominators.get(use, set())
 
     @classmethod
     def _canonicalize_path_conditioned_events(cls, facts: list[Json]) -> list[Json]:

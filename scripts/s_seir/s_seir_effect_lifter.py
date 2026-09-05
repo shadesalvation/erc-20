@@ -266,6 +266,16 @@ class EffectLifter:
                     }))
                 elif call in {"call", "staticcall", "delegatecall", "callcode"}:
                     attrs = {"op": call, "args": vals, "cfg_node_id": nid, "path_states": self.node_path_states(res, nid)}
+                    # The assignment target and the CALL-family effect are
+                    # one Yul AST operation.  Preserve that structural link
+                    # on the completed call effect so the semantic overlay
+                    # owns the call-status result instead of making a second
+                    # downstream call-shaped ValueDef necessary.
+                    if names:
+                        attrs["result"] = names[0]
+                        attrs["result_versions"] = self.created_value_versions(res, nid, names)
+                    if value_effect is not None:
+                        attrs["result_value_effect"] = value_effect.effect_id
                     self.attach_call_memory(attrs, res, nid, vals, call, block_loop_context)
                     effects.append(self.effect({"call": "Call", "staticcall": "StaticCall", "delegatecall": "DelegateCall", "callcode": "CallCode"}[call], [stmt], attrs))
                 elif call and call.startswith("log") and call[3:].isdigit():

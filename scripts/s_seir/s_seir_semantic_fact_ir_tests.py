@@ -141,6 +141,38 @@ class SemanticFactIRBridgeTests(unittest.TestCase):
         self.assertFalse(any(edge["from"] == revert_block["block_id"] for edge in result["fact_cfg"]["edges"]))
         self.assertFalse(any(item["kind"] == "terminal_fact_cfg_successor" for item in result["diagnostics"]))
 
+    def test_loop_header_projects_complementary_body_and_exit_guards(self) -> None:
+        control = {
+            "blocks": [
+                {
+                    **block("loop", "yul"),
+                    "terminator": {
+                        "kind": "Branch",
+                        "node_kind": "loop-condition",
+                        "condition": "for condition lt(i, accounts.length)",
+                        "text": "for condition lt(i, accounts.length)",
+                    },
+                },
+                block("body", "yul"),
+                block("exit", "yul"),
+            ],
+            "edges": [
+                {"from": "loop", "to": "body", "kind": "true: lt(i, accounts.length)"},
+                {"from": "loop", "to": "exit", "kind": "loop exit: !(lt(i, accounts.length))"},
+            ],
+        }
+        result = SemanticFactIRBridge().build_function(function(control), [], [])
+        loop = next(item for item in result["fact_cfg"]["blocks"] if item["origin"]["source_block_id"] == "loop")
+        edges = [item for item in result["fact_cfg"]["edges"] if item["from"] == loop["block_id"]]
+        self.assertEqual("lt(i, accounts.length)", loop["terminator"]["condition"])
+        self.assertEqual(
+            {
+                "true: lt(i, accounts.length)": "lt(i, accounts.length)",
+                "loop exit: !(lt(i, accounts.length))": "!(lt(i, accounts.length))",
+            },
+            {item["kind"]: item["guard"] for item in edges},
+        )
+
     def test_location_aliases_merge_by_high_semantic_identity(self) -> None:
         base = {
             "function_id": FUNCTION_ID, "kind": "StorageLocationResolve", "stmt_refs": ["stmt"],
@@ -197,6 +229,94 @@ class SemanticFactIRBridgeTests(unittest.TestCase):
         }
         result = YulSemanticLifter._select_canonical_high_semantics([high, generic, unrelated], overlays)
         self.assertEqual(["call_output", "other"], [item["operation_id"] for item in result])
+
+    def test_calldata_word_replaces_its_complete_atomic_derivation(self) -> None:
+        common = {"stmt_refs": ["read"], "semantic_provenance": {"anchor_cfg_node": "y1"}}
+        high = {**common, "operation_id": "calldata", "kind": "ValueCompute", "lvalue": "account", "evidence": {"overlay": "calldata"}}
+        generic = {**common, "operation_id": "generic", "kind": "ValueCompute", "lvalue": "account", "evidence": {"overlay": "generic"}}
+        multiply = {**common, "operation_id": "multiply", "kind": "ValueCompute", "lvalue": "tmp_1", "evidence": {"overlay": "multiply"}}
+        load = {**common, "operation_id": "load", "kind": "ValueCompute", "lvalue": "tmp_2", "evidence": {"overlay": "load"}}
+        unrelated = {**common, "operation_id": "unrelated", "kind": "ValueCompute", "lvalue": "other", "evidence": {"overlay": "unrelated"}}
+        overlays = {
+            "calldata": {"kind": "CalldataWordRead", "effects": ["value_def"], "attrs": {"target": "account"}},
+            "generic": {"kind": "ExpressionNormalization", "effects": ["value_def"], "attrs": {"target": "account"}},
+            "multiply": {"kind": "EvaluationStep", "attrs": {"parent_effect": "value_def"}},
+            "load": {"kind": "EvaluationStep", "attrs": {"parent_effect": "value_def"}},
+            "unrelated": {"kind": "EvaluationStep", "attrs": {"parent_effect": "another_value_def"}},
+        }
+        result = YulSemanticLifter._select_canonical_high_semantics(
+            [high, generic, multiply, load, unrelated], overlays
+        )
+        self.assertEqual(["calldata", "unrelated"], [item["operation_id"] for item in result])
+
+    def test_completed_call_owns_its_private_payload_buffer(self) -> None:
+        control = {
+            "blocks": [block("y0", "yul"), block("y1", "yul"), block("y2", "yul")],
+            "edges": [
+                {"from": "y0", "to": "y1", "kind": "next"},
+                {"from": "y1", "to": "y2", "kind": "next"},
+            ],
+        }
+        pointer = {
+            "operation_id": "pointer", "kind": "ValueCompute", "lvalue": "ptr", "writes": ["ptr"],
+            "stmt_refs": ["ptr_stmt"], "semantic_provenance": {"anchor_cfg_node": "y0"},
+            "evidence": {"overlay": "pointer"},
+        }
+        call = {
+            "operation_id": "call", "kind": "ExternalCall", "lvalue": "success", "writes": ["success"],
+            "stmt_refs": ["call_stmt"], "semantic_provenance": {"anchor_cfg_node": "y1"},
+            "evidence": {"overlay": "call"},
+        }
+        output = {
+            "operation_id": "output", "kind": "ValueCompute", "lvalue": "result", "writes": ["result"],
+            "stmt_refs": ["read_stmt"], "semantic_provenance": {"anchor_cfg_node": "y2"},
+            "evidence": {"overlay": "output"},
+        }
+        overlays = {
+            "pointer": {"overlay_id": "pointer", "kind": "ExpressionNormalization", "attrs": {"target": "ptr"}},
+            "call": {"overlay_id": "call", "kind": "StaticCallOverlay", "attrs": {
+                "input_ptr": "ptr", "output_ptr": "ptr", "decoded_input": "MemorySlice(selector, account)",
+            }},
+            "output": {"overlay_id": "output", "kind": "CallOutputRead", "attrs": {"source_call_overlay": "call"}},
+        }
+        result = YulSemanticLifter._drop_completed_call_buffer_temporaries(
+            [pointer, call, output], overlays, control
+        )
+        self.assertEqual(["call", "output"], [item["operation_id"] for item in result])
+
+    def test_call_buffer_remains_when_another_fact_reads_it(self) -> None:
+        control = {
+            "blocks": [block("y0", "yul"), block("y1", "yul"), block("y2", "yul")],
+            "edges": [
+                {"from": "y0", "to": "y1", "kind": "next"},
+                {"from": "y1", "to": "y2", "kind": "next"},
+            ],
+        }
+        pointer = {
+            "operation_id": "pointer", "kind": "ValueCompute", "lvalue": "ptr", "writes": ["ptr"],
+            "stmt_refs": ["ptr_stmt"], "semantic_provenance": {"anchor_cfg_node": "y0"},
+            "evidence": {"overlay": "pointer"},
+        }
+        call = {
+            "operation_id": "call", "kind": "ExternalCall", "stmt_refs": ["call_stmt"],
+            "semantic_provenance": {"anchor_cfg_node": "y1"}, "evidence": {"overlay": "call"},
+        }
+        escaped_use = {
+            "operation_id": "escaped", "kind": "ValueCompute", "reads": ["ptr"],
+            "stmt_refs": ["other_stmt"], "semantic_provenance": {"anchor_cfg_node": "y2"},
+            "evidence": {"overlay": "escaped"},
+        }
+        overlays = {
+            "pointer": {"overlay_id": "pointer", "kind": "ExpressionNormalization", "attrs": {"target": "ptr"}},
+            "call": {"overlay_id": "call", "kind": "StaticCallOverlay", "attrs": {
+                "input_ptr": "ptr", "decoded_input": "MemorySlice(selector, account)",
+            }},
+            "escaped": {"overlay_id": "escaped", "kind": "ExpressionNormalization", "attrs": {"target": "other"}},
+        }
+        result = YulSemanticLifter._drop_completed_call_buffer_temporaries(
+            [pointer, call, escaped_use], overlays, control
+        )
+        self.assertEqual(["pointer", "call", "escaped"], [item["operation_id"] for item in result])
 
     def test_parent_expression_replaces_its_atomic_derivation_and_uses_state_read(self) -> None:
         common = {"stmt_refs": ["stmt"], "semantic_provenance": {"anchor_cfg_node": "y0"}}

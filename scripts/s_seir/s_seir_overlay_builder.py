@@ -4936,9 +4936,15 @@ class SemanticOverlayBuilder:
                 }))
             elif e.kind == 'Branch':
                 condition_text = e.attrs.get('condition_final_temp') or e.attrs.get('condition_normalized') or normalize_expr(e.attrs.get('condition'))
+                # ``condition_final_temp`` is useful derivation evidence, not
+                # the semantic condition.  Carry the S-SEIR-normalized form
+                # explicitly so downstream SFIR never has to fall back to the
+                # raw Yul spelling such as iszero(eq(...)).
+                condition_normalized = e.attrs.get('condition_normalized') or normalize_expr(e.attrs.get('condition'), context='condition')
                 condition_evaluation = self.condition_evaluation_with_state_reads(type_env, e.attrs.get('condition_evaluation'), value_defs_by_name)
                 out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {
                     'expression': e.attrs.get('condition'),
+                    'condition_normalized': condition_normalized,
                     'solidity_like': f"if ({condition_text})",
                     'context': 'condition',
                     'condition_final_temp': e.attrs.get('condition_final_temp'),

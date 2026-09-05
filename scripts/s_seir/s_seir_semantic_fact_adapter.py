@@ -301,9 +301,12 @@ class SSeirFactAdapter:
             return self.fact(fn, overlay, stmt_lang, "MemoryObjectWrite", lvalue=target, rvalue=value, reads=flat_list(value), writes=[target], semantic=attrs)
         if kind in {"ExpressionNormalization", "EvaluationStep"}:
             target = attrs.get("target") or attrs.get("temp")
-            value = attrs.get("value") or attrs.get("expression") or attrs.get("solidity_like")
+            is_condition = attrs.get("context") == "condition"
+            value = (
+                attrs.get("condition_normalized") if is_condition else None
+            ) or attrs.get("value") or attrs.get("expression") or attrs.get("solidity_like")
             return self.fact(fn, overlay, stmt_lang, "ValueCompute", lvalue=target, rvalue=value, reads=rough_reads(value), writes=[target], semantic=pick(attrs, (
-                "target", "temp", "value", "expression", "solidity_like", "call", "raw_args", "evaluated_args",
+                "target", "temp", "value", "expression", "condition_normalized", "context", "solidity_like", "call", "raw_args", "evaluated_args",
             )))
         return None
 
@@ -371,7 +374,8 @@ class SSeirFactAdapter:
     def call_fact(self, fn: dict[str, Any], overlay: dict[str, Any], stmt_lang: dict[str, str], fact_kind: str) -> SemanticFact:
         attrs = overlay.get("attrs") or {}
         arguments = attrs.get("arguments") or attrs.get("args")
-        return self.fact(fn, overlay, stmt_lang, fact_kind, reads=clean_list([
+        result = attrs.get("result")
+        return self.fact(fn, overlay, stmt_lang, fact_kind, lvalue=result, writes=clean_list([result]), reads=clean_list([
             attrs.get("target_solidity") or attrs.get("target"),
             attrs.get("value"),
             *flat_list(arguments),
@@ -384,6 +388,7 @@ class SSeirFactAdapter:
             "decoded_input": attrs.get("decoded_input"),
             "semantic_inputs": attrs.get("semantic_inputs"),
             "value": attrs.get("value"),
+            "call_status_result": result,
             "precompile": attrs.get("precompile"),
             "solidity_like": attrs.get("solidity_like"),
         })
