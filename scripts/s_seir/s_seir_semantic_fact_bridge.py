@@ -102,6 +102,11 @@ class SemanticFactBridge:
             fact.setdefault("control_predecessors", [])
             fact["cfg_predecessor_blocks"] = block_predecessors.get(cfg_node, [])
 
+        # A S-SEIR effect may represent one source endpoint reached through
+        # several CFG paths.  Keep those executions distinct in the common
+        # fact schema; the bridge must not collapse them merely because they
+        # share a source statement or CFG block.
+        facts = self._materialize_sseir_path_instances(facts, effect_by_id)
         facts.sort(key=self._sort_key)
         self._propagate_dominating_guards(facts, semantic_input.control)
         self._propagate_terminal_branch_guards(facts, semantic_input.control)
@@ -275,6 +280,194 @@ class SemanticFactBridge:
         )
 
     @classmethod
+    def _materialize_sseir_path_instances(
+        cls,
+        facts: list[Json],
+        effect_by_id: dict[str, Json],
+    ) -> list[Json]:
+        """Expand one Yul fact per S-SEIR reaching path when needed.
+
+        S-SEIR already performs the path-sensitive analysis.  This method
+        only projects its recorded ``path_states`` into separate fact
+        instances.  It deliberately does not enumerate CFG paths itself.
+        Candidate facts (for example ``PathConditionedEventEmit``) are
+        already one-per-path when they enter the bridge and are only
+        annotated here.
+        """
+        out: list[Json] = []
+        for fact in facts:
+            if str(fact.get("source_lang") or "") != "yul":
+                out.append(fact)
+                continue
+
+            endpoint_effects = cls._path_endpoint_effects(fact, effect_by_id)
+            path_entries = cls._effect_path_entries(endpoint_effects)
+            candidate = (fact.get("evidence") or {}).get("candidate") or {}
+            candidate_condition = (
+                str(candidate.get("condition") or "")
+                if isinstance(candidate, dict) else ""
+            )
+
+            if candidate_condition:
+                matching = next(
+                    (item for item in path_entries if item[2] == candidate_condition),
+                    None,
+                )
+                effect_id, path_index, path_condition = matching or (
+                    cls._endpoint_effect_id(endpoint_effects, fact),
+                    0,
+                    candidate_condition,
+                )
+                out.append(cls._path_instance(
+                    fact,
+                    effect_id,
+                    path_index,
+                    path_condition,
+                    replace_condition=False,
+                    duplicate_id=False,
+                ))
+                continue
+
+            if len(path_entries) <= 1:
+                if path_entries:
+                    effect_id, path_index, path_condition = path_entries[0]
+                    out.append(cls._path_instance(
+                        fact,
+                        effect_id,
+                        path_index,
+                        path_condition,
+                        replace_condition=False,
+                        duplicate_id=False,
+                    ))
+                else:
+                    out.append(fact)
+                continue
+
+            for effect_id, path_index, path_condition in path_entries:
+                out.append(cls._path_instance(
+                    fact,
+                    effect_id,
+                    path_index,
+                    path_condition,
+                    # Require.condition is the lifted success predicate,
+                    # whereas a Revert effect path is the failure route.
+                    # Keep both meanings separate.
+                    replace_condition=str(fact.get("kind") or "") != "Require",
+                    duplicate_id=True,
+                ))
+        return out
+
+    @classmethod
+    def _path_endpoint_effects(
+        cls,
+        fact: Json,
+        effect_by_id: dict[str, Json],
+    ) -> list[Json]:
+        evidence = fact.get("evidence") or {}
+        referenced = [
+            effect_by_id[effect_id]
+            for effect_id in (str(value) for value in evidence.get("effects") or [])
+            if effect_id in effect_by_id
+        ]
+        expected = cls._SINK_EFFECT_KINDS.get(str(fact.get("kind") or ""))
+        if expected:
+            sinks = [
+                effect for effect in referenced
+                if str(effect.get("kind") or "") in expected
+            ]
+            if sinks:
+                return sinks
+        return referenced
+
+    @staticmethod
+    def _effect_path_entries(effects: list[Json]) -> list[tuple[str, int, str]]:
+        out: list[tuple[str, int, str]] = []
+        seen: set[tuple[str, str]] = set()
+        for effect in effects:
+            effect_id = str(effect.get("effect_id") or "")
+            attrs = effect.get("attrs") or {}
+            for index, value in enumerate(attrs.get("path_states") or []):
+                condition = str(value or "")
+                if not condition or condition == "entry":
+                    continue
+                key = (effect_id, condition)
+                if key in seen:
+                    continue
+                seen.add(key)
+                out.append((effect_id, index + 1, condition))
+        return out
+
+    @staticmethod
+    def _endpoint_effect_id(effects: list[Json], fact: Json) -> str:
+        for effect in effects:
+            effect_id = str(effect.get("effect_id") or "")
+            if effect_id:
+                return effect_id
+        evidence = fact.get("evidence") or {}
+        return str(evidence.get("overlay") or fact.get("operation_id") or fact.get("fact_id") or "endpoint")
+
+    @classmethod
+    def _path_instance(
+        cls,
+        fact: Json,
+        effect_id: str,
+        path_index: int,
+        path_condition: str,
+        *,
+        replace_condition: bool,
+        duplicate_id: bool,
+    ) -> Json:
+        item = dict(fact)
+        path_id = f"{effect_id}:path_{path_index}" if effect_id else f"path_{path_index}"
+        evidence = dict(item.get("evidence") or {})
+        endpoint_id = cls._semantic_endpoint_id(item, effect_id)
+        item["semantic_endpoint_id"] = endpoint_id
+        item["path_id"] = path_id
+        item["path_condition"] = path_condition
+        item["evidence"] = {
+            **evidence,
+            "path_instance": {
+                "semantic_endpoint_id": endpoint_id,
+                "path_id": path_id,
+                "condition": path_condition,
+                "source": "sseir_effect_path_state",
+            },
+        }
+        if replace_condition:
+            item["condition"] = cls._combine_conditions(
+                str(item.get("condition") or ""),
+                path_condition,
+            )
+        if duplicate_id:
+            old_id = str(item.get("fact_id") or "fact")
+            old_operation_id = str(item.get("operation_id") or old_id)
+            item["fact_id"] = f"{old_id}::{path_id}"
+            item["operation_id"] = f"{old_operation_id}::{path_id}"
+        return item
+
+    @staticmethod
+    def _semantic_endpoint_id(fact: Json, effect_id: str) -> str:
+        evidence = fact.get("evidence") or {}
+        overlay = str(evidence.get("overlay") or "")
+        function_id = str(fact.get("function_id") or "")
+        endpoint = effect_id or overlay or str(fact.get("operation_id") or fact.get("fact_id") or "")
+        return f"{function_id}:{endpoint}" if function_id else endpoint
+
+    @classmethod
+    def _combine_conditions(cls, existing: str, path_condition: str) -> str:
+        if not existing:
+            return path_condition
+        if not path_condition or existing == path_condition:
+            return existing
+        existing_parts = cls._condition_literals(existing)
+        path_parts = cls._condition_literals(path_condition)
+        if existing_parts and existing_parts.issubset(path_parts):
+            return path_condition
+        if path_parts and path_parts.issubset(existing_parts):
+            return existing
+        return f"({existing}) && ({path_condition})"
+
+    @classmethod
     def _link_control_predecessors(
         cls,
         facts: list[Json],
@@ -290,21 +483,33 @@ class SemanticFactBridge:
             block_facts.sort(key=cls._sort_key)
 
         for block, block_facts in by_block.items():
-            for index, fact in enumerate(block_facts):
-                predecessors = list(fact.get("control_predecessors") or [])
-                if index:
-                    previous = block_facts[index - 1].get("fact_id")
-                    if previous:
-                        predecessors.append(str(previous))
-                else:
-                    for predecessor_fact in cls._nearest_predecessor_facts(
+            groups = cls._operation_groups(block_facts)
+            for group_index, group in enumerate(groups):
+                prior_group = groups[group_index - 1] if group_index else []
+                for fact in group:
+                    predecessors = list(fact.get("control_predecessors") or [])
+                    candidates = prior_group or cls._nearest_predecessor_facts(
                         block,
                         by_block,
                         block_predecessors,
-                    ):
+                    )
+                    for predecessor_fact in candidates:
+                        if not cls._path_compatible(predecessor_fact, fact):
+                            continue
                         if predecessor_fact.get("fact_id"):
                             predecessors.append(str(predecessor_fact["fact_id"]))
-                fact["control_predecessors"] = list(dict.fromkeys(predecessors))
+                    fact["control_predecessors"] = list(dict.fromkeys(predecessors))
+
+    @classmethod
+    def _operation_groups(cls, block_facts: list[Json]) -> list[list[Json]]:
+        groups: list[list[Json]] = []
+        for fact in block_facts:
+            order = cls._local_order(fact)
+            if not groups or cls._local_order(groups[-1][0]) != order:
+                groups.append([fact])
+            else:
+                groups[-1].append(fact)
+        return groups
 
     @classmethod
     def _nearest_predecessor_facts(
@@ -323,12 +528,89 @@ class SemanticFactBridge:
                 visited.add(predecessor)
                 predecessor_facts = by_block.get(predecessor) or []
                 if predecessor_facts:
-                    out.append(predecessor_facts[-1])
+                    last_order = cls._local_order(predecessor_facts[-1])
+                    out.extend(
+                        fact for fact in predecessor_facts
+                        if cls._local_order(fact) == last_order
+                    )
                 else:
                     visit(predecessor)
 
         visit(block)
         return out
+
+    @classmethod
+    def _path_compatible(cls, left: Json, right: Json) -> bool:
+        left_literals = cls._condition_literals(cls._fact_path_condition(left))
+        right_literals = cls._condition_literals(cls._fact_path_condition(right))
+        for expression, polarity in left_literals:
+            if (expression, not polarity) in right_literals:
+                return False
+        return True
+
+    @staticmethod
+    def _fact_path_condition(fact: Json) -> str:
+        return str(fact.get("path_condition") or fact.get("condition") or "")
+
+    @classmethod
+    def _condition_literals(cls, condition: str) -> set[tuple[str, bool]]:
+        return {
+            cls._condition_literal(part)
+            for part in cls._split_top_level_conjunction(condition)
+            if cls._condition_literal(part)[0]
+        }
+
+    @staticmethod
+    def _split_top_level_conjunction(condition: str) -> list[str]:
+        out: list[str] = []
+        start = 0
+        depth = 0
+        index = 0
+        while index < len(condition):
+            char = condition[index]
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth = max(0, depth - 1)
+            elif depth == 0 and condition[index:index + 2] == "&&":
+                part = condition[start:index].strip()
+                if part:
+                    out.append(part)
+                start = index + 2
+                index += 1
+            index += 1
+        part = condition[start:].strip()
+        if part:
+            out.append(part)
+        return out
+
+    @classmethod
+    def _condition_literal(cls, value: str) -> tuple[str, bool]:
+        text = cls._strip_outer_parentheses(value.strip())
+        if text.startswith("!(") and text.endswith(")"):
+            return cls._strip_outer_parentheses(text[2:-1]), False
+        if text.startswith("!"):
+            return cls._strip_outer_parentheses(text[1:]), False
+        return text, True
+
+    @staticmethod
+    def _strip_outer_parentheses(value: str) -> str:
+        text = value.strip()
+        while text.startswith("(") and text.endswith(")"):
+            depth = 0
+            wraps_all = True
+            for index, char in enumerate(text):
+                if char == "(":
+                    depth += 1
+                elif char == ")":
+                    depth -= 1
+                    if depth == 0 and index != len(text) - 1:
+                        wraps_all = False
+                        break
+            if not wraps_all or depth != 0:
+                break
+            text = text[1:-1].strip()
+        return text
 
     @classmethod
     def _propagate_dominating_guards(cls, facts: list[Json], control: Json) -> None:
@@ -353,6 +635,13 @@ class SemanticFactBridge:
             guards: list[str] = []
             for require in requires:
                 if require is fact:
+                    continue
+                # Path instances of one lifted endpoint are sibling facts,
+                # not a sequence of independently dominating requires.
+                if (
+                    fact.get("semantic_endpoint_id")
+                    and fact.get("semantic_endpoint_id") == require.get("semantic_endpoint_id")
+                ):
                     continue
                 require_block = cls._primary_cfg_node(require)
                 if not require_block or require_block not in dominators.get(fact_block, set()):

@@ -1,0 +1,31 @@
+digraph{
+node [shape=box];
+0[label="Node Type: ENTRY_POINT 0\n"];
+0->1;
+1[label="Node Type: INLINE ASM 1\n"];
+1->2;
+2[label="Node Type: NEW VARIABLE 2\n"];
+2->3;
+3[label="Node Type: EXPRESSION 3\n\nSOURCE EXPRESSION (non-SSA):\nptr_externalBalanceOf_asm_0 = mload(uint256)(0x40)\n\nSlithIR-SSA:\nTMP_110(uint256) = SOLIDITY_CALL mload(uint256)(64)\nptr_externalBalanceOf_asm_0_1(uint256) := TMP_110(uint256)"];
+3->4;
+4[label="Node Type: EXPRESSION 4\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(ptr_externalBalanceOf_asm_0,0x70a08231 << 224)\n\nSlithIR-SSA:\nTMP_111(uint256) = 1889567281 << 224\nTMP_112(None) = SOLIDITY_CALL mstore(uint256,uint256)(ptr_externalBalanceOf_asm_0_1,TMP_111)"];
+4->5;
+5[label="Node Type: EXPRESSION 5\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(ptr_externalBalanceOf_asm_0 + 0x04,account)\n\nSlithIR-SSA:\nTMP_113(uint256) = ptr_externalBalanceOf_asm_0_1 + 4\nTMP_114(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_113,account_1)"];
+5->6;
+6[label="Node Type: NEW VARIABLE 6\n"];
+6->7;
+7[label="Node Type: EXPRESSION 7\n\nSOURCE EXPRESSION (non-SSA):\nsuccess_externalBalanceOf_asm_0 = staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(gas()(),token,ptr_externalBalanceOf_asm_0,0x24,ptr_externalBalanceOf_asm_0,0x20)\n\nSlithIR-SSA:\nTMP_115(uint256) = SOLIDITY_CALL gas()()\nTMP_116(uint256) = SOLIDITY_CALL staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(TMP_115,token_1,ptr_externalBalanceOf_asm_0_1,36,ptr_externalBalanceOf_asm_0_1,32)\nsuccess_externalBalanceOf_asm_0_1(uint256) := TMP_116(uint256)"];
+7->8;
+8[label="Node Type: IF 8\n\nSOURCE EXPRESSION (non-SSA):\n! success_externalBalanceOf_asm_0 & returndatasize()() == 0x20\n\nSlithIR-SSA:\nTMP_117(uint256) = SOLIDITY_CALL returndatasize()()\nTMP_118(bool) = TMP_117 == 32\nTMP_119(uint256) = success_externalBalanceOf_asm_0_1 & TMP_118\nTMP_120 = UnaryType.BANG TMP_119 \nCONDITION TMP_120"];
+8->10[label="True"];
+8->9[label="False"];
+9[label="Node Type: END_IF 9\n"];
+9->11;
+10[label="Node Type: EXPRESSION 10\n\nSOURCE EXPRESSION (non-SSA):\nrevert(uint256,uint256)(0x00,0x00)\n\nSlithIR-SSA:\nTMP_121(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+10->9;
+11[label="Node Type: EXPRESSION 11\n\nSOURCE EXPRESSION (non-SSA):\nresult = mload(uint256)(ptr_externalBalanceOf_asm_0)\n\nSlithIR-SSA:\nTMP_122(uint256) = SOLIDITY_CALL mload(uint256)(ptr_externalBalanceOf_asm_0_1)\nresult_1(uint256) := TMP_122(uint256)"];
+11->12;
+12[label="Node Type: END INLINE ASM 12\n"];
+12->13;
+13[label="Node Type: RETURN 13\n\nSOURCE EXPRESSION (non-SSA):\nresult\n\nSlithIR-SSA:\nRETURN result_1"];
+}

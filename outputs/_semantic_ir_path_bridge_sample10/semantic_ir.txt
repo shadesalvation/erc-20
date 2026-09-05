@@ -1,0 +1,721 @@
+SemanticProgram semantic-ir/v2
+Source: 人工构造样例/10_大量Yul_统一语义模型/contracts/YulHeavyERC20.sol
+
+Function YulHeavyERC20.constructor(uint256)
+    signature = constructor(uint256)
+
+bb_asm1_n0:
+    Goto(bb_asm1_n2)
+
+bb_asm1_n1:
+    Unresolved
+
+bb_asm1_n2:
+    op_fact_1 StateWrite | fact=fact_1 | lvalue=_totalSupply | rvalue=initialSupply | location=loc_1 | semantic={"access": "_totalSupply", "atomic_operation_count": 1, "location": {"access": "_totalSupply", "kind": "state_variable", "state_variable": "_totalSupply"}, "operation": "state_write", "state_variable": "_totalSupply", "value": "initialSupply"}
+    Goto(bb_asm1_n3)
+
+bb_asm1_n3:
+    Goto(bb_asm1_n4)
+
+bb_asm1_n4:
+    Goto(bb_asm1_n5)
+
+bb_asm1_n5:
+    op_fact_2 StorageLocationResolve | fact=fact_2 | lvalue=keccak256(0x00, 0x40) | rvalue=_balances[msg.sender] | location=loc_2 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    op_fact_3 StateWrite | fact=fact_3 | lvalue=_balances[msg.sender] | rvalue=initialSupply | location=loc_2 | semantic={"access": "_balances[msg.sender]", "atomic_operation_count": 1, "keys": ["msg.sender"], "location": {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_write", "state_variable": "_balances", "value": "initialSupply"}
+    Goto(bb_asm1_n6)
+
+bb_asm1_n6:
+    Goto(bb_asm1_n7)
+
+bb_asm1_n7:
+    op_fact_4 EventEmit | fact=fact_4 | semantic={"args": ["0", "msg.sender", "initialSupply"], "atomic_operation_count": 1, "event": "Transfer", "signature": "Transfer(address,address,uint256)"}
+    Goto(bb_asm1_n1)
+
+CFGEdges:
+    bb_asm1_n0 -> bb_asm1_n2 [next]
+    bb_asm1_n2 -> bb_asm1_n3 [next]
+    bb_asm1_n3 -> bb_asm1_n4 [next]
+    bb_asm1_n4 -> bb_asm1_n5 [next]
+    bb_asm1_n5 -> bb_asm1_n6 [next]
+    bb_asm1_n6 -> bb_asm1_n7 [next]
+    bb_asm1_n7 -> bb_asm1_n1 [next]
+
+Locations:
+    loc_1 = {"access": "_totalSupply", "kind": "state_variable", "state_variable": "_totalSupply"} origin_facts=[fact_1]
+    loc_2 = {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"} origin_facts=[fact_2, fact_3]
+
+
+Function YulHeavyERC20.totalSupply()
+    signature = totalSupply()
+
+bb_asm2_n0:
+    Goto(bb_asm2_n2)
+
+bb_asm2_n1:
+    Unresolved
+
+bb_asm2_n2:
+    op_fact_5 ValueCompute | fact=fact_5 | lvalue=result | rvalue=sload(_totalSupply.slot) | semantic={"atomic_operation_count": 1, "expression": "sload(_totalSupply.slot)", "target": "result"}
+    op_fact_6 StateRead | fact=fact_6 | lvalue=result | rvalue=_totalSupply | location=loc_1 | semantic={"access": "_totalSupply", "atomic_operation_count": 1, "location": {"access": "_totalSupply", "kind": "state_variable", "state_variable": "_totalSupply"}, "operation": "state_read", "state_variable": "_totalSupply"}
+    Goto(bb_asm2_n1)
+
+CFGEdges:
+    bb_asm2_n0 -> bb_asm2_n2 [next]
+    bb_asm2_n2 -> bb_asm2_n1 [next]
+
+Locations:
+    loc_1 = {"access": "_totalSupply", "kind": "state_variable", "state_variable": "_totalSupply"} origin_facts=[fact_6]
+
+
+Function YulHeavyERC20.balanceOf(address)
+    signature = balanceOf(address)
+
+bb_asm3_n0:
+    Goto(bb_asm3_n2)
+
+bb_asm3_n1:
+    Unresolved
+
+bb_asm3_n2:
+    Goto(bb_asm3_n3)
+
+bb_asm3_n3:
+    Goto(bb_asm3_n4)
+
+bb_asm3_n4:
+    op_fact_7 ValueCompute | fact=fact_7 | lvalue=result | rvalue=sload(keccak256(0x00, 0x40)) | semantic={"atomic_operation_count": 1, "expression": "sload(keccak256(0x00, 0x40))", "target": "result"}
+    op_fact_8 StorageLocationResolve | fact=fact_8 | lvalue=keccak256(0x00, 0x40) | rvalue=_balances[account] | location=loc_1 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[account]", "keys": ["account"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    op_fact_9 StateRead | fact=fact_9 | lvalue=result | rvalue=_balances[account] | location=loc_1 | semantic={"access": "_balances[account]", "atomic_operation_count": 1, "keys": ["account"], "location": {"access": "_balances[account]", "keys": ["account"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_read", "state_variable": "_balances"}
+    Goto(bb_asm3_n1)
+
+CFGEdges:
+    bb_asm3_n0 -> bb_asm3_n2 [next]
+    bb_asm3_n2 -> bb_asm3_n3 [next]
+    bb_asm3_n3 -> bb_asm3_n4 [next]
+    bb_asm3_n4 -> bb_asm3_n1 [next]
+
+Locations:
+    loc_1 = {"access": "_balances[account]", "keys": ["account"], "kind": "mapping", "state_variable": "_balances"} origin_facts=[fact_8, fact_9]
+
+
+Function YulHeavyERC20.allowance(address, address)
+    signature = allowance(address, address)
+
+bb_asm4_n0:
+    Goto(bb_asm4_n2)
+
+bb_asm4_n1:
+    Unresolved
+
+bb_asm4_n2:
+    Goto(bb_asm4_n3)
+
+bb_asm4_n3:
+    Goto(bb_asm4_n4)
+
+bb_asm4_n4:
+    op_fact_10 ValueCompute | fact=fact_10 | lvalue=ownerSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "ownerSlot"}
+    op_fact_11 StorageLocationResolve | fact=fact_11 | lvalue=ownerSlot | rvalue=_allowances[owner] | location=loc_1 | semantic={"atomic_operation_count": 1, "location": {"access": "_allowances[owner]", "keys": ["owner"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "storage_location_resolve"}
+    Goto(bb_asm4_n5)
+
+bb_asm4_n5:
+    Goto(bb_asm4_n6)
+
+bb_asm4_n6:
+    Goto(bb_asm4_n7)
+
+bb_asm4_n7:
+    op_fact_12 ValueCompute | fact=fact_12 | lvalue=result | rvalue=sload(keccak256(0x00, 0x40)) | semantic={"atomic_operation_count": 1, "expression": "sload(keccak256(0x00, 0x40))", "target": "result"}
+    op_fact_13 StorageLocationResolve | fact=fact_13 | lvalue=keccak256(0x00, 0x40) | rvalue=_allowances[owner][spender] | location=loc_2 | semantic={"atomic_operation_count": 1, "location": {"access": "_allowances[owner][spender]", "keys": ["owner", "spender"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "storage_location_resolve"}
+    op_fact_14 StateRead | fact=fact_14 | lvalue=result | rvalue=_allowances[owner][spender] | location=loc_2 | semantic={"access": "_allowances[owner][spender]", "atomic_operation_count": 1, "keys": ["owner", "spender"], "location": {"access": "_allowances[owner][spender]", "keys": ["owner", "spender"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "state_read", "state_variable": "_allowances"}
+    Goto(bb_asm4_n1)
+
+CFGEdges:
+    bb_asm4_n0 -> bb_asm4_n2 [next]
+    bb_asm4_n2 -> bb_asm4_n3 [next]
+    bb_asm4_n3 -> bb_asm4_n4 [next]
+    bb_asm4_n4 -> bb_asm4_n5 [next]
+    bb_asm4_n5 -> bb_asm4_n6 [next]
+    bb_asm4_n6 -> bb_asm4_n7 [next]
+    bb_asm4_n7 -> bb_asm4_n1 [next]
+
+Locations:
+    loc_1 = {"access": "_allowances[owner]", "keys": ["owner"], "kind": "mapping", "state_variable": "_allowances"} origin_facts=[fact_11]
+    loc_2 = {"access": "_allowances[owner][spender]", "keys": ["owner", "spender"], "kind": "mapping", "state_variable": "_allowances"} origin_facts=[fact_13, fact_14]
+
+
+Function YulHeavyERC20.approve(address, uint256)
+    signature = approve(address, uint256)
+
+bb_asm5_n0:
+    Goto(bb_asm5_n2)
+
+bb_asm5_n1:
+    Unresolved
+
+bb_asm5_n2:
+    Goto(bb_asm5_n3)
+
+bb_asm5_n3:
+    Goto(bb_asm5_n4)
+
+bb_asm5_n4:
+    op_fact_15 ValueCompute | fact=fact_15 | lvalue=ownerSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "ownerSlot"}
+    op_fact_16 StorageLocationResolve | fact=fact_16 | lvalue=ownerSlot | rvalue=_allowances[msg.sender] | location=loc_1 | semantic={"atomic_operation_count": 1, "location": {"access": "_allowances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "storage_location_resolve"}
+    Goto(bb_asm5_n5)
+
+bb_asm5_n5:
+    Goto(bb_asm5_n6)
+
+bb_asm5_n6:
+    Goto(bb_asm5_n7)
+
+bb_asm5_n7:
+    op_fact_17 StorageLocationResolve | fact=fact_17 | lvalue=keccak256(0x00, 0x40) | rvalue=_allowances[msg.sender][spender] | location=loc_2 | semantic={"atomic_operation_count": 1, "location": {"access": "_allowances[msg.sender][spender]", "keys": ["msg.sender", "spender"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "storage_location_resolve"}
+    op_fact_18 StateWrite | fact=fact_18 | lvalue=_allowances[msg.sender][spender] | rvalue=value | location=loc_2 | semantic={"access": "_allowances[msg.sender][spender]", "atomic_operation_count": 1, "keys": ["msg.sender", "spender"], "location": {"access": "_allowances[msg.sender][spender]", "keys": ["msg.sender", "spender"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "state_write", "state_variable": "_allowances", "value": "value"}
+    Goto(bb_asm5_n8)
+
+bb_asm5_n8:
+    Goto(bb_asm5_n9)
+
+bb_asm5_n9:
+    op_fact_19 EventEmit | fact=fact_19 | semantic={"args": ["msg.sender", "spender", "value"], "atomic_operation_count": 1, "event": "Approval", "signature": "Approval(address,address,uint256)"}
+    Goto(bb_asm5_n10)
+
+bb_asm5_n10:
+    op_fact_20 ValueCompute | fact=fact_20 | lvalue=ok | rvalue=1 | semantic={"atomic_operation_count": 1, "expression": "1", "target": "ok"}
+    Goto(bb_asm5_n1)
+
+CFGEdges:
+    bb_asm5_n0 -> bb_asm5_n2 [next]
+    bb_asm5_n2 -> bb_asm5_n3 [next]
+    bb_asm5_n3 -> bb_asm5_n4 [next]
+    bb_asm5_n4 -> bb_asm5_n5 [next]
+    bb_asm5_n5 -> bb_asm5_n6 [next]
+    bb_asm5_n6 -> bb_asm5_n7 [next]
+    bb_asm5_n7 -> bb_asm5_n8 [next]
+    bb_asm5_n8 -> bb_asm5_n9 [next]
+    bb_asm5_n9 -> bb_asm5_n10 [next]
+    bb_asm5_n10 -> bb_asm5_n1 [next]
+
+Locations:
+    loc_1 = {"access": "_allowances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_allowances"} origin_facts=[fact_16]
+    loc_2 = {"access": "_allowances[msg.sender][spender]", "keys": ["msg.sender", "spender"], "kind": "mapping", "state_variable": "_allowances"} origin_facts=[fact_17, fact_18]
+
+
+Function YulHeavyERC20.transfer(address, uint256)
+    signature = transfer(address, uint256)
+
+bb_asm6_n0:
+    Goto(bb_asm6_n2)
+
+bb_asm6_n1:
+    Unresolved
+
+bb_asm6_n2:
+    op_fact_21 ValueCompute | fact=fact_21 | lvalue=__sseir_eval_asm_s_1_1 | rvalue=iszero(to) | semantic={"atomic_operation_count": 1, "call": "iszero", "evaluated_args": ["to"], "expression": "iszero(to)", "raw_args": ["to"], "temp": "__sseir_eval_asm_s_1_1"}
+    op_fact_22 ValueCompute | fact=fact_22 | rvalue=iszero(to) | semantic={"atomic_operation_count": 1, "expression": "iszero(to)"}
+    Branch(iszero(to), bb_asm6_n4, bb_asm6_n3)
+
+bb_asm6_n3:
+    Goto(bb_asm6_n5)
+
+bb_asm6_n4:
+    op_fact_37 Require | fact=fact_37 | condition=!((__sseir_eval_asm_s_1_1 != 0)) | semantic={"atomic_operation_count": 1, "condition": "!((__sseir_eval_asm_s_1_1 != 0))", "on_fail": "revert"}
+    Revert
+
+bb_asm6_n5:
+    Goto(bb_asm6_n6)
+
+bb_asm6_n6:
+    Goto(bb_asm6_n7)
+
+bb_asm6_n7:
+    op_fact_23 ValueCompute | fact=fact_23 | condition=!(iszero(to)) | lvalue=fromSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "fromSlot"}
+    op_fact_24 StorageLocationResolve | fact=fact_24 | condition=!(iszero(to)) | lvalue=fromSlot | rvalue=_balances[msg.sender] | location=loc_1 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    Goto(bb_asm6_n8)
+
+bb_asm6_n8:
+    op_fact_25 ValueCompute | fact=fact_25 | condition=!(iszero(to)) | lvalue=fromBalance | rvalue=sload(fromSlot) | semantic={"atomic_operation_count": 1, "expression": "sload(fromSlot)", "target": "fromBalance"}
+    op_fact_26 StateRead | fact=fact_26 | condition=!(iszero(to)) | lvalue=fromBalance | rvalue=_balances[msg.sender] | location=loc_1 | semantic={"access": "_balances[msg.sender]", "atomic_operation_count": 1, "keys": ["msg.sender"], "location": {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_read", "state_variable": "_balances"}
+    Goto(bb_asm6_n9)
+
+bb_asm6_n9:
+    op_fact_27 ValueCompute | fact=fact_27 | condition=!(iszero(to)) | lvalue=__sseir_eval_asm_s_7_1 | rvalue=lt(fromBalance, value) | semantic={"atomic_operation_count": 1, "call": "lt", "evaluated_args": ["fromBalance", "value"], "expression": "lt(fromBalance, value)", "raw_args": ["fromBalance", "value"], "temp": "__sseir_eval_asm_s_7_1"}
+    op_fact_28 ValueCompute | fact=fact_28 | condition=!(iszero(to)) | rvalue=lt(fromBalance, value) | semantic={"atomic_operation_count": 1, "expression": "lt(fromBalance, value)"}
+    Branch(lt(fromBalance, value), bb_asm6_n11, bb_asm6_n10)
+
+bb_asm6_n10:
+    Goto(bb_asm6_n12)
+
+bb_asm6_n11:
+    op_fact_36 Require | fact=fact_36 | condition=!((__sseir_eval_asm_s_7_1 != 0)) | semantic={"atomic_operation_count": 1, "condition": "!((__sseir_eval_asm_s_7_1 != 0))", "on_fail": "revert"}
+    Revert
+
+bb_asm6_n12:
+    Goto(bb_asm6_n13)
+
+bb_asm6_n13:
+    Goto(bb_asm6_n14)
+
+bb_asm6_n14:
+    op_fact_29 ValueCompute | fact=fact_29 | condition=!(iszero(to)) && !(lt(fromBalance, value)) | lvalue=toSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "toSlot"}
+    op_fact_30 StorageLocationResolve | fact=fact_30 | condition=!(iszero(to)) && !(lt(fromBalance, value)) | lvalue=toSlot | rvalue=_balances[to] | location=loc_2 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    Goto(bb_asm6_n15)
+
+bb_asm6_n15:
+    op_fact_31 StateWrite | fact=fact_31 | condition=!(iszero(to)) && !(lt(fromBalance, value)) | lvalue=_balances[msg.sender] | rvalue=(fromBalance - value) | location=loc_1 | semantic={"access": "_balances[msg.sender]", "atomic_operation_count": 1, "keys": ["msg.sender"], "location": {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_write", "state_variable": "_balances", "value": "(fromBalance - value)"}
+    Goto(bb_asm6_n16)
+
+bb_asm6_n16:
+    op_fact_32 StateRead | fact=fact_32 | condition=!(iszero(to)) && !(lt(fromBalance, value)) | rvalue=_balances[to] | location=loc_2 | semantic={"access": "_balances[to]", "atomic_operation_count": 1, "keys": ["to"], "location": {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_read", "state_variable": "_balances"}
+    op_fact_33 StateWrite | fact=fact_33 | condition=!(iszero(to)) && !(lt(fromBalance, value)) | lvalue=_balances[to] | rvalue=(_balances[to] + value) | location=loc_2 | semantic={"access": "_balances[to]", "atomic_operation_count": 1, "keys": ["to"], "location": {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_write", "state_variable": "_balances", "value": "(_balances[to] + value)"}
+    Goto(bb_asm6_n17)
+
+bb_asm6_n17:
+    Goto(bb_asm6_n18)
+
+bb_asm6_n18:
+    op_fact_34 EventEmit | fact=fact_34 | condition=!(iszero(to)) && !(lt(fromBalance, value)) | semantic={"args": ["msg.sender", "to", "value"], "atomic_operation_count": 1, "event": "Transfer"}
+    Goto(bb_asm6_n19)
+
+bb_asm6_n19:
+    op_fact_35 ValueCompute | fact=fact_35 | condition=!(iszero(to)) && !(lt(fromBalance, value)) | lvalue=ok | rvalue=1 | semantic={"atomic_operation_count": 1, "expression": "1", "target": "ok"}
+    Goto(bb_asm6_n1)
+
+CFGEdges:
+    bb_asm6_n0 -> bb_asm6_n2 [next]
+    bb_asm6_n2 -> bb_asm6_n4 [true: iszero(to)]
+    bb_asm6_n4 -> bb_asm6_n1 [terminate: revert]
+    bb_asm6_n2 -> bb_asm6_n3 [false: !(iszero(to))]
+    bb_asm6_n3 -> bb_asm6_n5 [next]
+    bb_asm6_n5 -> bb_asm6_n6 [next]
+    bb_asm6_n6 -> bb_asm6_n7 [next]
+    bb_asm6_n7 -> bb_asm6_n8 [next]
+    bb_asm6_n8 -> bb_asm6_n9 [next]
+    bb_asm6_n9 -> bb_asm6_n11 [true: lt(fromBalance, value)]
+    bb_asm6_n11 -> bb_asm6_n1 [terminate: revert]
+    bb_asm6_n9 -> bb_asm6_n10 [false: !(lt(fromBalance, value))]
+    bb_asm6_n10 -> bb_asm6_n12 [next]
+    bb_asm6_n12 -> bb_asm6_n13 [next]
+    bb_asm6_n13 -> bb_asm6_n14 [next]
+    bb_asm6_n14 -> bb_asm6_n15 [next]
+    bb_asm6_n15 -> bb_asm6_n16 [next]
+    bb_asm6_n16 -> bb_asm6_n17 [next]
+    bb_asm6_n17 -> bb_asm6_n18 [next]
+    bb_asm6_n18 -> bb_asm6_n19 [next]
+    bb_asm6_n19 -> bb_asm6_n1 [next]
+
+Locations:
+    loc_1 = {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"} origin_facts=[fact_24, fact_26, fact_31]
+    loc_2 = {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"} origin_facts=[fact_30, fact_32, fact_33]
+
+
+Function YulHeavyERC20.transferFrom(address, address, uint256)
+    signature = transferFrom(address, address, uint256)
+
+bb_asm7_n0:
+    Goto(bb_asm7_n2)
+
+bb_asm7_n1:
+    Unresolved
+
+bb_asm7_n2:
+    op_fact_38 ValueCompute | fact=fact_38 | lvalue=__sseir_eval_asm_s_1_1 | rvalue=iszero(to) | semantic={"atomic_operation_count": 1, "call": "iszero", "evaluated_args": ["to"], "expression": "iszero(to)", "raw_args": ["to"], "temp": "__sseir_eval_asm_s_1_1"}
+    op_fact_39 ValueCompute | fact=fact_39 | rvalue=iszero(to) | semantic={"atomic_operation_count": 1, "expression": "iszero(to)"}
+    Branch(iszero(to), bb_asm7_n4, bb_asm7_n3)
+
+bb_asm7_n3:
+    Goto(bb_asm7_n5)
+
+bb_asm7_n4:
+    op_fact_82 Require | fact=fact_82 | condition=!((__sseir_eval_asm_s_1_1 != 0)) | semantic={"atomic_operation_count": 1, "condition": "!((__sseir_eval_asm_s_1_1 != 0))", "on_fail": "revert"}
+    Revert
+
+bb_asm7_n5:
+    Goto(bb_asm7_n6)
+
+bb_asm7_n6:
+    Goto(bb_asm7_n7)
+
+bb_asm7_n7:
+    op_fact_40 ValueCompute | fact=fact_40 | condition=!(iszero(to)) | lvalue=ownerSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "ownerSlot"}
+    op_fact_41 StorageLocationResolve | fact=fact_41 | condition=!(iszero(to)) | lvalue=ownerSlot | rvalue=_allowances[from] | location=loc_1 | semantic={"atomic_operation_count": 1, "location": {"access": "_allowances[from]", "keys": ["from"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "storage_location_resolve"}
+    Goto(bb_asm7_n8)
+
+bb_asm7_n8:
+    Goto(bb_asm7_n9)
+
+bb_asm7_n9:
+    Goto(bb_asm7_n10)
+
+bb_asm7_n10:
+    op_fact_42 ValueCompute | fact=fact_42 | condition=!(iszero(to)) | lvalue=allowanceSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "allowanceSlot"}
+    op_fact_43 StorageLocationResolve | fact=fact_43 | condition=!(iszero(to)) | lvalue=allowanceSlot | rvalue=_allowances[from][msg.sender] | location=loc_2 | semantic={"atomic_operation_count": 1, "location": {"access": "_allowances[from][msg.sender]", "keys": ["from", "msg.sender"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "storage_location_resolve"}
+    Goto(bb_asm7_n11)
+
+bb_asm7_n11:
+    op_fact_44 ValueCompute | fact=fact_44 | condition=!(iszero(to)) | lvalue=currentAllowance | rvalue=sload(allowanceSlot) | semantic={"atomic_operation_count": 1, "expression": "sload(allowanceSlot)", "target": "currentAllowance"}
+    op_fact_45 StateRead | fact=fact_45 | condition=!(iszero(to)) | lvalue=currentAllowance | rvalue=_allowances[from][msg.sender] | location=loc_2 | semantic={"access": "_allowances[from][msg.sender]", "atomic_operation_count": 1, "keys": ["from", "msg.sender"], "location": {"access": "_allowances[from][msg.sender]", "keys": ["from", "msg.sender"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "state_read", "state_variable": "_allowances"}
+    Goto(bb_asm7_n12)
+
+bb_asm7_n12:
+    op_fact_46 ValueCompute | fact=fact_46 | condition=!(iszero(to)) | lvalue=__sseir_eval_asm_s_10_1 | rvalue=lt(currentAllowance, value) | semantic={"atomic_operation_count": 1, "call": "lt", "evaluated_args": ["currentAllowance", "value"], "expression": "lt(currentAllowance, value)", "raw_args": ["currentAllowance", "value"], "temp": "__sseir_eval_asm_s_10_1"}
+    op_fact_47 ValueCompute | fact=fact_47 | condition=!(iszero(to)) | rvalue=lt(currentAllowance, value) | semantic={"atomic_operation_count": 1, "expression": "lt(currentAllowance, value)"}
+    Branch(lt(currentAllowance, value), bb_asm7_n14, bb_asm7_n13)
+
+bb_asm7_n13:
+    Goto(bb_asm7_n15)
+
+bb_asm7_n14:
+    op_fact_81 Require | fact=fact_81 | condition=!((__sseir_eval_asm_s_10_1 != 0)) | semantic={"atomic_operation_count": 1, "condition": "!((__sseir_eval_asm_s_10_1 != 0))", "on_fail": "revert"}
+    Revert
+
+bb_asm7_n15:
+    op_fact_48 ValueCompute | fact=fact_48 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) | lvalue=__sseir_eval_asm_s_12_1 | rvalue=not(0) | semantic={"atomic_operation_count": 1, "call": "not", "evaluated_args": ["0"], "expression": "not(0)", "raw_args": ["0"], "temp": "__sseir_eval_asm_s_12_1"}
+    op_fact_49 ValueCompute | fact=fact_49 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) | lvalue=__sseir_eval_asm_s_12_2 | rvalue=eq(currentAllowance, __sseir_eval_asm_s_12_1) | semantic={"atomic_operation_count": 1, "call": "eq", "evaluated_args": ["currentAllowance", "__sseir_eval_asm_s_12_1"], "expression": "eq(currentAllowance, __sseir_eval_asm_s_12_1)", "raw_args": ["currentAllowance", "not(0)"], "temp": "__sseir_eval_asm_s_12_2"}
+    op_fact_50 ValueCompute | fact=fact_50 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) | lvalue=__sseir_eval_asm_s_12_3 | rvalue=iszero(__sseir_eval_asm_s_12_2) | semantic={"atomic_operation_count": 1, "call": "iszero", "evaluated_args": ["__sseir_eval_asm_s_12_2"], "expression": "iszero(__sseir_eval_asm_s_12_2)", "raw_args": ["eq(currentAllowance, not(0))"], "temp": "__sseir_eval_asm_s_12_3"}
+    op_fact_51 ValueCompute | fact=fact_51 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) | rvalue=iszero(eq(currentAllowance, not(0))) | semantic={"atomic_operation_count": 1, "expression": "iszero(eq(currentAllowance, not(0)))"}
+    Branch(iszero(eq(currentAllowance, not(0))), bb_asm7_n17, bb_asm7_n16)
+
+bb_asm7_n16:
+    Goto(bb_asm7_n18)
+
+bb_asm7_n17:
+    op_fact_52 StateWrite | fact=fact_52 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) | lvalue=_allowances[from][msg.sender] | rvalue=(currentAllowance - value) | location=loc_2 | semantic={"access": "_allowances[from][msg.sender]", "atomic_operation_count": 1, "keys": ["from", "msg.sender"], "location": {"access": "_allowances[from][msg.sender]", "keys": ["from", "msg.sender"], "kind": "mapping", "state_variable": "_allowances"}, "operation": "state_write", "state_variable": "_allowances", "value": "(currentAllowance - value)"}
+    Goto(bb_asm7_n16)
+
+bb_asm7_n18:
+    Goto(bb_asm7_n19)
+
+bb_asm7_n19:
+    Goto(bb_asm7_n20)
+
+bb_asm7_n20:
+    op_fact_53 ValueCompute | fact=fact_53 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) | lvalue=fromSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "fromSlot"}
+    op_fact_54 ValueCompute | fact=fact_54 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) | lvalue=fromSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "fromSlot"}
+    op_fact_55 StorageLocationResolve | fact=fact_55 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) | lvalue=fromSlot | rvalue=_balances[from] | location=loc_3 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[from]", "keys": ["from"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    op_fact_56 StorageLocationResolve | fact=fact_56 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) | lvalue=fromSlot | rvalue=_balances[from] | location=loc_3 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[from]", "keys": ["from"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    Goto(bb_asm7_n21)
+
+bb_asm7_n21:
+    op_fact_57 ValueCompute | fact=fact_57 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) | lvalue=fromBalance | rvalue=sload(fromSlot) | semantic={"atomic_operation_count": 1, "expression": "sload(fromSlot)", "target": "fromBalance"}
+    op_fact_58 ValueCompute | fact=fact_58 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) | lvalue=fromBalance | rvalue=sload(fromSlot) | semantic={"atomic_operation_count": 1, "expression": "sload(fromSlot)", "target": "fromBalance"}
+    op_fact_59 StateRead | fact=fact_59 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) | lvalue=fromBalance | rvalue=_balances[from] | location=loc_3 | semantic={"access": "_balances[from]", "atomic_operation_count": 1, "keys": ["from"], "location": {"access": "_balances[from]", "keys": ["from"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_read", "state_variable": "_balances"}
+    op_fact_60 StateRead | fact=fact_60 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) | lvalue=fromBalance | rvalue=_balances[from] | location=loc_3 | semantic={"access": "_balances[from]", "atomic_operation_count": 1, "keys": ["from"], "location": {"access": "_balances[from]", "keys": ["from"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_read", "state_variable": "_balances"}
+    Goto(bb_asm7_n22)
+
+bb_asm7_n22:
+    op_fact_61 ValueCompute | fact=fact_61 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) | lvalue=__sseir_eval_asm_s_18_1 | rvalue=lt(fromBalance, value) | semantic={"atomic_operation_count": 1, "call": "lt", "evaluated_args": ["fromBalance", "value"], "expression": "lt(fromBalance, value)", "raw_args": ["fromBalance", "value"], "temp": "__sseir_eval_asm_s_18_1"}
+    op_fact_62 ValueCompute | fact=fact_62 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) | lvalue=__sseir_eval_asm_s_18_1 | rvalue=lt(fromBalance, value) | semantic={"atomic_operation_count": 1, "call": "lt", "evaluated_args": ["fromBalance", "value"], "expression": "lt(fromBalance, value)", "raw_args": ["fromBalance", "value"], "temp": "__sseir_eval_asm_s_18_1"}
+    op_fact_63 ValueCompute | fact=fact_63 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) | rvalue=lt(fromBalance, value) | semantic={"atomic_operation_count": 1, "expression": "lt(fromBalance, value)"}
+    op_fact_64 ValueCompute | fact=fact_64 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) | rvalue=lt(fromBalance, value) | semantic={"atomic_operation_count": 1, "expression": "lt(fromBalance, value)"}
+    Branch(lt(fromBalance, value), bb_asm7_n24, bb_asm7_n23)
+
+bb_asm7_n23:
+    Goto(bb_asm7_n25)
+
+bb_asm7_n24:
+    op_fact_79 Require | fact=fact_79 | condition=!((__sseir_eval_asm_s_18_1 != 0)) | semantic={"atomic_operation_count": 1, "condition": "!((__sseir_eval_asm_s_18_1 != 0))", "on_fail": "revert"}
+    op_fact_80 Require | fact=fact_80 | condition=!((__sseir_eval_asm_s_18_1 != 0)) | semantic={"atomic_operation_count": 1, "condition": "!((__sseir_eval_asm_s_18_1 != 0))", "on_fail": "revert"}
+    Revert
+
+bb_asm7_n25:
+    Goto(bb_asm7_n26)
+
+bb_asm7_n26:
+    Goto(bb_asm7_n27)
+
+bb_asm7_n27:
+    op_fact_65 ValueCompute | fact=fact_65 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value)) | lvalue=toSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "toSlot"}
+    op_fact_66 ValueCompute | fact=fact_66 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value)) | lvalue=toSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "toSlot"}
+    op_fact_67 StorageLocationResolve | fact=fact_67 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value)) | lvalue=toSlot | rvalue=_balances[to] | location=loc_4 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    op_fact_68 StorageLocationResolve | fact=fact_68 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value)) | lvalue=toSlot | rvalue=_balances[to] | location=loc_4 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    Goto(bb_asm7_n28)
+
+bb_asm7_n28:
+    op_fact_69 StateWrite | fact=fact_69 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value)) | lvalue=_balances[from] | rvalue=(fromBalance - value) | location=loc_3 | semantic={"access": "_balances[from]", "atomic_operation_count": 1, "keys": ["from"], "location": {"access": "_balances[from]", "keys": ["from"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_write", "state_variable": "_balances", "value": "(fromBalance - value)"}
+    op_fact_70 StateWrite | fact=fact_70 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value)) | lvalue=_balances[from] | rvalue=(fromBalance - value) | location=loc_3 | semantic={"access": "_balances[from]", "atomic_operation_count": 1, "keys": ["from"], "location": {"access": "_balances[from]", "keys": ["from"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_write", "state_variable": "_balances", "value": "(fromBalance - value)"}
+    Goto(bb_asm7_n29)
+
+bb_asm7_n29:
+    op_fact_71 StateRead | fact=fact_71 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value)) | rvalue=_balances[to] | location=loc_4 | semantic={"access": "_balances[to]", "atomic_operation_count": 1, "keys": ["to"], "location": {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_read", "state_variable": "_balances"}
+    op_fact_72 StateRead | fact=fact_72 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value)) | rvalue=_balances[to] | location=loc_4 | semantic={"access": "_balances[to]", "atomic_operation_count": 1, "keys": ["to"], "location": {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_read", "state_variable": "_balances"}
+    op_fact_73 StateWrite | fact=fact_73 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value)) | lvalue=_balances[to] | rvalue=(_balances[to] + value) | location=loc_4 | semantic={"access": "_balances[to]", "atomic_operation_count": 1, "keys": ["to"], "location": {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_write", "state_variable": "_balances", "value": "(_balances[to] + value)"}
+    op_fact_74 StateWrite | fact=fact_74 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value)) | lvalue=_balances[to] | rvalue=(_balances[to] + value) | location=loc_4 | semantic={"access": "_balances[to]", "atomic_operation_count": 1, "keys": ["to"], "location": {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_write", "state_variable": "_balances", "value": "(_balances[to] + value)"}
+    Goto(bb_asm7_n30)
+
+bb_asm7_n30:
+    Goto(bb_asm7_n31)
+
+bb_asm7_n31:
+    op_fact_75 EventEmit | fact=fact_75 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value)) | semantic={"args": ["from", "to", "value"], "atomic_operation_count": 1, "event": "Transfer"}
+    op_fact_76 EventEmit | fact=fact_76 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value)) | semantic={"args": ["from", "to", "value"], "atomic_operation_count": 1, "event": "Transfer"}
+    Goto(bb_asm7_n32)
+
+bb_asm7_n32:
+    op_fact_77 ValueCompute | fact=fact_77 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && !(iszero(eq(currentAllowance, not(0)))) && !(lt(fromBalance, value)) | lvalue=ok | rvalue=1 | semantic={"atomic_operation_count": 1, "expression": "1", "target": "ok"}
+    op_fact_78 ValueCompute | fact=fact_78 | condition=!(iszero(to)) && !(lt(currentAllowance, value)) && iszero(eq(currentAllowance, not(0))) && !(lt(fromBalance, value)) | lvalue=ok | rvalue=1 | semantic={"atomic_operation_count": 1, "expression": "1", "target": "ok"}
+    Goto(bb_asm7_n1)
+
+CFGEdges:
+    bb_asm7_n0 -> bb_asm7_n2 [next]
+    bb_asm7_n2 -> bb_asm7_n4 [true: iszero(to)]
+    bb_asm7_n4 -> bb_asm7_n1 [terminate: revert]
+    bb_asm7_n2 -> bb_asm7_n3 [false: !(iszero(to))]
+    bb_asm7_n3 -> bb_asm7_n5 [next]
+    bb_asm7_n5 -> bb_asm7_n6 [next]
+    bb_asm7_n6 -> bb_asm7_n7 [next]
+    bb_asm7_n7 -> bb_asm7_n8 [next]
+    bb_asm7_n8 -> bb_asm7_n9 [next]
+    bb_asm7_n9 -> bb_asm7_n10 [next]
+    bb_asm7_n10 -> bb_asm7_n11 [next]
+    bb_asm7_n11 -> bb_asm7_n12 [next]
+    bb_asm7_n12 -> bb_asm7_n14 [true: lt(currentAllowance, value)]
+    bb_asm7_n14 -> bb_asm7_n1 [terminate: revert]
+    bb_asm7_n12 -> bb_asm7_n13 [false: !(lt(currentAllowance, value))]
+    bb_asm7_n13 -> bb_asm7_n15 [next]
+    bb_asm7_n15 -> bb_asm7_n17 [true: iszero(eq(currentAllowance, not(0)))]
+    bb_asm7_n17 -> bb_asm7_n16 [next]
+    bb_asm7_n15 -> bb_asm7_n16 [false: !(iszero(eq(currentAllowance, not(0))))]
+    bb_asm7_n16 -> bb_asm7_n18 [next]
+    bb_asm7_n18 -> bb_asm7_n19 [next]
+    bb_asm7_n19 -> bb_asm7_n20 [next]
+    bb_asm7_n20 -> bb_asm7_n21 [next]
+    bb_asm7_n21 -> bb_asm7_n22 [next]
+    bb_asm7_n22 -> bb_asm7_n24 [true: lt(fromBalance, value)]
+    bb_asm7_n24 -> bb_asm7_n1 [terminate: revert]
+    bb_asm7_n22 -> bb_asm7_n23 [false: !(lt(fromBalance, value))]
+    bb_asm7_n23 -> bb_asm7_n25 [next]
+    bb_asm7_n25 -> bb_asm7_n26 [next]
+    bb_asm7_n26 -> bb_asm7_n27 [next]
+    bb_asm7_n27 -> bb_asm7_n28 [next]
+    bb_asm7_n28 -> bb_asm7_n29 [next]
+    bb_asm7_n29 -> bb_asm7_n30 [next]
+    bb_asm7_n30 -> bb_asm7_n31 [next]
+    bb_asm7_n31 -> bb_asm7_n32 [next]
+    bb_asm7_n32 -> bb_asm7_n1 [next]
+
+Locations:
+    loc_1 = {"access": "_allowances[from]", "keys": ["from"], "kind": "mapping", "state_variable": "_allowances"} origin_facts=[fact_41]
+    loc_2 = {"access": "_allowances[from][msg.sender]", "keys": ["from", "msg.sender"], "kind": "mapping", "state_variable": "_allowances"} origin_facts=[fact_43, fact_45, fact_52]
+    loc_3 = {"access": "_balances[from]", "keys": ["from"], "kind": "mapping", "state_variable": "_balances"} origin_facts=[fact_55, fact_56, fact_59, fact_60, fact_69, fact_70]
+    loc_4 = {"access": "_balances[to]", "keys": ["to"], "kind": "mapping", "state_variable": "_balances"} origin_facts=[fact_67, fact_68, fact_71, fact_72, fact_73, fact_74]
+
+
+Function YulHeavyERC20.burn(uint256)
+    signature = burn(uint256)
+
+bb_asm8_n0:
+    Goto(bb_asm8_n2)
+
+bb_asm8_n1:
+    Unresolved
+
+bb_asm8_n2:
+    Goto(bb_asm8_n3)
+
+bb_asm8_n3:
+    Goto(bb_asm8_n4)
+
+bb_asm8_n4:
+    op_fact_83 ValueCompute | fact=fact_83 | lvalue=accountSlot | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "expression": "keccak256(0x00, 0x40)", "target": "accountSlot"}
+    op_fact_84 StorageLocationResolve | fact=fact_84 | lvalue=accountSlot | rvalue=_balances[msg.sender] | location=loc_1 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    Goto(bb_asm8_n5)
+
+bb_asm8_n5:
+    op_fact_85 ValueCompute | fact=fact_85 | lvalue=accountBalance | rvalue=sload(accountSlot) | semantic={"atomic_operation_count": 1, "expression": "sload(accountSlot)", "target": "accountBalance"}
+    op_fact_86 StateRead | fact=fact_86 | lvalue=accountBalance | rvalue=_balances[msg.sender] | location=loc_1 | semantic={"access": "_balances[msg.sender]", "atomic_operation_count": 1, "keys": ["msg.sender"], "location": {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_read", "state_variable": "_balances"}
+    Goto(bb_asm8_n6)
+
+bb_asm8_n6:
+    op_fact_87 ValueCompute | fact=fact_87 | lvalue=__sseir_eval_asm_s_5_1 | rvalue=lt(accountBalance, value) | semantic={"atomic_operation_count": 1, "call": "lt", "evaluated_args": ["accountBalance", "value"], "expression": "lt(accountBalance, value)", "raw_args": ["accountBalance", "value"], "temp": "__sseir_eval_asm_s_5_1"}
+    op_fact_88 ValueCompute | fact=fact_88 | rvalue=lt(accountBalance, value) | semantic={"atomic_operation_count": 1, "expression": "lt(accountBalance, value)"}
+    Branch(lt(accountBalance, value), bb_asm8_n8, bb_asm8_n7)
+
+bb_asm8_n7:
+    Goto(bb_asm8_n9)
+
+bb_asm8_n8:
+    op_fact_93 Require | fact=fact_93 | condition=!((__sseir_eval_asm_s_5_1 != 0)) | semantic={"atomic_operation_count": 1, "condition": "!((__sseir_eval_asm_s_5_1 != 0))", "on_fail": "revert"}
+    Revert
+
+bb_asm8_n9:
+    op_fact_89 StateWrite | fact=fact_89 | condition=!(lt(accountBalance, value)) | lvalue=_balances[msg.sender] | rvalue=(accountBalance - value) | location=loc_1 | semantic={"access": "_balances[msg.sender]", "atomic_operation_count": 1, "keys": ["msg.sender"], "location": {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_write", "state_variable": "_balances", "value": "(accountBalance - value)"}
+    Goto(bb_asm8_n10)
+
+bb_asm8_n10:
+    op_fact_90 StateRead | fact=fact_90 | condition=!(lt(accountBalance, value)) | rvalue=_totalSupply | location=loc_2 | semantic={"access": "_totalSupply", "atomic_operation_count": 1, "location": {"access": "_totalSupply", "kind": "state_variable", "state_variable": "_totalSupply"}, "operation": "state_read", "state_variable": "_totalSupply"}
+    op_fact_91 StateWrite | fact=fact_91 | condition=!(lt(accountBalance, value)) | lvalue=_totalSupply | rvalue=(_totalSupply - value) | location=loc_2 | semantic={"access": "_totalSupply", "atomic_operation_count": 1, "location": {"access": "_totalSupply", "kind": "state_variable", "state_variable": "_totalSupply"}, "operation": "state_write", "state_variable": "_totalSupply", "value": "(_totalSupply - value)"}
+    Goto(bb_asm8_n11)
+
+bb_asm8_n11:
+    Goto(bb_asm8_n12)
+
+bb_asm8_n12:
+    op_fact_92 EventEmit | fact=fact_92 | condition=!(lt(accountBalance, value)) | semantic={"args": ["msg.sender", "0", "value"], "atomic_operation_count": 1, "event": "Transfer"}
+    Goto(bb_asm8_n1)
+
+CFGEdges:
+    bb_asm8_n0 -> bb_asm8_n2 [next]
+    bb_asm8_n2 -> bb_asm8_n3 [next]
+    bb_asm8_n3 -> bb_asm8_n4 [next]
+    bb_asm8_n4 -> bb_asm8_n5 [next]
+    bb_asm8_n5 -> bb_asm8_n6 [next]
+    bb_asm8_n6 -> bb_asm8_n8 [true: lt(accountBalance, value)]
+    bb_asm8_n8 -> bb_asm8_n1 [terminate: revert]
+    bb_asm8_n6 -> bb_asm8_n7 [false: !(lt(accountBalance, value))]
+    bb_asm8_n7 -> bb_asm8_n9 [next]
+    bb_asm8_n9 -> bb_asm8_n10 [next]
+    bb_asm8_n10 -> bb_asm8_n11 [next]
+    bb_asm8_n11 -> bb_asm8_n12 [next]
+    bb_asm8_n12 -> bb_asm8_n1 [next]
+
+Locations:
+    loc_1 = {"access": "_balances[msg.sender]", "keys": ["msg.sender"], "kind": "mapping", "state_variable": "_balances"} origin_facts=[fact_84, fact_86, fact_89]
+    loc_2 = {"access": "_totalSupply", "kind": "state_variable", "state_variable": "_totalSupply"} origin_facts=[fact_90, fact_91]
+
+
+Function YulHeavyERC20.batchBalanceSum(address[])
+    signature = batchBalanceSum(address[])
+
+bb_asm9_n0:
+    Goto(bb_asm9_n2)
+
+bb_asm9_n1:
+    Unresolved
+
+bb_asm9_n2:
+    op_fact_94 ValueCompute | fact=fact_94 | lvalue=i | rvalue=0 | semantic={"atomic_operation_count": 1, "expression": "0", "target": "i"}
+    Goto(bb_asm9_n3)
+
+bb_asm9_n3:
+    Branch(for condition lt(i, accounts.length), bb_asm9_n6, bb_asm9_n4)
+
+bb_asm9_n4:
+    Goto(bb_asm9_n1)
+
+bb_asm9_n5:
+    Goto(bb_asm9_n10)
+
+bb_asm9_n6:
+    op_fact_95 ValueCompute | fact=fact_95 | condition=lt(i, accounts.length) | lvalue=__sseir_eval_asm_s_3_1 | rvalue=mul(i, 0x20) | semantic={"atomic_operation_count": 1, "call": "mul", "evaluated_args": ["i", "0x20"], "expression": "mul(i, 0x20)", "raw_args": ["i", "0x20"], "temp": "__sseir_eval_asm_s_3_1"}
+    op_fact_96 ValueCompute | fact=fact_96 | condition=lt(i, accounts.length) | lvalue=__sseir_eval_asm_s_3_2 | rvalue=add(accounts.offset, __sseir_eval_asm_s_3_1) | semantic={"atomic_operation_count": 1, "call": "add", "evaluated_args": ["accounts.offset", "__sseir_eval_asm_s_3_1"], "expression": "add(accounts.offset, __sseir_eval_asm_s_3_1)", "raw_args": ["accounts.offset", "mul(i, 0x20)"], "temp": "__sseir_eval_asm_s_3_2"}
+    op_fact_97 ValueCompute | fact=fact_97 | condition=lt(i, accounts.length) | lvalue=__sseir_eval_asm_s_3_3 | rvalue=calldataload(__sseir_eval_asm_s_3_2) | semantic={"atomic_operation_count": 1, "call": "calldataload", "evaluated_args": ["__sseir_eval_asm_s_3_2"], "expression": "calldataload(__sseir_eval_asm_s_3_2)", "raw_args": ["add(accounts.offset, mul(i, 0x20))"], "temp": "__sseir_eval_asm_s_3_3"}
+    op_fact_98 ValueCompute | fact=fact_98 | condition=lt(i, accounts.length) | lvalue=account | rvalue=calldataload(add(accounts.offset, mul(i, 0x20))) | semantic={"atomic_operation_count": 1, "expression": "calldataload(add(accounts.offset, mul(i, 0x20)))", "target": "account"}
+    Goto(bb_asm9_n7)
+
+bb_asm9_n7:
+    Goto(bb_asm9_n8)
+
+bb_asm9_n8:
+    Goto(bb_asm9_n9)
+
+bb_asm9_n9:
+    op_fact_99 ValueCompute | fact=fact_99 | condition=lt(i, accounts.length) | lvalue=__sseir_eval_asm_s_6_1 | rvalue=keccak256(0x00, 0x40) | semantic={"atomic_operation_count": 1, "call": "keccak256", "evaluated_args": ["0x00", "0x40"], "expression": "keccak256(0x00, 0x40)", "raw_args": ["0x00", "0x40"], "temp": "__sseir_eval_asm_s_6_1"}
+    op_fact_100 StorageLocationResolve | fact=fact_100 | condition=lt(i, accounts.length) | lvalue=keccak256(0x00, 0x40) | rvalue=_balances[account] | location=loc_1 | semantic={"atomic_operation_count": 1, "location": {"access": "_balances[account]", "keys": ["account"], "kind": "mapping", "state_variable": "_balances"}, "operation": "storage_location_resolve"}
+    op_fact_101 StateRead | fact=fact_101 | condition=lt(i, accounts.length) | lvalue=__sseir_eval_asm_s_6_2 | rvalue=_balances[account] | location=loc_1 | semantic={"access": "_balances[account]", "atomic_operation_count": 1, "keys": ["account"], "location": {"access": "_balances[account]", "keys": ["account"], "kind": "mapping", "state_variable": "_balances"}, "operation": "state_read", "state_variable": "_balances"}
+    op_fact_102 ValueCompute | fact=fact_102 | condition=lt(i, accounts.length) | lvalue=__sseir_eval_asm_s_6_2 | rvalue=sload(__sseir_eval_asm_s_6_1) | semantic={"atomic_operation_count": 1, "call": "sload", "evaluated_args": ["__sseir_eval_asm_s_6_1"], "expression": "sload(__sseir_eval_asm_s_6_1)", "raw_args": ["keccak256(0x00, 0x40)"], "temp": "__sseir_eval_asm_s_6_2"}
+    op_fact_103 ValueCompute | fact=fact_103 | condition=lt(i, accounts.length) | lvalue=__sseir_eval_asm_s_6_3 | rvalue=add(result, __sseir_eval_asm_s_6_2) | semantic={"atomic_operation_count": 1, "call": "add", "evaluated_args": ["result", "__sseir_eval_asm_s_6_2"], "expression": "add(result, __sseir_eval_asm_s_6_2)", "raw_args": ["result", "sload(keccak256(0x00, 0x40))"], "temp": "__sseir_eval_asm_s_6_3"}
+    op_fact_104 ValueCompute | fact=fact_104 | condition=lt(i, accounts.length) | lvalue=result | rvalue=add(result, sload(keccak256(0x00, 0x40))) | semantic={"atomic_operation_count": 1, "expression": "add(result, sload(keccak256(0x00, 0x40)))", "target": "result"}
+    Goto(bb_asm9_n5)
+
+bb_asm9_n10:
+    op_fact_105 ValueCompute | fact=fact_105 | condition=lt(i, accounts.length) | lvalue=__sseir_eval_asm_s_7_1 | rvalue=add(i, 1) | semantic={"atomic_operation_count": 1, "call": "add", "evaluated_args": ["i", "1"], "expression": "add(i, 1)", "raw_args": ["i", "1"], "temp": "__sseir_eval_asm_s_7_1"}
+    op_fact_106 ValueCompute | fact=fact_106 | condition=lt(i, accounts.length) | lvalue=i | rvalue=add(i, 1) | semantic={"atomic_operation_count": 1, "expression": "add(i, 1)", "target": "i"}
+    Goto(bb_asm9_n3)
+
+CFGEdges:
+    bb_asm9_n0 -> bb_asm9_n2 [next]
+    bb_asm9_n2 -> bb_asm9_n3 [next]
+    bb_asm9_n3 -> bb_asm9_n6 [true: lt(i, accounts.length)]
+    bb_asm9_n6 -> bb_asm9_n7 [next]
+    bb_asm9_n7 -> bb_asm9_n8 [next]
+    bb_asm9_n8 -> bb_asm9_n9 [next]
+    bb_asm9_n9 -> bb_asm9_n5 [next]
+    bb_asm9_n5 -> bb_asm9_n10 [next]
+    bb_asm9_n10 -> bb_asm9_n3 [loop back]
+    bb_asm9_n3 -> bb_asm9_n4 [loop exit: !(lt(i, accounts.length))]
+    bb_asm9_n4 -> bb_asm9_n1 [next]
+
+Locations:
+    loc_1 = {"access": "_balances[account]", "keys": ["account"], "kind": "mapping", "state_variable": "_balances"} origin_facts=[fact_100, fact_101]
+
+
+Function YulHeavyERC20.hasCode(address)
+    signature = hasCode(address)
+
+bb_asm10_n0:
+    Goto(bb_asm10_n2)
+
+bb_asm10_n1:
+    Unresolved
+
+bb_asm10_n2:
+    op_fact_107 ValueCompute | fact=fact_107 | lvalue=__sseir_eval_asm_s_1_1 | rvalue=extcodesize(account) | semantic={"atomic_operation_count": 1, "call": "extcodesize", "evaluated_args": ["account"], "expression": "extcodesize(account)", "raw_args": ["account"], "temp": "__sseir_eval_asm_s_1_1"}
+    op_fact_108 ValueCompute | fact=fact_108 | lvalue=__sseir_eval_asm_s_1_2 | rvalue=iszero(__sseir_eval_asm_s_1_1) | semantic={"atomic_operation_count": 1, "call": "iszero", "evaluated_args": ["__sseir_eval_asm_s_1_1"], "expression": "iszero(__sseir_eval_asm_s_1_1)", "raw_args": ["extcodesize(account)"], "temp": "__sseir_eval_asm_s_1_2"}
+    op_fact_109 ValueCompute | fact=fact_109 | lvalue=__sseir_eval_asm_s_1_3 | rvalue=iszero(__sseir_eval_asm_s_1_2) | semantic={"atomic_operation_count": 1, "call": "iszero", "evaluated_args": ["__sseir_eval_asm_s_1_2"], "expression": "iszero(__sseir_eval_asm_s_1_2)", "raw_args": ["iszero(extcodesize(account))"], "temp": "__sseir_eval_asm_s_1_3"}
+    op_fact_110 ValueCompute | fact=fact_110 | lvalue=result | rvalue=(account.code.length != 0) | semantic={"address": "account", "atomic_operation_count": 1, "check_kind": "has_code", "code_size": "account.code.length", "operation": "address_has_code", "predicate": "(account.code.length != 0)"}
+    op_fact_111 ValueCompute | fact=fact_111 | lvalue=result | rvalue=iszero(iszero(extcodesize(account))) | semantic={"atomic_operation_count": 1, "expression": "iszero(iszero(extcodesize(account)))", "target": "result"}
+    Goto(bb_asm10_n1)
+
+CFGEdges:
+    bb_asm10_n0 -> bb_asm10_n2 [next]
+    bb_asm10_n2 -> bb_asm10_n1 [next]
+
+
+Function YulHeavyERC20.externalBalanceOf(address, address)
+    signature = externalBalanceOf(address, address)
+
+bb_asm11_n0:
+    Goto(bb_asm11_n2)
+
+bb_asm11_n1:
+    Unresolved
+
+bb_asm11_n2:
+    op_fact_112 ValueCompute | fact=fact_112 | lvalue=ptr | rvalue=mload(0x40) | semantic={"atomic_operation_count": 1, "expression": "mload(0x40)", "target": "ptr"}
+    Goto(bb_asm11_n3)
+
+bb_asm11_n3:
+    Goto(bb_asm11_n4)
+
+bb_asm11_n4:
+    Goto(bb_asm11_n5)
+
+bb_asm11_n5:
+    op_fact_113 ValueCompute | fact=fact_113 | lvalue=success | rvalue=staticcall(gas(), token, ptr, 0x24, ptr, 0x20) | semantic={"atomic_operation_count": 1, "expression": "staticcall(gas(), token, ptr, 0x24, ptr, 0x20)", "target": "success"}
+    op_fact_114 ExternalCall | fact=fact_114 | semantic={"arguments": ["account"], "atomic_operation_count": 1, "call_kind": "staticcall", "decoded_input": "MemorySlice(high_bytes((0x70a08231 << 224), 4), account)", "selector": "0x70a08231", "selector_signature": "balanceOf(address)", "semantic_inputs": {"paths": [{"arguments": {"input": "MemorySlice(high_bytes((0x70a08231 << 224), 4), account)"}}], "sink_kind": "StaticCall"}, "target": "token"}
+    Goto(bb_asm11_n6)
+
+bb_asm11_n6:
+    op_fact_115 ValueCompute | fact=fact_115 | lvalue=__sseir_eval_asm_s_5_1 | rvalue=returndatasize() | semantic={"atomic_operation_count": 1, "call": "returndatasize", "expression": "returndatasize()", "temp": "__sseir_eval_asm_s_5_1"}
+    op_fact_116 ValueCompute | fact=fact_116 | lvalue=__sseir_eval_asm_s_5_2 | rvalue=eq(__sseir_eval_asm_s_5_1, 0x20) | semantic={"atomic_operation_count": 1, "call": "eq", "evaluated_args": ["__sseir_eval_asm_s_5_1", "0x20"], "expression": "eq(__sseir_eval_asm_s_5_1, 0x20)", "raw_args": ["returndatasize()", "0x20"], "temp": "__sseir_eval_asm_s_5_2"}
+    op_fact_117 ValueCompute | fact=fact_117 | lvalue=__sseir_eval_asm_s_5_3 | rvalue=and(success, __sseir_eval_asm_s_5_2) | semantic={"atomic_operation_count": 1, "call": "and", "evaluated_args": ["success", "__sseir_eval_asm_s_5_2"], "expression": "and(success, __sseir_eval_asm_s_5_2)", "raw_args": ["success", "eq(returndatasize(), 0x20)"], "temp": "__sseir_eval_asm_s_5_3"}
+    op_fact_118 ValueCompute | fact=fact_118 | lvalue=__sseir_eval_asm_s_5_4 | rvalue=iszero(__sseir_eval_asm_s_5_3) | semantic={"atomic_operation_count": 1, "call": "iszero", "evaluated_args": ["__sseir_eval_asm_s_5_3"], "expression": "iszero(__sseir_eval_asm_s_5_3)", "raw_args": ["and(success, eq(returndatasize(), 0x20))"], "temp": "__sseir_eval_asm_s_5_4"}
+    op_fact_119 ValueCompute | fact=fact_119 | rvalue=iszero(and(success, eq(returndatasize(), 0x20))) | semantic={"atomic_operation_count": 1, "expression": "iszero(and(success, eq(returndatasize(), 0x20)))"}
+    Branch(iszero(and(success, eq(returndatasize(), 0x20))), bb_asm11_n8, bb_asm11_n7)
+
+bb_asm11_n7:
+    Goto(bb_asm11_n9)
+
+bb_asm11_n8:
+    op_fact_121 Require | fact=fact_121 | condition=!((__sseir_eval_asm_s_5_4 != 0)) | semantic={"atomic_operation_count": 1, "condition": "!((__sseir_eval_asm_s_5_4 != 0))", "on_fail": "revert"}
+    Revert
+
+bb_asm11_n9:
+    op_fact_120 ValueCompute | fact=fact_120 | condition=!(iszero(and(success, eq(returndatasize(), 0x20)))) | lvalue=result | rvalue=mload(ptr) | semantic={"atomic_operation_count": 1, "expression": "mload(ptr)", "target": "result"}
+    Goto(bb_asm11_n1)
+
+CFGEdges:
+    bb_asm11_n0 -> bb_asm11_n2 [next]
+    bb_asm11_n2 -> bb_asm11_n3 [next]
+    bb_asm11_n3 -> bb_asm11_n4 [next]
+    bb_asm11_n4 -> bb_asm11_n5 [next]
+    bb_asm11_n5 -> bb_asm11_n6 [next]
+    bb_asm11_n6 -> bb_asm11_n8 [true: iszero(and(success, eq(returndatasize(), 0x20)))]
+    bb_asm11_n8 -> bb_asm11_n1 [terminate: revert]
+    bb_asm11_n6 -> bb_asm11_n7 [false: !(iszero(and(success, eq(returndatasize(), 0x20))))]
+    bb_asm11_n7 -> bb_asm11_n9 [next]
+    bb_asm11_n9 -> bb_asm11_n1 [next]

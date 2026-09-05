@@ -1,0 +1,173 @@
+digraph{
+0[label="Node Type: ENTRY_POINT 0
+"];
+0->1;
+1[label="Node Type: INLINE ASM 1
+"];
+1->2;
+2[label="Node Type: IF 2
+
+EXPRESSION:
+! to
+
+IRs:
+TMP_31 = UnaryType.BANG to 
+CONDITION TMP_31"];
+2->4[label="True"];
+2->3[label="False"];
+3[label="Node Type: END_IF 3
+"];
+3->5;
+4[label="Node Type: EXPRESSION 4
+
+EXPRESSION:
+revert(uint256,uint256)(0x00,0x00)
+
+IRs:
+TMP_32(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+4->3;
+5[label="Node Type: EXPRESSION 5
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,caller()())
+
+IRs:
+TMP_33(address) := msg.sender(address)
+TMP_34(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,TMP_33)"];
+5->6;
+6[label="Node Type: EXPRESSION 6
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,_balances)
+
+IRs:
+TMP_35(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_balances)"];
+6->7;
+7[label="Node Type: NEW VARIABLE 7
+"];
+7->8;
+8[label="Node Type: EXPRESSION 8
+
+EXPRESSION:
+fromSlot_transfer_asm_0 = keccak256(uint256,uint256)(0x00,0x40)
+
+IRs:
+TMP_36(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+fromSlot_transfer_asm_0(uint256) := TMP_36(uint256)"];
+8->9;
+9[label="Node Type: NEW VARIABLE 9
+"];
+9->10;
+10[label="Node Type: EXPRESSION 10
+
+EXPRESSION:
+fromBalance_transfer_asm_0 = sload(uint256)(fromSlot_transfer_asm_0)
+
+IRs:
+TMP_37(uint256) = SOLIDITY_CALL sload(uint256)(fromSlot_transfer_asm_0)
+fromBalance_transfer_asm_0(uint256) := TMP_37(uint256)"];
+10->11;
+11[label="Node Type: IF 11
+
+EXPRESSION:
+fromBalance_transfer_asm_0 < value
+
+IRs:
+TMP_38(bool) = fromBalance_transfer_asm_0 < value
+CONDITION TMP_38"];
+11->13[label="True"];
+11->12[label="False"];
+12[label="Node Type: END_IF 12
+"];
+12->14;
+13[label="Node Type: EXPRESSION 13
+
+EXPRESSION:
+revert(uint256,uint256)(0x00,0x00)
+
+IRs:
+TMP_39(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+13->12;
+14[label="Node Type: EXPRESSION 14
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,to)
+
+IRs:
+TMP_40(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,to)"];
+14->15;
+15[label="Node Type: EXPRESSION 15
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,_balances)
+
+IRs:
+TMP_41(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_balances)"];
+15->16;
+16[label="Node Type: NEW VARIABLE 16
+"];
+16->17;
+17[label="Node Type: EXPRESSION 17
+
+EXPRESSION:
+toSlot_transfer_asm_0 = keccak256(uint256,uint256)(0x00,0x40)
+
+IRs:
+TMP_42(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+toSlot_transfer_asm_0(uint256) := TMP_42(uint256)"];
+17->18;
+18[label="Node Type: EXPRESSION 18
+
+EXPRESSION:
+sstore(uint256,uint256)(fromSlot_transfer_asm_0,fromBalance_transfer_asm_0 - value)
+
+IRs:
+TMP_43(uint256) = fromBalance_transfer_asm_0 - value
+TMP_44(None) = SOLIDITY_CALL sstore(uint256,uint256)(fromSlot_transfer_asm_0,TMP_43)"];
+18->19;
+19[label="Node Type: EXPRESSION 19
+
+EXPRESSION:
+sstore(uint256,uint256)(toSlot_transfer_asm_0,sload(uint256)(toSlot_transfer_asm_0) + value)
+
+IRs:
+TMP_45(uint256) = SOLIDITY_CALL sload(uint256)(toSlot_transfer_asm_0)
+TMP_46(uint256) = TMP_45 + value
+TMP_47(None) = SOLIDITY_CALL sstore(uint256,uint256)(toSlot_transfer_asm_0,TMP_46)"];
+19->20;
+20[label="Node Type: EXPRESSION 20
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,value)
+
+IRs:
+TMP_48(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,value)"];
+20->21;
+21[label="Node Type: EXPRESSION 21
+
+EXPRESSION:
+log3(uint256,uint256,uint256,uint256,uint256)(0x00,0x20,0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,caller()(),to)
+
+IRs:
+TMP_49(address) := msg.sender(address)
+TMP_50(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(0,32,100389287136786176327247604509743168900146139575972864366142685224231313322991,TMP_49,to)"];
+21->22;
+22[label="Node Type: EXPRESSION 22
+
+EXPRESSION:
+ok = 1
+
+IRs:
+ok(bool) := 1(uint256)"];
+22->23;
+23[label="Node Type: END INLINE ASM 23
+"];
+23->24;
+24[label="Node Type: RETURN 24
+
+EXPRESSION:
+ok
+
+IRs:
+RETURN ok"];
+}

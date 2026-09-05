@@ -256,7 +256,7 @@ class SecurityFact:
     def to_dict(self): return asdict(self)
 @dataclass
 class VariableInfo:
-    name: str; kind: str; type_string: str; data_location: str|None=None; src: str=""; storage_slot: int|None=None
+    name: str; kind: str; type_string: str; data_location: str|None=None; src: str=""; storage_slot: int|None=None; declaration_id: int|None=None
     def to_dict(self): return asdict(self)
 @dataclass
 class FunctionUnit:

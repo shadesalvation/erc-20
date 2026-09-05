@@ -184,6 +184,41 @@ def test_path_conditioned_staticcall_is_lifted_to_precompile() -> None:
     assert "uint256((sha256(abi.encodePacked(bytes20(msg.sender)))))" == output.attrs["candidates"][0]["value"], output.attrs
 
 
+def test_complete_ordinary_staticcall_output_becomes_semantic_overlay() -> None:
+    call = effect("StaticCall", {
+        "op": "staticcall",
+        "target": "token",
+        "output_ptr": "ptr",
+        "output_size": "0x20",
+        "selector": "0x70a08231",
+        "selector_signature": "balanceOf(address)",
+        "arguments": ["account"],
+    }, "eff_call")
+    read = effect("MemoryRead", {
+        "read_from": "ptr",
+        "value": "result",
+        "reads_after_call_output": [{
+            "effect_id": "eff_call", "call": "staticcall", "output_ptr": "ptr", "output_size": "0x20",
+        }],
+        "memory_read": {
+            "complete": True,
+            "has_unknown": False,
+            "overridden_by_call_output": {
+                "effect_id": "eff_call", "call": "staticcall", "output_ptr": "ptr", "output_size": "0x20",
+            },
+        },
+    }, "eff_read")
+    builder = SemanticOverlayBuilder()
+    calls = builder.call_overlays([call, read])
+    outputs = builder.call_output_overlays([call, read], calls)
+    assert len(outputs) == 1
+    output = outputs[0]
+    assert output.kind == "CallOutputRead"
+    assert output.attrs["target"] == "result"
+    assert output.attrs["resolution"] == "memory_ssa_proven_complete_call_output"
+    assert "eff_call" not in output.attrs["value"]
+
+
 def test_dynamic_ecrecover_v_is_classified_but_not_unsafely_lifted() -> None:
     attrs = {
         "op": "staticcall", "gas": "gas()", "target": "1",

@@ -31,7 +31,8 @@ def variable_info(node:Json,kind:str,storage_slot:int|None=None)->VariableInfo:
     t=node.get('typeDescriptions',{}).get('typeString')
     if not t:
         tn=node.get('typeName') or {}; t=tn.get('name') or tn.get('nodeType') or 'unknown'
-    return VariableInfo(node.get('name',''),kind,str(t),node.get('storageLocation') or None,str(node.get('src','')),storage_slot)
+    declaration_id=node.get('id')
+    return VariableInfo(node.get('name',''),kind,str(t),node.get('storageLocation') or None,str(node.get('src','')),storage_slot,declaration_id if isinstance(declaration_id,int) else None)
 def collect_variables(fn:Json):
     params=[variable_info(x,'parameter') for x in fn.get('parameters',{}).get('parameters',[])]
     rets=[variable_info(x,'return') for x in fn.get('returnParameters',{}).get('parameters',[])]

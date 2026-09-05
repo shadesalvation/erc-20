@@ -1,0 +1,35 @@
+digraph{
+node [shape=box];
+0[label="Node Type: ENTRY_POINT 0\n\nSlithIR-SSA:\n_totalSupply_3(uint256) := ϕ(['_totalSupply_4', '_totalSupply_1', '_totalSupply_0'])\n_balances_5(mapping(address => uint256)) := ϕ(['_balances_0'])"];
+0->1;
+1[label="Node Type: INLINE ASM 1\n"];
+1->2;
+2[label="Node Type: EXPRESSION 2\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x00,caller()())\n\nSlithIR-SSA:\nTMP_84(address) := msg.sender(address)\nTMP_85(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,TMP_84)"];
+2->3;
+3[label="Node Type: EXPRESSION 3\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x20,_balances)\n\nSlithIR-SSA:\nTMP_86(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_balances_5)"];
+3->4;
+4[label="Node Type: NEW VARIABLE 4\n"];
+4->5;
+5[label="Node Type: EXPRESSION 5\n\nSOURCE EXPRESSION (non-SSA):\naccountSlot_burn_asm_0 = keccak256(uint256,uint256)(0x00,0x40)\n\nSlithIR-SSA:\nTMP_87(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)\naccountSlot_burn_asm_0_1(uint256) := TMP_87(uint256)"];
+5->6;
+6[label="Node Type: NEW VARIABLE 6\n"];
+6->7;
+7[label="Node Type: EXPRESSION 7\n\nSOURCE EXPRESSION (non-SSA):\naccountBalance_burn_asm_0 = sload(uint256)(accountSlot_burn_asm_0)\n\nSlithIR-SSA:\nTMP_88(uint256) = SOLIDITY_CALL sload(uint256)(accountSlot_burn_asm_0_1)\naccountBalance_burn_asm_0_1(uint256) := TMP_88(uint256)"];
+7->8;
+8[label="Node Type: IF 8\n\nSOURCE EXPRESSION (non-SSA):\naccountBalance_burn_asm_0 < value\n\nSlithIR-SSA:\nTMP_89(bool) = accountBalance_burn_asm_0_1 < value_1\nCONDITION TMP_89"];
+8->10[label="True"];
+8->9[label="False"];
+9[label="Node Type: END_IF 9\n"];
+9->11;
+10[label="Node Type: EXPRESSION 10\n\nSOURCE EXPRESSION (non-SSA):\nrevert(uint256,uint256)(0x00,0x00)\n\nSlithIR-SSA:\nTMP_90(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+10->9;
+11[label="Node Type: EXPRESSION 11\n\nSOURCE EXPRESSION (non-SSA):\nsstore(uint256,uint256)(accountSlot_burn_asm_0,accountBalance_burn_asm_0 - value)\n\nSlithIR-SSA:\nTMP_91(uint256) = accountBalance_burn_asm_0_1 - value_1\nTMP_92(None) = SOLIDITY_CALL sstore(uint256,uint256)(accountSlot_burn_asm_0_1,TMP_91)"];
+11->12;
+12[label="Node Type: EXPRESSION 12\n\nSOURCE EXPRESSION (non-SSA):\nsstore(uint256,uint256)(_totalSupply,sload(uint256)(_totalSupply) - value)\n\nSlithIR-SSA:\nTMP_93(uint256) := _totalSupply_3(uint256)\nTMP_94(uint256) = TMP_93 - value_1\n_totalSupply_4(uint256) := TMP_94(uint256)"];
+12->13;
+13[label="Node Type: EXPRESSION 13\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x00,value)\n\nSlithIR-SSA:\nTMP_95(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,value_1)"];
+13->14;
+14[label="Node Type: EXPRESSION 14\n\nSOURCE EXPRESSION (non-SSA):\nlog3(uint256,uint256,uint256,uint256,uint256)(0x00,0x20,0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,caller()(),0)\n\nSlithIR-SSA:\nTMP_96(address) := msg.sender(address)\nTMP_97(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(0,32,100389287136786176327247604509743168900146139575972864366142685224231313322991,TMP_96,0)"];
+14->15;
+15[label="Node Type: END INLINE ASM 15\n"];
+}

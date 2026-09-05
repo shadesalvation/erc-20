@@ -1,0 +1,30 @@
+digraph{
+node [shape=box];
+0[label="Node Type: ENTRY_POINT 0\n\nSlithIR-SSA:\n_allowances_2(mapping(address => mapping(address => uint256))) := ϕ(['_allowances_0'])"];
+0->1;
+1[label="Node Type: INLINE ASM 1\n"];
+1->2;
+2[label="Node Type: EXPRESSION 2\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x00,caller()())\n\nSlithIR-SSA:\nTMP_20(address) := msg.sender(address)\nTMP_21(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,TMP_20)"];
+2->3;
+3[label="Node Type: EXPRESSION 3\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x20,_allowances)\n\nSlithIR-SSA:\nTMP_22(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_allowances_2)"];
+3->4;
+4[label="Node Type: NEW VARIABLE 4\n"];
+4->5;
+5[label="Node Type: EXPRESSION 5\n\nSOURCE EXPRESSION (non-SSA):\nownerSlot_approve_asm_0 = keccak256(uint256,uint256)(0x00,0x40)\n\nSlithIR-SSA:\nTMP_23(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)\nownerSlot_approve_asm_0_1(uint256) := TMP_23(uint256)"];
+5->6;
+6[label="Node Type: EXPRESSION 6\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x00,spender)\n\nSlithIR-SSA:\nTMP_24(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,spender_1)"];
+6->7;
+7[label="Node Type: EXPRESSION 7\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x20,ownerSlot_approve_asm_0)\n\nSlithIR-SSA:\nTMP_25(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,ownerSlot_approve_asm_0_1)"];
+7->8;
+8[label="Node Type: EXPRESSION 8\n\nSOURCE EXPRESSION (non-SSA):\nsstore(uint256,uint256)(keccak256(uint256,uint256)(0x00,0x40),value)\n\nSlithIR-SSA:\nTMP_26(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)\nTMP_27(None) = SOLIDITY_CALL sstore(uint256,uint256)(TMP_26,value_1)"];
+8->9;
+9[label="Node Type: EXPRESSION 9\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x00,value)\n\nSlithIR-SSA:\nTMP_28(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,value_1)"];
+9->10;
+10[label="Node Type: EXPRESSION 10\n\nSOURCE EXPRESSION (non-SSA):\nlog3(uint256,uint256,uint256,uint256,uint256)(0x00,0x20,0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925,caller()(),spender)\n\nSlithIR-SSA:\nTMP_29(address) := msg.sender(address)\nTMP_30(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(0,32,63486140976153616755203102783360879283472101686154884697241723088393386309925,TMP_29,spender_1)"];
+10->11;
+11[label="Node Type: EXPRESSION 11\n\nSOURCE EXPRESSION (non-SSA):\nok = 1\n\nSlithIR-SSA:\nok_1(bool) := 1(uint256)"];
+11->12;
+12[label="Node Type: END INLINE ASM 12\n"];
+12->13;
+13[label="Node Type: RETURN 13\n\nSOURCE EXPRESSION (non-SSA):\nok\n\nSlithIR-SSA:\nRETURN ok_1"];
+}

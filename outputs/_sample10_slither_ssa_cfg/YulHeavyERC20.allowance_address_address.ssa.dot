@@ -1,0 +1,24 @@
+digraph{
+node [shape=box];
+0[label="Node Type: ENTRY_POINT 0\n\nSlithIR-SSA:\n_allowances_1(mapping(address => mapping(address => uint256))) := ϕ(['_allowances_0'])"];
+0->1;
+1[label="Node Type: INLINE ASM 1\n"];
+1->2;
+2[label="Node Type: EXPRESSION 2\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x00,owner)\n\nSlithIR-SSA:\nTMP_13(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,owner_1)"];
+2->3;
+3[label="Node Type: EXPRESSION 3\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x20,_allowances)\n\nSlithIR-SSA:\nTMP_14(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_allowances_1)"];
+3->4;
+4[label="Node Type: NEW VARIABLE 4\n"];
+4->5;
+5[label="Node Type: EXPRESSION 5\n\nSOURCE EXPRESSION (non-SSA):\nownerSlot_allowance_asm_0 = keccak256(uint256,uint256)(0x00,0x40)\n\nSlithIR-SSA:\nTMP_15(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)\nownerSlot_allowance_asm_0_1(uint256) := TMP_15(uint256)"];
+5->6;
+6[label="Node Type: EXPRESSION 6\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x00,spender)\n\nSlithIR-SSA:\nTMP_16(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,spender_1)"];
+6->7;
+7[label="Node Type: EXPRESSION 7\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x20,ownerSlot_allowance_asm_0)\n\nSlithIR-SSA:\nTMP_17(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,ownerSlot_allowance_asm_0_1)"];
+7->8;
+8[label="Node Type: EXPRESSION 8\n\nSOURCE EXPRESSION (non-SSA):\nresult = sload(uint256)(keccak256(uint256,uint256)(0x00,0x40))\n\nSlithIR-SSA:\nTMP_18(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)\nTMP_19(uint256) = SOLIDITY_CALL sload(uint256)(TMP_18)\nresult_1(uint256) := TMP_19(uint256)"];
+8->9;
+9[label="Node Type: END INLINE ASM 9\n"];
+9->10;
+10[label="Node Type: RETURN 10\n\nSOURCE EXPRESSION (non-SSA):\nresult\n\nSlithIR-SSA:\nRETURN result_1"];
+}

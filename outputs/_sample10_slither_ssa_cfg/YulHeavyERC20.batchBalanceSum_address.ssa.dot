@@ -1,0 +1,33 @@
+digraph{
+node [shape=box];
+0[label="Node Type: ENTRY_POINT 0\n\nSlithIR-SSA:\n_balances_6(mapping(address => uint256)) := ϕ(['_balances_0'])"];
+0->1;
+1[label="Node Type: INLINE ASM 1\n"];
+1->2;
+2[label="Node Type: BEGIN_LOOP 2\n"];
+2->4;
+3[label="Node Type: END_LOOP 3\n"];
+3->13;
+4[label="Node Type: NEW VARIABLE 4\n"];
+4->5;
+5[label="Node Type: EXPRESSION 5\n\nSOURCE EXPRESSION (non-SSA):\ni_batchBalanceSum_asm_0 = 0\n\nSlithIR-SSA:\ni_batchBalanceSum_asm_0_1(uint256) := 0(uint256)"];
+5->6;
+6[label="Node Type: IF_LOOP 6\n\nSOURCE EXPRESSION (non-SSA):\ni_batchBalanceSum_asm_0 < accounts\n\nSlithIR-SSA:\nresult_1(uint256) := ϕ(['result_0', 'result_2'])\ni_batchBalanceSum_asm_0_2(uint256) := ϕ(['i_batchBalanceSum_asm_0_3', 'i_batchBalanceSum_asm_0_1'])\nTMP_98(bool) = i_batchBalanceSum_asm_0_2 < accounts_1\nCONDITION TMP_98"];
+6->3[label="True"];
+6->7[label="False"];
+7[label="Node Type: NEW VARIABLE 7\n"];
+7->8;
+8[label="Node Type: EXPRESSION 8\n\nSOURCE EXPRESSION (non-SSA):\naccount_batchBalanceSum_asm_0 = calldataload(uint256)(accounts + i_batchBalanceSum_asm_0 * 0x20)\n\nSlithIR-SSA:\nTMP_99(uint256) = i_batchBalanceSum_asm_0_2 * 32\nTMP_100(address[]) = accounts_1 + TMP_99\nTMP_101(uint256) = SOLIDITY_CALL calldataload(uint256)(TMP_100)\naccount_batchBalanceSum_asm_0_1(uint256) := TMP_101(uint256)"];
+8->9;
+9[label="Node Type: EXPRESSION 9\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x00,account_batchBalanceSum_asm_0)\n\nSlithIR-SSA:\nTMP_102(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,account_batchBalanceSum_asm_0_1)"];
+9->10;
+10[label="Node Type: EXPRESSION 10\n\nSOURCE EXPRESSION (non-SSA):\nmstore(uint256,uint256)(0x20,_balances)\n\nSlithIR-SSA:\nTMP_103(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_balances_6)"];
+10->11;
+11[label="Node Type: EXPRESSION 11\n\nSOURCE EXPRESSION (non-SSA):\nresult = result + sload(uint256)(keccak256(uint256,uint256)(0x00,0x40))\n\nSlithIR-SSA:\nTMP_104(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)\nTMP_105(uint256) = SOLIDITY_CALL sload(uint256)(TMP_104)\nTMP_106(uint256) = result_1 + TMP_105\nresult_2(uint256) := TMP_106(uint256)"];
+11->12;
+12[label="Node Type: EXPRESSION 12\n\nSOURCE EXPRESSION (non-SSA):\ni_batchBalanceSum_asm_0 = i_batchBalanceSum_asm_0 + 1\n\nSlithIR-SSA:\nTMP_107(uint256) = i_batchBalanceSum_asm_0_2 + 1\ni_batchBalanceSum_asm_0_3(uint256) := TMP_107(uint256)"];
+12->6;
+13[label="Node Type: END INLINE ASM 13\n"];
+13->14;
+14[label="Node Type: RETURN 14\n\nSOURCE EXPRESSION (non-SSA):\nresult\n\nSlithIR-SSA:\nRETURN result_1"];
+}

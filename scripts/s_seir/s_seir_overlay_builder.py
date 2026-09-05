@@ -47,6 +47,11 @@ class SemanticOverlayBuilder:
         call_overlays = self.call_overlays(effects)
         overlays.extend(call_overlays)
         overlays.extend(self.precompile_output_overlays(effects, call_overlays))
+        # ``attach_cross_statement_call_outputs`` has already proved the
+        # MemorySSA def-use relation.  Project that resolved result as a
+        # completed semantic overlay before the generic expression projection
+        # below, so downstream users need not rediscover it from ``mload``.
+        overlays.extend(self.call_output_overlays(effects, call_overlays))
         overlays.extend(self.division_guard_overlays(effects))
         overlays.extend(self.memory_object_construction_overlays(unit, type_env, effects))
         struct_overlays = self.struct_memory_mutation_overlays(unit, type_env, effects)
@@ -352,11 +357,20 @@ class SemanticOverlayBuilder:
             merged = self.mergeable_revert_conditions(e, effects)
             guard = merged[-1] if merged else self.nearest_guard(e, effects, branches)
             require_conditions = merged or ([guard] if guard else [])
+            # Keep the source-level guard predicates separate from their
+            # evaluation temporaries.  The latter are useful evidence inside
+            # S-SEIR, but the former is the canonical Require condition for
+            # downstream semantic IR.
+            semantic_require_conditions = [
+                self.normalize_condition_state_reads(type_env, item)
+                for item in require_conditions
+                if item
+            ]
             evaluated_conditions = [
                 self.branch_condition_value(condition, branches)
                 for condition in require_conditions
             ]
-            condition = self.require_condition(evaluated_conditions, type_env)
+            condition = self.require_condition(semantic_require_conditions, type_env)
             path_states = self.path_states(e)
             out.append(self.ov('RequireOverlay', e.effect_id, e.stmt_refs, {
                 'condition': condition,
@@ -367,12 +381,31 @@ class SemanticOverlayBuilder:
                 'path_states': path_states,
                 'merged_conditions': merged,
                 'require_conditions': require_conditions,
+                'semantic_require_conditions': semantic_require_conditions,
                 'evaluated_require_conditions': evaluated_conditions,
+                'guard_stmt_refs': self.require_guard_stmt_refs(require_conditions, branches),
                 'discarded_before_revert': self.discarded_before_revert(e, merged, effects),
                 'elided_by_native_precompile': self.is_native_precompile_success_guard(guard),
                 'sink_resolution': e.attrs.get('sink_resolution'),
             }))
         return out
+
+    @staticmethod
+    def require_guard_stmt_refs(conditions: list[str], branches: list[EffectNode]) -> list[str]:
+        """Return the branch statements whose semantic guard reaches Revert.
+
+        ``conditions`` originate from the recovered control path, and branch
+        conditions are S-SEIR semantic identities rather than source-text
+        scans.  The result lets SFIR remove only the corresponding derivation
+        node after replacing it with the recovered Require operation.
+        """
+        wanted = {str(condition).strip() for condition in conditions if condition}
+        refs: list[str] = []
+        for branch in branches:
+            if str(branch.attrs.get('condition') or '').strip() not in wanted:
+                continue
+            refs.extend(str(ref) for ref in branch.stmt_refs if ref)
+        return list(dict.fromkeys(refs))
 
     @staticmethod
     def branch_condition_value(condition: str, branches: list[EffectNode]) -> str:
@@ -3418,6 +3451,64 @@ class SemanticOverlayBuilder:
                 }))
                 break
         out.extend(self.returndatasize_precompile_output_overlays(reads, call_overlays))
+        return out
+
+    def call_output_overlays(
+        self,
+        effects: list[EffectNode],
+        call_overlays: list[SemanticOverlay],
+    ) -> list[SemanticOverlay]:
+        """Project a MemorySSA-proven ordinary CALL output as one high fact.
+
+        This intentionally consumes the structured relation attached by
+        ``EffectLifter.attach_cross_statement_call_outputs``.  It performs no
+        source-text recognition and no new reachability or memory analysis.
+        Precompile output overlays retain their specialized projections.
+        """
+        ordinary_kinds = {"LowLevelCall", "StaticCallOverlay", "DelegateCallOverlay"}
+        overlays_by_effect: dict[str, list[SemanticOverlay]] = {}
+        for overlay in call_overlays:
+            if overlay.kind not in ordinary_kinds:
+                continue
+            for effect_id in overlay.effects:
+                overlays_by_effect.setdefault(str(effect_id), []).append(overlay)
+
+        out: list[SemanticOverlay] = []
+        for read in effects:
+            if read.kind != "MemoryRead":
+                continue
+            query = read.attrs.get("memory_read") or {}
+            resolved_output = query.get("overridden_by_call_output") or {}
+            if not isinstance(resolved_output, dict):
+                continue
+            # The upstream MemorySSA query must establish a complete first
+            # word.  A partial or unknown output is deliberately left as the
+            # ordinary expression instead of being guessed as a call result.
+            if not query.get("complete") or query.get("has_unknown"):
+                continue
+            source_effect = str(resolved_output.get("effect_id") or "")
+            candidates = overlays_by_effect.get(source_effect) or []
+            if len(candidates) != 1:
+                continue
+            call_overlay = candidates[0]
+            target = read.attrs.get("value")
+            if not target:
+                continue
+            out.append(self.ov("CallOutputRead", [call_overlay.effects[0], read.effect_id], read.stmt_refs, self.clean({
+                "source_call_overlay": call_overlay.overlay_id,
+                "target": target,
+                "call_kind": call_overlay.attrs.get("op") or call_overlay.attrs.get("call_kind"),
+                "target_address": call_overlay.attrs.get("target_solidity") or call_overlay.attrs.get("target"),
+                "selector": call_overlay.attrs.get("selector"),
+                "selector_signature": call_overlay.attrs.get("selector_signature"),
+                "arguments": call_overlay.attrs.get("arguments"),
+                "word_index": 0,
+                # This is a source-neutral semantic operation, rather than a
+                # textual rendering containing an upstream effect identifier.
+                "value": "external_call_return_word(0)",
+                "solidity_like": f"{target} = external_call_return_word(0);",
+                "resolution": "memory_ssa_proven_complete_call_output",
+            })))
         return out
 
     def returndatasize_precompile_output_overlays(

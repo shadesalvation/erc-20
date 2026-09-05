@@ -1,0 +1,94 @@
+digraph{
+0[label="Node Type: ENTRY_POINT 0
+"];
+0->1;
+1[label="Node Type: INLINE ASM 1
+"];
+1->2;
+2[label="Node Type: NEW VARIABLE 2
+"];
+2->3;
+3[label="Node Type: EXPRESSION 3
+
+EXPRESSION:
+ptr_externalBalanceOf_asm_0 = mload(uint256)(0x40)
+
+IRs:
+TMP_110(uint256) = SOLIDITY_CALL mload(uint256)(64)
+ptr_externalBalanceOf_asm_0(uint256) := TMP_110(uint256)"];
+3->4;
+4[label="Node Type: EXPRESSION 4
+
+EXPRESSION:
+mstore(uint256,uint256)(ptr_externalBalanceOf_asm_0,0x70a08231 << 224)
+
+IRs:
+TMP_111(uint256) = 1889567281 << 224
+TMP_112(None) = SOLIDITY_CALL mstore(uint256,uint256)(ptr_externalBalanceOf_asm_0,TMP_111)"];
+4->5;
+5[label="Node Type: EXPRESSION 5
+
+EXPRESSION:
+mstore(uint256,uint256)(ptr_externalBalanceOf_asm_0 + 0x04,account)
+
+IRs:
+TMP_113(uint256) = ptr_externalBalanceOf_asm_0 + 4
+TMP_114(None) = SOLIDITY_CALL mstore(uint256,uint256)(TMP_113,account)"];
+5->6;
+6[label="Node Type: NEW VARIABLE 6
+"];
+6->7;
+7[label="Node Type: EXPRESSION 7
+
+EXPRESSION:
+success_externalBalanceOf_asm_0 = staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(gas()(),token,ptr_externalBalanceOf_asm_0,0x24,ptr_externalBalanceOf_asm_0,0x20)
+
+IRs:
+TMP_115(uint256) = SOLIDITY_CALL gas()()
+TMP_116(uint256) = SOLIDITY_CALL staticcall(uint256,uint256,uint256,uint256,uint256,uint256)(TMP_115,token,ptr_externalBalanceOf_asm_0,36,ptr_externalBalanceOf_asm_0,32)
+success_externalBalanceOf_asm_0(uint256) := TMP_116(uint256)"];
+7->8;
+8[label="Node Type: IF 8
+
+EXPRESSION:
+! success_externalBalanceOf_asm_0 & returndatasize()() == 0x20
+
+IRs:
+TMP_117(uint256) = SOLIDITY_CALL returndatasize()()
+TMP_118(bool) = TMP_117 == 32
+TMP_119(uint256) = success_externalBalanceOf_asm_0 & TMP_118
+TMP_120 = UnaryType.BANG TMP_119 
+CONDITION TMP_120"];
+8->10[label="True"];
+8->9[label="False"];
+9[label="Node Type: END_IF 9
+"];
+9->11;
+10[label="Node Type: EXPRESSION 10
+
+EXPRESSION:
+revert(uint256,uint256)(0x00,0x00)
+
+IRs:
+TMP_121(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+10->9;
+11[label="Node Type: EXPRESSION 11
+
+EXPRESSION:
+result = mload(uint256)(ptr_externalBalanceOf_asm_0)
+
+IRs:
+TMP_122(uint256) = SOLIDITY_CALL mload(uint256)(ptr_externalBalanceOf_asm_0)
+result(uint256) := TMP_122(uint256)"];
+11->12;
+12[label="Node Type: END INLINE ASM 12
+"];
+12->13;
+13[label="Node Type: RETURN 13
+
+EXPRESSION:
+result
+
+IRs:
+RETURN result"];
+}

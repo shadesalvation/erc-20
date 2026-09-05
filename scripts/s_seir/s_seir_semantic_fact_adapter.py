@@ -64,10 +64,18 @@ class SSeirFactAdapter:
             "facts": facts,
         }
 
-    def function_facts(self, fn: dict[str, Any]) -> list[SemanticFact]:
+    def function_facts(self, fn: dict[str, Any], *, semantic_only: bool = False) -> list[SemanticFact]:
+        """Project completed overlays to facts.
+
+        ``semantic_only`` is the SFIR boundary mode: the projection starts
+        solely from the completed high-level overlays.  Existing callers keep
+        the historical effect-assisted evidence mode by default.
+        """
         out: list[SemanticFact] = []
         stmt_lang = self.statement_languages(fn)
-        effect_by_id = {item.get("effect_id"): item for item in fn.get("effects") or [] if isinstance(item, dict)}
+        effect_by_id = {} if semantic_only else {
+            item.get("effect_id"): item for item in fn.get("effects") or [] if isinstance(item, dict)
+        }
         for overlay in fn.get("semantic_overlays") or []:
             if not isinstance(overlay, dict):
                 continue
@@ -159,6 +167,10 @@ class SSeirFactAdapter:
                 lvalue=target,
                 rvalue=access,
                 reads=[access],
+                # A recovered storage read defines its local target.  The
+                # generic ``sload`` normalization used to mask this omission,
+                # but SFIR correctly keeps only the high-level StateRead.
+                writes=clean_list([target]),
                 semantic=self.state_semantic(attrs, "state_read"),
                 extra_evidence={"storage_resolution": self.storage_resolution_evidence(attrs)},
             )
@@ -208,8 +220,11 @@ class SSeirFactAdapter:
             })
         if kind == "RequireOverlay":
             condition = attrs.get("condition") or attrs.get("nearest_condition") or attrs.get("require_like")
-            return self.fact(fn, overlay, stmt_lang, "Require", condition=condition, reads=[condition], semantic={
+            failure_predicates = attrs.get("semantic_require_conditions") or attrs.get("require_conditions")
+            return self.fact(fn, overlay, stmt_lang, "Require", condition=condition, reads=rough_reads(condition), semantic={
                 "condition": condition,
+                "failure_predicates": failure_predicates,
+                "guard_stmt_refs": attrs.get("guard_stmt_refs"),
                 "on_fail": "revert",
                 "error": attrs.get("error") or attrs.get("custom_error"),
             })
@@ -222,6 +237,43 @@ class SSeirFactAdapter:
             })
         if kind in {"ExternalCall", "LowLevelCall", "StaticCallOverlay", "DelegateCallOverlay"}:
             return self.call_fact(fn, overlay, stmt_lang, "ExternalCall")
+        if kind == "CallOutputRead":
+            target = attrs.get("target")
+            value = attrs.get("value")
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "ValueCompute",
+                lvalue=target,
+                rvalue=value,
+                writes=clean_list([target]),
+                semantic=pick(attrs, (
+                    "operation", "source_call_overlay", "call_kind", "target_address",
+                    "selector", "selector_signature", "arguments", "word_index",
+                    "value", "solidity_like", "resolution",
+                )) | {"operation": "external_call_return_word"},
+            )
+        if kind == "CalldataWordRead":
+            target = attrs.get("target")
+            offset = attrs.get("offset_normalized") or attrs.get("offset")
+            value = f"calldataWord({offset})" if offset else "calldataWord(unknown)"
+            # This is a completed S-SEIR overlay.  Do not lower it back to
+            # the original Yul ``calldataload`` spelling in final SFIR.
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "ValueCompute",
+                lvalue=target,
+                rvalue=value,
+                reads=rough_reads(offset),
+                writes=clean_list([target]),
+                semantic=pick(attrs, (
+                    "source", "offset", "offset_normalized", "width_bytes",
+                    "target_type", "source_expression", "reason",
+                )) | {"operation": "calldata_word_read", "value": value},
+            )
         if kind == "PrecompileCall":
             return self.call_fact(fn, overlay, stmt_lang, "PrecompileCall")
         if kind == "InternalCall":
@@ -993,7 +1045,7 @@ def build_function_level_semantic_fact_payload(
             "ordering": "function-level CFG partial order plus block-local operation order",
             "solidity": "SolidityAtomicOperationExtractor produces sol_atom records; SoliditySemanticLifter only projects each atom to the common schema.",
             "yul": "S-SEIR alone analyzes Yul; YulSemanticLifter only projects completed S-SEIR results to the common schema.",
-            "bridge": "SemanticFactBridge restores function-level CFG order and control predecessors after both sources already share one schema.",
+            "bridge": "SemanticFactBridge restores function-level CFG order while preserving S-SEIR path instances and path-compatible control predecessors after both sources already share one schema.",
         },
         "function_count": len(functions),
         "solidity_fact_count": len(solidity_facts),
@@ -1003,6 +1055,44 @@ def build_function_level_semantic_fact_payload(
         "yul_facts": yul_facts,
         "facts": facts,
     }
+
+
+def build_function_level_semantic_fact_ir_payload(
+    functions: list[Any],
+    *,
+    source: str | None = None,
+    result_dir: str | None = None,
+) -> dict[str, Any]:
+    """Build the canonical Semantic Fact IR.
+
+    The legacy SemanticFact payload remains available for compatibility, but
+    the new downstream boundary is this function.  It deliberately sends the
+    bridge only high-level Solidity atoms and completed Yul overlay semantics.
+    In particular, no S-SEIR EffectNode is an input to ``SemanticFactIRBridge``.
+    """
+    from s_seir_semantic_fact_ir import SemanticFactIRBridge
+    from s_seir_solidity_semantic_lifter import SoliditySemanticLifter
+    from s_seir_yul_semantic_lifter import YulSemanticLifter
+
+    solidity_lifter = SoliditySemanticLifter()
+    yul_lifter = YulSemanticLifter()
+    by_function: dict[str, tuple[list[dict[str, Any]], list[dict[str, Any]]]] = {}
+    for function in functions:
+        fn_dict = function.to_semantic_dict() if hasattr(function, "to_semantic_dict") else function
+        if not isinstance(fn_dict, dict):
+            continue
+        function_id = str(getattr(function, "function_id", "") or fn_dict.get("function_id") or "")
+        solidity = [semantic_fact_public_view(item) for item in solidity_lifter.facts_from_function(function)]
+        # YulSemanticLifter emits semantic_provenance and strips all Effect
+        # transport before the Fact IR bridge sees the value.
+        yul = [semantic_fact_public_view(item) for item in yul_lifter.facts_from_function(function)]
+        by_function[function_id] = (solidity, yul)
+    return SemanticFactIRBridge().build_program(
+        functions,
+        by_function,
+        source=source,
+        result_dir=result_dir,
+    )
 
 
 def renumber_facts(facts: list[dict[str, Any]], prefix: str = "fact") -> list[dict[str, Any]]:

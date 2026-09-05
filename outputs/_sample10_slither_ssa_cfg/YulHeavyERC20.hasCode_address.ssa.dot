@@ -1,0 +1,12 @@
+digraph{
+node [shape=box];
+0[label="Node Type: ENTRY_POINT 0\n"];
+0->1;
+1[label="Node Type: INLINE ASM 1\n"];
+1->2;
+2[label="Node Type: EXPRESSION 2\n\nSOURCE EXPRESSION (non-SSA):\nresult = ! ! extcodesize(uint256)(account)\n\nSlithIR-SSA:\nREF_0 -> CODESIZE account_1\nTMP_108 = UnaryType.BANG REF_0 \nTMP_109 = UnaryType.BANG TMP_108 \nresult_1(bool) := TMP_109(uint256)"];
+2->3;
+3[label="Node Type: END INLINE ASM 3\n"];
+3->4;
+4[label="Node Type: RETURN 4\n\nSOURCE EXPRESSION (non-SSA):\nresult\n\nSlithIR-SSA:\nRETURN result_1"];
+}
