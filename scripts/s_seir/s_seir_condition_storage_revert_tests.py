@@ -218,7 +218,7 @@ def test_atomized_nested_sload_does_not_bind_mapping_read_to_parent_target() -> 
 
     exprs = [item for item in builder.expression_overlays(type_env, effects) if item.kind == "ExpressionNormalization"]
     parent = next(item for item in exprs if item.attrs.get("target") == "dhzw")
-    assert parent.attrs["solidity_like"] == "dhzw = __sseir_eval_asm_s_21_2;"
+    assert parent.attrs["solidity_like"] == "dhzw = (sload(LjAi) + IUGo);"
     assert parent.attrs["atomized_value"]["final"] == "__sseir_eval_asm_s_21_2"
 
 

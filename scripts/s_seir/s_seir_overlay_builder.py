@@ -4922,8 +4922,11 @@ class SemanticOverlayBuilder:
                     )
                 if memory_hash:
                     expr = str(memory_hash['expression'])
-                if atomized_value and atomized_value.get('final'):
-                    expr = str(atomized_value.get('final'))
+                # Atomization materializes evaluation order for provenance;
+                # its ``final`` field is an internal temporary, not the
+                # value-language expression.  Keep the normalized expression
+                # public and let the semantic lifter use atomized steps only
+                # to replace proven atomic reads with recovered semantics.
                 out.append(self.ov('ExpressionNormalization', e.effect_id, e.stmt_refs, {
                     'target': target,
                     'expression': e.attrs.get('value'),
@@ -5076,7 +5079,7 @@ class SemanticOverlayBuilder:
             offset_expr = normalize_expr(offset)
             target_info = getattr(type_env, 'lookup', lambda _name: None)(target)
             target_type = getattr(target_info, 'type_string', None)
-            out.append(self.ov('CalldataWordRead', effect.effect_id, effect.stmt_refs, {
+            word_read = self.ov('CalldataWordRead', effect.effect_id, effect.stmt_refs, {
                 'target': target,
                 'target_type': target_type,
                 'source': 'msg.data',
@@ -5089,8 +5092,91 @@ class SemanticOverlayBuilder:
                 'reason': 'raw_calldata_word_read_requires_inline_assembly_or_helper',
                 'path_states': effect.attrs.get('path_states') or [],
                 'target_versions': effect.attrs.get('target_versions') or {},
-            }))
+            })
+            out.append(word_read)
+            # This is intentionally only a typed-layout *candidate*.  A
+            # calldataload beyond calldata returns zero, while ``array[i]``
+            # performs a Solidity bounds check.  The post-predicate CFG pass
+            # may complete it only after proving the true bounds edge and
+            # that the index is unchanged on every path to this read.
+            candidate = self.calldata_array_candidate_from_offset(type_env, offset)
+            if candidate:
+                candidate.update({
+                    'target': target,
+                    'target_type': target_type,
+                    'source_word_overlay': word_read.overlay_id,
+                    'source_expression': effect.attrs.get('value'),
+                    'candidate_status': 'pending_cfg_bounds_proof',
+                })
+                out.append(self.ov('CalldataArrayElementCandidate', effect.effect_id, effect.stmt_refs, candidate))
         return out
+
+    def calldata_array_candidate_from_offset(self, type_env: Any, offset: Any) -> dict[str, Any] | None:
+        """Recognize ``array.offset + index * 32`` for ABI word arrays.
+
+        The layout identity alone is not a source-equivalence proof.  Callers
+        receive a provisional candidate that the CFG completion pass must
+        discharge against a dominating ``index < array.length`` true edge.
+        """
+        text = str(offset or '').strip()
+        array = None
+        index = None
+        if text.endswith('.offset'):
+            possible = text.removesuffix('.offset').strip()
+            if getattr(type_env, 'is_calldata_array_parameter', lambda _name: False)(possible):
+                array, index = possible, '0'
+        else:
+            parsed = self.array_base_and_offset(text)
+            if parsed:
+                left, right = parsed
+                for base, stride in ((left, right), (right, left)):
+                    if not base.endswith('.offset'):
+                        continue
+                    possible = base.removesuffix('.offset').strip()
+                    if not getattr(type_env, 'is_calldata_array_parameter', lambda _name: False)(possible):
+                        continue
+                    recovered_index = self.calldata_array_word_index(stride)
+                    if recovered_index is not None:
+                        array, index = possible, recovered_index
+                        break
+        if not array or index is None:
+            return None
+        element_type = getattr(type_env, 'calldata_array_element_type', lambda _name: None)(array)
+        if not self.is_abi_word_array_element(element_type):
+            return None
+        variable = getattr(type_env, 'calldata_array_parameter', lambda _name: None)(array)
+        return self.clean({
+            'array': array,
+            'array_type': getattr(variable, 'type_string', None),
+            'element_type': element_type,
+            'data_location': 'calldata',
+            'index': index,
+            'access': f'{array}[{index}]',
+            'layout': 'abi_calldata_dynamic_array_elements_at_offset',
+            'element_encoding': 'single_abi_word',
+        })
+
+    @classmethod
+    def calldata_array_word_index(cls, stride: Any) -> str | None:
+        text = str(stride or '').strip()
+        if not text:
+            return None
+        if parse_int_literal(text) == 0:
+            return '0'
+        index = cls.word_stride_mul(text)
+        return normalize_expr(index) if index is not None else None
+
+    @staticmethod
+    def is_abi_word_array_element(element_type: Any) -> bool:
+        """Return true only for array elements encoded in exactly one word."""
+        text = str(element_type or '').strip().replace(' payable', '')
+        if text in {'address', 'bool'}:
+            return True
+        if re.fullmatch(r'(?:u?int)(?:[0-9]{0,3})?', text):
+            bits = text.removeprefix('uint').removeprefix('int')
+            return not bits or (bits.isdigit() and 8 <= int(bits) <= 256 and int(bits) % 8 == 0)
+        match = re.fullmatch(r'bytes([0-9]{1,2})', text)
+        return bool(match and 1 <= int(match.group(1)) <= 32)
 
     @staticmethod
     def is_storage_pointer_slot_target(target: Any) -> bool:

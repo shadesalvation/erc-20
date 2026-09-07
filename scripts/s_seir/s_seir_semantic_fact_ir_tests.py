@@ -203,7 +203,7 @@ class SemanticFactIRBridgeTests(unittest.TestCase):
 
     def test_storage_semantic_operation_replaces_its_keccak_derivation(self) -> None:
         high = {
-            "operation_id": "location", "kind": "StorageLocationResolve", "lvalue": "slot", "stmt_refs": ["slot", "load"],
+            "operation_id": "location", "kind": "StorageLocationResolve", "rvalue": "_balances[account]", "stmt_refs": ["slot"],
             "semantic_provenance": {"anchor_cfg_node": "y0"}, "evidence": {"overlay": "location"},
         }
         generic = {
@@ -211,7 +211,7 @@ class SemanticFactIRBridgeTests(unittest.TestCase):
             "semantic_provenance": {"anchor_cfg_node": "y0"}, "evidence": {"overlay": "generic"},
         }
         overlays = {
-            "location": {"kind": "MappingSlot", "attrs": {}},
+            "location": {"kind": "MappingSlot", "attrs": {"target": "slot"}},
             "generic": {"kind": "ExpressionNormalization", "attrs": {"target": "slot", "expression": "keccak256(0, 64)"}},
         }
         result = YulSemanticLifter._select_canonical_high_semantics([high, generic], overlays)
@@ -248,6 +248,19 @@ class SemanticFactIRBridgeTests(unittest.TestCase):
             [high, generic, multiply, load, unrelated], overlays
         )
         self.assertEqual(["calldata", "unrelated"], [item["operation_id"] for item in result])
+
+    def test_calldata_array_read_replaces_its_complete_atomic_derivation(self) -> None:
+        common = {"stmt_refs": ["read"], "semantic_provenance": {"anchor_cfg_node": "y1"}}
+        high = {**common, "operation_id": "array_read", "kind": "ValueCompute", "lvalue": "account", "evidence": {"overlay": "array_read"}}
+        generic = {**common, "operation_id": "generic", "kind": "ValueCompute", "lvalue": "account", "evidence": {"overlay": "generic"}}
+        load = {**common, "operation_id": "load", "kind": "ValueCompute", "lvalue": "tmp", "evidence": {"overlay": "load"}}
+        overlays = {
+            "array_read": {"kind": "CalldataArrayElementRead", "effects": ["value_def"], "attrs": {"target": "account"}},
+            "generic": {"kind": "ExpressionNormalization", "effects": ["value_def"], "attrs": {"target": "account"}},
+            "load": {"kind": "EvaluationStep", "attrs": {"parent_effect": "value_def"}},
+        }
+        result = YulSemanticLifter._select_canonical_high_semantics([high, generic, load], overlays)
+        self.assertEqual(["array_read"], [item["operation_id"] for item in result])
 
     def test_completed_call_owns_its_private_payload_buffer(self) -> None:
         control = {
@@ -333,6 +346,8 @@ class SemanticFactIRBridgeTests(unittest.TestCase):
         }
         composed = YulSemanticLifter._compose_value_expressions([state_read, parent, step], overlays)
         self.assertEqual("(result + _balances[account])", parent["rvalue"])
+        self.assertEqual("(result + _balances[account])", parent["semantic"]["expression_normalized"])
+        self.assertNotIn("expression", parent["semantic"])
         final = YulSemanticLifter._drop_covered_derivation_steps(composed, overlays)
         self.assertEqual(["state", "parent"], [item["operation_id"] for item in final])
 

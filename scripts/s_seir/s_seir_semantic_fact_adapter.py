@@ -129,31 +129,42 @@ class SSeirFactAdapter:
         kind = str(overlay.get("kind") or "")
         attrs = overlay.get("attrs") or {}
         if kind in {"MappingSlot", "DynamicArraySlot"}:
-            expression = attrs.get("expression") or attrs.get("access") or attrs.get("slot")
-            target = attrs.get("target") or attrs.get("target_key")
+            location = self.storage_location(attrs)
+            if not self.is_resolved_storage_location(location):
+                # S-SEIR retains the physical slot construction upstream as
+                # audit evidence.  SFIR must not pretend that an arbitrary
+                # slot expression is a Solidity storage location, nor leak
+                # its keccak/slot transport into the reconstruction input.
+                return self.fact(
+                    fn,
+                    overlay,
+                    stmt_lang,
+                    "UnresolvedStorageLocation",
+                    rvalue="opaqueStorageLocation",
+                    semantic={
+                        "operation": "unresolved_storage_location",
+                        "status": "unresolved",
+                        "reason": "storage_location_not_semantically_recovered",
+                        "candidate_kind": location.get("kind"),
+                    },
+                )
+            access = location["access"]
             return self.fact(
                 fn,
                 overlay,
                 stmt_lang,
                 "StorageLocationResolve",
-                lvalue=target,
-                rvalue=expression,
-                reads=clean_list([attrs.get("key"), attrs.get("base")]),
-                writes=clean_list([target]),
+                # A location resolve is a support declaration, not an
+                # assignment to the physical ``keccak256`` slot temporary.
+                # Semantic IR groups it with StateRead/StateWrite through the
+                # structured location object below.
+                rvalue=access,
+                reads=self.storage_location_reads(location),
+                writes=[],
                 semantic={
                     "operation": "storage_location_resolve",
-                    "location": self.storage_location(attrs),
-                },
-                extra_evidence={
-                    "physical_reference": target,
-                    "slot_kind": attrs.get("slot_kind"),
-                    "resolved_inputs": attrs.get("resolved_inputs"),
-                    "slot_relation": clean_dict({
-                        "target_key": attrs.get("target_key"),
-                        "target_keys": attrs.get("target_keys"),
-                        "parent_target_key": attrs.get("parent_target_key"),
-                        "base_key": attrs.get("base_key"),
-                    }),
+                    "location": location,
+                    "resolution_status": "resolved",
                 },
             )
         if kind in {"StateVariableRead", "MappingRead"}:
@@ -286,6 +297,27 @@ class SSeirFactAdapter:
                     "target_type", "source_expression", "reason",
                 )) | {"operation": "calldata_word_read", "value": value},
             )
+        if kind == "CalldataArrayElementRead":
+            target = attrs.get("target")
+            access = attrs.get("access") or "calldataArrayElement(unknown)"
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "ValueCompute",
+                lvalue=target,
+                rvalue=access,
+                reads=clean_list([attrs.get("array"), attrs.get("index")]),
+                writes=clean_list([target]),
+                # The source ``calldataload`` expression is recovery evidence
+                # only.  Final SFIR receives the typed array operation and its
+                # control proof, never the low-level calldata spelling.
+                semantic=pick(attrs, (
+                    "array", "array_type", "element_type", "data_location",
+                    "index", "access", "layout", "element_encoding",
+                    "bounds_proof", "semantic_model", "solidity_like",
+                )) | {"operation": "calldata_array_element_read", "value": access},
+            )
         if kind == "PrecompileCall":
             return self.call_fact(fn, overlay, stmt_lang, "PrecompileCall")
         if kind == "InternalCall":
@@ -316,9 +348,9 @@ class SSeirFactAdapter:
             is_condition = attrs.get("context") == "condition"
             value = (
                 attrs.get("condition_normalized") if is_condition else None
-            ) or attrs.get("value") or attrs.get("expression") or attrs.get("solidity_like")
+            ) or attrs.get("expression_normalized") or attrs.get("value") or attrs.get("expression") or attrs.get("solidity_like")
             return self.fact(fn, overlay, stmt_lang, "ValueCompute", lvalue=target, rvalue=value, reads=rough_reads(value), writes=[target], semantic=pick(attrs, (
-                "target", "temp", "value", "expression", "condition_normalized", "context", "solidity_like", "call", "raw_args", "evaluated_args",
+                "target", "temp", "value", "expression_normalized", "condition_normalized", "context", "solidity_like", "call", "raw_args", "evaluated_args",
             )))
         return None
 
@@ -537,6 +569,11 @@ class SSeirFactAdapter:
 
     @staticmethod
     def storage_resolution_evidence(attrs: dict[str, Any]) -> dict[str, Any]:
+        # A recovered StateRead/StateWrite already carries the complete
+        # structured location in its semantic payload.  Slot hashes and their
+        # version transport belong exclusively to upstream S-SEIR evidence.
+        if SSeirFactAdapter.is_resolved_storage_location(SSeirFactAdapter.storage_location(attrs)):
+            return {}
         return clean_dict({
             "storage_model": attrs.get("storage_model"),
             "slot": attrs.get("slot"),
@@ -566,6 +603,26 @@ class SSeirFactAdapter:
             "state_variable": attrs.get("state_variable") or attrs.get("state_var"),
             "keys": keys,
         })
+
+    @staticmethod
+    def is_resolved_storage_location(location: dict[str, Any]) -> bool:
+        """Whether a location can be represented without physical slot math."""
+        if not isinstance(location, dict):
+            return False
+        access = str(location.get("access") or "").strip()
+        state_variable = str(location.get("state_variable") or "").strip()
+        if not access or not state_variable:
+            return False
+        if str(location.get("kind") or "") not in {"mapping", "dynamic_array", "state_variable"}:
+            return False
+        return not any(token in access.lower() for token in ("keccak256(", "sload(", "sstore("))
+
+    @staticmethod
+    def storage_location_reads(location: dict[str, Any]) -> list[Any]:
+        return clean_list([
+            location.get("state_variable"),
+            *(location.get("keys") or []),
+        ])
 
     @staticmethod
     def reads_for_value(value: Any, attrs: dict[str, Any]) -> list[Any]:

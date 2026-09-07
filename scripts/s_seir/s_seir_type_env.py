@@ -103,6 +103,35 @@ class TypeEnv:
         if text.endswith('[]'):
             return text[:-2]
         return None
+    def is_calldata_array(self,var:VariableInfo|str|None)->bool:
+        """Whether ``var`` is a Solidity dynamic array carried in calldata."""
+        v=self.lookup(var) if isinstance(var,str) else var
+        if not v:
+            return False
+        t=str(v.type_string or '')
+        return '[]' in t and (v.data_location=='calldata' or ' calldata' in t)
+    def is_calldata_array_parameter(self,name:str|None)->bool:
+        if not name:
+            return False
+        for v in self.unit.parameters:
+            if v.name == name:
+                return self.is_calldata_array(v)
+        return False
+    def calldata_array_parameter(self,name:str|None)->VariableInfo|None:
+        if not name:
+            return None
+        for v in self.unit.parameters:
+            if v.name == name and self.is_calldata_array(v):
+                return v
+        return None
+    def calldata_array_element_type(self,name:str|None)->str|None:
+        v=self.calldata_array_parameter(name)
+        if not v:
+            return None
+        text=v.type_string.replace(' memory','').replace(' calldata','').replace(' storage','').strip()
+        if text.endswith('[]'):
+            return text[:-2]
+        return None
     def is_storage_reference(self,var:VariableInfo|str|None)->bool:
         v=self.lookup(var) if isinstance(var,str) else var
         if not v:

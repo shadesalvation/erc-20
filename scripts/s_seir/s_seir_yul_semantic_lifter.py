@@ -143,7 +143,12 @@ class YulSemanticLifter:
             # free-variable list, not an expression-level dependency graph.
             fact["reads"] = rough_reads(rendered)
             semantic = dict(fact.get("semantic") or {})
-            semantic["expression"] = rendered
+            # Preserve one public expression spelling after composition.  The
+            # original normalized field may still contain the low-level
+            # ``sload`` that was just replaced, so it must not remain as a
+            # parallel SFIR representation.
+            semantic.pop("expression", None)
+            semantic["expression_normalized"] = rendered
             semantic["semantic_resolution"] = "composed_from_sseir_high_value_dependencies"
             fact["semantic"] = semantic
         return facts
@@ -245,11 +250,11 @@ class YulSemanticLifter:
     ) -> list[Json]:
         """Remove generic derivations exactly covered by a high-level overlay.
 
-        At present ``AddressHasCode``/``AddressCodeSize`` are the recovered
-        operations for which S-SEIR also deliberately creates a generic
-        ``ExpressionNormalization`` trace.  The match requires the same
-        target, source statement and semantic CFG anchor; it is therefore not
-        a name-based deduplication of independent assignments.
+        Recovered address-code, storage-location, calldata, and call-output
+        operations may each have a generic ``ExpressionNormalization`` trace.
+        Every replacement below requires its own structural identity proof
+        (effect, source statement, and/or semantic CFG anchor), rather than
+        name-based deduplication of independent assignments.
         """
         covered_generic_ids: set[str] = set()
         covered_evaluation_ids: set[str] = set()
@@ -329,6 +334,57 @@ class YulSemanticLifter:
                 ):
                     covered_generic_ids.add(str(candidate.get("operation_id") or ""))
 
+        # A resolved ``MappingSlot`` is the high-level replacement for the
+        # ValueDef that names its physical hash temporary.  The SFIR adapter
+        # deliberately removes that temporary from StorageLocationResolve's
+        # public lvalue, so recover the identity from the completed overlay
+        # itself.  Equality of target, source statement, and semantic CFG
+        # anchor identifies the one ValueDef that the MappingSlot was built
+        # to replace; it is not a free name-based deduplication.
+        for high in facts:
+            high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
+            if high.get("kind") != "StorageLocationResolve" or high_overlay.get("kind") != "MappingSlot":
+                continue
+            high_attrs = high_overlay.get("attrs") or {}
+            target = str(high_attrs.get("target") or "")
+            high_refs = tuple(str(value) for value in high.get("stmt_refs") or [])
+            high_anchor = (high.get("semantic_provenance") or {}).get("anchor_cfg_node")
+            if not target or not high_refs:
+                continue
+            for candidate in facts:
+                candidate_overlay = overlays.get(str((candidate.get("evidence") or {}).get("overlay") or "")) or {}
+                if candidate_overlay.get("kind") != "ExpressionNormalization":
+                    continue
+                candidate_attrs = candidate_overlay.get("attrs") or {}
+                candidate_refs = tuple(str(value) for value in candidate.get("stmt_refs") or [])
+                candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                if (
+                    str(candidate_attrs.get("target") or candidate.get("lvalue") or "") == target
+                    and candidate_refs == high_refs
+                    and candidate_anchor == high_anchor
+                ):
+                    covered_generic_ids.add(str(candidate.get("operation_id") or ""))
+                    candidate_effects = {
+                        str(value) for value in candidate_overlay.get("effects") or [] if value
+                    }
+                    for evaluation in facts:
+                        evaluation_overlay = overlays.get(
+                            str((evaluation.get("evidence") or {}).get("overlay") or "")
+                        ) or {}
+                        if evaluation_overlay.get("kind") != "EvaluationStep":
+                            continue
+                        evaluation_attrs = evaluation_overlay.get("attrs") or {}
+                        evaluation_anchor = (
+                            evaluation.get("semantic_provenance") or {}
+                        ).get("anchor_cfg_node")
+                        if (
+                            str(evaluation_attrs.get("parent_effect") or "") in candidate_effects
+                            and evaluation_anchor == high_anchor
+                        ):
+                            covered_evaluation_ids.add(
+                                str(evaluation.get("operation_id") or "")
+                            )
+
         # ``CallOutputRead`` is already a complete S-SEIR semantic overlay:
         # its source is a MemorySSA-proven call output, not a textual mload
         # pattern.  Suppress only the generic value definition at the same
@@ -361,7 +417,7 @@ class YulSemanticLifter:
         # replacement proof; no expression-text match is used.
         for high in facts:
             high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
-            if high_overlay.get("kind") != "CalldataWordRead":
+            if high_overlay.get("kind") not in {"CalldataWordRead", "CalldataArrayElementRead"}:
                 continue
             high_attrs = high_overlay.get("attrs") or {}
             target = str(high_attrs.get("target") or high.get("lvalue") or "")

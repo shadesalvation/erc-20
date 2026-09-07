@@ -23,6 +23,7 @@ from s_seir_llm_assembly_export import write_llm_assembly_compact_json, write_ll
 from s_seir_memory_ssa import build_memory_ssa_views
 from s_seir_semantic_normalizer import SemanticNormalizer
 from s_seir_predicate_lifter import PredicateLifter
+from s_seir_calldata_array_lifter import CalldataArrayLifter
 from s_seir_model import FunctionSSEIR
 from s_seir_overlay_builder import SemanticOverlayBuilder
 from s_seir_selector_registry import build_selector_registry
@@ -152,6 +153,10 @@ def build_sseir(source_path:Path, solc_bin:str|None=None, slither_bin:str|None=N
         # meaning.  Its generic condition traces remain upstream evidence and
         # are disconnected before SFIR projection.
         overlays=PredicateLifter().lift(type_env,effects,overlays,control)
+        # A typed calldata layout candidate becomes ``array[index]`` only
+        # after its dominating successful bounds predicate has been proven.
+        # The pass replaces (rather than supplements) CalldataWordRead.
+        overlays=CalldataArrayLifter().lift(type_env,effects,overlays,control)
         # Complete overlays with semantic-only CFG provenance while recovery
         # effects are still upstream.  SFIR later consumes just these fields.
         attach_semantic_cfg_provenance(overlays,effects,control)

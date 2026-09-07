@@ -226,6 +226,75 @@ def test_sseir_mapping_write_becomes_state_write_fact() -> None:
     assert fact["evidence"]["overlay"] == "ov_1"
 
 
+def test_resolved_mapping_slot_projects_only_high_storage_location() -> None:
+    fn = function([overlay("MappingSlot", {
+        "target": "keccak256(0x00, 0x40)",
+        "expression": "balances[account]",
+        "access": "balances[account]",
+        "state_variable": "balances",
+        "keys": ["account"],
+        "slot_kind": "mapping_slot",
+        "resolved_inputs": [{"offset": 0, "value": "account"}],
+    })])
+    fact = SSeirFactAdapter().function_facts(fn, semantic_only=True)[0].to_dict()
+    assert fact["kind"] == "StorageLocationResolve"
+    assert "lvalue" not in fact and "writes" not in fact
+    assert fact["rvalue"] == "balances[account]"
+    assert fact["reads"] == ["balances", "account"]
+    assert fact["semantic"]["location"] == {
+        "kind": "mapping", "access": "balances[account]",
+        "state_variable": "balances", "keys": ["account"],
+    }
+    assert "keccak256" not in str(fact)
+    assert "physical_reference" not in fact["evidence"]
+
+
+def test_unresolved_mapping_slot_becomes_opaque_storage_location() -> None:
+    fn = function([overlay("MappingSlot", {
+        "target": "keccak256(0x00, 0x40)",
+        "expression": "keccak256(0x00, 0x40)",
+        "slot_kind": "mapping_slot",
+    })])
+    fact = SSeirFactAdapter().function_facts(fn, semantic_only=True)[0].to_dict()
+    assert fact["kind"] == "UnresolvedStorageLocation"
+    assert fact["rvalue"] == "opaqueStorageLocation"
+    assert fact["semantic"]["status"] == "unresolved"
+    assert "keccak256" not in str(fact)
+
+
+def test_resolved_mapping_read_hides_physical_slot_evidence() -> None:
+    fn = function([overlay("MappingRead", {
+        "target": "balance",
+        "access": "balances[account]",
+        "state_variable": "balances",
+        "keys": ["account"],
+        "slot": "keccak256(0x00, 0x40)",
+        "slot_key": "keccak256(0x00, 0x40)__inline",
+        "slot_versions": ["keccak256(0x00, 0x40)__inline"],
+    })])
+    fact = SSeirFactAdapter().function_facts(fn, semantic_only=True)[0].to_dict()
+    assert fact["kind"] == "StateRead"
+    assert fact["rvalue"] == "balances[account]"
+    assert fact["semantic"]["location"]["access"] == "balances[account]"
+    assert "storage_resolution" not in fact["evidence"]
+    assert "keccak256" not in str(fact)
+
+
+def test_expression_normalization_projects_the_normalized_expression() -> None:
+    facts = [item.to_dict() for item in SSeirFactAdapter().function_facts(function([
+        overlay("ExpressionNormalization", {
+            "target": "i",
+            "expression": "add(i, 1)",
+            "expression_normalized": "(i + 1)",
+            "context": "value",
+        }),
+    ]), semantic_only=True)]
+    assert len(facts) == 1
+    assert facts[0]["rvalue"] == "(i + 1)"
+    assert facts[0]["semantic"]["expression_normalized"] == "(i + 1)"
+    assert "expression" not in facts[0]["semantic"]
+
+
 def test_path_conditioned_storage_write_expands_to_multiple_facts() -> None:
     fn = function([
         overlay("PathConditionedStorageWrite", {
@@ -511,6 +580,10 @@ def test_function_level_payload_preserves_distinct_yul_operations() -> None:
 if __name__ == "__main__":
     tests = [
         test_sseir_mapping_write_becomes_state_write_fact,
+        test_resolved_mapping_slot_projects_only_high_storage_location,
+        test_unresolved_mapping_slot_becomes_opaque_storage_location,
+        test_resolved_mapping_read_hides_physical_slot_evidence,
+        test_expression_normalization_projects_the_normalized_expression,
         test_path_conditioned_storage_write_expands_to_multiple_facts,
         test_plain_yul_fact_inherits_single_effect_path_condition,
         test_mapping_write_condition_comes_from_storage_sink,
