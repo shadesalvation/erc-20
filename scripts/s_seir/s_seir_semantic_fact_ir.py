@@ -118,6 +118,7 @@ class SemanticFactIRBridge:
 
         self._normalize_require_guards(fact_cfg, semantic_nodes, raw_to_fact)
         self._normalize_branch_conditions(fact_cfg, semantic_nodes)
+        self._refresh_fact_cfg_analysis(fact_cfg)
         for block in fact_cfg["blocks"]:
             block["semantic_ids"].sort(key=lambda item: self._node_order(semantic_nodes, item))
         fact_ssa, semantic_edges, boundary_links, ssa_diagnostics = self._build_fact_ssa(
@@ -193,7 +194,7 @@ class SemanticFactIRBridge:
         edges = fact_cfg.get("edges") or []
         for node in nodes:
             semantic = node.get("semantic") or {}
-            if node.get("kind") != "ValueCompute" or semantic.get("context") != "condition":
+            if node.get("kind") not in {"ValueCompute", "BranchCondition"} or semantic.get("context") != "condition":
                 continue
             condition = str(node.get("rvalue") or "").strip()
             block_id = (node.get("placement") or {}).get("anchor_block")
@@ -201,10 +202,24 @@ class SemanticFactIRBridge:
             if not condition or not block or str((block.get("terminator") or {}).get("kind") or "").lower() != "branch":
                 continue
             block["terminator"]["condition"] = condition
+            block["terminator"]["text"] = f"if ({condition})"
             for edge in edges:
                 if edge.get("from") != block_id:
                     continue
                 edge["guard"] = SemanticFactIRBridge._edge_guard(block["terminator"], str(edge.get("kind") or ""))
+
+    def _refresh_fact_cfg_analysis(self, fact_cfg: Json) -> None:
+        """Recompute graph facts after completed predicates replace raw guards.
+
+        The CFG shape is unchanged, but control-dependency predicates and path
+        witnesses are semantic output.  They must be derived from the final
+        completed terminators, not from the pre-projection Yul spelling.
+        """
+        analysis = self._graph_analysis(fact_cfg.get("blocks") or [], fact_cfg.get("edges") or [])
+        fact_cfg["entry_blocks"] = analysis["entry_blocks"]
+        fact_cfg["reverse_postorder"] = analysis["reverse_postorder"]
+        fact_cfg["dominance"] = analysis["dominance"]
+        fact_cfg["control_dependencies"] = analysis["control_dependencies"]
 
     def _build_fact_cfg(self, function_id: str, control: Json) -> tuple[Json, dict[str, str]]:
         raw_blocks = [item for item in control.get("blocks") or [] if isinstance(item, dict) and item.get("block_id")]
@@ -300,7 +315,6 @@ class SemanticFactIRBridge:
         return _clean({
             "kind": value.get("kind"),
             "condition": condition,
-            "text": value.get("text"),
             "node_kind": node_kind,
         })
 

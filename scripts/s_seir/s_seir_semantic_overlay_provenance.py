@@ -14,6 +14,7 @@ from typing import Any
 Json = dict[str, Any]
 
 _SINK_KINDS = {
+    "Predicate": {"Branch"},
     "StateVariableWrite": {"StorageWrite"}, "MappingWrite": {"StorageWrite"},
     "StateVariableRead": {"StorageRead"}, "MappingRead": {"StorageRead"},
     "EventEmit": {"EventLog"}, "PathConditionedEventEmit": {"EventLog"},
@@ -37,6 +38,11 @@ def attach_semantic_cfg_provenance(overlays: list[Any], effects: list[Any], cont
     for overlay in overlays:
         attrs = getattr(overlay, "attrs", None)
         if not isinstance(attrs, dict):
+            continue
+        # CFG-native loop predicates have no sink effect: their unique
+        # terminator block is already semantic-level provenance.  Preserve
+        # this completed anchor instead of rediscovering it from statements.
+        if attrs.get("semantic_anchor_cfg_node") and attrs.get("semantic_evidence_cfg_nodes"):
             continue
         refs = {str(ref) for ref in getattr(overlay, "stmt_refs", []) if ref}
         candidates = [effect_by_id[str(effect_id)] for effect_id in getattr(overlay, "effects", []) if str(effect_id) in effect_by_id]

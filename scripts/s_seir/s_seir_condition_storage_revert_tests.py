@@ -1342,8 +1342,10 @@ def test_empty_revert_nonzero_pointer_and_hex_size_is_require_overlay() -> None:
     ])
     assert len(overlays) == 1, [item.kind for item in overlays]
     assert overlays[0].kind == "RequireOverlay"
-    assert "__guard" in overlays[0].attrs["condition"]
-    assert "call(" not in overlays[0].attrs["condition"]
+    # The completed Require condition is semantic, while __guard remains only
+    # evaluation evidence for the later PredicateLifter pass.
+    assert "__guard" not in overlays[0].attrs["condition"]
+    assert overlays[0].attrs["condition"] == "(call(gasleft(), target, 0, input, size, output, 0x20) != 0)"
     assert overlays[0].attrs["evaluated_require_conditions"] == ["__guard"]
     sink = overlays[0].attrs["sink_resolution"]
     payload = sink["path_resolutions"][0]["arg_resolutions"]["payload"]

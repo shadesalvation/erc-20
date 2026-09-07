@@ -228,6 +228,18 @@ class SSeirFactAdapter:
                 "on_fail": "revert",
                 "error": attrs.get("error") or attrs.get("custom_error"),
             })
+        if kind == "Predicate":
+            expression = attrs.get("expression")
+            predicate_id = attrs.get("predicate_id")
+            return self.fact(fn, overlay, stmt_lang, "BranchCondition", lvalue=predicate_id, rvalue=expression,
+                             reads=clean_list(attrs.get("dependencies") or rough_reads(expression)), writes=clean_list([predicate_id]), semantic={
+                                 "operation": "control_predicate",
+                                 "predicate_id": predicate_id,
+                                 "expression": expression,
+                                 "context": "condition",
+                                 "status": attrs.get("status"),
+                                 "semantic_model": attrs.get("semantic_model"),
+                             })
         if kind in {"CustomErrorRevert", "RawRevertBytes", "RevertOverlay"}:
             return self.fact(fn, overlay, stmt_lang, "Revert", reads=flat_list(attrs.get("args")), semantic={
                 "operation": "revert",

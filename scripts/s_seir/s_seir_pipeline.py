@@ -22,6 +22,7 @@ from s_seir_expr_roles import ExpressionRoleAnalyzer
 from s_seir_llm_assembly_export import write_llm_assembly_compact_json, write_llm_assembly_compact_text, write_llm_assembly_json, write_llm_assembly_text
 from s_seir_memory_ssa import build_memory_ssa_views
 from s_seir_semantic_normalizer import SemanticNormalizer
+from s_seir_predicate_lifter import PredicateLifter
 from s_seir_model import FunctionSSEIR
 from s_seir_overlay_builder import SemanticOverlayBuilder
 from s_seir_selector_registry import build_selector_registry
@@ -147,6 +148,10 @@ def build_sseir(source_path:Path, solc_bin:str|None=None, slither_bin:str|None=N
         branch_effects,branch_facts=build_branch_materialization_nodes(unit,mem); effects.extend(branch_effects); facts.extend(branch_facts)
         overlays=SemanticOverlayBuilder(events,include_shallow_overlays=True,selector_registry=selector_registry).build(unit,type_env,roles,effects)
         roles,effects,overlays,normalizer_facts=SemanticNormalizer().normalize(unit,type_env,roles,effects,overlays)
+        # PredicateLifter is the sole completed representation for Yul branch
+        # meaning.  Its generic condition traces remain upstream evidence and
+        # are disconnected before SFIR projection.
+        overlays=PredicateLifter().lift(type_env,effects,overlays,control)
         # Complete overlays with semantic-only CFG provenance while recovery
         # effects are still upstream.  SFIR later consumes just these fields.
         attach_semantic_cfg_provenance(overlays,effects,control)
