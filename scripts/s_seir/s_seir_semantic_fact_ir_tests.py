@@ -173,6 +173,157 @@ class SemanticFactIRBridgeTests(unittest.TestCase):
             {item["kind"]: item["guard"] for item in edges},
         )
 
+    def test_fact_cfg_erases_empty_entry_and_relay_as_transport_provenance(self) -> None:
+        yul_statement = {"kind": "YulNode", "node_kind": "statement"}
+        control = {
+            "blocks": [
+                {**block("entry", "yul"), "terminator": {"kind": "YulNode", "node_kind": "entry"}},
+                {**block("relay", "yul"), "terminator": yul_statement},
+                {**block("semantic", "yul"), "terminator": yul_statement},
+            ],
+            "edges": [
+                {"from": "entry", "to": "relay", "kind": "next"},
+                {"from": "relay", "to": "semantic", "kind": "next"},
+            ],
+        }
+        result = SemanticFactIRBridge().build_function(function(control), [], [yul("write", "semantic")])
+        blocks = result["fact_cfg"]["blocks"]
+        self.assertNotIn("relay", [item["origin"]["source_block_id"] for item in blocks])
+        self.assertNotIn("entry", [item["origin"]["source_block_id"] for item in blocks])
+        semantic = blocks[0]
+        self.assertEqual("semantic", semantic["origin"]["source_block_id"])
+        self.assertEqual({"entry", "statement"}, {
+            item["role"] for item in semantic["collapsed_entry_transport"]
+        })
+        self.assertEqual([], result["diagnostics"])
+
+    def test_fact_cfg_redirects_guarded_path_across_empty_relay(self) -> None:
+        yul_statement = {"kind": "YulNode", "node_kind": "statement"}
+        control = {
+            "blocks": [
+                {**block("branch", "yul"), "terminator": {"kind": "Branch", "condition": "flag", "node_kind": "condition"}},
+                {**block("relay", "yul"), "terminator": yul_statement},
+                {**block("semantic", "yul"), "terminator": yul_statement},
+                {**block("other", "yul"), "terminator": yul_statement},
+            ],
+            "edges": [
+                {"from": "branch", "to": "relay", "kind": "true"},
+                {"from": "branch", "to": "other", "kind": "false"},
+                {"from": "relay", "to": "semantic", "kind": "next"},
+            ],
+        }
+        result = SemanticFactIRBridge().build_function(function(control), [], [yul("write", "semantic")])
+        self.assertNotIn("relay", [item["origin"]["source_block_id"] for item in result["fact_cfg"]["blocks"]])
+        semantic = next(item for item in result["fact_cfg"]["blocks"] if item["origin"]["source_block_id"] == "semantic")
+        incoming = next(item for item in result["fact_cfg"]["edges"] if item["to"] == semantic["block_id"])
+        self.assertEqual("true", incoming["kind"])
+        self.assertEqual("flag", incoming["guard"])
+        self.assertEqual("relay", incoming["collapsed_transport"][0]["source_block_id"])
+
+    def test_fact_cfg_erases_empty_join_and_rebuilds_phi_at_successor(self) -> None:
+        statement = {"kind": "YulNode", "node_kind": "statement"}
+        control = {
+            "blocks": [
+                block("branch", condition="flag"), block("left"), block("right"),
+                {**block("join", "yul"), "terminator": {"kind": "YulNode", "node_kind": "merge"}},
+                {**block("read", "yul"), "terminator": statement},
+            ],
+            "edges": [
+                {"from": "branch", "to": "left", "kind": "true"},
+                {"from": "branch", "to": "right", "kind": "false"},
+                {"from": "left", "to": "join", "kind": "next"},
+                {"from": "right", "to": "join", "kind": "next"},
+                {"from": "join", "to": "read", "kind": "next"},
+            ],
+        }
+        result = SemanticFactIRBridge().build_function(
+            function(control),
+            [solidity("left_def", "left", writes=["amount_1"]), solidity("right_def", "right", writes=["amount_2"])],
+            [yul("read", "read", reads=["amount"])],
+        )
+        self.assertNotIn("join", [item["origin"]["source_block_id"] for item in result["fact_cfg"]["blocks"]])
+        read_block = next(item for item in result["fact_cfg"]["blocks"] if item["origin"]["source_block_id"] == "read")
+        self.assertEqual(2, len(read_block["predecessors"]))
+        self.assertEqual(read_block["block_id"], result["fact_ssa"]["phis"][0]["block_id"])
+        read_node = next(item for item in result["semantic_nodes"] if item["semantic_id"].endswith(":read"))
+        self.assertEqual(result["fact_ssa"]["phis"][0]["version"], read_node["fact_ssa"]["reads"][0]["version"])
+
+    def test_fact_cfg_erases_cross_language_entry_exit_with_boundary_provenance(self) -> None:
+        control = {
+            "blocks": [
+                {**block("sol_entry"), "terminator": {"kind": "Fallthrough"}},
+                {**block("yul_entry", "yul"), "terminator": {"kind": "YulNode", "node_kind": "entry"}},
+                {**block("work", "yul"), "terminator": {"kind": "YulNode", "node_kind": "statement"}},
+                {**block("yul_exit", "yul"), "terminator": {"kind": "YulNode", "node_kind": "exit"}},
+                {**block("sol_return"), "terminator": {"kind": "Return"}},
+            ],
+            "edges": [
+                {"from": "sol_entry", "to": "yul_entry", "kind": "fallthrough"},
+                {"from": "yul_entry", "to": "work", "kind": "next"},
+                {"from": "work", "to": "yul_exit", "kind": "next"},
+                {"from": "yul_exit", "to": "sol_return", "kind": "fallthrough"},
+            ],
+        }
+        result = SemanticFactIRBridge().build_function(
+            function(control), [solidity("return", "sol_return", reads=["result"])], [yul("write", "work", writes=["result"])],
+        )
+        blocks = {item["origin"]["source_block_id"]: item for item in result["fact_cfg"]["blocks"]}
+        self.assertEqual({"work", "sol_return"}, set(blocks))
+        self.assertEqual(["solidity-entry", "entry"], [item["role"] for item in blocks["work"]["collapsed_entry_transport"]])
+        self.assertEqual("solidity", blocks["work"]["entry_boundary_transitions"][0]["from_lang"])
+        edge = result["fact_cfg"]["edges"][0]
+        self.assertEqual(blocks["work"]["block_id"], edge["from"])
+        self.assertEqual(blocks["sol_return"]["block_id"], edge["to"])
+        self.assertEqual("yul", edge["boundary_transitions"][0]["from_lang"])
+        self.assertEqual("solidity", edge["boundary_transitions"][0]["to_lang"])
+
+    def test_fact_cfg_fuses_unique_linear_semantic_blocks_in_cfg_order(self) -> None:
+        """Fusion must preserve a write/read sequence even when IDs sort backwards."""
+        statement = {"kind": "YulNode", "node_kind": "statement"}
+        control = {
+            "blocks": [
+                {**block("entry", "yul"), "terminator": {"kind": "YulNode", "node_kind": "entry"}},
+                {**block("write", "yul"), "terminator": statement},
+                {**block("read", "yul"), "terminator": statement},
+                {**block("exit", "yul"), "terminator": {"kind": "YulNode", "node_kind": "exit"}},
+            ],
+            "edges": [
+                {"from": "entry", "to": "write", "kind": "next"},
+                {"from": "write", "to": "read", "kind": "next"},
+                {"from": "read", "to": "exit", "kind": "next"},
+            ],
+        }
+        # Both facts intentionally have the same source order and the write's
+        # ID sorts after the read's.  Only the CFG edge proves their order.
+        result = SemanticFactIRBridge().build_function(
+            function(control), [],
+            [yul("z_write", "write", writes=["result"]), yul("a_read", "read", reads=["result"])],
+        )
+        fused = next(item for item in result["fact_cfg"]["blocks"] if item["origin"]["source_block_id"] == "write")
+        self.assertEqual([
+            f"sfir:{FUNCTION_ID}:z_write", f"sfir:{FUNCTION_ID}:a_read",
+        ], fused["semantic_ids"])
+        self.assertEqual(["write", "read"], fused["fused_source_blocks"])
+        self.assertNotIn("read", [item["origin"]["source_block_id"] for item in result["fact_cfg"]["blocks"]])
+        read_node = next(item for item in result["semantic_nodes"] if item["semantic_id"].endswith(":a_read"))
+        self.assertEqual(fused["block_id"], read_node["placement"]["anchor_block"])
+        self.assertIn("version", read_node["fact_ssa"]["reads"][0])
+        self.assertTrue(any(
+            edge["from"].endswith(":z_write") and edge["to"].endswith(":a_read")
+            for edge in result["semantic_edges"]
+        ))
+
+    def test_fact_cfg_does_not_fuse_across_solidity_yul_boundary(self) -> None:
+        control = {
+            "blocks": [block("sol", "solidity"), block("yul", "yul")],
+            "edges": [{"from": "sol", "to": "yul", "kind": "next"}],
+        }
+        result = SemanticFactIRBridge().build_function(
+            function(control), [solidity("sol_write", "sol", writes=["result"])], [yul("yul_read", "yul", reads=["result"])],
+        )
+        self.assertEqual(2, len(result["fact_cfg"]["blocks"]))
+        self.assertFalse((result["fact_cfg"].get("normalization") or {}).get("linear_semantic_block_fusion"))
+
     def test_location_aliases_merge_by_high_semantic_identity(self) -> None:
         base = {
             "function_id": FUNCTION_ID, "kind": "StorageLocationResolve", "stmt_refs": ["stmt"],

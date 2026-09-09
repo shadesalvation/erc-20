@@ -305,6 +305,97 @@ class YulSemanticLifter:
                 if candidate_anchor == high_anchor and candidate_refs == high_refs:
                     covered_evaluation_ids.add(str(candidate.get("operation_id") or ""))
 
+        # A completed memory-array pattern and a local-Yul-function call each
+        # replace exactly one generic ValueDef.  The proof is the originating
+        # ValueDef effect plus the same semantic CFG anchor; pointer arithmetic
+        # and the raw call spelling remain S-SEIR derivation evidence only.
+        for high in facts:
+            high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
+            if high_overlay.get("kind") not in {"MemoryArrayLengthRead", "MemoryArrayElementRead", "YulLocalFunctionCall", "CalldataSelectorRead"}:
+                continue
+            high_attrs = high_overlay.get("attrs") or {}
+            target = str(high_attrs.get("target") or high.get("lvalue") or "")
+            source_effect = str(high_attrs.get("source_value_effect") or "")
+            high_effects = {str(value) for value in high_overlay.get("effects") or [] if value}
+            high_anchor = (high.get("semantic_provenance") or {}).get("anchor_cfg_node")
+            if not target or not high_effects or not high_anchor:
+                continue
+            for candidate in facts:
+                candidate_overlay = overlays.get(str((candidate.get("evidence") or {}).get("overlay") or "")) or {}
+                if candidate_overlay.get("kind") != "ExpressionNormalization":
+                    continue
+                candidate_attrs = candidate_overlay.get("attrs") or {}
+                candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                candidate_effects = {str(value) for value in candidate_overlay.get("effects") or [] if value}
+                same_statement = tuple(str(value) for value in candidate.get("stmt_refs") or []) == tuple(
+                    str(value) for value in high.get("stmt_refs") or []
+                )
+                if (
+                    str(candidate_attrs.get("target") or candidate.get("lvalue") or "") == target
+                    and candidate_anchor == high_anchor
+                    and (
+                        (source_effect and source_effect in candidate_effects)
+                        or (not source_effect and bool(candidate_effects.intersection(high_effects)))
+                        or (high_overlay.get("kind") == "MemoryArrayLengthRead" and same_statement)
+                    )
+                ):
+                    covered_generic_ids.add(str(candidate.get("operation_id") or ""))
+                    for evaluation in facts:
+                        evaluation_overlay = overlays.get(
+                            str((evaluation.get("evidence") or {}).get("overlay") or "")
+                        ) or {}
+                        if evaluation_overlay.get("kind") != "EvaluationStep":
+                            continue
+                        evaluation_attrs = evaluation_overlay.get("attrs") or {}
+                        evaluation_anchor = (evaluation.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                        if (
+                            str(evaluation_attrs.get("parent_effect") or "") in (high_effects | ({source_effect} if source_effect else set()))
+                            and evaluation_anchor == high_anchor
+                        ):
+                            covered_evaluation_ids.add(str(evaluation.get("operation_id") or ""))
+
+        # A pointer alias used exclusively to derive a completed array access
+        # is memory-layout transport, not a public value operation.  Drop it
+        # only when every remaining semantic use is itself already covered.
+        for high in facts:
+            high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
+            if high_overlay.get("kind") != "MemoryArrayElementRead":
+                continue
+            high_attrs = high_overlay.get("attrs") or {}
+            pointer_effects = {str(value) for value in high_attrs.get("pointer_value_effects") or [] if value}
+            high_anchor = (high.get("semantic_provenance") or {}).get("anchor_cfg_node")
+            if not pointer_effects or not high_anchor:
+                continue
+            for candidate in facts:
+                candidate_overlay = overlays.get(str((candidate.get("evidence") or {}).get("overlay") or "")) or {}
+                if candidate_overlay.get("kind") != "ExpressionNormalization":
+                    continue
+                candidate_effects = {str(value) for value in candidate_overlay.get("effects") or [] if value}
+                candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                pointer = str(candidate.get("lvalue") or "")
+                pointer_nodes = {str(value) for value in high_attrs.get("pointer_cfg_nodes") or [] if value}
+                if not pointer or (candidate_anchor != high_anchor and candidate_anchor not in pointer_nodes):
+                    continue
+                if not candidate_effects.intersection(pointer_effects):
+                    continue
+                uncovered_use = any(
+                    pointer in {str(value) for value in fact.get("reads") or [] if value}
+                    and str(fact.get("operation_id") or "") not in covered_generic_ids
+                    and str(fact.get("operation_id") or "") not in covered_evaluation_ids
+                    and fact is not candidate
+                    for fact in facts
+                )
+                if uncovered_use:
+                    continue
+                covered_generic_ids.add(str(candidate.get("operation_id") or ""))
+                for evaluation in facts:
+                    evaluation_overlay = overlays.get(str((evaluation.get("evidence") or {}).get("overlay") or "")) or {}
+                    if (
+                        evaluation_overlay.get("kind") == "EvaluationStep"
+                        and str((evaluation_overlay.get("attrs") or {}).get("parent_effect") or "") in pointer_effects
+                    ):
+                        covered_evaluation_ids.add(str(evaluation.get("operation_id") or ""))
+
         # Mapping-slot and state-read overlays have already abstracted the
         # implementation-level ``keccak256``/``sload`` expression.  Their
         # generic normalization has the same target and CFG anchor, while the

@@ -24,6 +24,9 @@ from s_seir_memory_ssa import build_memory_ssa_views
 from s_seir_semantic_normalizer import SemanticNormalizer
 from s_seir_predicate_lifter import PredicateLifter
 from s_seir_calldata_array_lifter import CalldataArrayLifter
+from s_seir_calldata_selector_lifter import CalldataSelectorLifter
+from s_seir_memory_array_pattern_lifter import MemoryArrayPatternLifter
+from s_seir_yul_local_function_lifter import YulLocalFunctionLifter
 from s_seir_model import FunctionSSEIR
 from s_seir_overlay_builder import SemanticOverlayBuilder
 from s_seir_selector_registry import build_selector_registry
@@ -34,6 +37,7 @@ from s_seir_storage_layout import apply_storage_layout, extract_storage_layout
 from s_seir_security_facts import SecurityFactBuilder
 from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_ir_payload
 from s_seir_semantic_fact_ir import write_semantic_fact_ir_json, write_semantic_fact_ir_text
+from s_seir_semantic_fact_render import write_fact_cfg_dot_files, write_fact_cfg_text, write_sfir_c_like_text
 from s_seir_semantic_overlay_provenance import attach_semantic_cfg_provenance
 from s_seir_type_env import TypeEnv
 
@@ -157,6 +161,18 @@ def build_sseir(source_path:Path, solc_bin:str|None=None, slither_bin:str|None=N
         # after its dominating successful bounds predicate has been proven.
         # The pass replaces (rather than supplements) CalldataWordRead.
         overlays=CalldataArrayLifter().lift(type_env,effects,overlays,control)
+        # ``shr(224, calldataload(0))`` assigned to a bytes4 result is the
+        # ABI selector, not an arbitrary word shift.  Preserve the exact
+        # structural match as evidence but project only ``msg.sig`` to SFIR.
+        overlays=CalldataSelectorLifter().lift(type_env,effects,overlays)
+        # A memory-array element read is completed only after its mload sink
+        # has a typed, SSA-resolved base/stride def-use pattern and a CFG true
+        # edge proving Solidity-equivalent bounds behaviour.
+        overlays=MemoryArrayPatternLifter().lift(unit,type_env,mem,effects,overlays,control)
+        # Local Yul definitions own an independent semantic CFG.  Calls keep
+        # that boundary explicit instead of flattening callee control into the
+        # caller's CFG.
+        overlays=YulLocalFunctionLifter().lift(unit,effects,overlays)
         # Complete overlays with semantic-only CFG provenance while recovery
         # effects are still upstream.  SFIR later consumes just these fields.
         attach_semantic_cfg_provenance(overlays,effects,control)
@@ -202,7 +218,7 @@ def render_text(functions):
     return '\n'.join(lines)
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('source',type=Path); ap.add_argument('-o','--output',type=Path,default=Path('outputs/sseir.json')); ap.add_argument('--text-output',type=Path,default=Path('outputs/sseir.txt')); ap.add_argument('--semantic-fact-ir-output','--semantic-facts-output','--semantic-ir-output',dest='semantic_fact_ir_output',type=Path,default=Path('outputs/semantic_fact_ir.json'),help='Function-level Semantic Fact IR JSON. The former semantic-facts/semantic-ir flags are compatibility aliases.'); ap.add_argument('--semantic-fact-ir-text-output','--semantic-ir-text-output',dest='semantic_fact_ir_text_output',type=Path,help='Human-auditable Semantic Fact IR text view.'); ap.add_argument('--solidity-atomic-output',type=Path,help='Optional audit output for the transient Solidity atomic-operation table.'); ap.add_argument('--debug-output',type=Path,help='Optional full analysis output including MemorySSA/SinkResolver query traces.'); ap.add_argument('--cfg-dot-dir',type=Path); ap.add_argument('--llm-assembly-output',type=Path); ap.add_argument('--llm-assembly-text-output',type=Path); ap.add_argument('--llm-assembly-compact-output',type=Path); ap.add_argument('--llm-assembly-compact-text-output',type=Path); ap.add_argument('--solidity-like-output',type=Path); ap.add_argument('--branch-preprocessed-output',type=Path); ap.add_argument('--branch-report-output',type=Path); ap.add_argument('--no-branch-preprocess',action='store_true'); ap.add_argument('--solc-bin'); ap.add_argument('--slither-bin'); ap.add_argument('--workdir',type=Path,default=Path('.'))
+    ap=argparse.ArgumentParser(); ap.add_argument('source',type=Path); ap.add_argument('-o','--output',type=Path,default=Path('outputs/sseir.json')); ap.add_argument('--text-output',type=Path,default=Path('outputs/sseir.txt')); ap.add_argument('--semantic-fact-ir-output','--semantic-facts-output','--semantic-ir-output',dest='semantic_fact_ir_output',type=Path,default=Path('outputs/semantic_fact_ir.json'),help='Function-level Semantic Fact IR JSON. The former semantic-facts/semantic-ir flags are compatibility aliases.'); ap.add_argument('--semantic-fact-ir-text-output','--semantic-ir-text-output',dest='semantic_fact_ir_text_output',type=Path,help='Human-auditable Semantic Fact IR text view.'); ap.add_argument('--semantic-fact-c-output','--sfir-c-output',dest='semantic_fact_c_output',type=Path,help='C-like, basic-block SFIR projection derived only from final SFIR.'); ap.add_argument('--semantic-fact-cfg-text-output',dest='semantic_fact_cfg_text_output',type=Path,help='Human-readable Fact CFG with high-level SFIR at each block.'); ap.add_argument('--semantic-fact-cfg-dot-dir',dest='semantic_fact_cfg_dot_dir',type=Path,help='Directory for one semantic Fact CFG DOT file per function.'); ap.add_argument('--solidity-atomic-output',type=Path,help='Optional audit output for the transient Solidity atomic-operation table.'); ap.add_argument('--debug-output',type=Path,help='Optional full analysis output including MemorySSA/SinkResolver query traces.'); ap.add_argument('--cfg-dot-dir',type=Path); ap.add_argument('--llm-assembly-output',type=Path); ap.add_argument('--llm-assembly-text-output',type=Path); ap.add_argument('--llm-assembly-compact-output',type=Path); ap.add_argument('--llm-assembly-compact-text-output',type=Path); ap.add_argument('--solidity-like-output',type=Path); ap.add_argument('--branch-preprocessed-output',type=Path); ap.add_argument('--branch-report-output',type=Path); ap.add_argument('--no-branch-preprocess',action='store_true'); ap.add_argument('--solc-bin'); ap.add_argument('--slither-bin'); ap.add_argument('--workdir',type=Path,default=Path('.'))
     a=ap.parse_args(); fns=build_sseir(a.source,a.solc_bin,a.slither_bin,a.workdir.resolve(),branch_preprocess=not a.no_branch_preprocess,branch_preprocess_output=a.branch_preprocessed_output,branch_report_output=a.branch_report_output)
     a.output.parent.mkdir(parents=True,exist_ok=True); a.text_output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps([x.to_semantic_dict() for x in fns],indent=2,ensure_ascii=False),encoding='utf-8'); a.text_output.write_text(render_text(fns),encoding='utf-8')
@@ -215,6 +231,15 @@ def main():
     if a.semantic_fact_ir_text_output:
         write_semantic_fact_ir_text(a.semantic_fact_ir_text_output,semantic_fact_ir)
         print(f'Wrote {a.semantic_fact_ir_text_output}')
+    if a.semantic_fact_c_output:
+        write_sfir_c_like_text(a.semantic_fact_c_output,semantic_fact_ir)
+        print(f'Wrote {a.semantic_fact_c_output}')
+    if a.semantic_fact_cfg_text_output:
+        write_fact_cfg_text(a.semantic_fact_cfg_text_output,semantic_fact_ir)
+        print(f'Wrote {a.semantic_fact_cfg_text_output}')
+    if a.semantic_fact_cfg_dot_dir:
+        paths=write_fact_cfg_dot_files(semantic_fact_ir,a.semantic_fact_cfg_dot_dir)
+        print(f'Wrote {len(paths)} semantic Fact CFG DOT files to {a.semantic_fact_cfg_dot_dir}')
     if a.solidity_atomic_output:
         write_solidity_atomic_operation_json(fns,a.solidity_atomic_output,source=str(a.source))
         print(f'Wrote {a.solidity_atomic_output}')

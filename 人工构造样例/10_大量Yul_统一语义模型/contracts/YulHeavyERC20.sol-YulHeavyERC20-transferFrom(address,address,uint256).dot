@@ -1,0 +1,285 @@
+digraph{
+0[label="Node Type: ENTRY_POINT 0
+"];
+0->1;
+1[label="Node Type: INLINE ASM 1
+"];
+1->2;
+2[label="Node Type: IF 2
+
+EXPRESSION:
+! to
+
+IRs:
+TMP_51 = UnaryType.BANG to 
+CONDITION TMP_51"];
+2->4[label="True"];
+2->3[label="False"];
+3[label="Node Type: END_IF 3
+"];
+3->5;
+4[label="Node Type: EXPRESSION 4
+
+EXPRESSION:
+revert(uint256,uint256)(0x00,0x00)
+
+IRs:
+TMP_52(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+4->3;
+5[label="Node Type: EXPRESSION 5
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,from)
+
+IRs:
+TMP_53(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,from)"];
+5->6;
+6[label="Node Type: EXPRESSION 6
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,_allowances)
+
+IRs:
+TMP_54(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_allowances)"];
+6->7;
+7[label="Node Type: NEW VARIABLE 7
+"];
+7->8;
+8[label="Node Type: EXPRESSION 8
+
+EXPRESSION:
+ownerSlot_transferFrom_asm_0 = keccak256(uint256,uint256)(0x00,0x40)
+
+IRs:
+TMP_55(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+ownerSlot_transferFrom_asm_0(uint256) := TMP_55(uint256)"];
+8->9;
+9[label="Node Type: EXPRESSION 9
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,caller()())
+
+IRs:
+TMP_56(address) := msg.sender(address)
+TMP_57(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,TMP_56)"];
+9->10;
+10[label="Node Type: EXPRESSION 10
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,ownerSlot_transferFrom_asm_0)
+
+IRs:
+TMP_58(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,ownerSlot_transferFrom_asm_0)"];
+10->11;
+11[label="Node Type: NEW VARIABLE 11
+"];
+11->12;
+12[label="Node Type: EXPRESSION 12
+
+EXPRESSION:
+allowanceSlot_transferFrom_asm_0 = keccak256(uint256,uint256)(0x00,0x40)
+
+IRs:
+TMP_59(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+allowanceSlot_transferFrom_asm_0(uint256) := TMP_59(uint256)"];
+12->13;
+13[label="Node Type: NEW VARIABLE 13
+"];
+13->14;
+14[label="Node Type: EXPRESSION 14
+
+EXPRESSION:
+currentAllowance_transferFrom_asm_0 = sload(uint256)(allowanceSlot_transferFrom_asm_0)
+
+IRs:
+TMP_60(uint256) = SOLIDITY_CALL sload(uint256)(allowanceSlot_transferFrom_asm_0)
+currentAllowance_transferFrom_asm_0(uint256) := TMP_60(uint256)"];
+14->15;
+15[label="Node Type: IF 15
+
+EXPRESSION:
+currentAllowance_transferFrom_asm_0 < value
+
+IRs:
+TMP_61(bool) = currentAllowance_transferFrom_asm_0 < value
+CONDITION TMP_61"];
+15->17[label="True"];
+15->16[label="False"];
+16[label="Node Type: END_IF 16
+"];
+16->18;
+17[label="Node Type: EXPRESSION 17
+
+EXPRESSION:
+revert(uint256,uint256)(0x00,0x00)
+
+IRs:
+TMP_62(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+17->16;
+18[label="Node Type: IF 18
+
+EXPRESSION:
+! currentAllowance_transferFrom_asm_0 == ~ 0
+
+IRs:
+TMP_63 = UnaryType.TILD 0 
+TMP_64(bool) = currentAllowance_transferFrom_asm_0 == TMP_63
+TMP_65 = UnaryType.BANG TMP_64 
+CONDITION TMP_65"];
+18->20[label="True"];
+18->19[label="False"];
+19[label="Node Type: END_IF 19
+"];
+19->21;
+20[label="Node Type: EXPRESSION 20
+
+EXPRESSION:
+sstore(uint256,uint256)(allowanceSlot_transferFrom_asm_0,currentAllowance_transferFrom_asm_0 - value)
+
+IRs:
+TMP_66(uint256) = currentAllowance_transferFrom_asm_0 - value
+TMP_67(None) = SOLIDITY_CALL sstore(uint256,uint256)(allowanceSlot_transferFrom_asm_0,TMP_66)"];
+20->19;
+21[label="Node Type: EXPRESSION 21
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,from)
+
+IRs:
+TMP_68(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,from)"];
+21->22;
+22[label="Node Type: EXPRESSION 22
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,_balances)
+
+IRs:
+TMP_69(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_balances)"];
+22->23;
+23[label="Node Type: NEW VARIABLE 23
+"];
+23->24;
+24[label="Node Type: EXPRESSION 24
+
+EXPRESSION:
+fromSlot_transferFrom_asm_0 = keccak256(uint256,uint256)(0x00,0x40)
+
+IRs:
+TMP_70(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+fromSlot_transferFrom_asm_0(uint256) := TMP_70(uint256)"];
+24->25;
+25[label="Node Type: NEW VARIABLE 25
+"];
+25->26;
+26[label="Node Type: EXPRESSION 26
+
+EXPRESSION:
+fromBalance_transferFrom_asm_0 = sload(uint256)(fromSlot_transferFrom_asm_0)
+
+IRs:
+TMP_71(uint256) = SOLIDITY_CALL sload(uint256)(fromSlot_transferFrom_asm_0)
+fromBalance_transferFrom_asm_0(uint256) := TMP_71(uint256)"];
+26->27;
+27[label="Node Type: IF 27
+
+EXPRESSION:
+fromBalance_transferFrom_asm_0 < value
+
+IRs:
+TMP_72(bool) = fromBalance_transferFrom_asm_0 < value
+CONDITION TMP_72"];
+27->29[label="True"];
+27->28[label="False"];
+28[label="Node Type: END_IF 28
+"];
+28->30;
+29[label="Node Type: EXPRESSION 29
+
+EXPRESSION:
+revert(uint256,uint256)(0x00,0x00)
+
+IRs:
+TMP_73(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+29->28;
+30[label="Node Type: EXPRESSION 30
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,to)
+
+IRs:
+TMP_74(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,to)"];
+30->31;
+31[label="Node Type: EXPRESSION 31
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,_balances)
+
+IRs:
+TMP_75(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_balances)"];
+31->32;
+32[label="Node Type: NEW VARIABLE 32
+"];
+32->33;
+33[label="Node Type: EXPRESSION 33
+
+EXPRESSION:
+toSlot_transferFrom_asm_0 = keccak256(uint256,uint256)(0x00,0x40)
+
+IRs:
+TMP_76(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+toSlot_transferFrom_asm_0(uint256) := TMP_76(uint256)"];
+33->34;
+34[label="Node Type: EXPRESSION 34
+
+EXPRESSION:
+sstore(uint256,uint256)(fromSlot_transferFrom_asm_0,fromBalance_transferFrom_asm_0 - value)
+
+IRs:
+TMP_77(uint256) = fromBalance_transferFrom_asm_0 - value
+TMP_78(None) = SOLIDITY_CALL sstore(uint256,uint256)(fromSlot_transferFrom_asm_0,TMP_77)"];
+34->35;
+35[label="Node Type: EXPRESSION 35
+
+EXPRESSION:
+sstore(uint256,uint256)(toSlot_transferFrom_asm_0,sload(uint256)(toSlot_transferFrom_asm_0) + value)
+
+IRs:
+TMP_79(uint256) = SOLIDITY_CALL sload(uint256)(toSlot_transferFrom_asm_0)
+TMP_80(uint256) = TMP_79 + value
+TMP_81(None) = SOLIDITY_CALL sstore(uint256,uint256)(toSlot_transferFrom_asm_0,TMP_80)"];
+35->36;
+36[label="Node Type: EXPRESSION 36
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,value)
+
+IRs:
+TMP_82(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,value)"];
+36->37;
+37[label="Node Type: EXPRESSION 37
+
+EXPRESSION:
+log3(uint256,uint256,uint256,uint256,uint256)(0x00,0x20,0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,from,to)
+
+IRs:
+TMP_83(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(0,32,100389287136786176327247604509743168900146139575972864366142685224231313322991,from,to)"];
+37->38;
+38[label="Node Type: EXPRESSION 38
+
+EXPRESSION:
+ok = 1
+
+IRs:
+ok(bool) := 1(uint256)"];
+38->39;
+39[label="Node Type: END INLINE ASM 39
+"];
+39->40;
+40[label="Node Type: RETURN 40
+
+EXPRESSION:
+ok
+
+IRs:
+RETURN ok"];
+}

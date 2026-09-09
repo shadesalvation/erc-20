@@ -1,0 +1,97 @@
+digraph{
+0[label="Node Type: ENTRY_POINT 0
+"];
+0->1;
+1[label="Node Type: INLINE ASM 1
+"];
+1->2;
+2[label="Node Type: EXPRESSION 2
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,caller()())
+
+IRs:
+TMP_20(address) := msg.sender(address)
+TMP_21(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,TMP_20)"];
+2->3;
+3[label="Node Type: EXPRESSION 3
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,_allowances)
+
+IRs:
+TMP_22(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_allowances)"];
+3->4;
+4[label="Node Type: NEW VARIABLE 4
+"];
+4->5;
+5[label="Node Type: EXPRESSION 5
+
+EXPRESSION:
+ownerSlot_approve_asm_0 = keccak256(uint256,uint256)(0x00,0x40)
+
+IRs:
+TMP_23(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+ownerSlot_approve_asm_0(uint256) := TMP_23(uint256)"];
+5->6;
+6[label="Node Type: EXPRESSION 6
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,spender)
+
+IRs:
+TMP_24(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,spender)"];
+6->7;
+7[label="Node Type: EXPRESSION 7
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,ownerSlot_approve_asm_0)
+
+IRs:
+TMP_25(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,ownerSlot_approve_asm_0)"];
+7->8;
+8[label="Node Type: EXPRESSION 8
+
+EXPRESSION:
+sstore(uint256,uint256)(keccak256(uint256,uint256)(0x00,0x40),value)
+
+IRs:
+TMP_26(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+TMP_27(None) = SOLIDITY_CALL sstore(uint256,uint256)(TMP_26,value)"];
+8->9;
+9[label="Node Type: EXPRESSION 9
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,value)
+
+IRs:
+TMP_28(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,value)"];
+9->10;
+10[label="Node Type: EXPRESSION 10
+
+EXPRESSION:
+log3(uint256,uint256,uint256,uint256,uint256)(0x00,0x20,0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925,caller()(),spender)
+
+IRs:
+TMP_29(address) := msg.sender(address)
+TMP_30(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(0,32,63486140976153616755203102783360879283472101686154884697241723088393386309925,TMP_29,spender)"];
+10->11;
+11[label="Node Type: EXPRESSION 11
+
+EXPRESSION:
+ok = 1
+
+IRs:
+ok(bool) := 1(uint256)"];
+11->12;
+12[label="Node Type: END INLINE ASM 12
+"];
+12->13;
+13[label="Node Type: RETURN 13
+
+EXPRESSION:
+ok
+
+IRs:
+RETURN ok"];
+}

@@ -1,0 +1,240 @@
+Semantic Fact CFG
+Source: 人工构造样例/10_大量Yul_统一语义模型/contracts/YulHeavyERC20.sol
+
+Function YulHeavyERC20.constructor(uint256)
+  B0 [yul] fcfg:YulHeavyERC20.constructor(uint256):bb_asm1_n2 fused=3
+    terminator: YulNode
+    /* collapsed transport: solidity-entry, entry; boundary: solidity->yul */
+    _totalSupply = initialSupply;
+    /* resolved storage location: _balances[msg.sender]; */
+    _balances[msg.sender] = initialSupply;
+    emit Transfer(0, msg.sender, initialSupply);
+
+Function YulHeavyERC20.totalSupply()
+  B0 [yul] fcfg:YulHeavyERC20.totalSupply():bb_asm2_n2
+    terminator: YulNode
+    /* collapsed transport: solidity-entry, entry; boundary: solidity->yul */
+    result = _totalSupply;
+    -> B1 [next]
+  B1 [solidity] fcfg:YulHeavyERC20.totalSupply():bb_sol_slither_n4
+    terminator: Return
+    return result_1;
+
+Function YulHeavyERC20.balanceOf(address)
+  B0 [yul] fcfg:YulHeavyERC20.balanceOf(address):bb_asm3_n4
+    terminator: YulNode
+    /* collapsed transport: solidity-entry, statement, entry; boundary: solidity->yul */
+    /* resolved storage location: _balances[account]; */
+    result = _balances[account];
+    -> B1 [next]
+  B1 [solidity] fcfg:YulHeavyERC20.balanceOf(address):bb_sol_slither_n6
+    terminator: Return
+    return result_1;
+
+Function YulHeavyERC20.allowance(address, address)
+  B0 [yul] fcfg:YulHeavyERC20.allowance(address, address):bb_asm4_n4 fused=2
+    terminator: YulNode
+    /* collapsed transport: solidity-entry, statement, entry; boundary: solidity->yul */
+    /* resolved storage location: _allowances[owner]; */
+    /* resolved storage location: _allowances[owner][spender]; */
+    result = _allowances[owner][spender];
+    -> B1 [next]
+  B1 [solidity] fcfg:YulHeavyERC20.allowance(address, address):bb_sol_slither_n10
+    terminator: Return
+    return result_1;
+
+Function YulHeavyERC20.approve(address, uint256)
+  B0 [yul] fcfg:YulHeavyERC20.approve(address, uint256):bb_asm5_n4 fused=4
+    terminator: YulNode
+    /* collapsed transport: solidity-entry, statement, entry; boundary: solidity->yul */
+    /* resolved storage location: _allowances[msg.sender]; */
+    /* resolved storage location: _allowances[msg.sender][spender]; */
+    _allowances[msg.sender][spender] = value;
+    emit Approval(msg.sender, spender, value);
+    ok = 1;
+    -> B1 [next]
+  B1 [solidity] fcfg:YulHeavyERC20.approve(address, uint256):bb_sol_slither_n13
+    terminator: Return
+    return ok_1;
+
+Function YulHeavyERC20.transfer(address, uint256)
+  B0 [yul] fcfg:YulHeavyERC20.transfer(address, uint256):bb_asm6_n2
+    terminator: Require
+    /* collapsed transport: solidity-entry, entry; boundary: solidity->yul */
+    require((to != address(0)));
+    if ((to != address(0)))
+    -> B6 [false guard=!((to != address(0)))]
+    -> B1 [true guard=(to != address(0))]
+  B1 [yul] fcfg:YulHeavyERC20.transfer(address, uint256):bb_asm6_n7 fused=2
+    terminator: YulNode
+    /* resolved storage location: _balances[msg.sender]; */
+    fromBalance = _balances[msg.sender];
+    -> B2 [next]
+  B2 [yul] fcfg:YulHeavyERC20.transfer(address, uint256):bb_asm6_n9
+    terminator: Require
+    require((fromBalance >= value));
+    if ((fromBalance >= value))
+    -> B5 [false guard=!((fromBalance >= value))]
+    -> B3 [true guard=(fromBalance >= value)]
+  B3 [yul] fcfg:YulHeavyERC20.transfer(address, uint256):bb_asm6_n14 fused=5
+    terminator: YulNode
+    /* resolved storage location: _balances[to]; */
+    _balances[msg.sender] = (fromBalance - value);
+    read(_balances[to]);
+    _balances[to] = (_balances[to] + value);
+    emit Transfer(msg.sender, to, value);
+    ok = 1;
+    -> B4 [next]
+  B4 [solidity] fcfg:YulHeavyERC20.transfer(address, uint256):bb_sol_slither_n24
+    terminator: Return
+    return ok_1;
+  B5 [yul] fcfg:YulHeavyERC20.transfer(address, uint256):bb_asm6_n11
+    terminator: Revert
+    revert();
+  B6 [yul] fcfg:YulHeavyERC20.transfer(address, uint256):bb_asm6_n4
+    terminator: Revert
+    revert();
+
+Function YulHeavyERC20.transferFrom(address, address, uint256)
+  B0 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n2
+    terminator: Require
+    /* collapsed transport: solidity-entry, entry; boundary: solidity->yul */
+    require((to != address(0)));
+    if ((to != address(0)))
+    -> B11 [false guard=!((to != address(0)))]
+    -> B1 [true guard=(to != address(0))]
+  B1 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n7 fused=3
+    terminator: YulNode
+    /* resolved storage location: _allowances[from]; */
+    /* resolved storage location: _allowances[from][msg.sender]; */
+    currentAllowance = _allowances[from][msg.sender];
+    -> B2 [next]
+  B2 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n12
+    terminator: Require
+    require((currentAllowance >= value));
+    if ((currentAllowance >= value))
+    -> B10 [false guard=!((currentAllowance >= value))]
+    -> B3 [true guard=(currentAllowance >= value)]
+  B3 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n15
+    terminator: Branch
+    if ((currentAllowance != type(uint256).max))
+    -> B4 [true guard=(currentAllowance != type(uint256).max)]
+    -> B5 [false guard=!((currentAllowance != type(uint256).max))]
+  B4 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n17
+    terminator: YulNode
+    _allowances[from][msg.sender] = (currentAllowance - value);
+    -> B5 [next]
+  B5 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n20 fused=2
+    terminator: YulNode
+    /* resolved storage location: _balances[from]; */
+    fromBalance = _balances[from];
+    -> B6 [next]
+  B6 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n22
+    terminator: Require
+    require((fromBalance >= value));
+    if ((fromBalance >= value))
+    -> B9 [false guard=!((fromBalance >= value))]
+    -> B7 [true guard=(fromBalance >= value)]
+  B7 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n27 fused=5
+    terminator: YulNode
+    /* resolved storage location: _balances[to]; */
+    _balances[from] = (fromBalance - value);
+    read(_balances[to]);
+    _balances[to] = (_balances[to] + value);
+    emit Transfer(from, to, value);
+    ok = 1;
+    -> B8 [next]
+  B8 [solidity] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_sol_slither_n40
+    terminator: Return
+    return ok_1;
+  B9 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n24
+    terminator: Revert
+    revert();
+  B10 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n14
+    terminator: Revert
+    revert();
+  B11 [yul] fcfg:YulHeavyERC20.transferFrom(address, address, uint256):bb_asm7_n4
+    terminator: Revert
+    revert();
+
+Function YulHeavyERC20.burn(uint256)
+  B0 [yul] fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n4 fused=2
+    terminator: YulNode
+    /* collapsed transport: solidity-entry, statement, entry; boundary: solidity->yul */
+    /* resolved storage location: _balances[msg.sender]; */
+    accountBalance = _balances[msg.sender];
+    -> B1 [next]
+  B1 [yul] fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n6
+    terminator: Require
+    require((accountBalance >= value));
+    if ((accountBalance >= value))
+    -> B3 [false guard=!((accountBalance >= value))]
+    -> B2 [true guard=(accountBalance >= value)]
+  B2 [yul] fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n9 fused=3
+    terminator: YulNode
+    _balances[msg.sender] = (accountBalance - value);
+    read(_totalSupply);
+    _totalSupply = (_totalSupply - value);
+    emit Transfer(msg.sender, 0, value);
+  B3 [yul] fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n8
+    terminator: Revert
+    revert();
+
+Function YulHeavyERC20.batchBalanceSum(address[])
+  B0 [yul] fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n2
+    terminator: YulNode
+    /* collapsed transport: solidity-entry, entry; boundary: solidity->yul */
+    i = 0;
+    -> B1 [next]
+  B1 [yul] fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n3
+    terminator: Branch
+    if ((i < accounts.length))
+    -> B3 [true guard=(i < accounts.length)]
+    -> B2 [false guard=!((i < accounts.length))]
+  B2 [solidity] fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_sol_slither_n14
+    terminator: Return
+    return result_1;
+  B3 [yul] fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n6 fused=3
+    terminator: YulNode
+    account = accounts[i];
+    /* resolved storage location: _balances[account]; */
+    result = (result + _balances[account]);
+    /* state read used by enclosing expression: _balances[account]; */
+    i = (i + 1);
+    -> B1 [loop back]
+  FactPhi:
+    fssa:decl:120:value:phi:1 = phi(fssa:decl:120:value:v17, fssa:decl:120:value:v4)
+    fssa:symbol:i:value:phi:2 = phi(fssa:symbol:i:value:v14, fssa:symbol:i:value:v19)
+
+Function YulHeavyERC20.hasCode(address)
+  B0 [yul] fcfg:YulHeavyERC20.hasCode(address):bb_asm10_n2
+    terminator: YulNode
+    /* collapsed transport: solidity-entry, entry; boundary: solidity->yul */
+    result = (account.code.length != 0);
+    -> B1 [next]
+  B1 [solidity] fcfg:YulHeavyERC20.hasCode(address):bb_sol_slither_n4
+    terminator: Return
+    return result_1;
+
+Function YulHeavyERC20.externalBalanceOf(address, address)
+  B0 [yul] fcfg:YulHeavyERC20.externalBalanceOf(address, address):bb_asm11_n5
+    terminator: YulNode
+    /* collapsed transport: solidity-entry, statement, entry; boundary: solidity->yul */
+    success = staticcall token.balanceOf(account);
+    -> B1 [next]
+  B1 [yul] fcfg:YulHeavyERC20.externalBalanceOf(address, address):bb_asm11_n6
+    terminator: Require
+    require((success && (returnDataSize() == 0x20)));
+    if ((success && (returnDataSize() == 0x20)))
+    -> B4 [false guard=!((success && (returnDataSize() == 0x20)))]
+    -> B2 [true guard=(success && (returnDataSize() == 0x20))]
+  B2 [yul] fcfg:YulHeavyERC20.externalBalanceOf(address, address):bb_asm11_n9
+    terminator: YulNode
+    result = external_call_return_word(0);
+    -> B3 [next]
+  B3 [solidity] fcfg:YulHeavyERC20.externalBalanceOf(address, address):bb_sol_slither_n13
+    terminator: Return
+    return result_1;
+  B4 [yul] fcfg:YulHeavyERC20.externalBalanceOf(address, address):bb_asm11_n8
+    terminator: Revert
+    revert();

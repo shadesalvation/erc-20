@@ -1,0 +1,13 @@
+digraph "YulHeavyERC20.batchBalanceSum_address" {
+  graph [rankdir=TB, bgcolor="#ffffff", labelloc=t, fontsize=14, fontname="Consolas", label="Fact CFG: YulHeavyERC20.batchBalanceSum(address[])"];
+  node [fontname="Consolas"];
+  edge [fontname="Consolas", fontsize="9"];
+  "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n2" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="B0 [yul]\\lfcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n2\\l/* collapsed transport: solidity-entry, entry; boundary: solidity->yul */\\li = 0;\\l"];
+  "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n3" [shape="diamond", style="rounded,filled", fontname="Consolas", fontsize="10", color="#7a4bb3", fillcolor="#f5ecff", label="B1 [yul]\\lfcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n3\\lif ((i < accounts.length))\\l"];
+  "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_sol_slither_n14" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#3574b7", fillcolor="#e9ffe8", peripheries="2", label="B2 [solidity]\\lfcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_sol_slither_n14\\lreturn result_1;\\l"];
+  "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n6" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="B3 [yul]; fused 3 linear semantic blocks\\lfcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n6\\laccount = accounts[i];\\l/* resolved storage location: _balances[account]; */\\lresult = (result + _balances[account]);\\l/* state read used by enclosing expression: _balances[account]; */\\li = (i + 1);\\l"];
+  "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n2" -> "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n3" [label="next", color="#586069"];
+  "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n3" -> "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n6" [label="true: (i < accounts.length)", color="#22863a"];
+  "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n6" -> "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n3" [label="loop back", color="#6f42c1"];
+  "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_asm9_n3" -> "fcfg:YulHeavyERC20.batchBalanceSum(address[]):bb_sol_slither_n14" [label="false: !((i < accounts.length))", color="#cb2431"];
+}

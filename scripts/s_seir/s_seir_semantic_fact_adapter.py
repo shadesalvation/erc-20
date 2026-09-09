@@ -247,9 +247,10 @@ class SSeirFactAdapter:
                                  "operation": "control_predicate",
                                  "predicate_id": predicate_id,
                                  "expression": expression,
-                                 "context": "condition",
+                                 "context": attrs.get("context") or "condition",
                                  "status": attrs.get("status"),
                                  "semantic_model": attrs.get("semantic_model"),
+                                 "switch_edges": attrs.get("switch_edges"),
                              })
         if kind in {"CustomErrorRevert", "RawRevertBytes", "RevertOverlay"}:
             return self.fact(fn, overlay, stmt_lang, "Revert", reads=flat_list(attrs.get("args")), semantic={
@@ -297,6 +298,21 @@ class SSeirFactAdapter:
                     "target_type", "source_expression", "reason",
                 )) | {"operation": "calldata_word_read", "value": value},
             )
+        if kind == "CalldataSelectorRead":
+            target = attrs.get("target")
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "ValueCompute",
+                lvalue=target,
+                rvalue="msg.sig",
+                reads=["msg.data"],
+                writes=clean_list([target]),
+                semantic=pick(attrs, (
+                    "source", "access", "target_type", "semantic_model", "solidity_like",
+                )) | {"operation": "calldata_selector_read", "value": "msg.sig"},
+            )
         if kind == "CalldataArrayElementRead":
             target = attrs.get("target")
             access = attrs.get("access") or "calldataArrayElement(unknown)"
@@ -317,6 +333,57 @@ class SSeirFactAdapter:
                     "index", "access", "layout", "element_encoding",
                     "bounds_proof", "semantic_model", "solidity_like",
                 )) | {"operation": "calldata_array_element_read", "value": access},
+            )
+        if kind in {"MemoryArrayLengthRead", "MemoryArrayElementRead"}:
+            target = attrs.get("target")
+            access = attrs.get("access") or (
+                "memoryArrayElement(unknown)" if kind == "MemoryArrayElementRead" else "memoryArrayLength(unknown)"
+            )
+            operation = "memory_array_element_read" if kind == "MemoryArrayElementRead" else "memory_array_length_read"
+            reads = [attrs.get("array")]
+            if kind == "MemoryArrayElementRead":
+                reads.append(attrs.get("index"))
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "ValueCompute",
+                lvalue=target,
+                rvalue=access,
+                reads=clean_list(reads),
+                writes=clean_list([target]),
+                semantic=pick(attrs, (
+                    "array", "array_type", "element_type", "data_location", "index", "access",
+                    "layout", "bounds_proof", "pattern_model", "solidity_like",
+                )) | {"operation": operation, "value": access},
+            )
+        if kind == "YulLocalFunctionDefinition":
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "LocalFunctionDefinition",
+                lvalue=attrs.get("name"),
+                semantic=pick(attrs, (
+                    "name", "parameters", "returns", "body", "semantic_cfg", "solidity_like",
+                    "semantic_model", "assembly_block",
+                )),
+            )
+        if kind == "YulLocalFunctionCall":
+            target = attrs.get("target")
+            arguments = clean_list(attrs.get("arguments"))
+            return self.fact(
+                fn,
+                overlay,
+                stmt_lang,
+                "InternalCall",
+                lvalue=target,
+                rvalue=f"{attrs.get('function')}({', '.join(str(item) for item in arguments)})",
+                reads=arguments,
+                writes=clean_list([target]),
+                semantic=pick(attrs, (
+                    "function", "arguments", "definition_overlay", "semantic_model", "assembly_block",
+                )) | {"operation": "yul_local_function_call"},
             )
         if kind == "PrecompileCall":
             return self.call_fact(fn, overlay, stmt_lang, "PrecompileCall")
@@ -904,7 +971,11 @@ class SlitherFactAdapter:
     def operation_reads(cls, op: dict[str, Any]) -> list[Any]:
         explicit = op.get("reads") or op.get("read")
         if explicit:
-            return clean_list(cls.value_list_text(explicit))
+            # Slither carries literalness on the operand object.  Retain a
+            # constant as a call argument, but it is never an SSA read.
+            return clean_list(cls.value_list_text([
+                value for value in cls.operand_items(explicit) if not cls.is_constant_value(value)
+            ]))
         kind = str(op.get("kind") or op.get("type") or "")
         fields_by_kind = {
             "Assignment": ["rvalue"],
@@ -937,7 +1008,7 @@ class SlitherFactAdapter:
         }
         values: list[Any] = []
         for field_name in fields_by_kind.get(kind, ["rvalue", "expression"]):
-            values.extend(flat_list(op.get(field_name)))
+            values.extend(cls.operand_items(op.get(field_name)))
         return clean_list(cls.value_list_text(values) or rough_reads(op.get("text") or op.get("expression")))
 
     @classmethod
@@ -1032,12 +1103,31 @@ class SlitherFactAdapter:
     @classmethod
     def value_text(cls, value: Any) -> Any:
         if isinstance(value, dict):
-            return value.get("text") or value.get("name") or value.get("full_name") or value.get("canonical_name") or value
+            text = value.get("text") or value.get("name") or value.get("full_name") or value.get("canonical_name") or value
+            if cls.is_constant_value(value) and "string" in str(value.get("type") or "").lower():
+                return json.dumps(str(text), ensure_ascii=False)
+            return text
         return value
+
+    @staticmethod
+    def is_constant_value(value: Any) -> bool:
+        return isinstance(value, dict) and bool(value.get("is_constant"))
 
     @classmethod
     def value_list_text(cls, value: Any) -> list[Any]:
-        return [cls.value_text(item) for item in flat_list(value)]
+        return [cls.value_text(item) for item in cls.operand_items(value)]
+
+    @classmethod
+    def operand_items(cls, value: Any) -> list[Any]:
+        """Flatten operand sequences without splitting typed operand objects."""
+        if value is None:
+            return []
+        if isinstance(value, (list, tuple, set)):
+            out: list[Any] = []
+            for item in value:
+                out.extend(cls.operand_items(item))
+            return out
+        return [value]
 
     @classmethod
     def scalar_text(cls, value: Any) -> Any:
@@ -1329,14 +1419,26 @@ def rough_reads(value: Any) -> list[str]:
         return clean_list([item for part in value for item in rough_reads(part)])
     if isinstance(value, dict):
         return clean_list([item for part in value.values() for item in rough_reads(part)])
-    text = str(value)
-    identifiers = re.findall(r"\b[A-Za-z_$][A-Za-z0-9_$]*(?:\[[^\]]+\])?", text)
+    # Work on complete access paths, not individual identifier fragments.
+    # In particular, ``msg.data.length`` is one environment leaf rather than
+    # user symbols named ``data`` and ``length``.  Removing quoted strings
+    # first likewise prevents revert messages from becoming SSA variables.
+    text = re.sub(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'', "", str(value))
+    identifiers = re.findall(r"\b[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*(?:\[[^\]]+\])?", text)
     keywords = {
         "if", "else", "return", "true", "false", "uint256", "address", "bytes", "memory",
         "storage", "keccak256", "abi", "encode", "encodePacked", "low_bytes", "bytes20",
-        "msg", "sender", "block", "timestamp", "gasleft",
+        "msg", "block", "tx", "sender", "timestamp", "gasleft", "require", "revert",
+        "bool", "string", "type", "max", "returnDataSize",
     }
-    return [item for item in identifiers if item not in keywords]
+    out: list[str] = []
+    for item in identifiers:
+        root = item.split(".", 1)[0]
+        if item in keywords or root in {"msg", "block", "tx"}:
+            continue
+        if item not in out:
+            out.append(item)
+    return out
 
 
 def flat_list(value: Any) -> list[Any]:

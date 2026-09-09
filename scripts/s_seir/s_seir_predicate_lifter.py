@@ -50,7 +50,8 @@ class PredicateLifter:
         branches = [effect for effect in effects if effect.kind == "Branch" and effect.attrs.get("language") == "yul"]
         boolean_values = self._boolean_values(type_env, effects)
         loop_conditions = self._loop_conditions(control or {})
-        if not branches and not loop_conditions:
+        switch_conditions = self._switch_conditions(control or {}, type_env)
+        if not branches and not loop_conditions and not switch_conditions:
             return overlays
 
         predicates: list[SemanticOverlay] = []
@@ -102,6 +103,29 @@ class PredicateLifter:
                     "semantic_anchor_cfg_node": block_id,
                     "semantic_evidence_cfg_nodes": [block_id],
                     "dependencies": self._rough_reads(expression),
+                },
+            ))
+
+        # A Yul switch is a multi-way value comparison, not a YulIf Branch
+        # effect.  Its terminator plus case/default CFG edges provide complete
+        # control evidence, including the complement guard of default.
+        for switch in switch_conditions:
+            predicate_id = self.ids.new("pred")
+            predicates.append(SemanticOverlay(
+                predicate_id,
+                "Predicate",
+                [],
+                list(switch["stmt_refs"]),
+                {
+                    "predicate_id": predicate_id,
+                    "expression": switch["expression"],
+                    "status": "resolved",
+                    "context": "switch",
+                    "semantic_model": "cfg_switch_discriminant",
+                    "semantic_anchor_cfg_node": switch["block_id"],
+                    "semantic_evidence_cfg_nodes": [switch["block_id"]],
+                    "dependencies": self._rough_reads(switch["expression"]),
+                    "switch_edges": switch["edges"],
                 },
             ))
 
@@ -339,6 +363,88 @@ class PredicateLifter:
             if len(conditions) == 1 and conditions[0]:
                 out.append((conditions[0], str(block["block_id"]), list(block.get("stmts") or [])))
         return out
+
+    def _switch_conditions(self, control: Json, type_env: Any) -> list[Json]:
+        """Lift every structurally verified Yul switch edge.
+
+        The CFG producer writes each case as ``case: <discriminant> ==
+        <value>``.  Matching the left side to the terminator's discriminant is
+        the evidence that lets this pass turn the edge into a semantic case;
+        it never infers cases from source order or block position.
+        """
+        outgoing: dict[str, list[str]] = {}
+        for edge in control.get("edges") or []:
+            if isinstance(edge, dict) and edge.get("from") and edge.get("kind"):
+                outgoing.setdefault(str(edge["from"]), []).append(str(edge["kind"]))
+        out: list[Json] = []
+        for block in control.get("blocks") or []:
+            if not isinstance(block, dict):
+                continue
+            terminator = block.get("terminator") or {}
+            if str(terminator.get("node_kind") or "") != "switch":
+                continue
+            raw = str(terminator.get("condition") or "").strip()
+            if raw.startswith("switch "):
+                raw = raw.removeprefix("switch ").strip()
+            if not raw:
+                continue
+            expression = self._render_value(raw, type_env, {})
+            if not expression or self._contains_low_level_call(expression):
+                continue
+            edges: list[Json] = []
+            case_guards: list[str] = []
+            for edge_kind in outgoing.get(str(block.get("block_id") or ""), []):
+                if edge_kind.startswith("case:"):
+                    case_value = self._switch_case(edge_kind.removeprefix("case:").strip(), raw)
+                    if case_value is None:
+                        continue
+                    value = self._render_value(case_value, type_env, {})
+                    if not value or self._contains_low_level_call(value):
+                        continue
+                    guard = f"({expression} == {value})"
+                    case_guards.append(guard)
+                    edges.append({
+                        "kind": f"case: {value}",
+                        "case_value": value,
+                        "guard": guard,
+                    })
+                elif edge_kind.startswith("default:") or edge_kind == "default":
+                    edges.append({"kind": "default", "default": True})
+            if not case_guards:
+                continue
+            default_guard = " && ".join(f"!({guard})" for guard in case_guards)
+            for edge in edges:
+                if edge.pop("default", False):
+                    edge["guard"] = default_guard
+            out.append({
+                "block_id": str(block["block_id"]),
+                "stmt_refs": list(block.get("stmts") or []),
+                "expression": expression,
+                "edges": edges,
+            })
+        return out
+
+    @staticmethod
+    def _switch_case(case_expression: str, discriminant: str) -> str | None:
+        """Return the RHS of a top-level case equality for this switch."""
+        text = str(case_expression).strip()
+        depth = 0
+        for index in range(len(text) - 1):
+            char = text[index]
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+            elif char == "=" and text[index + 1] == "=" and depth == 0:
+                left, right = text[:index].strip(), text[index + 2:].strip()
+                if PredicateLifter._compact(left) == PredicateLifter._compact(discriminant) and right:
+                    return right
+                return None
+        return None
+
+    @staticmethod
+    def _compact(value: Any) -> str:
+        return re.sub(r"\s+", "", str(value or ""))
 
     @staticmethod
     def _rough_reads(expression: str) -> list[str]:

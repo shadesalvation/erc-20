@@ -1,0 +1,108 @@
+digraph{
+0[label="Node Type: ENTRY_POINT 0
+"];
+0->1;
+1[label="Node Type: INLINE ASM 1
+"];
+1->2;
+2[label="Node Type: EXPRESSION 2
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,caller()())
+
+IRs:
+TMP_84(address) := msg.sender(address)
+TMP_85(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,TMP_84)"];
+2->3;
+3[label="Node Type: EXPRESSION 3
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,_balances)
+
+IRs:
+TMP_86(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_balances)"];
+3->4;
+4[label="Node Type: NEW VARIABLE 4
+"];
+4->5;
+5[label="Node Type: EXPRESSION 5
+
+EXPRESSION:
+accountSlot_burn_asm_0 = keccak256(uint256,uint256)(0x00,0x40)
+
+IRs:
+TMP_87(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+accountSlot_burn_asm_0(uint256) := TMP_87(uint256)"];
+5->6;
+6[label="Node Type: NEW VARIABLE 6
+"];
+6->7;
+7[label="Node Type: EXPRESSION 7
+
+EXPRESSION:
+accountBalance_burn_asm_0 = sload(uint256)(accountSlot_burn_asm_0)
+
+IRs:
+TMP_88(uint256) = SOLIDITY_CALL sload(uint256)(accountSlot_burn_asm_0)
+accountBalance_burn_asm_0(uint256) := TMP_88(uint256)"];
+7->8;
+8[label="Node Type: IF 8
+
+EXPRESSION:
+accountBalance_burn_asm_0 < value
+
+IRs:
+TMP_89(bool) = accountBalance_burn_asm_0 < value
+CONDITION TMP_89"];
+8->10[label="True"];
+8->9[label="False"];
+9[label="Node Type: END_IF 9
+"];
+9->11;
+10[label="Node Type: EXPRESSION 10
+
+EXPRESSION:
+revert(uint256,uint256)(0x00,0x00)
+
+IRs:
+TMP_90(None) = SOLIDITY_CALL revert(uint256,uint256)(0,0)"];
+10->9;
+11[label="Node Type: EXPRESSION 11
+
+EXPRESSION:
+sstore(uint256,uint256)(accountSlot_burn_asm_0,accountBalance_burn_asm_0 - value)
+
+IRs:
+TMP_91(uint256) = accountBalance_burn_asm_0 - value
+TMP_92(None) = SOLIDITY_CALL sstore(uint256,uint256)(accountSlot_burn_asm_0,TMP_91)"];
+11->12;
+12[label="Node Type: EXPRESSION 12
+
+EXPRESSION:
+sstore(uint256,uint256)(_totalSupply,sload(uint256)(_totalSupply) - value)
+
+IRs:
+TMP_93(uint256) := _totalSupply(uint256)
+TMP_94(uint256) = TMP_93 - value
+_totalSupply(uint256) := TMP_94(uint256)"];
+12->13;
+13[label="Node Type: EXPRESSION 13
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,value)
+
+IRs:
+TMP_95(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,value)"];
+13->14;
+14[label="Node Type: EXPRESSION 14
+
+EXPRESSION:
+log3(uint256,uint256,uint256,uint256,uint256)(0x00,0x20,0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,caller()(),0)
+
+IRs:
+TMP_96(address) := msg.sender(address)
+TMP_97(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(0,32,100389287136786176327247604509743168900146139575972864366142685224231313322991,TMP_96,0)"];
+14->15;
+15[label="Node Type: END INLINE ASM 15
+"];
+}

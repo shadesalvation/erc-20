@@ -1,0 +1,61 @@
+digraph{
+0[label="Node Type: ENTRY_POINT 0
+"];
+0->1;
+1[label="Node Type: INLINE ASM 1
+"];
+1->2;
+2[label="Node Type: EXPRESSION 2
+
+EXPRESSION:
+sstore(uint256,uint256)(_totalSupply,initialSupply)
+
+IRs:
+_totalSupply(uint256) := initialSupply(uint256)"];
+2->3;
+3[label="Node Type: EXPRESSION 3
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,caller()())
+
+IRs:
+TMP_0(address) := msg.sender(address)
+TMP_1(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,TMP_0)"];
+3->4;
+4[label="Node Type: EXPRESSION 4
+
+EXPRESSION:
+mstore(uint256,uint256)(0x20,_balances)
+
+IRs:
+TMP_2(None) = SOLIDITY_CALL mstore(uint256,uint256)(32,_balances)"];
+4->5;
+5[label="Node Type: EXPRESSION 5
+
+EXPRESSION:
+sstore(uint256,uint256)(keccak256(uint256,uint256)(0x00,0x40),initialSupply)
+
+IRs:
+TMP_3(uint256) = SOLIDITY_CALL keccak256(uint256,uint256)(0,64)
+TMP_4(None) = SOLIDITY_CALL sstore(uint256,uint256)(TMP_3,initialSupply)"];
+5->6;
+6[label="Node Type: EXPRESSION 6
+
+EXPRESSION:
+mstore(uint256,uint256)(0x00,initialSupply)
+
+IRs:
+TMP_5(None) = SOLIDITY_CALL mstore(uint256,uint256)(0,initialSupply)"];
+6->7;
+7[label="Node Type: EXPRESSION 7
+
+EXPRESSION:
+log3(uint256,uint256,uint256,uint256,uint256)(0x00,0x20,0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef,0,caller()())
+
+IRs:
+TMP_6(address) := msg.sender(address)
+TMP_7(None) = SOLIDITY_CALL log3(uint256,uint256,uint256,uint256,uint256)(0,32,100389287136786176327247604509743168900146139575972864366142685224231313322991,0,TMP_6)"];
+7->8;
+8[label="Node Type: END INLINE ASM 8
+"];
+}

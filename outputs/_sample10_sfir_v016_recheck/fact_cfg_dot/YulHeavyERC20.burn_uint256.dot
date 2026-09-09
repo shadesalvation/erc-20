@@ -1,0 +1,12 @@
+digraph "YulHeavyERC20.burn_uint256" {
+  graph [rankdir=TB, bgcolor="#ffffff", labelloc=t, fontsize=14, fontname="Consolas", label="Fact CFG: YulHeavyERC20.burn(uint256)"];
+  node [fontname="Consolas"];
+  edge [fontname="Consolas", fontsize="9"];
+  "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n4" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="B0 [yul]; fused 2 linear semantic blocks\\lfcfg:YulHeavyERC20.burn(uint256):bb_asm8_n4\\l/* collapsed transport: solidity-entry, statement, entry; boundary: solidity->yul */\\l/* resolved storage location: _balances[msg.sender]; */\\laccountBalance = _balances[msg.sender];\\l"];
+  "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n6" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="B1 [yul]\\lfcfg:YulHeavyERC20.burn(uint256):bb_asm8_n6\\lrequire((accountBalance >= value));\\lif ((accountBalance >= value))\\l"];
+  "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n9" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#fff4d6", label="B2 [yul]; fused 3 linear semantic blocks\\lfcfg:YulHeavyERC20.burn(uint256):bb_asm8_n9\\l_balances[msg.sender] = (accountBalance - value);\\lread(_totalSupply);\\l_totalSupply = (_totalSupply - value);\\lemit Transfer(msg.sender, 0, value);\\l"];
+  "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n8" [shape="box", style="rounded,filled", fontname="Consolas", fontsize="10", color="#c48700", fillcolor="#ffe7e7", peripheries="2", label="B3 [yul]\\lfcfg:YulHeavyERC20.burn(uint256):bb_asm8_n8\\lrevert();\\l"];
+  "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n4" -> "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n6" [label="next", color="#586069"];
+  "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n6" -> "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n8" [label="false: !((accountBalance >= value))", color="#cb2431"];
+  "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n6" -> "fcfg:YulHeavyERC20.burn(uint256):bb_asm8_n9" [label="true: (accountBalance >= value)", color="#22863a"];
+}

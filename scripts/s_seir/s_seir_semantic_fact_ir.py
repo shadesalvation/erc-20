@@ -109,7 +109,7 @@ class SemanticFactIRBridge:
             node["placement"] = placement
             if placement.get("status") == "anchored":
                 fact_cfg["block_by_id"][placement["anchor_block"]]["semantic_ids"].append(node["semantic_id"])
-            else:
+            elif placement.get("status") != "nested_definition":
                 diagnostics.append({
                     "kind": "unanchored_semantic_node",
                     "semantic_id": node["semantic_id"],
@@ -118,9 +118,25 @@ class SemanticFactIRBridge:
 
         self._normalize_require_guards(fact_cfg, semantic_nodes, raw_to_fact)
         self._normalize_branch_conditions(fact_cfg, semantic_nodes)
-        self._refresh_fact_cfg_analysis(fact_cfg)
+        self._contract_trivial_unconditional_blocks(fact_cfg, semantic_nodes)
+        # Establish a canonical order inside every original fact block before
+        # any CFG fusion.  A later linear fusion appends the successor's
+        # already-canonical list, which is the CFG-proven execution order.
         for block in fact_cfg["blocks"]:
             block["semantic_ids"].sort(key=lambda item: self._node_order(semantic_nodes, item))
+        self._fuse_linear_semantic_blocks(fact_cfg, semantic_nodes)
+        # The final SFIR is the deobfuscation boundary.  Its canonical CFG
+        # therefore removes all zero-semantic transport nodes (including
+        # source-level entry/exit/merge scaffolding) while retaining their
+        # provenance on the redirected semantic control edge.
+        self._contract_semantic_transport_blocks(fact_cfg, semantic_nodes)
+        self._refresh_fact_cfg_analysis(fact_cfg)
+        # Transport contraction can make two semantic blocks adjacent (notably
+        # a loop body and its post expression), so run the CFG-proven linear
+        # fusion once more before producing FactSSA.
+        self._fuse_linear_semantic_blocks(fact_cfg, semantic_nodes)
+        self._contract_semantic_transport_blocks(fact_cfg, semantic_nodes)
+        self._refresh_fact_cfg_analysis(fact_cfg)
         fact_ssa, semantic_edges, boundary_links, ssa_diagnostics = self._build_fact_ssa(
             function, raw, fact_cfg, semantic_nodes, raw_to_fact
         )
@@ -194,19 +210,121 @@ class SemanticFactIRBridge:
         edges = fact_cfg.get("edges") or []
         for node in nodes:
             semantic = node.get("semantic") or {}
-            if node.get("kind") not in {"ValueCompute", "BranchCondition"} or semantic.get("context") != "condition":
+            context = str(semantic.get("context") or "")
+            if node.get("kind") not in {"ValueCompute", "BranchCondition"} or context not in {"condition", "switch"}:
                 continue
             condition = str(node.get("rvalue") or "").strip()
             block_id = (node.get("placement") or {}).get("anchor_block")
             block = by_id.get(str(block_id)) if block_id else None
             if not condition or not block or str((block.get("terminator") or {}).get("kind") or "").lower() != "branch":
                 continue
+            if context == "switch":
+                switch_edges = [
+                    item for item in semantic.get("switch_edges") or []
+                    if isinstance(item, dict) and item.get("kind") and item.get("guard")
+                ]
+                if not switch_edges:
+                    continue
+                raw_discriminant = str((block.get("terminator") or {}).get("condition") or "").strip()
+                if raw_discriminant.startswith("switch "):
+                    raw_discriminant = raw_discriminant.removeprefix("switch ").strip()
+                replacements = SemanticFactIRBridge._switch_edge_replacements(
+                    edges, str(block_id), raw_discriminant, switch_edges
+                )
+                if not replacements:
+                    continue
+                block["terminator"] = {
+                    "kind": "Switch",
+                    "condition": condition,
+                    "text": f"switch ({condition})",
+                    "node_kind": "switch",
+                }
+                for edge in edges:
+                    if edge.get("from") != block_id:
+                        continue
+                    replacement = replacements.get(str(edge.get("edge_id") or ""))
+                    if replacement is None:
+                        continue
+                    edge["kind"] = str(replacement.get("kind") or edge["kind"])
+                    edge["guard"] = str(replacement["guard"])
+                continue
             block["terminator"]["condition"] = condition
             block["terminator"]["text"] = f"if ({condition})"
             for edge in edges:
                 if edge.get("from") != block_id:
                     continue
-                edge["guard"] = SemanticFactIRBridge._edge_guard(block["terminator"], str(edge.get("kind") or ""))
+                raw_kind = str(edge.get("kind") or "")
+                edge["guard"] = SemanticFactIRBridge._edge_guard(block["terminator"], raw_kind)
+                edge["kind"] = SemanticFactIRBridge._canonical_branch_edge_kind(raw_kind)
+
+    @staticmethod
+    def _canonical_branch_edge_kind(edge_kind: str) -> str:
+        """Keep branch polarity while removing upstream Yul text from SFIR."""
+        if edge_kind in {"true", "body"} or edge_kind.startswith("true:"):
+            return "true"
+        if (
+            edge_kind in {"false", "exit", "zero"}
+            or edge_kind.startswith("false:")
+            or edge_kind.startswith("loop exit:")
+        ):
+            return "false"
+        return edge_kind
+
+    @staticmethod
+    def _switch_edge_replacements(
+        edges: list[Json],
+        block_id: str,
+        raw_discriminant: str,
+        semantic_edges: list[Json],
+    ) -> dict[str, Json]:
+        """Map CFG cases to completed cases by value, never by edge order.
+
+        The raw CFG label is recovery evidence used only while constructing
+        Fact CFG.  It is compared structurally against the original switch
+        discriminant, then discarded; neither S-SEIR's completed overlay nor
+        final SFIR needs to retain that lower-level spelling.
+        """
+        cases = {
+            str(item.get("case_value") or ""): item
+            for item in semantic_edges
+            if str(item.get("kind") or "").startswith("case:") and item.get("case_value") is not None
+        }
+        defaults = [item for item in semantic_edges if item.get("kind") == "default"]
+        replacements: dict[str, Json] = {}
+        for edge in (item for item in edges if item.get("from") == block_id):
+            edge_kind = str(edge.get("kind") or "")
+            if edge_kind.startswith("case:"):
+                value = SemanticFactIRBridge._raw_switch_case_value(
+                    edge_kind.removeprefix("case:").strip(), raw_discriminant
+                )
+                replacement = cases.get(value or "")
+                if replacement is not None:
+                    replacements[str(edge.get("edge_id") or "")] = replacement
+            elif edge_kind.startswith("default:") or edge_kind == "default":
+                if len(defaults) == 1:
+                    replacements[str(edge.get("edge_id") or "")] = defaults[0]
+        return replacements
+
+    @staticmethod
+    def _raw_switch_case_value(case_expression: str, discriminant: str) -> str | None:
+        text = str(case_expression).strip()
+        depth = 0
+        for index in range(len(text) - 1):
+            char = text[index]
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+            elif char == "=" and text[index + 1] == "=" and depth == 0:
+                left, right = text[:index].strip(), text[index + 2:].strip()
+                if SemanticFactIRBridge._compact_control_text(left) == SemanticFactIRBridge._compact_control_text(discriminant) and right:
+                    return right
+                return None
+        return None
+
+    @staticmethod
+    def _compact_control_text(value: Any) -> str:
+        return re.sub(r"\s+", "", str(value or ""))
 
     def _refresh_fact_cfg_analysis(self, fact_cfg: Json) -> None:
         """Recompute graph facts after completed predicates replace raw guards.
@@ -220,6 +338,506 @@ class SemanticFactIRBridge:
         fact_cfg["reverse_postorder"] = analysis["reverse_postorder"]
         fact_cfg["dominance"] = analysis["dominance"]
         fact_cfg["control_dependencies"] = analysis["control_dependencies"]
+
+    @staticmethod
+    def _rebuild_fact_cfg_adjacency(fact_cfg: Json) -> None:
+        """Rebuild derived block adjacency after a semantics-preserving rewrite."""
+        by_id = {str(block["block_id"]): block for block in fact_cfg.get("blocks") or []}
+        for block in by_id.values():
+            block["predecessors"] = []
+            block["successors"] = []
+        for edge in fact_cfg.get("edges") or []:
+            source, target = str(edge.get("from") or ""), str(edge.get("to") or "")
+            if source not in by_id or target not in by_id:
+                continue
+            by_id[source]["successors"].append(target)
+            by_id[target]["predecessors"].append(source)
+        fact_cfg["block_by_id"] = by_id
+
+    @staticmethod
+    def _is_unconditional_linear_edge(edge: Json) -> bool:
+        """True only for a guard-free edge with no control-flow meaning."""
+        return (
+            str(edge.get("kind") or "") in {"next", "fallthrough", "join"}
+            and not str(edge.get("guard") or "").strip()
+        )
+
+    def _contract_trivial_unconditional_blocks(self, fact_cfg: Json, nodes: list[Json]) -> None:
+        """Remove inert Yul relay blocks before SFIR analyses consume the CFG.
+
+        ControlBuilder intentionally retains a node for every local Yul CFG
+        statement, including memory preparation statements whose only role was
+        consumed while recovering a high-level storage access.  Such a node is
+        not part of the final semantic language.  Contract only a proven
+        one-predecessor/one-successor relay with guard-free incident edges.
+        Branches, joins, loop structure, boundaries, terminals, and all
+        semantic/provenance anchors remain explicit.
+        """
+        blocks = fact_cfg.get("blocks") or []
+        edges = fact_cfg.get("edges") or []
+        protected = set(fact_cfg.get("entry_blocks") or [])
+        for node in nodes:
+            placement = node.get("placement") or {}
+            if placement.get("status") != "anchored":
+                continue
+            protected.add(str(placement.get("anchor_block") or ""))
+            protected.update(str(item) for item in placement.get("evidence_blocks") or [])
+
+        removed: list[Json] = []
+        while True:
+            self._rebuild_fact_cfg_adjacency(fact_cfg)
+            by_id = fact_cfg["block_by_id"]
+            candidate: Json | None = None
+            incoming: Json | None = None
+            outgoing: Json | None = None
+            for block in fact_cfg.get("blocks") or []:
+                block_id = str(block.get("block_id") or "")
+                term = block.get("terminator") or {}
+                node_kind = str(term.get("node_kind") or "")
+                predecessors = block.get("predecessors") or []
+                successors = block.get("successors") or []
+                if (
+                    not block_id
+                    or block_id in protected
+                    or block.get("semantic_ids")
+                    or str(block.get("kind") or "") != "yul"
+                    or node_kind in {"entry", "exit", "merge", "condition", "switch", "loop-condition", "loop-merge", "loop-post"}
+                    or str(term.get("kind") or "") not in {"YulNode", "Fallthrough"}
+                    or len(predecessors) != 1
+                    or len(successors) != 1
+                    or predecessors[0] == successors[0]
+                ):
+                    continue
+                candidates_in = [edge for edge in fact_cfg.get("edges") or [] if edge.get("to") == block_id]
+                candidates_out = [edge for edge in fact_cfg.get("edges") or [] if edge.get("from") == block_id]
+                if len(candidates_in) != 1 or len(candidates_out) != 1:
+                    continue
+                if not self._is_unconditional_linear_edge(candidates_in[0]) or not self._is_unconditional_linear_edge(candidates_out[0]):
+                    continue
+                candidate, incoming, outgoing = block, candidates_in[0], candidates_out[0]
+                break
+            if candidate is None or incoming is None or outgoing is None:
+                break
+
+            block_id = str(candidate["block_id"])
+            replacement = dict(incoming)
+            replacement["to"] = outgoing["to"]
+            prior_blocks = list(replacement.pop("contracted_blocks", []) or [])
+            prior_edges = list(replacement.pop("contracted_edge_ids", []) or [])
+            replacement["contracted_blocks"] = prior_blocks + [block_id]
+            replacement["contracted_edge_ids"] = prior_edges + [str(incoming.get("edge_id")), str(outgoing.get("edge_id"))]
+            # Preserve the eliminated relay in the same provenance channel
+            # consumed by the final semantic transport quotient below.
+            replacement["collapsed_transport"] = self._dedupe_records(
+                list(replacement.get("collapsed_transport") or []) + [self._transport_summary(candidate)]
+            )
+            replacement["normalization"] = "trivial_unconditional_block_elimination"
+            fact_cfg["edges"] = [
+                edge for edge in fact_cfg.get("edges") or []
+                if edge is not incoming and edge is not outgoing
+            ] + [replacement]
+            fact_cfg["blocks"] = [block for block in fact_cfg.get("blocks") or [] if block is not candidate]
+            removed.append({
+                "block_id": block_id,
+                "source_block_id": (candidate.get("origin") or {}).get("source_block_id"),
+                "predecessor": incoming.get("from"),
+                "successor": outgoing.get("to"),
+            })
+
+        self._rebuild_fact_cfg_adjacency(fact_cfg)
+        if removed:
+            fact_cfg["normalization"] = {
+                "kind": "trivial_unconditional_block_elimination",
+                "removed_blocks": removed,
+                "policy": "canonical_sfir_cfg_contracts_only_guard_free_yul_relay_blocks",
+            }
+
+    @staticmethod
+    def _block_source_ids(block: Json) -> list[str]:
+        """Return source-block provenance, including earlier fused blocks."""
+        known = list(block.get("fused_source_blocks") or [])
+        source = str((block.get("origin") or {}).get("source_block_id") or "")
+        if source and source not in known:
+            known.insert(0, source)
+        return list(dict.fromkeys(item for item in known if item))
+
+    @staticmethod
+    def _linear_semantic_terminator(block: Json) -> bool:
+        """Whether a block may be folded into a straight-line semantic block.
+
+        The rule intentionally admits only statement/fallthrough terminators.
+        It therefore cannot absorb a branch, loop header, join marker, entry
+        or exit boundary, return, revert, or stop into a predecessor.
+        """
+        term = block.get("terminator") or {}
+        return (
+            str(term.get("kind") or "") in {"YulNode", "Fallthrough"}
+            and str(term.get("node_kind") or "") not in {
+                "entry", "exit", "merge", "condition", "switch",
+                "loop-condition", "loop-merge", "loop-post", "terminal",
+            }
+        )
+
+    def _fuse_linear_semantic_blocks(self, fact_cfg: Json, nodes: list[Json]) -> None:
+        """Fuse only CFG-proven straight-line, same-language semantic blocks.
+
+        A source block ``P`` and successor ``S`` are fused only when ``P`` has
+        exactly that successor, ``S`` has exactly that predecessor, and their
+        connector is guard-free.  Both blocks must contain final high-level
+        semantics and may not be a structural/control boundary.  Thus the
+        rewrite changes representation granularity only: every execution that
+        reached ``P`` still evaluates P's semantic operations followed by S's.
+
+        The surviving block retains all source-block identities in provenance;
+        semantic placement evidence is re-anchored to the surviving canonical
+        Fact CFG block.  Raw S-SEIR/Slither provenance remains on the semantic
+        node itself, so no lower-level fact is reintroduced downstream.
+        """
+        node_by_id = {str(node.get("semantic_id")): node for node in nodes}
+        fused: list[Json] = []
+
+        while True:
+            self._rebuild_fact_cfg_adjacency(fact_cfg)
+            by_id = fact_cfg["block_by_id"]
+            candidate: tuple[Json, Json, Json] | None = None
+            for predecessor in fact_cfg.get("blocks") or []:
+                predecessor_id = str(predecessor.get("block_id") or "")
+                successors = predecessor.get("successors") or []
+                if (
+                    not predecessor_id
+                    or predecessor_id in set(fact_cfg.get("entry_blocks") or [])
+                    or len(successors) != 1
+                    or not predecessor.get("semantic_ids")
+                    or str(predecessor.get("kind") or "") not in {"solidity", "yul"}
+                    or not self._linear_semantic_terminator(predecessor)
+                ):
+                    continue
+                successor = by_id.get(str(successors[0]))
+                if not successor:
+                    continue
+                successor_id = str(successor.get("block_id") or "")
+                if (
+                    len(successor.get("predecessors") or []) != 1
+                    or successor.get("predecessors", [None])[0] != predecessor_id
+                    or not successor.get("semantic_ids")
+                    or str(successor.get("kind") or "") not in {"solidity", "yul"}
+                    or str(predecessor.get("kind") or "") != str(successor.get("kind") or "")
+                    or not self._linear_semantic_terminator(successor)
+                ):
+                    continue
+                connector = [
+                    edge for edge in fact_cfg.get("edges") or []
+                    if edge.get("from") == predecessor_id and edge.get("to") == successor_id
+                ]
+                if len(connector) != 1 or not self._is_unconditional_linear_edge(connector[0]):
+                    continue
+                candidate = predecessor, successor, connector[0]
+                break
+
+            if candidate is None:
+                break
+
+            predecessor, successor, connector = candidate
+            predecessor_id = str(predecessor["block_id"])
+            successor_id = str(successor["block_id"])
+            successor_sources = self._block_source_ids(successor)
+            predecessor_sources = self._block_source_ids(predecessor)
+
+            # The concatenation is not source-order inference: it is justified
+            # by the unique, guard-free P -> S CFG edge above.
+            moved_ids = list(successor.get("semantic_ids") or [])
+            predecessor["semantic_ids"] = list(predecessor.get("semantic_ids") or []) + moved_ids
+            predecessor["stmt_refs"] = list(dict.fromkeys(
+                list(predecessor.get("stmt_refs") or []) + list(successor.get("stmt_refs") or [])
+            ))
+            predecessor["terminator"] = deepcopy(successor.get("terminator") or {})
+            predecessor["fused_source_blocks"] = list(dict.fromkeys(predecessor_sources + successor_sources))
+            predecessor["linear_fusion"] = {
+                "kind": "linear_semantic_block_fusion",
+                "fused_block_ids": list(dict.fromkeys(
+                    list((predecessor.get("linear_fusion") or {}).get("fused_block_ids") or [predecessor_id]) + [successor_id]
+                )),
+                "fused_source_blocks": predecessor["fused_source_blocks"],
+            }
+
+            for semantic_id in moved_ids:
+                node = node_by_id.get(str(semantic_id))
+                if not node:
+                    continue
+                placement = node.get("placement") or {}
+                placement["anchor_block"] = predecessor_id
+                evidence = [predecessor_id if item == successor_id else item for item in placement.get("evidence_blocks") or []]
+                placement["evidence_blocks"] = list(dict.fromkeys(evidence))
+                placement["fused_from_source_blocks"] = list(dict.fromkeys(
+                    list(placement.get("fused_from_source_blocks") or []) + successor_sources
+                ))
+                node["placement"] = placement
+
+            # Redirect S's only possible continuation through P.  The outgoing
+            # edge keeps its original identity because it still represents the
+            # same source-level control transfer; P->S becomes local sequence.
+            redirected = []
+            for edge in fact_cfg.get("edges") or []:
+                if edge is connector:
+                    continue
+                if edge.get("from") == successor_id:
+                    edge = dict(edge)
+                    edge["from"] = predecessor_id
+                    edge["normalization"] = "linear_semantic_block_fusion"
+                    edge["fused_block_ids"] = [predecessor_id, successor_id]
+                redirected.append(edge)
+            fact_cfg["edges"] = redirected
+            fact_cfg["blocks"] = [block for block in fact_cfg.get("blocks") or [] if block is not successor]
+            fused.append({
+                "survivor_block_id": predecessor_id,
+                "removed_block_id": successor_id,
+                "survivor_source_blocks": predecessor["fused_source_blocks"],
+                "semantic_ids": moved_ids,
+            })
+
+        self._rebuild_fact_cfg_adjacency(fact_cfg)
+        if fused:
+            normalization = dict(fact_cfg.get("normalization") or {})
+            normalization["linear_semantic_block_fusion"] = {
+                "fused_blocks": fused,
+                "policy": "canonical_sfir_cfg_fuses_only_unique_guard_free_same_language_semantic_blocks",
+            }
+            fact_cfg["normalization"] = normalization
+
+    @staticmethod
+    def _transport_role(block: Json) -> str:
+        """Classify a semantically inert CFG node without exposing its text."""
+        term = block.get("terminator") or {}
+        node_kind = str(term.get("node_kind") or "")
+        if node_kind:
+            return node_kind
+        if str(block.get("kind") or "") == "solidity" and not block.get("predecessors"):
+            return "solidity-entry"
+        return "fallthrough"
+
+    @staticmethod
+    def _semantic_transport_block(block: Json) -> bool:
+        """True iff ``block`` has no final SFIR operation or control action.
+
+        A source Yul statement may still appear in upstream provenance, but a
+        final Fact CFG block with no semantic IDs is intentionally behaviour-
+        free at this layer.  Branch/terminal terminators are excluded even if
+        their body happens to have no semantic node.
+        """
+        term = block.get("terminator") or {}
+        return (
+            not block.get("semantic_ids")
+            and str(term.get("kind") or "") in {"YulNode", "Fallthrough"}
+        )
+
+    @staticmethod
+    def _transport_summary(block: Json) -> Json:
+        term = block.get("terminator") or {}
+        origin = block.get("origin") or {}
+        return _clean({
+            "block_id": block.get("block_id"),
+            "source_block_id": origin.get("source_block_id"),
+            "source_lang": block.get("kind"),
+            "role": SemanticFactIRBridge._transport_role(block),
+        })
+
+    @staticmethod
+    def _dedupe_records(records: list[Json]) -> list[Json]:
+        """Stable deduplication for provenance records with nested fields."""
+        out: list[Json] = []
+        seen: set[str] = set()
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            key = json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+            if key not in seen:
+                seen.add(key)
+                out.append(record)
+        return out
+
+    @staticmethod
+    def _boundary_transition(source: Json | None, target: Json | None) -> Json | None:
+        """Record a language boundary as provenance rather than an empty block."""
+        if not source or not target:
+            return None
+        from_lang = str(source.get("kind") or "")
+        to_lang = str(target.get("kind") or "")
+        if not from_lang or not to_lang or from_lang == to_lang:
+            return None
+        return _clean({
+            "from_lang": from_lang,
+            "to_lang": to_lang,
+            "from_source_block": (source.get("origin") or {}).get("source_block_id"),
+            "to_source_block": (target.get("origin") or {}).get("source_block_id"),
+        })
+
+    def _reanchor_collapsed_transport_evidence(
+        self,
+        nodes: list[Json],
+        removed_block_id: str,
+        successor_id: str | None,
+        summary: Json,
+    ) -> None:
+        """Keep evidence valid after its structural carrier is erased."""
+        for node in nodes:
+            placement = node.get("placement") or {}
+            evidence = list(placement.get("evidence_blocks") or [])
+            if removed_block_id not in evidence:
+                continue
+            replacement = [
+                successor_id if item == removed_block_id and successor_id else item
+                for item in evidence
+                if item != removed_block_id or successor_id
+            ]
+            placement["evidence_blocks"] = list(dict.fromkeys(replacement))
+            placement["collapsed_transport_evidence"] = self._dedupe_records(
+                list(placement.get("collapsed_transport_evidence") or []) + [summary]
+            )
+            node["placement"] = placement
+
+    def _transport_edge(
+        self,
+        incoming: Json,
+        outgoing: Json,
+        candidate: Json,
+        source: Json | None,
+        target: Json,
+    ) -> Json:
+        """Redirect one incoming path across an inert block without losing it."""
+        replacement = dict(incoming)
+        replacement["to"] = target["block_id"]
+        summary = self._transport_summary(candidate)
+        transports = (
+            list(incoming.get("collapsed_transport") or [])
+            + list(outgoing.get("collapsed_transport") or [])
+            + [summary]
+        )
+        replacement["collapsed_transport"] = self._dedupe_records(transports)
+        transitions = [
+            *list(incoming.get("boundary_transitions") or []),
+            *list(outgoing.get("boundary_transitions") or []),
+            self._boundary_transition(source, candidate),
+            self._boundary_transition(candidate, target),
+        ]
+        replacement["boundary_transitions"] = self._dedupe_records(
+            [item for item in transitions if item]
+        )
+        prior_edges = list(incoming.get("contracted_edge_ids") or [])
+        replacement["contracted_edge_ids"] = list(dict.fromkeys(
+            prior_edges + [str(outgoing.get("edge_id") or "")]
+        ))
+        replacement["normalization"] = "semantic_transport_block_elimination"
+        return replacement
+
+    def _contract_semantic_transport_blocks(self, fact_cfg: Json, nodes: list[Json]) -> None:
+        """Erase all behaviour-free transport blocks from the canonical SFIR CFG.
+
+        This is a stuttering-equivalence reduction.  For an inert block B with
+        the sole unconditional transition B -> T, every P -> B -> T path is
+        replaced by P -> T carrying the original edge's guard and kind.  B may
+        have any number of predecessors, so a genuine empty join is reduced as
+        well; FactSSA is rebuilt afterwards, relocating any resulting Phi to
+        T.  Entry and exit scaffolding are treated as the zero-predecessor and
+        zero-successor forms of the same rewrite.
+
+        The eliminated source block is retained only as compact provenance on
+        the edge/entry/exit it crossed.  No second CFG is emitted: the reduced
+        Fact CFG is the sole downstream deobfuscation representation.
+        """
+        removed: list[Json] = []
+        while True:
+            self._rebuild_fact_cfg_adjacency(fact_cfg)
+            by_id = fact_cfg["block_by_id"]
+            candidate: Json | None = None
+            incoming: list[Json] = []
+            outgoing: Json | None = None
+            implicit_exit = False
+
+            for block in fact_cfg.get("blocks") or []:
+                block_id = str(block.get("block_id") or "")
+                if not block_id or not self._semantic_transport_block(block):
+                    continue
+                inputs = [edge for edge in fact_cfg.get("edges") or [] if edge.get("to") == block_id]
+                outputs = [edge for edge in fact_cfg.get("edges") or [] if edge.get("from") == block_id]
+                if len(outputs) == 1 and self._is_unconditional_linear_edge(outputs[0]):
+                    target_id = str(outputs[0].get("to") or "")
+                    if target_id and target_id != block_id and target_id in by_id:
+                        candidate, incoming, outgoing = block, inputs, outputs[0]
+                        break
+                # Synthetic Yul exits have no operation and no successor.  We
+                # may erase one only if every incoming source has no other
+                # successor, so no branch guard disappears from the final CFG.
+                if (
+                    not outputs
+                    and (self._transport_role(block) == "exit" or block.get("implicit_function_exit"))
+                    and all(len(by_id.get(str(edge.get("from") or ""), {}).get("successors") or []) == 1 for edge in inputs)
+                ):
+                    candidate, incoming, outgoing, implicit_exit = block, inputs, None, True
+                    break
+
+            if candidate is None:
+                break
+
+            candidate_id = str(candidate["block_id"])
+            summary = self._transport_summary(candidate)
+            if implicit_exit:
+                for edge in incoming:
+                    source = by_id.get(str(edge.get("from") or ""))
+                    if source:
+                        source["implicit_function_exit"] = self._dedupe_records(
+                            list(source.get("implicit_function_exit") or []) + [summary]
+                        )
+                    self._reanchor_collapsed_transport_evidence(nodes, candidate_id, None, summary)
+                fact_cfg["edges"] = [
+                    edge for edge in fact_cfg.get("edges") or [] if edge not in incoming
+                ]
+                exit_target = None
+            else:
+                assert outgoing is not None
+                target = by_id[str(outgoing["to"])]
+                replacements = [
+                    self._transport_edge(
+                        edge, outgoing, candidate, by_id.get(str(edge.get("from") or "")), target
+                    )
+                    for edge in incoming
+                ]
+                # A root transport node becomes provenance attached to its new
+                # root.  This handles Slither entry -> Yul entry chains without
+                # retaining either as visible goto-only labels.
+                if not incoming:
+                    target["collapsed_entry_transport"] = self._dedupe_records(
+                        list(candidate.get("collapsed_entry_transport") or [])
+                        + list(outgoing.get("collapsed_transport") or [])
+                        + [summary]
+                    )
+                    transitions = list(candidate.get("entry_boundary_transitions") or []) + list(outgoing.get("boundary_transitions") or [])
+                    boundary = self._boundary_transition(candidate, target)
+                    if boundary:
+                        transitions.append(boundary)
+                    target["entry_boundary_transitions"] = self._dedupe_records(transitions)
+                self._reanchor_collapsed_transport_evidence(nodes, candidate_id, str(target["block_id"]), summary)
+                fact_cfg["edges"] = [
+                    edge for edge in fact_cfg.get("edges") or [] if edge not in incoming and edge is not outgoing
+                ] + replacements
+                exit_target = str(target["block_id"])
+            fact_cfg["blocks"] = [block for block in fact_cfg.get("blocks") or [] if block is not candidate]
+            removed.append({
+                "block_id": candidate_id,
+                "source_block_id": (candidate.get("origin") or {}).get("source_block_id"),
+                "role": summary.get("role"),
+                "mode": "implicit_exit" if implicit_exit else "redirect",
+                "successor": exit_target,
+                "predecessor_count": len(incoming),
+            })
+
+        self._rebuild_fact_cfg_adjacency(fact_cfg)
+        if removed:
+            normalization = dict(fact_cfg.get("normalization") or {})
+            normalization["semantic_transport_block_elimination"] = {
+                "removed_blocks": removed,
+                "policy": "canonical_sfir_cfg_erases_zero_semantic_unconditional_transport_blocks",
+            }
+            fact_cfg["normalization"] = normalization
 
     def _build_fact_cfg(self, function_id: str, control: Json) -> tuple[Json, dict[str, str]]:
         raw_blocks = [item for item in control.get("blocks") or [] if isinstance(item, dict) and item.get("block_id")]
@@ -527,6 +1145,11 @@ class SemanticFactIRBridge:
         return False
 
     def _place_node(self, node: Json, raw_to_fact: dict[str, str]) -> Json:
+        if node.get("kind") == "LocalFunctionDefinition":
+            # Local Yul functions own the nested semantic CFG carried by the
+            # definition itself.  They are declarations in the enclosing
+            # function, not executable nodes on its Fact CFG.
+            return {"status": "nested_definition", "reason": "local_function_owns_semantic_cfg"}
         provenance = node.get("semantic_provenance") or {}
         raw_anchor = provenance.get("anchor_cfg_node") or provenance.get("anchor_control_block")
         if raw_anchor and str(raw_anchor) in raw_to_fact:
@@ -554,13 +1177,19 @@ class SemanticFactIRBridge:
     def _build_fact_ssa(self, function: Any, raw: Json, fact_cfg: Json, nodes: list[Json], raw_to_fact: dict[str, str]) -> tuple[Json, list[Json], list[Json], list[Json]]:
         diagnostics: list[Json] = []
         bindings = self._bindings(function, raw)
-        block_nodes: dict[str, list[Json]] = defaultdict(list)
-        for node in nodes:
-            placement = node.get("placement") or {}
-            if placement.get("status") == "anchored":
-                block_nodes[str(placement["anchor_block"])].append(node)
-        for values in block_nodes.values():
-            values.sort(key=lambda item: (self._operation_order(item), item["semantic_id"]))
+        # ``semantic_ids`` is the canonical block-local order.  In particular,
+        # linear fusion has already concatenated P then S under a CFG proof;
+        # sorting by source offsets or generated IDs here would destroy that
+        # execution order and could reverse a write/read def-use pair.
+        node_by_id = {str(node.get("semantic_id")): node for node in nodes}
+        block_nodes: dict[str, list[Json]] = {}
+        for block in fact_cfg.get("blocks") or []:
+            block_id = str(block.get("block_id") or "")
+            block_nodes[block_id] = [
+                node_by_id[semantic_id]
+                for semantic_id in block.get("semantic_ids") or []
+                if semantic_id in node_by_id
+            ]
         definitions: list[Json] = []
         generated: dict[str, dict[str, str]] = defaultdict(dict)
         entry_versions: dict[str, dict[str, str]] = defaultdict(dict)

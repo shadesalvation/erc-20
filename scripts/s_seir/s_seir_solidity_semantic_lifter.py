@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 import re
 from typing import Any
 
@@ -70,8 +71,11 @@ class SoliditySemanticLifter:
                 continue
             atom_id = str(atom.get("atom_id") or "")
             kind = self.atomic_fact_kind(atom)
-            reads = self.atomic_operands(atom, kind)
-            lvalue, rvalue, writes = self.atomic_assignment(atom, kind, reads)
+            operands = self.atomic_operands(atom, kind)
+            # Constants participate in the displayed operation but do not
+            # demand FactSSA definitions.  Keep these two roles separate.
+            reads = self.atomic_ssa_reads(atom, kind, operands)
+            lvalue, rvalue, writes = self.atomic_assignment(atom, kind, operands)
             out.append(_clean({
                 "fact_id": f"solidity:{function_id}:{atom_id}",
                 "operation_id": atom_id,
@@ -139,6 +143,21 @@ class SoliditySemanticLifter:
             return [str(value) for value in storage.get("keys") or []]
         values = atom.get("read") or atom.get("arguments") or atom.get("values") or []
         return cls.unique_text(cls.ssa_value(value) for value in values)
+
+    @classmethod
+    def atomic_ssa_reads(cls, atom: Json, fact_kind: str | None, operands: list[str]) -> list[str]:
+        if fact_kind == "StateRead":
+            access = (atom.get("storage_access") or {}).get("access")
+            return [str(access)] if access else []
+        if fact_kind == "StateWrite" and atom.get("kind") == "Delete":
+            storage = atom.get("storage_access") or {}
+            return [str(value) for value in storage.get("keys") or []]
+        values = atom.get("read") or atom.get("arguments") or atom.get("values") or []
+        return cls.unique_text(
+            cls.ssa_value(value)
+            for value in values
+            if not cls.is_constant(value)
+        )
 
     @classmethod
     def atomic_assignment(cls, atom: Json, fact_kind: str, reads: list[str]) -> tuple[Any, Any, list[str]]:
@@ -268,9 +287,15 @@ class SoliditySemanticLifter:
                 resolved = list(atom.get("resolved_reads") or [])
                 semantic["guard"] = resolved[0] if resolved else (reads[0] if reads else None)
         elif fact_kind == "EventEmit":
-            semantic.update({"operation": "event_emit", "event": atom.get("name"), "arguments": reads})
+            semantic.update({
+                "operation": "event_emit", "event": atom.get("name"),
+                "arguments": [cls.ssa_value(value) for value in atom.get("arguments") or atom.get("read") or []],
+            })
         elif fact_kind == "Return":
-            semantic.update({"operation": "return", "values": reads})
+            semantic.update({
+                "operation": "return",
+                "values": [cls.ssa_value(value) for value in atom.get("values") or atom.get("read") or []],
+            })
         elif fact_kind == "ValuePhi":
             semantic.update({
                 "operation": "phi",
@@ -330,7 +355,13 @@ class SoliditySemanticLifter:
         text = str(value.get("text") or value.get("name") or value.get("base_name") or "")
         if value.get("is_constant") and text in {"True", "False"}:
             return text.lower()
+        if value.get("is_constant") and "string" in str(value.get("type") or "").lower():
+            return json.dumps(text, ensure_ascii=False)
         return text
+
+    @staticmethod
+    def is_constant(value: Any) -> bool:
+        return isinstance(value, dict) and bool(value.get("is_constant"))
 
     @staticmethod
     def source_value(value: Any) -> str:
