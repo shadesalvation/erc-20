@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from s_seir_semantic_fact_adapter import SSeirFactAdapter, rough_reads
@@ -9,6 +10,20 @@ from s_seir_yul_normalize import normalize_expr
 
 
 Json = dict[str, Any]
+
+
+_LOW_LEVEL_YUL_CALL = re.compile(
+    r"\b(?:mload|mstore|sload|sstore|calldataload|calldatacopy|codecopy|"
+    r"extcodecopy|staticcall|delegatecall|callcode|returndatacopy)\s*\(",
+    re.IGNORECASE,
+)
+_LOW_LEVEL_TRANSPORT = re.compile(r"(?:^|[_:])(?:effect|memoryssa|memory_ssa|path_state|slot_effect)", re.IGNORECASE)
+_LOW_LEVEL_IDENTIFIERS = frozenset({
+    "mload", "mstore", "sload", "sstore", "calldataload", "calldatacopy",
+    "codecopy", "extcodecopy", "staticcall", "delegatecall", "callcode",
+    "returndatacopy",
+})
+_DROP = object()
 
 
 class YulSemanticLifter:
@@ -79,7 +94,112 @@ class YulSemanticLifter:
         )
         out = self._drop_covered_derivation_steps(out, overlays)
         out = self._dedupe_location_facts(out)
+        out = self._merge_struct_fragments(out, overlays)
+        out = self._drop_cursor_writes_covered_by_struct_fields(out, overlays)
         out = self._canonicalize_path_conditioned_events(out)
+        out = self._canonicalize_path_conditioned_calls(out)
+        out = self._canonicalize_path_conditioned_values(out)
+        # A generic normalization is not automatically a recovered
+        # Solidity-like expression.  Its residual Yul primitives are useful
+        # upstream evidence, but must never become final SFIR syntax.  This
+        # final boundary check runs after canonical replacement, so it cannot
+        # suppress a high-level fact that already proved the same operation.
+        out = self._sanitize_lower_yul_boundary(out)
+        return out
+
+    @classmethod
+    def _sanitize_lower_yul_boundary(cls, facts: list[Json]) -> list[Json]:
+        """Remove residual opcode/effect transport from final public facts.
+
+        A high-level fact keeps its safe projection after irrelevant upstream
+        evidence is removed.  If its executable value itself still contains a
+        low-level primitive, S-SEIR has not recovered that operation; model
+        the definition as an explicit opaque value rather than pretending the
+        opcode is Solidity-like.
+        """
+        out: list[Json] = []
+        for fact in facts:
+            rvalue = fact.get("rvalue")
+            if cls._contains_lower_yul(rvalue):
+                out.append(cls._opaque_unmodeled_fact(fact))
+                continue
+            item = dict(fact)
+            for key in ("semantic", "evidence"):
+                cleaned = cls._redact_lower_yul(item.get(key) or {})
+                item[key] = {} if cleaned is _DROP else cleaned
+            item["reads"] = cls._safe_reads(item.get("reads") or [])
+            item["writes"] = cls._safe_values(item.get("writes") or [])
+            # A malformed raw value can be nested in a list-valued lvalue or
+            # condition even when the main RHS was safe.  Such a node cannot
+            # be rendered faithfully and must follow the same explicit path.
+            if any(cls._contains_lower_yul(item.get(key)) for key in ("lvalue", "condition", "reads", "writes", "semantic", "evidence")):
+                out.append(cls._opaque_unmodeled_fact(fact))
+            else:
+                out.append(item)
+        return out
+
+    @classmethod
+    def _opaque_unmodeled_fact(cls, fact: Json) -> Json:
+        lvalue = fact.get("lvalue")
+        safe_lvalue = lvalue if not cls._contains_lower_yul(lvalue) else None
+        reads = cls._safe_reads([*fact.get("reads", []), *rough_reads(str(fact.get("rvalue") or ""))])
+        writes = cls._safe_values(fact.get("writes") or [])
+        if safe_lvalue and safe_lvalue not in writes:
+            writes.append(safe_lvalue)
+        evidence = cls._redact_lower_yul(fact.get("evidence") or {})
+        item = dict(fact)
+        item.update({
+            "kind": "UnmodeledSSeirOverlay",
+            "lvalue": safe_lvalue,
+            "rvalue": "opaqueYulValue()" if safe_lvalue else None,
+            "reads": reads,
+            "writes": writes,
+            "semantic": {
+                "operation": "unmodeled_sseir_overlay",
+                "status": "unmodeled",
+                "overlay_kind": str((fact.get("evidence") or {}).get("overlay_kind") or "unknown"),
+                "unmodeled_reason": "residual_low_level_yul_expression",
+                "opaque_value": "opaqueYulValue()" if safe_lvalue else None,
+            },
+            "evidence": {} if evidence is _DROP else evidence,
+        })
+        return item
+
+    @classmethod
+    def _redact_lower_yul(cls, value: Any) -> Any:
+        if isinstance(value, dict):
+            out: Json = {}
+            for key, item in value.items():
+                if _LOW_LEVEL_TRANSPORT.search(str(key)):
+                    continue
+                cleaned = cls._redact_lower_yul(item)
+                if cleaned is not _DROP:
+                    out[str(key)] = cleaned
+            return out
+        if isinstance(value, list):
+            return [cleaned for item in value if (cleaned := cls._redact_lower_yul(item)) is not _DROP]
+        return _DROP if cls._contains_lower_yul(value) else value
+
+    @staticmethod
+    def _contains_lower_yul(value: Any) -> bool:
+        if isinstance(value, dict):
+            return any(YulSemanticLifter._contains_lower_yul(item) for item in value.values())
+        if isinstance(value, (list, tuple)):
+            return any(YulSemanticLifter._contains_lower_yul(item) for item in value)
+        return isinstance(value, str) and bool(_LOW_LEVEL_YUL_CALL.search(value))
+
+    @staticmethod
+    def _safe_values(values: list[Any]) -> list[Any]:
+        return [value for value in values if not YulSemanticLifter._contains_lower_yul(value)]
+
+    @classmethod
+    def _safe_reads(cls, values: list[Any]) -> list[Any]:
+        out: list[Any] = []
+        for value in cls._safe_values(values):
+            if isinstance(value, str) and value.strip().lower() in _LOW_LEVEL_IDENTIFIERS:
+                continue
+            if value not in out:
+                out.append(value)
         return out
 
     @classmethod
@@ -261,16 +381,16 @@ class YulSemanticLifter:
         high_facts: list[tuple[Json, Json]] = []
         for fact in facts:
             overlay = overlays.get(str((fact.get("evidence") or {}).get("overlay") or "")) or {}
-            if overlay.get("kind") not in {"AddressHasCode", "AddressCodeSize"}:
+            if overlay.get("kind") not in {"AddressHasCode", "AddressCodeSize", "BytesContentHash"}:
                 continue
             attrs = overlay.get("attrs") or {}
-            if not attrs.get("solidity_equivalent") or not attrs.get("source_expression"):
+            if overlay.get("kind") != "BytesContentHash" and (not attrs.get("solidity_equivalent") or not attrs.get("source_expression")):
                 continue
             high_facts.append((fact, attrs))
 
         for high, attrs in high_facts:
             high_target = str(attrs.get("target") or "")
-            source_expression = str(attrs.get("source_expression") or "")
+            source_expression = str(attrs.get("source_expression") or attrs.get("expression") or "")
             if not high_target or not source_expression:
                 continue
             high_anchor = (high.get("semantic_provenance") or {}).get("anchor_cfg_node")
@@ -283,7 +403,10 @@ class YulSemanticLifter:
                 candidate_attrs = overlay.get("attrs") or {}
                 if str(candidate_attrs.get("target") or "") != high_target:
                     continue
-                if str(candidate_attrs.get("expression") or "") != source_expression:
+                candidate_expression = str(
+                    candidate_attrs.get("expression_normalized") or candidate_attrs.get("expression") or ""
+                )
+                if candidate_expression != source_expression:
                     continue
                 candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
                 candidate_refs = tuple(str(value) for value in candidate.get("stmt_refs") or [])
@@ -541,6 +664,92 @@ class YulSemanticLifter:
                 ):
                     covered_evaluation_ids.add(str(candidate.get("operation_id") or ""))
 
+        # ``AddressZeroCheck`` gives a recovered name/type-aware condition to
+        # the very Branch already represented by a generic Predicate.  Keep
+        # one BranchCondition by matching only the completed branch evidence
+        # and its semantic CFG anchor.
+        for high in facts:
+            high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
+            if high_overlay.get("kind") != "AddressZeroCheck":
+                continue
+            high_effects = {str(item) for item in high_overlay.get("effects") or [] if item}
+            high_anchor = (high.get("semantic_provenance") or {}).get("anchor_cfg_node")
+            if not high_effects or not high_anchor:
+                continue
+            for candidate in facts:
+                candidate_overlay = overlays.get(str((candidate.get("evidence") or {}).get("overlay") or "")) or {}
+                if candidate_overlay.get("kind") != "Predicate":
+                    continue
+                candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                candidate_effects = {str(item) for item in candidate_overlay.get("effects") or [] if item}
+                if candidate_anchor == high_anchor and candidate_effects == high_effects:
+                    covered_generic_ids.add(str(candidate.get("operation_id") or ""))
+
+        # A proved struct-field overlay owns the direct memory read/write at
+        # its exact CFG anchor.  The generic ValueDef is only the transport
+        # that S-SEIR used to discover the field access.
+        for high in facts:
+            high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
+            if high_overlay.get("kind") not in {"StructFieldRead", "StructFieldWrite"}:
+                continue
+            target = str(high.get("lvalue") or "")
+            high_anchor = (high.get("semantic_provenance") or {}).get("anchor_cfg_node")
+            if not target or not high_anchor:
+                continue
+            for candidate in facts:
+                candidate_overlay = overlays.get(str((candidate.get("evidence") or {}).get("overlay") or "")) or {}
+                if candidate_overlay.get("kind") != "ExpressionNormalization":
+                    continue
+                candidate_target = str((candidate_overlay.get("attrs") or {}).get("target") or candidate.get("lvalue") or "")
+                candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                if candidate_target == target and candidate_anchor == high_anchor:
+                    covered_generic_ids.add(str(candidate.get("operation_id") or ""))
+
+        # Path-sensitive call overlays carry S-SEIR's completed input-memory
+        # proof.  A generic direct-call expression at the same semantic CFG
+        # endpoint is therefore derivation transport, even when its status
+        # target was not separately recovered by the overlay.
+        for high in facts:
+            high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
+            if high_overlay.get("kind") not in {
+                "PathConditionedExternalCall", "PathConditionedLowLevelCall",
+                "PathConditionedStaticCallOverlay", "PathConditionedDelegateCallOverlay",
+                "PathConditionedPrecompileCall",
+            }:
+                continue
+            high_anchor = (high.get("semantic_provenance") or {}).get("anchor_cfg_node")
+            high_refs = tuple(str(value) for value in high.get("stmt_refs") or [])
+            if not high_anchor or not high_refs:
+                continue
+            for candidate in facts:
+                candidate_overlay = overlays.get(str((candidate.get("evidence") or {}).get("overlay") or "")) or {}
+                if candidate_overlay.get("kind") != "ExpressionNormalization":
+                    continue
+                candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                candidate_refs = tuple(str(value) for value in candidate.get("stmt_refs") or [])
+                if candidate_anchor == high_anchor and candidate_refs == high_refs:
+                    covered_generic_ids.add(str(candidate.get("operation_id") or ""))
+
+        # A decoded ABI call is the canonical call operation.  The original
+        # call overlay remains proof upstream but must not yield a second
+        # final call node at the same endpoint.
+        for high in facts:
+            high_overlay = overlays.get(str((high.get("evidence") or {}).get("overlay") or "")) or {}
+            if high_overlay.get("kind") != "AbiEncodedLowLevelCall":
+                continue
+            high_effects = {str(item) for item in high_overlay.get("effects") or [] if item}
+            high_anchor = (high.get("semantic_provenance") or {}).get("anchor_cfg_node")
+            if not high_effects or not high_anchor:
+                continue
+            for candidate in facts:
+                candidate_overlay = overlays.get(str((candidate.get("evidence") or {}).get("overlay") or "")) or {}
+                if candidate_overlay.get("kind") not in {"LowLevelCall", "StaticCallOverlay", "DelegateCallOverlay"}:
+                    continue
+                candidate_anchor = (candidate.get("semantic_provenance") or {}).get("anchor_cfg_node")
+                candidate_effects = {str(item) for item in candidate_overlay.get("effects") or [] if item}
+                if candidate_anchor == high_anchor and candidate_effects == high_effects:
+                    covered_generic_ids.add(str(candidate.get("operation_id") or ""))
+
         # A CALL-family overlay owns its status result when S-SEIR proved that
         # the surrounding Yul assignment binds the direct call expression.
         # Suppress precisely that ValueDef projection; do not use textual call
@@ -600,6 +809,12 @@ class YulSemanticLifter:
             "LowLevelCall",
             "StaticCallOverlay",
             "DelegateCallOverlay",
+            "PathConditionedExternalCall",
+            "PathConditionedLowLevelCall",
+            "PathConditionedStaticCallOverlay",
+            "PathConditionedDelegateCallOverlay",
+            "PathConditionedPrecompileCall",
+            "AbiEncodedLowLevelCall",
         }
         fact_overlay = {
             str(fact.get("operation_id") or ""): overlays.get(
@@ -616,7 +831,10 @@ class YulSemanticLifter:
                 continue
             attrs = overlay.get("attrs") or {}
             pointer = str(attrs.get("input_ptr") or "").strip()
-            decoded_input = attrs.get("decoded_input")
+            decoded_input = attrs.get("decoded_input") or any(
+                isinstance(candidate, dict) and candidate.get("normalized")
+                for candidate in attrs.get("candidates") or []
+            )
             overlay_id = str(overlay.get("overlay_id") or "")
             anchor = str((fact.get("semantic_provenance") or {}).get("anchor_cfg_node") or "")
             if not pointer or not decoded_input or not overlay_id or not anchor:
@@ -645,7 +863,13 @@ class YulSemanticLifter:
             definition_anchor = str((definition.get("semantic_provenance") or {}).get("anchor_cfg_node") or "")
             if not definition_id or not definition_anchor:
                 continue
-            if not all(cls._dominates(dominators, definition_anchor, call_anchor) for _, _, call_anchor in calls):
+            # A completed path-call overlay already carries S-SEIR's proven
+            # input-memory relation.  That proof permits a same-block buffer
+            # definition; otherwise retain the existing CFG dominance rule.
+            if not all(
+                definition_anchor == call_anchor or cls._dominates(dominators, definition_anchor, call_anchor)
+                for _, _, call_anchor in calls
+            ):
                 continue
 
             completed_call_ids = {
@@ -653,7 +877,8 @@ class YulSemanticLifter:
                 for _, call_overlay, _ in calls
             }
             if cls._has_uncovered_pointer_use(
-                pointer, definition_id, facts, fact_overlay, completed_call_ids
+                pointer, definition_id, facts, fact_overlay, completed_call_ids,
+                {(tuple(str(value) for value in fact.get("stmt_refs") or []), anchor) for fact, _, anchor in calls},
             ):
                 continue
             covered_ids.add(definition_id)
@@ -670,6 +895,7 @@ class YulSemanticLifter:
         facts: list[Json],
         fact_overlay: dict[str, Json],
         completed_call_ids: set[str],
+        completed_call_sources: set[tuple[tuple[str, ...], str]],
     ) -> bool:
         """Return whether a pointer escapes the recovered call abstraction."""
         call_kinds = {
@@ -695,6 +921,14 @@ class YulSemanticLifter:
                 overlay.get("kind") == "CallOutputRead"
                 and str(attrs.get("source_call_overlay") or "") in completed_call_ids
             ):
+                continue
+            # The generic direct-call ValueDef is already replaced by the
+            # completed path-call overlay at this exact source endpoint.
+            # Its apparent pointer read is derivation transport, not an
+            # independent semantic escape.
+            anchor = str((fact.get("semantic_provenance") or {}).get("anchor_cfg_node") or "")
+            refs = tuple(str(value) for value in fact.get("stmt_refs") or [])
+            if overlay.get("kind") == "ExpressionNormalization" and (refs, anchor) in completed_call_sources:
                 continue
             if pointer in {str(value) for value in fact.get("reads") or [] if value}:
                 return True
@@ -781,6 +1015,203 @@ class YulSemanticLifter:
             provenance["path_conditions"] = conditions
             semantic = canonical.setdefault("semantic", {})
             semantic["path_conditions"] = conditions
+            evidence = dict(canonical.get("evidence") or {})
+            evidence.pop("candidate", None)
+            canonical["evidence"] = evidence
+            canonical["operation_id"] = f"yul_overlay:{cls._semantic_source(canonical).get('overlay_id')}"
+            remainder.append(canonical)
+        return remainder
+
+    @classmethod
+    def _merge_struct_fragments(cls, facts: list[Json], overlays: dict[str, Json]) -> list[Json]:
+        """Keep aggregate struct overlays as provenance, not duplicate writes."""
+        field_facts: list[tuple[Json, Json]] = []
+        fragments: list[tuple[Json, Json]] = []
+        for fact in facts:
+            overlay = overlays.get(str((fact.get("evidence") or {}).get("overlay") or "")) or {}
+            if overlay.get("kind") == "StructFieldWrite":
+                field_facts.append((fact, overlay))
+            elif overlay.get("kind") in {"StructInitializationFragment", "StructMutationFragment"}:
+                fragments.append((fact, overlay))
+        covered: set[str] = set()
+        for fragment_fact, fragment_overlay in fragments:
+            attrs = fragment_overlay.get("attrs") or {}
+            mutations = attrs.get("mutations") or attrs.get("fields") or []
+            fragment_effects = {str(item) for item in fragment_overlay.get("effects") or [] if item}
+            matched = 0
+            for field_fact, field_overlay in field_facts:
+                field_attrs = field_overlay.get("attrs") or {}
+                field_effects = {str(item) for item in field_overlay.get("effects") or [] if item}
+                if not field_effects.intersection(fragment_effects):
+                    continue
+                if field_attrs.get("struct_object") != attrs.get("struct_object"):
+                    continue
+                cls._merge_semantic_sources(field_fact, fragment_fact)
+                matched += 1
+            # Do not discard a fragment whose constituent writes were not all
+            # independently recovered; it is the only faithful high-level
+            # record in that case.
+            if matched and matched >= len(mutations):
+                covered.add(str(fragment_fact.get("operation_id") or ""))
+        return [
+            fact for fact in facts
+            if str(fact.get("operation_id") or "") not in covered
+        ]
+
+    @classmethod
+    def _canonicalize_path_conditioned_calls(cls, facts: list[Json]) -> list[Json]:
+        """One call endpoint may have several S-SEIR input-memory paths."""
+        grouped: dict[str, list[Json]] = {}
+        remainder: list[Json] = []
+        path_kinds = {
+            "PathConditionedExternalCall", "PathConditionedLowLevelCall",
+            "PathConditionedStaticCallOverlay", "PathConditionedDelegateCallOverlay",
+            "PathConditionedPrecompileCall",
+        }
+        for fact in facts:
+            source = cls._semantic_source(fact)
+            if source.get("overlay_kind") not in path_kinds or fact.get("kind") not in {"ExternalCall", "PrecompileCall"}:
+                remainder.append(fact)
+                continue
+            key = json.dumps({
+                "function_id": fact.get("function_id"), "overlay_id": source.get("overlay_id"),
+                "kind": fact.get("kind"),
+                "anchor": (fact.get("semantic_provenance") or {}).get("anchor_cfg_node"),
+                "stmt_refs": fact.get("stmt_refs") or [], "lvalue": fact.get("lvalue"),
+            }, sort_keys=True, ensure_ascii=False)
+            grouped.setdefault(key, []).append(fact)
+        for group in grouped.values():
+            canonical = group[0]
+            conditions = list(dict.fromkeys(str(item.get("condition")) for item in group if item.get("condition")))
+            common = cls._common_conjuncts(conditions)
+            if common:
+                canonical["condition"] = " && ".join(common)
+            else:
+                canonical.pop("condition", None)
+            semantic = canonical.setdefault("semantic", {})
+            semantic["path_conditions"] = conditions
+            semantic["path_candidates"] = [
+                {
+                    "condition": item.get("condition"),
+                    "target": (item.get("semantic") or {}).get("target"),
+                    "call_kind": (item.get("semantic") or {}).get("call_kind"),
+                    "selector": (item.get("semantic") or {}).get("selector"),
+                    "selector_signature": (item.get("semantic") or {}).get("selector_signature"),
+                    "arguments": (item.get("semantic") or {}).get("arguments"),
+                    "precompile": (item.get("semantic") or {}).get("precompile"),
+                    "call_status_result": (item.get("semantic") or {}).get("call_status_result"),
+                }
+                for item in group
+            ]
+            evidence = dict(canonical.get("evidence") or {})
+            evidence.pop("candidate", None)
+            canonical["evidence"] = evidence
+            canonical["operation_id"] = f"yul_overlay:{cls._semantic_source(canonical).get('overlay_id')}"
+            remainder.append(canonical)
+        return remainder
+
+    @classmethod
+    def _drop_cursor_writes_covered_by_struct_fields(cls, facts: list[Json], overlays: dict[str, Json]) -> list[Json]:
+        """Remove a cursor-write only when field writes prove the same update.
+
+        ``CursorBasedMemoryWrite`` is a derived summary of the same completed
+        struct mutations.  It is not enough that the objects share a name:
+        every recovered field/value pair must be present at the same semantic
+        CFG anchor.  Otherwise the cursor summary remains the only public
+        high-level memory-object operation.
+        """
+        fields: dict[tuple[str, str, str, str, str], Json] = {}
+        for fact in facts:
+            if fact.get("kind") != "ValueAssign":
+                continue
+            semantic = fact.get("semantic") or {}
+            if semantic.get("operation") != "struct_field_write":
+                continue
+            overlay = overlays.get(str((fact.get("evidence") or {}).get("overlay") or "")) or {}
+            attrs = overlay.get("attrs") or {}
+            write_effect = str(attrs.get("write_effect") or "")
+            anchor = str((fact.get("semantic_provenance") or {}).get("anchor_cfg_node") or "")
+            fields[(anchor, str(semantic.get("struct_object") or ""), str((semantic.get("field") or {}).get("name") or ""), str(fact.get("rvalue") or ""), write_effect)] = fact
+
+        covered: set[str] = set()
+        for fact in facts:
+            source = cls._semantic_source(fact)
+            if source.get("overlay_kind") != "CursorBasedMemoryWrite":
+                continue
+            semantic = fact.get("semantic") or {}
+            updates = semantic.get("field_updates") or []
+            anchor = str((fact.get("semantic_provenance") or {}).get("anchor_cfg_node") or "")
+            object_name = str(semantic.get("struct_object") or "")
+            if not anchor or not object_name or not updates:
+                continue
+            exact = True
+            for update in updates:
+                if not isinstance(update, dict):
+                    exact = False; break
+                field = str((update.get("field") or {}).get("name") or "")
+                value = str(update.get("new_value_normalized") or update.get("new_value") or "")
+                write_effect = str(update.get("write_effect") or "")
+                if not field or not value or not write_effect or (anchor, object_name, field, value, write_effect) not in fields:
+                    exact = False; break
+            if exact:
+                covered.add(str(fact.get("operation_id") or ""))
+        return [fact for fact in facts if str(fact.get("operation_id") or "") not in covered]
+
+    @classmethod
+    def _canonicalize_path_conditioned_values(cls, facts: list[Json]) -> list[Json]:
+        """Collapse one path-sensitive semantic endpoint to one SFIR node.
+
+        S-SEIR's candidates are alternative reaching definitions of one
+        endpoint, not separate source-level executions.  This mirrors the
+        existing event rule while retaining every resolved path condition as
+        semantic evidence for later deobfuscation.
+        """
+        grouped: dict[str, list[Json]] = {}
+        remainder: list[Json] = []
+        supported = {
+            "PathConditionedRawReturnData": "Return",
+            "PathConditionedPrecompileOutputRead": "ValueCompute",
+        }
+        for fact in facts:
+            source = cls._semantic_source(fact)
+            overlay_kind = source.get("overlay_kind")
+            if supported.get(overlay_kind) != fact.get("kind"):
+                remainder.append(fact)
+                continue
+            key = json.dumps({
+                "function_id": fact.get("function_id"),
+                "overlay_id": source.get("overlay_id"),
+                "kind": fact.get("kind"),
+                "anchor_cfg_node": (fact.get("semantic_provenance") or {}).get("anchor_cfg_node"),
+                "stmt_refs": fact.get("stmt_refs") or [],
+                "lvalue": fact.get("lvalue"),
+            }, sort_keys=True, ensure_ascii=False)
+            grouped.setdefault(key, []).append(fact)
+        for group in grouped.values():
+            canonical = group[0]
+            conditions = list(dict.fromkeys(
+                str(item.get("condition")) for item in group if item.get("condition")
+            ))
+            common = cls._common_conjuncts(conditions)
+            if common:
+                canonical["condition"] = " && ".join(common)
+            else:
+                canonical.pop("condition", None)
+            provenance = canonical.setdefault("semantic_provenance", {})
+            provenance["path_conditions"] = conditions
+            semantic = canonical.setdefault("semantic", {})
+            semantic["path_conditions"] = conditions
+            alternatives = [
+                {"condition": item.get("condition"), "value": item.get("rvalue")}
+                for item in group
+            ]
+            semantic["path_candidates"] = alternatives
+            values = list(dict.fromkeys(str(item.get("rvalue") or "") for item in group))
+            if len(values) > 1:
+                canonical["rvalue"] = (
+                    "pathConditionedReturn()" if canonical.get("kind") == "Return"
+                    else "pathConditionedValue()"
+                )
             evidence = dict(canonical.get("evidence") or {})
             evidence.pop("candidate", None)
             canonical["evidence"] = evidence

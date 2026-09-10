@@ -16,6 +16,7 @@ for item in (ROOT / "legacy_yul", ROOT / "s_seir"):
 
 from s_seir_semantic_fact_ir import SemanticFactIRBridge
 from s_seir_yul_semantic_lifter import YulSemanticLifter
+from s_seir_semantic_fact_render import render_fact_cfg_dot, render_fact_cfg_text, render_sfir_c_like
 
 
 FUNCTION_ID = "Token.transfer(address,uint256)"
@@ -78,6 +79,119 @@ def all_keys(value: object) -> set[str]:
 
 
 class SemanticFactIRBridgeTests(unittest.TestCase):
+    def test_call_output_relation_is_semantic_not_fact_ssa(self) -> None:
+        control = {"blocks": [block("call", "yul"), block("read", "yul")], "edges": [{"from": "call", "to": "read", "kind": "next"}]}
+        call = yul("call_overlay", "call", extra={
+            "kind": "ExternalCall", "semantic_provenance": {"semantic_source": {"overlay_id": "ov_call"}, "anchor_cfg_node": "call", "evidence_cfg_nodes": ["call"]},
+        })
+        output = yul("call_output", "read", writes=["result"], extra={
+            "kind": "ValueCompute", "semantic": {"operation": "external_call_return_word", "source_call_overlay": "ov_call"},
+            "semantic_provenance": {"semantic_source": {"overlay_id": "ov_output"}, "anchor_cfg_node": "read", "evidence_cfg_nodes": ["read"]},
+        })
+        result = SemanticFactIRBridge().build_function(function(control), [], [call, output])
+        relation = next(edge for edge in result["semantic_edges"] if edge["kind"] == "call_output")
+        self.assertTrue(relation["from"].endswith(":call_overlay"))
+        self.assertTrue(relation["to"].endswith(":call_output"))
+        self.assertEqual("ov_call", relation["source_overlay"])
+        self.assertNotIn("value_ref", relation)
+        output_node = next(node for node in result["semantic_nodes"] if node["semantic_id"].endswith(":call_output"))
+        self.assertEqual([], output_node["fact_ssa"]["reads"])
+
+    def test_precompile_output_relation_is_semantic_not_fact_ssa(self) -> None:
+        control = {"blocks": [block("call", "yul"), block("read", "yul")], "edges": [{"from": "call", "to": "read", "kind": "next"}]}
+        call = yul("precompile", "call", extra={
+            "kind": "PrecompileCall",
+            "semantic_provenance": {"semantic_source": {"overlay_id": "ov_precompile"}, "anchor_cfg_node": "call", "evidence_cfg_nodes": ["call"]},
+        })
+        output = yul("precompile_output", "read", writes=["digest"], extra={
+            "kind": "ValueCompute",
+            "semantic": {"operation": "precompile_output_read", "source_precompile_overlay": "ov_precompile"},
+            "semantic_provenance": {"semantic_source": {"overlay_id": "ov_precompile_output"}, "anchor_cfg_node": "read", "evidence_cfg_nodes": ["read"]},
+        })
+        result = SemanticFactIRBridge().build_function(function(control), [], [call, output])
+        relation = next(edge for edge in result["semantic_edges"] if edge["kind"] == "precompile_output")
+        self.assertTrue(relation["from"].endswith(":precompile"))
+        self.assertTrue(relation["to"].endswith(":precompile_output"))
+        self.assertEqual("ov_precompile", relation["source_overlay"])
+        output_node = next(node for node in result["semantic_nodes"] if node["semantic_id"].endswith(":precompile_output"))
+        self.assertEqual([], output_node["fact_ssa"]["reads"])
+
+    def test_cursor_summary_is_removed_only_with_matching_struct_write_evidence(self) -> None:
+        field = {
+            "operation_id": "field", "kind": "ValueAssign", "rvalue": "amount",
+            "semantic": {"operation": "struct_field_write", "struct_object": "pair", "field": {"name": "right"}},
+            "semantic_provenance": {"anchor_cfg_node": "y0", "semantic_source": {"overlay_id": "field_overlay"}},
+            "evidence": {"overlay": "field_overlay"},
+        }
+        cursor = {
+            "operation_id": "cursor", "kind": "MemoryObjectWrite",
+            "semantic": {"struct_object": "pair", "field_updates": [{"field": {"name": "right"}, "new_value_normalized": "amount", "write_effect": "eff_write"}]},
+            "semantic_provenance": {"anchor_cfg_node": "y0", "semantic_source": {"overlay_id": "cursor_overlay", "overlay_kind": "CursorBasedMemoryWrite"}},
+            "evidence": {"overlay": "cursor_overlay"},
+        }
+        overlays = {
+            "field_overlay": {"kind": "StructFieldWrite", "attrs": {"write_effect": "eff_write"}},
+            "cursor_overlay": {"kind": "CursorBasedMemoryWrite", "attrs": {}},
+        }
+        result = YulSemanticLifter._drop_cursor_writes_covered_by_struct_fields([field, cursor], overlays)
+        self.assertEqual([field], result)
+        overlays["field_overlay"]["attrs"]["write_effect"] = "different_effect"
+        result = YulSemanticLifter._drop_cursor_writes_covered_by_struct_fields([field, cursor], overlays)
+        self.assertEqual([field, cursor], result)
+
+    def test_completed_sseir_overlays_reach_fact_cfg_and_all_human_views(self) -> None:
+        control = {
+            "blocks": [
+                block("branch", "yul", condition="account != address(0)"),
+                block("call", "yul"), block("ret", "yul"),
+            ],
+            "edges": [
+                {"from": "branch", "to": "call", "kind": "true", "guard": "account != address(0)"},
+                {"from": "branch", "to": "ret", "kind": "false", "guard": "!(account != address(0))"},
+                {"from": "call", "to": "ret", "kind": "next"},
+            ],
+        }
+        def overlay(overlay_id: str, kind: str, attrs: dict, effects: list[str] | None = None, refs: list[str] | None = None) -> dict:
+            attrs = dict(attrs)
+            attrs.setdefault("semantic_anchor_cfg_node", "call")
+            attrs.setdefault("semantic_evidence_cfg_nodes", [attrs["semantic_anchor_cfg_node"]])
+            return {"overlay_id": overlay_id, "kind": kind, "effects": effects or [], "stmt_refs": refs or ["asm_call"], "attrs": attrs}
+
+        fn_dict = {
+            "function_id": FUNCTION_ID, "contract": "Token", "function": "transfer", "signature": "transfer(address,uint256)",
+            "source_statements": [
+                {"stmt_id": "asm_branch", "lang": "yul"}, {"stmt_id": "asm_call", "lang": "yul"}, {"stmt_id": "asm_return", "lang": "yul"},
+            ],
+            "control": control,
+            "semantic_overlays": [
+                overlay("pred", "Predicate", {"predicate_id": "pred", "expression": "iszero(iszero(account))", "dependencies": ["account"], "semantic_anchor_cfg_node": "branch", "semantic_evidence_cfg_nodes": ["branch"]}, ["branch_effect"], ["asm_branch"]),
+                overlay("zero", "AddressZeroCheck", {"variable": "account", "check": "is_nonzero", "condition": "account != address(0)", "semantic_anchor_cfg_node": "branch", "semantic_evidence_cfg_nodes": ["branch"]}, ["branch_effect"], ["asm_branch"]),
+                overlay("abi", "AbiCallDataConstruction", {"selector": "0x70a08231", "signature": "balanceOf(address)", "arguments": [{"value": "account"}]}),
+                overlay("call_plain", "StaticCallOverlay", {"target": "token", "target_solidity": "token", "op": "staticcall", "result": "ok", "arguments": ["account"]}, ["call_effect"]),
+                overlay("call_encoded", "AbiEncodedLowLevelCall", {"target": "token", "target_solidity": "token", "op": "staticcall", "result": "ok", "arguments": ["account"], "abi_calldata": {"overlay": "abi", "selector": "0x70a08231", "signature": "balanceOf(address)"}}, ["call_effect"]),
+                overlay("output", "PathConditionedPrecompileOutputRead", {"target": "out", "candidates": [{"status": "resolved", "condition": "ok", "target": "out", "value": "ecrecover(hash, v, r, s)"}]}),
+                overlay("raw_return", "PathConditionedRawReturnData", {"semantic_anchor_cfg_node": "ret", "semantic_evidence_cfg_nodes": ["ret"], "candidates": [{"status": "resolved", "condition": "ok", "encoding_hint": "abi_word", "values": ["out"]}]}, [], ["asm_return"]),
+            ],
+        }
+        yul_nodes = YulSemanticLifter().facts_from_function(fn_dict)
+        self.assertEqual(1, sum(1 for item in yul_nodes if item["kind"] == "BranchCondition"))
+        self.assertEqual(1, sum(1 for item in yul_nodes if item["kind"] == "LowLevelCall"))
+        function_obj = SimpleNamespace(function_id=FUNCTION_ID, contract="Token", function="transfer", signature="transfer(address,uint256)", control=control, _sseir_variable_bindings=[])
+        result = SemanticFactIRBridge().build_function(function_obj, [], yul_nodes)
+        final_ids = {item["semantic_id"] for item in result["semantic_nodes"]}
+        block_ids = {item for block_item in result["fact_cfg"]["blocks"] for item in block_item["semantic_ids"]}
+        self.assertTrue(final_ids.issubset(block_ids))
+        payload = {"functions": [result]}
+        c_like = render_sfir_c_like(payload)
+        cfg_text = render_fact_cfg_text(payload)
+        dot = render_fact_cfg_dot(result)
+        for rendered in (c_like, cfg_text, dot):
+            self.assertIn("abi.encodeWithSelector(0x70a08231, account)", rendered)
+            self.assertIn("externalStaticCall(token, __sfir_abi_payload_abi)", rendered)
+            self.assertIn("returnRawAbiWord(out);", rendered)
+            self.assertNotIn("mload(", rendered)
+            self.assertNotIn("effects", rendered)
+
     def test_solidity_to_yul_and_yul_boundary_to_solidity_are_explicit(self) -> None:
         control = {
             "blocks": [block("s0"), block("y0", "yul"), block("y1", "yul"), block("s1")],

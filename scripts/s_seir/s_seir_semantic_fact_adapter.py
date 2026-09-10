@@ -51,6 +51,49 @@ class SSeirFactAdapter:
     MemorySSA, SinkResolver, slot recovery, event recovery, or call lifting.
     """
 
+    # The completed pipeline may only expose these semantic overlays at the
+    # Yul -> SFIR boundary.  Candidates used by completion passes are
+    # intentionally absent: they must be replaced by a proved overlay or
+    # discarded before reaching this adapter.
+    FINAL_OVERLAY_KINDS = frozenset({
+        "AbiCallDataConstruction", "AbiEncodedLowLevelCall",
+        "AddressCodeSize", "AddressHasCode", "AddressZeroCheck",
+        "BytesContentHash", "CallOutputRead", "CalldataArrayElementRead",
+        "CalldataSelectorRead", "CalldataWordRead", "CursorBasedMemoryWrite",
+        "CustomErrorRevert", "DelegateCallOverlay", "DynamicArraySlot",
+        "EvaluationStep", "EventEmit", "ExpressionNormalization", "ExternalCall",
+        "InternalCall", "LibraryCall", "LowLevelCall", "MappingRead", "MappingSlot", "MappingWrite",
+        "MemoryArrayConstruction", "MemoryArrayElementRead", "MemoryArrayLengthRead",
+        "MemoryRegionAllocate", "MemoryRegionWrite", "PathConditionedCustomErrorRevert",
+        "PathConditionedDelegateCallOverlay", "PathConditionedEventEmit",
+        "PathConditionedExternalCall", "PathConditionedLowLevelCall",
+        "PathConditionedPrecompileCall", "PathConditionedPrecompileOutputRead",
+        "PathConditionedRawReturnData", "PathConditionedRevert",
+        "PathConditionedStaticCallOverlay", "PathConditionedStorageRead",
+        "PathConditionedStorageWrite", "PrecompileCall", "PrecompileOutputRead",
+        "Predicate", "RawReturnData", "RawRevertBytes", "RequireOverlay",
+        "ReturnValue", "RevertOverlay", "StateVariableRead", "StateVariableWrite",
+        "StaticCallOverlay", "StoragePointerSlotBinding", "StructFieldRead",
+        "StructFieldWrite", "StructInitializationFragment", "StructMemoryMutation",
+        "StructMutationFragment", "YulLocalFunctionCall", "YulLocalFunctionDefinition",
+    })
+    # This table is the executable boundary contract for completed S-SEIR
+    # overlays.  ``project`` rows have a direct SFIR fact rule below;
+    # ``derivation`` rows are allowed to reach the lifter only until a
+    # structurally-proved high-level replacement removes them; and
+    # ``candidate`` rows must have been completed by an S-SEIR lifter before
+    # this boundary.  A candidate that escapes is made visible as unmodeled,
+    # never silently interpreted as a source-level operation.
+    DERIVATION_OVERLAY_KINDS = frozenset({
+        "EvaluationStep", "ExpressionNormalization", "StructInitializationFragment",
+        "StructMutationFragment", "MemoryRegionWrite", "CursorBasedMemoryWrite",
+    })
+    FINAL_OVERLAY_POLICY = {
+        **{kind: "project" for kind in FINAL_OVERLAY_KINDS},
+        **{kind: "derivation" for kind in DERIVATION_OVERLAY_KINDS},
+        "CalldataArrayElementCandidate": "candidate",
+    }
+
     def __init__(self) -> None:
         self.ids = FactIdAllocator()
 
@@ -92,32 +135,64 @@ class SSeirFactAdapter:
         overlay = self.overlay_with_effect_refs(overlay, effect_by_id)
         kind = str(overlay.get("kind") or "")
         attrs = overlay.get("attrs") or {}
+        policy = self.FINAL_OVERLAY_POLICY.get(kind)
+        if policy is None:
+            return [self.unmodeled_overlay_fact(fn, overlay, stmt_lang, reason="unknown_final_overlay_kind")]
         if kind in {"PathConditionedStorageRead", "PathConditionedStorageWrite"}:
-            return [
+            facts = [
                 self.storage_candidate_fact(fn, overlay, candidate, stmt_lang, effect_by_id)
                 for candidate in attrs.get("candidates") or []
                 if isinstance(candidate, dict)
             ]
+            return facts or [self.unmodeled_overlay_fact(fn, overlay, stmt_lang, reason="no_structured_path_candidates")]
         if kind == "PathConditionedEventEmit":
-            return [
+            facts = [
                 self.event_candidate_fact(fn, overlay, candidate, stmt_lang)
                 for candidate in attrs.get("candidates") or []
                 if isinstance(candidate, dict)
             ]
+            return facts or [self.unmodeled_overlay_fact(fn, overlay, stmt_lang, reason="no_structured_path_candidates")]
         if kind in {"PathConditionedCustomErrorRevert", "PathConditionedRevert"}:
-            return [
+            facts = [
                 self.revert_candidate_fact(fn, overlay, candidate, stmt_lang)
                 for candidate in attrs.get("candidates") or []
                 if isinstance(candidate, dict)
             ]
-        if kind in {"PathConditionedPrecompileCall", "PathConditionedExternalCall", "PathConditionedLowLevelCall"}:
-            return [
+            return facts or [self.unmodeled_overlay_fact(fn, overlay, stmt_lang, reason="no_structured_path_candidates")]
+        if kind in {
+            "PathConditionedPrecompileCall", "PathConditionedExternalCall",
+            "PathConditionedLowLevelCall", "PathConditionedStaticCallOverlay",
+            "PathConditionedDelegateCallOverlay",
+        }:
+            facts = [
                 self.call_candidate_fact(fn, overlay, candidate, stmt_lang)
                 for candidate in attrs.get("candidates") or []
                 if isinstance(candidate, dict)
             ]
+            return facts or [self.unmodeled_overlay_fact(fn, overlay, stmt_lang, reason="no_structured_path_candidates")]
+        if kind == "PathConditionedRawReturnData":
+            facts = [
+                self.raw_return_candidate_fact(fn, overlay, candidate, stmt_lang)
+                for candidate in attrs.get("candidates") or []
+                if isinstance(candidate, dict)
+            ]
+            return facts or [self.unmodeled_overlay_fact(fn, overlay, stmt_lang, reason="no_structured_path_candidates")]
+        if kind == "PathConditionedPrecompileOutputRead":
+            facts = [
+                self.precompile_output_candidate_fact(fn, overlay, candidate, stmt_lang)
+                for candidate in attrs.get("candidates") or []
+                if isinstance(candidate, dict)
+            ]
+            return facts or [self.unmodeled_overlay_fact(fn, overlay, stmt_lang, reason="no_structured_path_candidates")]
+        if policy == "candidate":
+            return [self.unmodeled_overlay_fact(fn, overlay, stmt_lang, reason="completion_candidate_reached_sfir_boundary")]
         fact = self.plain_overlay_fact(fn, overlay, stmt_lang, effect_by_id)
-        return [fact] if fact else []
+        if fact and policy in {"project", "derivation"}:
+            return [fact]
+        # A silent omission would make an upgraded S-SEIR appear complete to
+        # downstream deobfuscation.  Keep unknown future overlays structured
+        # and anchored, but never invent their execution semantics.
+        return [self.unmodeled_overlay_fact(fn, overlay, stmt_lang)]
 
     def plain_overlay_fact(
         self,
@@ -223,11 +298,45 @@ class SSeirFactAdapter:
                     "check_kind": attrs.get("check_kind"),
                 },
             )
+        if kind == "AddressZeroCheck":
+            expression = attrs.get("condition") or "addressZeroCheck(unknown)"
+            return self.fact(
+                fn, overlay, stmt_lang, "BranchCondition",
+                rvalue=expression,
+                reads=clean_list([attrs.get("variable")]),
+                semantic=pick(attrs, (
+                    "variable", "variable_type", "check", "condition", "projection",
+                    "projection_expression", "source_pattern",
+                )) | {
+                    "operation": "address_zero_check",
+                    "expression": expression,
+                    "context": "condition",
+                    "status": "resolved",
+                },
+            )
+        if kind == "BytesContentHash":
+            target = attrs.get("target")
+            expression = attrs.get("result_expression") or attrs.get("expression") or "keccak256(bytes)"
+            object_name = attrs.get("object") or attrs.get("hash_input")
+            return self.fact(
+                fn, overlay, stmt_lang, "HashCompute",
+                lvalue=target, rvalue=expression,
+                reads=clean_list([object_name]), writes=clean_list([target]),
+                semantic=pick(attrs, (
+                    "hash_algorithm", "object", "object_type", "target_type", "expression",
+                    "result_expression", "pattern", "exact_solidity_equivalent",
+                )) | {
+                    "builtin_signature": "keccak256(bytes)",
+                    "arguments": clean_list([object_name]),
+                    "operation": "bytes_content_hash",
+                },
+            )
         if kind == "EventEmit":
             return self.fact(fn, overlay, stmt_lang, "EventEmit", reads=flat_list(attrs.get("args")), semantic={
                 "event": attrs.get("event") or attrs.get("event_name"),
                 "signature": attrs.get("signature"),
                 "args": attrs.get("args"),
+                **self.event_topic_semantics(attrs),
             })
         if kind == "RequireOverlay":
             condition = attrs.get("condition") or attrs.get("nearest_condition") or attrs.get("require_like")
@@ -253,14 +362,51 @@ class SSeirFactAdapter:
                                  "switch_edges": attrs.get("switch_edges"),
                              })
         if kind in {"CustomErrorRevert", "RawRevertBytes", "RevertOverlay"}:
-            return self.fact(fn, overlay, stmt_lang, "Revert", reads=flat_list(attrs.get("args")), semantic={
+            condition = attrs.get("guard") or attrs.get("condition") or attrs.get("nearest_condition")
+            return self.fact(fn, overlay, stmt_lang, "Revert", condition=condition, reads=flat_list(attrs.get("args")), semantic={
                 "operation": "revert",
                 "error": attrs.get("error") or attrs.get("custom_error"),
                 "payload": attrs.get("payload") or attrs.get("revert_payload"),
                 "source_object": attrs.get("source_object"),
+                "arguments": attrs.get("args"),
+                "guard": condition,
             })
         if kind in {"ExternalCall", "LowLevelCall", "StaticCallOverlay", "DelegateCallOverlay"}:
             return self.call_fact(fn, overlay, stmt_lang, "ExternalCall")
+        if kind == "LibraryCall":
+            return self.call_fact(fn, overlay, stmt_lang, "LibraryCall")
+        if kind == "AbiCallDataConstruction":
+            payload = self.abi_payload_name(overlay)
+            arguments = [
+                item.get("value_semantic") or item.get("value_normalized") or item.get("value")
+                for item in attrs.get("arguments") or [] if isinstance(item, dict)
+            ]
+            signature = attrs.get("signature")
+            return self.fact(
+                fn, overlay, stmt_lang, "AbiEncode",
+                lvalue=payload,
+                rvalue=f"abi.encodeWithSelector({signature or attrs.get('selector') or 'unknown'})",
+                reads=clean_list(arguments), writes=[payload],
+                semantic=pick(attrs, ("selector", "signature", "selector_match", "arguments")) | {
+                    "builtin_signature": "abi.encodeWithSelector(bytes4,...)",
+                    "arguments": clean_list([attrs.get("selector"), *arguments]),
+                    "encoded_payload": payload,
+                    "operation": "abi_calldata_construction",
+                },
+            )
+        if kind == "AbiEncodedLowLevelCall":
+            fact = self.call_fact(fn, overlay, stmt_lang, "LowLevelCall")
+            semantic = dict(fact.semantic)
+            calldata = attrs.get("abi_calldata") or {}
+            payload_overlay = calldata.get("overlay") if isinstance(calldata, dict) else None
+            semantic.update({
+                "operation": "abi_encoded_low_level_call",
+                "encoded_payload": self.abi_payload_name_from_id(payload_overlay) if payload_overlay else None,
+                "abi_encoding": self.abi_encoding_semantics(calldata) if isinstance(calldata, dict) else {},
+            })
+            fact.semantic = clean_dict(semantic)
+            fact.reads = clean_list([*fact.reads, semantic.get("encoded_payload")])
+            return fact
         if kind == "CallOutputRead":
             target = attrs.get("target")
             value = attrs.get("value")
@@ -277,6 +423,17 @@ class SSeirFactAdapter:
                     "selector", "selector_signature", "arguments", "word_index",
                     "value", "solidity_like", "resolution",
                 )) | {"operation": "external_call_return_word"},
+            )
+        if kind == "PrecompileOutputRead":
+            target = attrs.get("target")
+            value = attrs.get("value") or "precompileOutput(unknown)"
+            return self.fact(
+                fn, overlay, stmt_lang, "ValueCompute",
+                lvalue=target, rvalue=value, writes=clean_list([target]),
+                semantic=pick(attrs, ("source_precompile_overlay", "value")) | {
+                    "operation": "precompile_output_read",
+                    "value": value,
+                },
             )
         if kind == "CalldataWordRead":
             target = attrs.get("target")
@@ -390,26 +547,103 @@ class SSeirFactAdapter:
         if kind == "InternalCall":
             return self.call_fact(fn, overlay, stmt_lang, "InternalCall")
         if kind == "ReturnValue":
-            value = attrs.get("value") or attrs.get("return_value") or attrs.get("expression")
-            return self.fact(fn, overlay, stmt_lang, "Return", rvalue=value, reads=[value], semantic={
+            values = clean_list(attrs.get("values"))
+            # ``ReturnValue`` is emitted by the actual S-SEIR return builder
+            # as a list.  Preserve that source-level arity rather than
+            # accidentally projecting it as an empty return.
+            value = values[0] if len(values) == 1 else values
+            return self.fact(fn, overlay, stmt_lang, "Return", rvalue=value, reads=values, semantic={
                 "operation": "return",
                 "value": value,
+                "values": values,
                 "target": attrs.get("target"),
             })
+        if kind == "RawReturnData":
+            values = clean_list(attrs.get("values"))
+            expression = self.raw_return_expression(attrs)
+            return self.fact(
+                fn, overlay, stmt_lang, "Return",
+                rvalue=expression, reads=values,
+                semantic=pick(attrs, ("encoding_hint", "payload_memory_complete", "reason")) | {
+                    "operation": "raw_return_data",
+                    "values": values,
+                    "return_expression": expression,
+                },
+            )
         if kind == "MemoryRegionAllocate":
-            return self.fact(fn, overlay, stmt_lang, "MemoryAllocate", lvalue=attrs.get("base"), rvalue=attrs.get("new_free_pointer"), reads=[attrs.get("base")], writes=[attrs.get("new_free_pointer")], semantic={
-                "base": attrs.get("base"),
-                "new_free_pointer": attrs.get("new_free_pointer"),
-                "stored_values": attrs.get("stored_values"),
+            base = attrs.get("base") or attrs.get("region_base")
+            return self.fact(fn, overlay, stmt_lang, "MemoryAllocate", lvalue=base, rvalue="memoryRegion", writes=clean_list([base]), semantic={
+                "operation": "memory_region_allocate",
+                "stored_value_count": len(attrs.get("stored_values") or []),
+                "region": base,
+                "semantic_hint": attrs.get("semantic_hint"),
             })
         if kind == "MemoryArrayConstruction":
-            return self.fact(fn, overlay, stmt_lang, "MemoryObjectConstruct", lvalue=attrs.get("result"), rvalue=attrs.get("allocation_source"), writes=[attrs.get("result")], semantic=pick(attrs, (
-                "result", "array_type", "element_type", "length_expr", "length_expr_normalized", "element_writes", "free_memory_pointer_update",
-            )))
-        if kind in {"StructMemoryMutation", "StructInitializationFragment", "MemoryRegionWrite", "CursorBasedMemoryWrite"}:
+            result = attrs.get("result")
+            length = attrs.get("length_expr_normalized") or attrs.get("length_expr") or "unknown"
+            # S-SEIR has proved these writes are part of one array-object
+            # construction, but it deliberately has not necessarily proved
+            # every raw memory address is a source-level array index.  Retain
+            # the recovered values and pattern without inventing indices.
+            elements = clean_list([
+                item.get("value_normalized") or item.get("value")
+                for item in attrs.get("element_writes") or [] if isinstance(item, dict)
+            ])
+            return self.fact(fn, overlay, stmt_lang, "MemoryObjectConstruct", lvalue=result,
+                             rvalue=f"new {attrs.get('array_type') or 'array'}({length})",
+                             reads=clean_list([length, *elements]), writes=[result], semantic={
+                                 "operation": "memory_array_construction",
+                                 "result": result,
+                                 "array_type": attrs.get("array_type"),
+                                 "element_type": attrs.get("element_type"),
+                                 "length": length,
+                                 "elements": elements,
+                                 "element_write_pattern": attrs.get("element_write_pattern"),
+                                 "recovered_element_write_count": len(elements),
+                             })
+        if kind == "StructFieldRead":
+            field = attrs.get("field") or {}
+            target = attrs.get("value")
+            access = self.struct_field_access(attrs)
+            return self.fact(
+                fn, overlay, stmt_lang, "ValueCompute",
+                lvalue=target, rvalue=access, reads=clean_list([attrs.get("struct_object")]), writes=clean_list([target]),
+                semantic=pick(attrs, ("struct_object", "struct_type", "field")) | {
+                    "operation": "struct_field_read", "access": access,
+                    "field_type": field.get("type_string"),
+                },
+            )
+        if kind == "StructFieldWrite":
+            value = attrs.get("value_normalized") or attrs.get("value")
+            access = self.struct_field_access(attrs)
+            return self.fact(
+                fn, overlay, stmt_lang, "ValueAssign",
+                lvalue=access, rvalue=value,
+                reads=self.reads_for_value(value, attrs), writes=[access],
+                semantic=pick(attrs, ("struct_object", "struct_type", "field")) | {
+                    "operation": "struct_field_write", "access": access,
+                },
+            )
+        if kind == "StoragePointerSlotBinding":
+            pointer = attrs.get("pointer") or "storagePointer"
+            return self.fact(
+                fn, overlay, stmt_lang, "ValueCompute",
+                lvalue=pointer, rvalue="opaqueStorageLocation",
+                writes=[pointer],
+                semantic={
+                    "operation": "storage_pointer_binding",
+                    "status": "unresolved",
+                    "reason": attrs.get("reason") or "storage_pointer_location_not_semantically_recovered",
+                    "value": "opaqueStorageLocation",
+                },
+            )
+        if kind in {"StructMemoryMutation", "StructInitializationFragment", "StructMutationFragment", "MemoryRegionWrite", "CursorBasedMemoryWrite"}:
             target = attrs.get("target") or attrs.get("region_base") or attrs.get("object")
-            value = attrs.get("value") or attrs.get("value_normalized") or attrs.get("fields")
-            return self.fact(fn, overlay, stmt_lang, "MemoryObjectWrite", lvalue=target, rvalue=value, reads=flat_list(value), writes=[target], semantic=attrs)
+            value = attrs.get("value") or attrs.get("value_normalized") or attrs.get("fields") or attrs.get("field_updates")
+            return self.fact(fn, overlay, stmt_lang, "MemoryObjectWrite", lvalue=target, rvalue=value, reads=flat_list(value), writes=[target], semantic=pick(attrs, (
+                "target", "region_base", "object", "struct_object", "struct_type", "fields", "mutations", "semantic_hint",
+                "cursor_field", "field_updates", "value", "value_normalized",
+            )) | {"operation": "memory_object_write"})
         if kind in {"ExpressionNormalization", "EvaluationStep"}:
             target = attrs.get("target") or attrs.get("temp")
             is_condition = attrs.get("context") == "condition"
@@ -454,9 +688,13 @@ class SSeirFactAdapter:
         )
 
     def event_candidate_fact(self, fn: dict[str, Any], overlay: dict[str, Any], candidate: dict[str, Any], stmt_lang: dict[str, str]) -> SemanticFact:
+        attrs = overlay.get("attrs") or {}
+        event_attrs = {**attrs, **candidate}
         return self.fact(fn, overlay, stmt_lang, "EventEmit", condition=candidate.get("condition"), reads=flat_list(candidate.get("args")), semantic={
             "event": candidate.get("event") or (overlay.get("attrs") or {}).get("event"),
+            "signature": candidate.get("signature") or attrs.get("signature"),
             "args": candidate.get("args"),
+            **self.event_topic_semantics(event_attrs),
             "candidate_status": candidate.get("status"),
             "unresolved_reason": candidate.get("unresolved_reason") or candidate.get("reason"),
         }, extra_evidence={"candidate": clean_dict(candidate)})
@@ -466,31 +704,169 @@ class SSeirFactAdapter:
             "operation": "revert",
             "error": candidate.get("error") or candidate.get("custom_error") or candidate.get("selector_signature"),
             "payload": candidate.get("payload") or candidate.get("revert_payload"),
+            "source_object": candidate.get("source_object") or (overlay.get("attrs") or {}).get("source_object"),
+            "arguments": candidate.get("args") or (overlay.get("attrs") or {}).get("args"),
+            "guard": candidate.get("condition"),
+            # A matched selector signature is preferred above.  When only a
+            # selector is proved, it is still a meaningful raw-revert
+            # operation but not evidence for inventing an error name/args.
+            "selector": candidate.get("selector"),
+            "raw_payload": candidate.get("normalized"),
             "candidate_status": candidate.get("status"),
             "unresolved_reason": candidate.get("unresolved_reason") or candidate.get("reason"),
         }, extra_evidence={"candidate": clean_dict(candidate)})
 
     def call_candidate_fact(self, fn: dict[str, Any], overlay: dict[str, Any], candidate: dict[str, Any], stmt_lang: dict[str, str]) -> SemanticFact:
         base_kind = "PrecompileCall" if "Precompile" in str(overlay.get("kind")) else "ExternalCall"
-        return self.fact(fn, overlay, stmt_lang, base_kind, condition=candidate.get("condition"), reads=flat_list(candidate.get("arguments") or candidate.get("args")), semantic={
-            "target": candidate.get("target_solidity") or candidate.get("target") or (overlay.get("attrs") or {}).get("target"),
-            "call_kind": candidate.get("call_kind") or candidate.get("op") or (overlay.get("attrs") or {}).get("op"),
+        attrs = overlay.get("attrs") or {}
+        result = candidate.get("result") or attrs.get("result") or self.result_from_high_level_line(candidate.get("solidity_like"))
+        target = candidate.get("target_solidity") or candidate.get("target") or attrs.get("target_solidity") or attrs.get("target")
+        arguments = candidate.get("arguments") or candidate.get("args")
+        semantic = {
+            "target": target,
+            "call_kind": candidate.get("call_kind") or candidate.get("op") or attrs.get("op"),
             "selector": candidate.get("selector"),
-            "arguments": candidate.get("arguments") or candidate.get("args"),
-            "precompile": candidate.get("precompile") or (overlay.get("attrs") or {}).get("precompile"),
+            "selector_signature": candidate.get("selector_signature"),
+            "arguments": arguments,
+            "precompile": candidate.get("precompile") or attrs.get("precompile"),
+            "call_status_result": result,
             "candidate_status": candidate.get("status"),
             "unresolved_reason": candidate.get("unresolved_reason") or candidate.get("reason"),
-        }, extra_evidence={"candidate": clean_dict(candidate)})
+        }
+        if base_kind == "PrecompileCall":
+            semantic["native_projection"] = self.native_precompile_projection(candidate, attrs)
+            semantic["input_words"] = candidate.get("input_words") or attrs.get("input_words")
+        return self.fact(fn, overlay, stmt_lang, base_kind, condition=candidate.get("condition"), reads=clean_list([target, *flat_list(arguments)]), semantic=semantic, lvalue=result, writes=clean_list([result]), extra_evidence={"candidate": clean_dict(candidate)})
+
+    def raw_return_candidate_fact(self, fn: dict[str, Any], overlay: dict[str, Any], candidate: dict[str, Any], stmt_lang: dict[str, str]) -> SemanticFact:
+        attrs = overlay.get("attrs") or {}
+        values = clean_list(candidate.get("values"))
+        expression = self.raw_return_expression(candidate, fallback=attrs)
+        return self.fact(
+            fn, overlay, stmt_lang, "Return", condition=candidate.get("condition"),
+            rvalue=expression, reads=values,
+            semantic={
+                "operation": "raw_return_data",
+                "encoding_hint": candidate.get("encoding_hint"),
+                "values": values,
+                "return_expression": expression,
+                "candidate_status": candidate.get("status"),
+                "unresolved_reason": candidate.get("unresolved_reason") or candidate.get("reason"),
+            }, extra_evidence={"candidate": clean_dict(candidate)},
+        )
+
+    def precompile_output_candidate_fact(self, fn: dict[str, Any], overlay: dict[str, Any], candidate: dict[str, Any], stmt_lang: dict[str, str]) -> SemanticFact:
+        attrs = overlay.get("attrs") or {}
+        target = candidate.get("target") or attrs.get("target")
+        value = candidate.get("value") or "precompileOutput(unknown)"
+        return self.fact(
+            fn, overlay, stmt_lang, "ValueCompute", condition=candidate.get("condition"),
+            lvalue=target, rvalue=value, writes=clean_list([target]),
+            semantic={
+                "operation": "precompile_output_read",
+                "value": value,
+                "source_precompile_overlay": candidate.get("source_precompile_overlay") or attrs.get("source_precompile_overlay"),
+                "precompile": candidate.get("precompile"),
+                "candidate_status": candidate.get("status"),
+                "unresolved_reason": candidate.get("unresolved_reason") or candidate.get("reason"),
+            }, extra_evidence={"candidate": clean_dict(candidate)},
+        )
+
+    def unmodeled_overlay_fact(
+        self,
+        fn: dict[str, Any],
+        overlay: dict[str, Any],
+        stmt_lang: dict[str, str],
+        *,
+        reason: str = "no_sfir_projection_rule",
+        lvalue: Any = None,
+        reads: list[Any] | None = None,
+        writes: list[Any] | None = None,
+    ) -> SemanticFact:
+        kind = str(overlay.get("kind") or "unknown")
+        return self.fact(
+            fn, overlay, stmt_lang, "UnmodeledSSeirOverlay",
+            lvalue=lvalue,
+            rvalue="opaqueYulValue()" if lvalue else None,
+            reads=clean_list(reads or []),
+            writes=clean_list(writes or ([] if lvalue is None else [lvalue])),
+            semantic={
+                "operation": "unmodeled_sseir_overlay",
+                "status": "unmodeled",
+                "overlay_kind": kind,
+                "unmodeled_reason": reason,
+                "opaque_value": "opaqueYulValue()" if lvalue else None,
+                # Attributes are deliberately summarized rather than copied:
+                # they can contain upstream MemorySSA/effect transport.
+                "available_fields": sorted(str(key) for key in (overlay.get("attrs") or {}).keys()),
+            },
+        )
+
+    @staticmethod
+    def abi_payload_name(overlay: dict[str, Any]) -> str:
+        return SSeirFactAdapter.abi_payload_name_from_id(overlay.get("overlay_id"))
+
+    @staticmethod
+    def abi_payload_name_from_id(overlay_id: Any) -> str:
+        safe = re.sub(r"[^A-Za-z0-9_]", "_", str(overlay_id or "unknown"))
+        return f"__sfir_abi_payload_{safe}"
+
+    @staticmethod
+    def struct_field_access(attrs: dict[str, Any]) -> str:
+        field = attrs.get("field") or {}
+        object_name = attrs.get("struct_object") or "structObject"
+        name = field.get("name") or "field"
+        return f"{object_name}.{name}"
+
+    @staticmethod
+    def raw_return_expression(attrs: dict[str, Any], *, fallback: dict[str, Any] | None = None) -> str:
+        attrs = attrs or {}
+        fallback = fallback or {}
+        hint = attrs.get("encoding_hint") or fallback.get("encoding_hint")
+        values = clean_list(attrs.get("values") or fallback.get("values"))
+        if hint == "abi_word" and len(values) == 1:
+            return f"returnRawAbiWord({values[0]})"
+        if hint == "abi_static_words" and values:
+            return f"returnRawAbiWords({', '.join(map(str, values))})"
+        # The data has intentionally not been decoded.  This is a high-level
+        # opaque return operation, not a replay of the original Yul pointer.
+        return "returnRawMemory()"
+
+    @staticmethod
+    def abi_encoding_semantics(calldata: dict[str, Any]) -> dict[str, Any]:
+        """Keep ABI argument meaning while excluding write/effect transport."""
+        arguments = []
+        for item in calldata.get("arguments") or []:
+            if isinstance(item, dict):
+                arguments.append(clean_dict({
+                    "index": item.get("index"), "type": item.get("type"),
+                    "value": item.get("value_semantic") or item.get("value_normalized") or item.get("value"),
+                    "kind": item.get("kind"), "length": item.get("length_semantic"),
+                }))
+            else:
+                arguments.append(item)
+        return clean_dict({
+            "selector": calldata.get("selector"), "signature": calldata.get("signature"),
+            "arguments": arguments,
+        })
+
+    @staticmethod
+    def result_from_high_level_line(line: Any) -> str | None:
+        """Read an assignment target only from S-SEIR's completed display form.
+
+        Path-sensitive call overlays predate a structured ``result`` field,
+        but their own completed Solidity-like operation records the target.
+        This deliberately recognizes only an unambiguous identifier assignment
+        and never parses or revisits the original Yul expression.
+        """
+        match = re.match(r"^\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*=", str(line or ""))
+        return match.group(1) if match else None
 
     def call_fact(self, fn: dict[str, Any], overlay: dict[str, Any], stmt_lang: dict[str, str], fact_kind: str) -> SemanticFact:
         attrs = overlay.get("attrs") or {}
         arguments = attrs.get("arguments") or attrs.get("args")
         result = attrs.get("result")
-        return self.fact(fn, overlay, stmt_lang, fact_kind, lvalue=result, writes=clean_list([result]), reads=clean_list([
-            attrs.get("target_solidity") or attrs.get("target"),
-            attrs.get("value"),
-            *flat_list(arguments),
-        ]), semantic={
+        semantic = {
             "target": attrs.get("target_solidity") or attrs.get("target"),
             "call_kind": attrs.get("call_kind") or attrs.get("op") or overlay.get("kind"),
             "selector": attrs.get("selector"),
@@ -502,6 +878,53 @@ class SSeirFactAdapter:
             "call_status_result": result,
             "precompile": attrs.get("precompile"),
             "solidity_like": attrs.get("solidity_like"),
+        }
+        if fact_kind == "PrecompileCall":
+            semantic["native_projection"] = self.native_precompile_projection(attrs)
+            semantic["input_words"] = self.precompile_input_words(attrs)
+        return self.fact(fn, overlay, stmt_lang, fact_kind, lvalue=result, writes=clean_list([result]), reads=clean_list([
+            attrs.get("target_solidity") or attrs.get("target"),
+            attrs.get("value"),
+            *flat_list(arguments),
+        ]), semantic=semantic)
+
+    @staticmethod
+    def event_topic_semantics(attrs: dict[str, Any]) -> dict[str, Any]:
+        """Project event topics as source-level indexed-event meaning only."""
+        topics = clean_list(attrs.get("topics"))
+        return clean_dict({
+            "topics": topics,
+            "topic0": attrs.get("topic0") or (topics[0] if topics else None),
+            "indexed_topic_values": topics[1:] if len(topics) > 1 else [],
+        })
+
+    @staticmethod
+    def precompile_input_words(attrs: dict[str, Any]) -> list[Any]:
+        native = attrs.get("native_precompile") or {}
+        return clean_list(attrs.get("input_words") or native.get("input_words"))
+
+    @staticmethod
+    def native_precompile_projection(*sources: dict[str, Any]) -> dict[str, Any]:
+        """Whitelist the completed intrinsic, never its memory/effect proof."""
+        native: dict[str, Any] = {}
+        precompile = None
+        for source in sources:
+            if not isinstance(source, dict):
+                continue
+            precompile = precompile or source.get("precompile")
+            candidate = source.get("native_precompile") or {}
+            if isinstance(candidate, dict):
+                precompile = precompile or candidate.get("precompile")
+                # Direct call overlays retain a small wrapper containing the
+                # intrinsic projection; path candidates retain the intrinsic
+                # itself.  Both are S-SEIR's documented completed forms.
+                inner = candidate.get("native_precompile")
+                native.update(inner if isinstance(inner, dict) else candidate)
+        return clean_dict({
+            "precompile": precompile,
+            "result_name": native.get("result_name"),
+            "output_expression": native.get("output_word_expression"),
+            "solidity_like": native.get("solidity_like"),
         })
 
     @staticmethod

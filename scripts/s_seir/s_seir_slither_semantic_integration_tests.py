@@ -92,7 +92,7 @@ def run() -> None:
     rendered = render_sfir_c_like(surface_payload)
     assert "new uint256[](2)" in rendered
     assert "Pair({left: REF_3, right: REF_4})" in rendered
-    assert "lowLevelTarget_1.call{value: 0}(TMP_6)" in rendered
+    assert "TUPLE_0 = externalCall(lowLevelTarget_1, TMP_6);" in rendered
     assert "new SurfaceChild{value: 0, salt: salt_1}(echoed_1)" in rendered
     assert "return (result_1, lowLevelOk_1);" in rendered
 

@@ -480,6 +480,7 @@ class SemanticFactIRBridge:
         fact_ssa, semantic_edges, boundary_links, ssa_diagnostics = self._build_fact_ssa(
             function, raw, fact_cfg, semantic_nodes, raw_to_fact
         )
+        self._add_call_output_relations(semantic_nodes, semantic_edges, diagnostics)
         diagnostics.extend(ssa_diagnostics)
         path_witnesses = self._path_witnesses(fact_cfg, semantic_nodes)
         diagnostics.extend(self._validate(function_id, fact_cfg, semantic_nodes, fact_ssa, semantic_edges))
@@ -1752,6 +1753,66 @@ class SemanticFactIRBridge:
             "reaching_definitions_in": {block: {key: sorted(value) for key, value in values.items()} for block, values in reaching_in.items()},
             "reaching_definitions_out": {block: {key: sorted(value) for key, value in values.items()} for block, values in reaching_out.items()},
         }, semantic_edges, boundary_links, diagnostics)
+
+    @staticmethod
+    def _add_call_output_relations(nodes: list[Json], edges: list[Json], diagnostics: list[Json]) -> None:
+        """Connect S-SEIR's proved output channels without inventing SSA.
+
+        A ``CallOutputRead`` receives a result through the EVM call-output
+        memory channel, rather than through a local variable written by the
+        call status operation.  The completed overlay identity is the proof
+        of this relation.  Keep it as a semantic edge, not a synthetic
+        FactSSA version/read.
+        """
+        call_producers: dict[str, str] = {}
+        precompile_producers: dict[str, str] = {}
+        for node in nodes:
+            source = ((node.get("semantic_provenance") or {}).get("semantic_source") or {})
+            overlay_id = str(source.get("overlay_id") or "") if isinstance(source, dict) else ""
+            if overlay_id and node.get("kind") in {"ExternalCall", "LowLevelCall", "PrecompileCall"}:
+                target = str(node.get("semantic_id") or "")
+                call_producers[overlay_id] = target
+                if node.get("kind") == "PrecompileCall":
+                    precompile_producers[overlay_id] = target
+        existing = {
+            (str(edge.get("from") or ""), str(edge.get("to") or ""), str(edge.get("kind") or ""))
+            for edge in edges if isinstance(edge, dict)
+        }
+        for node in nodes:
+            semantic = node.get("semantic") or {}
+            if not isinstance(semantic, dict):
+                continue
+            source_overlay = str(semantic.get("source_call_overlay") or "")
+            relation_kind = "call_output"
+            producers = call_producers
+            diagnostic_kind = "unresolved_call_output_source"
+            diagnostic_source_key = "source_call_overlay"
+            if not source_overlay:
+                source_overlay = str(semantic.get("source_precompile_overlay") or "")
+                relation_kind = "precompile_output"
+                producers = precompile_producers
+                diagnostic_kind = "unresolved_precompile_output_source"
+                diagnostic_source_key = "source_precompile_overlay"
+            if not source_overlay:
+                continue
+            producer = producers.get(source_overlay)
+            target = str(node.get("semantic_id") or "")
+            if not producer:
+                diagnostics.append({
+                    "kind": diagnostic_kind,
+                    "semantic_id": target,
+                    diagnostic_source_key: source_overlay,
+                })
+                continue
+            key = (producer, target, relation_kind)
+            if key not in existing and producer != target:
+                edges.append({
+                    "from": producer,
+                    "to": target,
+                    "kind": relation_kind,
+                    "source_overlay": source_overlay,
+                })
+                existing.add(key)
 
     def _bindings(self, function: Any, raw: Json) -> dict[str, Json]:
         values = getattr(function, "_sseir_variable_bindings", None)

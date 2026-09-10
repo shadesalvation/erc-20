@@ -460,6 +460,200 @@ def test_sseir_event_and_revert_become_behavior_facts() -> None:
     assert facts[1]["condition"] == "fromBalance >= amount"
 
 
+def test_completed_sseir_advanced_overlays_have_high_level_facts() -> None:
+    fn = function([
+        overlay("AddressZeroCheck", {"variable": "account", "variable_type": "address", "check": "is_nonzero", "condition": "account != address(0)"}, "ov_zero"),
+        overlay("BytesContentHash", {"target": "digest", "object": "data", "object_type": "bytes", "expression": "keccak256(data)", "result_expression": "keccak256(data)", "hash_algorithm": "keccak256"}, "ov_hash"),
+        overlay("AbiCallDataConstruction", {"selector": "0x70a08231", "signature": "balanceOf(address)", "arguments": [{"value": "account", "type": "address"}]}, "ov_abi"),
+        overlay("AbiEncodedLowLevelCall", {"target": "token", "target_solidity": "token", "op": "staticcall", "result": "ok", "selector": "0x70a08231", "selector_signature": "balanceOf(address)", "arguments": ["account"], "abi_calldata": {"overlay": "ov_abi", "selector": "0x70a08231", "signature": "balanceOf(address)", "arguments": ["account"]}}, "ov_call"),
+        overlay("RawReturnData", {"encoding_hint": "abi_word", "values": ["digest"]}, "ov_return"),
+        overlay("PrecompileOutputRead", {"target": "recovered", "value": "ecrecover(hash, v, r, s)", "source_precompile_overlay": "ov_pc"}, "ov_pc_out"),
+        overlay("StructFieldRead", {"struct_object": "pair", "struct_type": "Pair", "field": {"name": "left", "type_string": "uint256"}, "value": "left"}, "ov_field_read"),
+        overlay("StructFieldWrite", {"struct_object": "pair", "struct_type": "Pair", "field": {"name": "right", "type_string": "uint256"}, "value_normalized": "digest"}, "ov_field_write"),
+        overlay("StoragePointerSlotBinding", {"pointer": "ref", "slot_normalized": "ignored", "reason": "assembly_only"}, "ov_binding"),
+    ])
+    facts = [item.to_dict() for item in SSeirFactAdapter().function_facts(fn, semantic_only=True)]
+    by_overlay = {item["evidence"]["overlay"]: item for item in facts}
+    assert by_overlay["ov_zero"]["kind"] == "BranchCondition"
+    assert by_overlay["ov_hash"]["kind"] == "HashCompute"
+    assert by_overlay["ov_abi"]["kind"] == "AbiEncode"
+    assert by_overlay["ov_call"]["kind"] == "LowLevelCall"
+    assert by_overlay["ov_call"]["semantic"]["encoded_payload"] == "__sfir_abi_payload_ov_abi"
+    assert by_overlay["ov_return"]["rvalue"] == "returnRawAbiWord(digest)"
+    assert by_overlay["ov_pc_out"]["semantic"]["operation"] == "precompile_output_read"
+    assert by_overlay["ov_field_read"]["rvalue"] == "pair.left"
+    assert by_overlay["ov_field_write"]["lvalue"] == "pair.right"
+    assert by_overlay["ov_binding"]["rvalue"] == "opaqueStorageLocation"
+    public = json.dumps(facts, ensure_ascii=False)
+    assert "mload(" not in public and "mstore(" not in public and ".slot :=" not in public
+
+
+def test_path_conditioned_sseir_return_output_and_unknown_are_not_dropped() -> None:
+    fn = function([
+        overlay("PathConditionedRawReturnData", {"candidates": [{"status": "resolved", "condition": "ok", "encoding_hint": "abi_word", "values": ["value"]}]}, "ov_path_return"),
+        overlay("PathConditionedPrecompileOutputRead", {"target": "out", "candidates": [{"status": "resolved", "condition": "ok", "target": "out", "value": "ecrecover(hash, v, r, s)"}]}, "ov_path_output"),
+        overlay("FutureCompletedOverlay", {"new_semantic_field": "value"}, "ov_future"),
+    ])
+    facts = [item.to_dict() for item in SSeirFactAdapter().function_facts(fn, semantic_only=True)]
+    assert [item["kind"] for item in facts] == ["Return", "ValueCompute", "UnmodeledSSeirOverlay"]
+    assert facts[0]["condition"] == "ok"
+    assert facts[1]["semantic"]["operation"] == "precompile_output_read"
+    assert facts[2]["semantic"]["overlay_kind"] == "FutureCompletedOverlay"
+
+
+def test_path_overlay_without_structured_candidates_is_visible_unmodeled() -> None:
+    fn = function([
+        overlay("PathConditionedStaticCallOverlay", {"target": "token", "candidates": []}, "ov_empty_path"),
+        overlay("CalldataArrayElementCandidate", {"target": "element"}, "ov_candidate"),
+    ])
+    facts = [item.to_dict() for item in SSeirFactAdapter().function_facts(fn, semantic_only=True)]
+    assert [item["kind"] for item in facts] == ["UnmodeledSSeirOverlay", "UnmodeledSSeirOverlay"]
+    assert facts[0]["semantic"]["unmodeled_reason"] == "no_structured_path_candidates"
+    assert facts[1]["semantic"]["unmodeled_reason"] == "completion_candidate_reached_sfir_boundary"
+
+
+def test_final_overlay_policy_covers_every_declared_completed_overlay() -> None:
+    adapter = SSeirFactAdapter()
+    assert adapter.FINAL_OVERLAY_KINDS <= set(adapter.FINAL_OVERLAY_POLICY)
+    assert {
+        "EvaluationStep", "ExpressionNormalization", "StructInitializationFragment",
+        "StructMutationFragment", "MemoryRegionWrite", "CursorBasedMemoryWrite",
+    } == {
+        kind for kind, policy in adapter.FINAL_OVERLAY_POLICY.items()
+        if policy == "derivation"
+    }
+
+
+def test_every_declared_final_overlay_has_a_non_silent_boundary_outcome() -> None:
+    """The completed-overlay contract may never silently lose a future kind.
+
+    Empty attributes deliberately exercise the boundary rather than a
+    recognizer: each kind must still produce a projected fact or the explicit
+    UnmodeledSSeirOverlay fallback.  Path kinds receive the same structured
+    candidate envelope emitted by their S-SEIR builders.
+    """
+    adapter = SSeirFactAdapter()
+    path_kinds = {
+        "PathConditionedStorageRead", "PathConditionedStorageWrite",
+        "PathConditionedEventEmit", "PathConditionedCustomErrorRevert",
+        "PathConditionedRevert", "PathConditionedPrecompileCall",
+        "PathConditionedExternalCall", "PathConditionedLowLevelCall",
+        "PathConditionedStaticCallOverlay", "PathConditionedDelegateCallOverlay",
+        "PathConditionedRawReturnData", "PathConditionedPrecompileOutputRead",
+    }
+    for index, kind in enumerate(sorted(adapter.FINAL_OVERLAY_KINDS)):
+        attrs = {"candidates": [{}]} if kind in path_kinds else {}
+        facts = adapter.overlay_facts(
+            function([]), overlay(kind, attrs, f"ov_contract_{index}"), {}, {},
+        )
+        assert facts, kind
+        assert all(item.kind or item.semantic.get("status") == "unmodeled" for item in facts), kind
+
+
+def test_sseir_event_return_revert_memory_and_precompile_fields_are_projected() -> None:
+    fn = function([
+        overlay("EventEmit", {
+            "event": "Transfer", "signature": "Transfer(address,address,uint256)",
+            "args": ["from", "to", "amount"],
+            "topics": ["Transfer.topic0", "from", "to"],
+        }, "ov_event_topics"),
+        overlay("ReturnValue", {"values": ["left", "right"]}, "ov_return_values"),
+        overlay("RawRevertBytes", {
+            "source_object": "reason", "payload": "reason[0:reason.length]", "guard": "!ok",
+        }, "ov_revert_bytes"),
+        overlay("CursorBasedMemoryWrite", {
+            "struct_object": "pair", "struct_type": "Pair", "cursor_field": "right",
+            "field_updates": [{"field": {"name": "right"}, "new_value_normalized": "amount"}],
+        }, "ov_cursor"),
+        overlay("PrecompileCall", {
+            "precompile": "sha256", "input_words": ["data"],
+            "native_precompile": {
+                "precompile": "sha256", "input_words": ["data"],
+                "native_precompile": {
+                    "result_name": "sha256_result_0", "output_word_expression": "uint256(sha256_result_0)",
+                    "solidity_like": "bytes32 sha256_result_0 = sha256(abi.encodePacked(data));",
+                },
+            },
+        }, "ov_precompile"),
+    ])
+    facts = [item.to_dict() for item in SSeirFactAdapter().function_facts(fn, semantic_only=True)]
+    by_overlay = {item["evidence"]["overlay"]: item for item in facts}
+    event = by_overlay["ov_event_topics"]
+    assert event["semantic"]["topic0"] == "Transfer.topic0"
+    assert event["semantic"]["indexed_topic_values"] == ["from", "to"]
+    returned = by_overlay["ov_return_values"]
+    assert returned["rvalue"] == ["left", "right"] and returned["reads"] == ["left", "right"]
+    reverted = by_overlay["ov_revert_bytes"]
+    assert reverted["condition"] == "!ok" and reverted["semantic"]["source_object"] == "reason"
+    cursor = by_overlay["ov_cursor"]
+    assert cursor["semantic"]["cursor_field"] == "right"
+    assert cursor["semantic"]["field_updates"][0]["field"]["name"] == "right"
+    precompile = by_overlay["ov_precompile"]
+    assert precompile["semantic"]["native_projection"] == {
+        "precompile": "sha256", "result_name": "sha256_result_0",
+        "output_expression": "uint256(sha256_result_0)",
+        "solidity_like": "bytes32 sha256_result_0 = sha256(abi.encodePacked(data));",
+    }
+
+
+def test_memory_array_projection_keeps_recovered_values_without_guessing_indices() -> None:
+    fn = function([
+        overlay("MemoryArrayConstruction", {
+            "result": "items", "array_type": "uint256[]", "element_type": "uint256",
+            "length_expr_normalized": "length", "element_write_pattern": "cursor_based",
+            "element_writes": [
+                {"address": "opaqueAddress", "value_normalized": "left"},
+                {"address": "opaqueAddress2", "value": "right"},
+            ],
+        }, "ov_memory_array"),
+        overlay("StructInitializationFragment", {
+            "target": "pair", "fields": [{"field": "left", "value": "amount"}],
+        }, "ov_struct_fragment"),
+    ])
+    facts = [item.to_dict() for item in SSeirFactAdapter().function_facts(fn, semantic_only=True)]
+    by_overlay = {item["evidence"]["overlay"]: item for item in facts}
+    array = by_overlay["ov_memory_array"]
+    assert array["semantic"]["elements"] == ["left", "right"]
+    assert array["semantic"]["element_write_pattern"] == "cursor_based"
+    assert array["semantic"]["recovered_element_write_count"] == 2
+    fragment = by_overlay["ov_struct_fragment"]
+    assert fragment["semantic"]["fields"] == [{"field": "left", "value": "amount"}]
+
+
+def test_path_call_and_event_keep_completed_high_semantics() -> None:
+    fn = function([
+        overlay("PathConditionedStaticCallOverlay", {"candidates": [{
+            "status": "resolved", "condition": "enabled", "target": "token", "op": "staticcall",
+            "selector": "0x70a08231", "selector_signature": "balanceOf(address)",
+            "arguments": ["owner"], "result": "balance",
+        }]}, "ov_path_call"),
+        overlay("PathConditionedEventEmit", {"event": "Transfer", "signature": "Transfer(address,address,uint256)", "candidates": [{
+            "status": "resolved", "condition": "enabled", "args": ["from", "to", "amount"],
+            "topics": ["Transfer.topic0", "from", "to"],
+        }]}, "ov_path_event"),
+    ])
+    facts = [item.to_dict() for item in SSeirFactAdapter().function_facts(fn, semantic_only=True)]
+    call, event = facts
+    assert call["semantic"]["target"] == "token"
+    assert call["semantic"]["selector_signature"] == "balanceOf(address)"
+    assert call["semantic"]["call_status_result"] == "balance"
+    assert event["semantic"]["signature"] == "Transfer(address,address,uint256)"
+    assert event["semantic"]["indexed_topic_values"] == ["from", "to"]
+
+
+def test_path_custom_revert_keeps_a_proved_raw_selector_without_guessing_an_error() -> None:
+    fn = function([
+        overlay("PathConditionedCustomErrorRevert", {"candidates": [{
+            "status": "resolved", "condition": "bad", "selector": "0x08c379a0",
+            "normalized": "MemorySlice(low_bytes(0x08c379a0, 4))",
+        }]}, "ov_path_revert"),
+    ])
+    fact = SSeirFactAdapter().function_facts(fn, semantic_only=True)[0].to_dict()
+    assert fact["kind"] == "Revert" and fact["condition"] == "bad"
+    assert fact["semantic"]["selector"] == "0x08c379a0"
+    assert "error" not in fact["semantic"]
+
+
 def test_slither_like_operations_map_to_semantic_facts() -> None:
     facts = [
         item.to_dict()
@@ -590,6 +784,15 @@ if __name__ == "__main__":
         test_mapping_write_condition_keeps_common_join_prefix,
         test_address_and_decoded_call_overlays_project_to_facts,
         test_sseir_event_and_revert_become_behavior_facts,
+        test_completed_sseir_advanced_overlays_have_high_level_facts,
+        test_path_conditioned_sseir_return_output_and_unknown_are_not_dropped,
+        test_path_overlay_without_structured_candidates_is_visible_unmodeled,
+        test_final_overlay_policy_covers_every_declared_completed_overlay,
+        test_every_declared_final_overlay_has_a_non_silent_boundary_outcome,
+        test_sseir_event_return_revert_memory_and_precompile_fields_are_projected,
+        test_memory_array_projection_keeps_recovered_values_without_guessing_indices,
+        test_path_call_and_event_keep_completed_high_semantics,
+        test_path_custom_revert_keeps_a_proved_raw_selector_without_guessing_an_error,
         test_slither_like_operations_map_to_semantic_facts,
         test_slither_defined_operation_dicts_are_covered,
         test_real_slither_operations_project_to_semantic_facts,

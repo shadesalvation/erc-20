@@ -48,6 +48,119 @@ def _nodes_by_id(function: Json) -> dict[str, Json]:
     return {str(node.get("semantic_id")): node for node in function.get("semantic_nodes") or [] if node.get("semantic_id")}
 
 
+def _local_function_nodes(function: Json) -> list[Json]:
+    """Definitions are declarations, deliberately outside the enclosing CFG."""
+    return [
+        node for node in function.get("semantic_nodes") or []
+        if node.get("kind") == "LocalFunctionDefinition"
+        and (node.get("placement") or {}).get("status") == "nested_definition"
+    ]
+
+
+def _nested_body_lines(body: Any, indent: str = "  ") -> list[str]:
+    """Render already-lifted local-function statements without Yul fallback."""
+    if not isinstance(body, list):
+        return [indent + "/* semantic body unavailable */"]
+    lines: list[str] = []
+    for statement in body:
+        if not isinstance(statement, dict):
+            lines.append(indent + "/* unmodeled local semantic statement */")
+            continue
+        line = statement.get("solidity_like")
+        if line:
+            lines.append(indent + str(line).rstrip("; ") + ";")
+            continue
+        kind = str(statement.get("kind") or statement.get("operation") or "statement")
+        if kind.lower() in {"assignment", "valueassign", "set"}:
+            targets = statement.get("targets")
+            target = statement.get("target") or statement.get("lvalue")
+            value = statement.get("value") or statement.get("rvalue") or "opaqueYulValue()"
+            if isinstance(targets, list) and targets:
+                for item in targets:
+                    lines.append(f"{indent}{item} = {value};")
+            else:
+                lines.append(f"{indent}{target or 'value'} = {value};")
+        elif kind.lower() in {"leave", "return", "returnfromlocalfunction"}:
+            values = statement.get("values") or statement.get("value")
+            if isinstance(values, list):
+                lines.append(f"{indent}return ({', '.join(map(str, values))});")
+            else:
+                lines.append(f"{indent}return {values};" if values else indent + "return;")
+        elif kind.lower() == "controltransfer":
+            operation = str(statement.get("operation") or "")
+            lines.append(f"{indent}{operation};" if operation in {"break", "continue"} else indent + "/* unmodeled local control transfer */")
+        elif kind.lower() in {"break", "continue"}:
+            lines.append(f"{indent}{kind.lower()};")
+        elif kind.lower() == "if":
+            condition = statement.get("condition") or "/* unresolved condition */"
+            lines.append(f"{indent}if ({condition}) {{")
+            lines.extend(_nested_body_lines(statement.get("body") or statement.get("then"), indent + "  "))
+            lines.append(indent + "}")
+        elif kind.lower() == "switch":
+            expression = statement.get("expression") or "/* unresolved discriminant */"
+            lines.append(f"{indent}switch ({expression}) {{")
+            for case in statement.get("cases") or []:
+                if not isinstance(case, dict):
+                    lines.append(indent + "  /* unmodeled switch case */")
+                    continue
+                value = str(case.get("value") or "default")
+                header = "default:" if value == "default" else f"case {value}:"
+                lines.append(indent + "  " + header + " {")
+                case_body = case.get("body")
+                lines.extend(_nested_body_lines(case_body, indent + "    "))
+                # Yul switch has no fall-through.  This structural C-like
+                # break preserves that completed semantic choice unless its
+                # recovered body already ends in an explicit transfer.
+                last = case_body[-1] if isinstance(case_body, list) and case_body else {}
+                last_kind = str(last.get("kind") or "").lower() if isinstance(last, dict) else ""
+                if last_kind not in {"returnfromlocalfunction", "return", "leave", "controltransfer", "break", "continue"}:
+                    lines.append(indent + "    break;")
+                lines.append(indent + "  }")
+            lines.append(indent + "}")
+        elif kind.lower() == "for":
+            # A Yul for-loop executes pre once, then condition/body/post.
+            # Spell it as C-like while rather than inventing a synthetic
+            # comma-expression for potentially multi-statement pre/post.
+            lines.append(indent + "{")
+            lines.extend(_nested_body_lines(statement.get("pre"), indent + "  "))
+            condition = statement.get("condition") or "/* unresolved condition */"
+            lines.append(f"{indent}  while ({condition}) {{")
+            lines.extend(_nested_body_lines(statement.get("body"), indent + "    "))
+            lines.extend(_nested_body_lines(statement.get("post"), indent + "    "))
+            lines.append(indent + "  }")
+            lines.append(indent + "}")
+        elif kind.lower() == "expression":
+            expression = statement.get("expression")
+            lines.append(f"{indent}{expression};" if expression else indent + "/* unmodeled local expression */")
+        else:
+            # ``kind`` itself is final semantic classification.  Do not dump
+            # raw source/effect fields into a renderer just for display.
+            lines.append(f"{indent}/* local semantic {kind} */")
+    return lines
+
+
+def _local_definition_lines(function: Json, indent: str = "  ") -> list[str]:
+    lines: list[str] = []
+    for node in _local_function_nodes(function):
+        semantic = _semantic(node)
+        name = semantic.get("name") or node.get("lvalue") or "localFunction"
+        parameters = ", ".join(_local_parameter_text(item) for item in semantic.get("parameters") or [])
+        returns = ", ".join(_local_parameter_text(item) for item in semantic.get("returns") or [])
+        suffix = f" returns ({returns})" if returns else ""
+        lines.append(f"{indent}function {name}({parameters}){suffix} {{ /* nested semantic declaration; not FactCFG */")
+        lines.extend(_nested_body_lines(semantic.get("body"), indent + "  "))
+        lines.append(indent + "}")
+    return lines
+
+
+def _local_parameter_text(value: Any) -> str:
+    if not isinstance(value, dict):
+        return str(value)
+    type_name = str(value.get("type") or value.get("type_string") or "").strip()
+    name = str(value.get("name") or value.get("base_name") or "").strip()
+    return " ".join(part for part in (type_name, name) if part) or "unknown"
+
+
 def _semantic(node: Json) -> Json:
     value = node.get("semantic")
     return value if isinstance(value, dict) else {}
@@ -57,7 +170,9 @@ def _event_line(node: Json) -> str:
     semantic = _semantic(node)
     event = semantic.get("event") or node.get("event") or "Event"
     args = semantic.get("arguments") or semantic.get("args") or node.get("arguments") or []
-    return f"emit {event}({', '.join(map(str, args))});"
+    topics = semantic.get("topics") or []
+    suffix = f" /* topics: {', '.join(map(str, topics))} */" if topics else ""
+    return f"emit {event}({', '.join(map(str, args))});{suffix}"
 
 
 def _call_options(semantic: Json, *, include_salt: bool = False) -> str:
@@ -71,11 +186,43 @@ def _call_options(semantic: Json, *, include_salt: bool = False) -> str:
     return f"{{{', '.join(options)}}}" if options else ""
 
 
+def _path_witness_suffix(semantic: Json) -> str:
+    candidates = semantic.get("path_candidates") or []
+    if not candidates:
+        return ""
+    parts = []
+    for item in candidates:
+        if not isinstance(item, dict):
+            continue
+        value = item.get("value")
+        if value is None and (item.get("selector_signature") or item.get("target") or item.get("precompile")):
+            target = item.get("target") or item.get("precompile") or "target"
+            signature = str(item.get("selector_signature") or "")
+            name = signature.split("(", 1)[0] if signature else _call_display_kind(item.get("call_kind"))
+            value = f"{target}.{name}({', '.join(map(str, item.get('arguments') or []))})"
+        parts.append(f"{item.get('condition') or 'entry'} => {value or 'unknown'}")
+    if not parts:
+        return ""
+    label = "path" if len(parts) == 1 else "paths"
+    return f" /* {label}: {'; '.join(parts)} */"
+
+
+def _call_display_kind(value: Any) -> str:
+    """Render EVM call modes as SFIR-level operations, not Yul opcodes."""
+    raw = str(value or "call")
+    return {
+        "call": "externalCall",
+        "staticcall": "externalStaticCall",
+        "delegatecall": "externalDelegateCall",
+        "callcode": "externalCallCode",
+    }.get(raw, raw)
+
+
 def render_sfir_node_c_like(node: Json) -> str | None:
     """Render one final semantic operation without descending into Yul evidence."""
     kind = str(node.get("kind") or "")
     semantic = _semantic(node)
-    lvalue = node.get("lvalue") or semantic.get("target")
+    lvalue = node.get("lvalue")
     rvalue = node.get("rvalue") or semantic.get("value") or semantic.get("expression_normalized")
 
     if kind == "StorageLocationResolve":
@@ -97,19 +244,61 @@ def render_sfir_node_c_like(node: Json) -> str | None:
         return f"assert({condition});" if condition else "assert(/* unresolved condition */);"
     if kind == "EventEmit":
         return _event_line(node)
+    if kind == "PrecompileCall":
+        projection = semantic.get("native_projection") or {}
+        native_line = projection.get("solidity_like") if isinstance(projection, dict) else None
+        if native_line:
+            return str(native_line) + _path_witness_suffix(semantic)
+        precompile = semantic.get("precompile") or "unknown"
+        args = semantic.get("input_words") or semantic.get("arguments") or []
+        call = f"precompileCall({precompile}, {', '.join(map(str, args))})"
+        return (f"{lvalue} = {call};" if lvalue else f"{call};") + _path_witness_suffix(semantic)
     if kind == "ExternalCall":
         target = semantic.get("target") or node.get("lvalue") or "target"
         signature = semantic.get("selector_signature")
         function = semantic.get("function")
         args = semantic.get("arguments") or node.get("arguments") or []
-        call_kind = semantic.get("call_kind") or "call"
+        call_kind = _call_display_kind(semantic.get("call_kind"))
         if signature:
             call = f"{call_kind} {target}.{signature.split('(')[0]}({', '.join(map(str, args))})"
         elif function and target:
             call = f"{target}.{function}({', '.join(map(str, args))})"
         else:
             call = f"{call_kind}({target}, {', '.join(map(str, args))})"
+        line = f"{lvalue} = {call};" if lvalue else f"{call};"
+        return line + _path_witness_suffix(semantic)
+    if kind == "LowLevelCall" and semantic.get("encoded_payload"):
+        target = semantic.get("target") or "target"
+        call = f"{_call_display_kind(semantic.get('call_kind'))}({target}, {semantic['encoded_payload']})"
         return f"{lvalue} = {call};" if lvalue else f"{call};"
+    if kind == "MemoryAllocate":
+        return f"{lvalue} = allocateMemoryRegion();" if lvalue else "allocateMemoryRegion();"
+    if kind == "MemoryObjectConstruct":
+        expression = node.get("rvalue") or "new memoryObject(unknown)"
+        line = f"{lvalue} = {expression};" if lvalue else f"{expression};"
+        elements = semantic.get("elements") or []
+        if elements:
+            pattern = semantic.get("element_write_pattern") or "recovered"
+            line += f" /* recovered {pattern} element values: {', '.join(map(str, elements))}; indices unresolved */"
+        return line
+    if kind == "MemoryObjectWrite":
+        object_name = semantic.get("struct_object") or semantic.get("object") or semantic.get("target") or lvalue
+        updates = semantic.get("field_updates") or semantic.get("mutations") or semantic.get("fields")
+        if object_name and isinstance(updates, list) and updates:
+            rendered = []
+            for update in updates:
+                if not isinstance(update, dict):
+                    continue
+                raw_field = update.get("field")
+                field = raw_field.get("name") if isinstance(raw_field, dict) else raw_field
+                value = update.get("new_value_normalized") or update.get("new_value") or update.get("value")
+                if field and value is not None:
+                    rendered.append(f"{object_name}.{field} = {value};")
+            if rendered:
+                return " ".join(rendered)
+        if object_name and rvalue is not None:
+            return f"writeMemoryObject({object_name}, {rvalue});"
+        return "writeMemoryObject(/* unresolved object */);"
     if kind == "ModifierApply":
         modifier = semantic.get("modifier") or semantic.get("function") or "modifier"
         args = semantic.get("arguments") or []
@@ -139,6 +328,13 @@ def render_sfir_node_c_like(node: Json) -> str | None:
     if kind == "UnmodeledSlithIROperation":
         operation = semantic.get("slithir_kind") or "<unknown operation>"
         return f"/* unmodeled SlithIR operation: {operation}; */"
+    if kind == "UnmodeledSSeirOverlay":
+        operation = semantic.get("overlay_kind") or "<unknown overlay>"
+        fields = ", ".join(map(str, semantic.get("available_fields") or []))
+        opaque = semantic.get("opaque_value") or node.get("rvalue")
+        if lvalue and opaque:
+            return f"{lvalue} = {opaque}; /* unmodeled S-SEIR overlay: {operation}; fields=[{fields}] */"
+        return f"/* unmodeled S-SEIR overlay: {operation}; fields=[{fields}] */"
     if kind == "SelfDestruct":
         function = semantic.get("function") or "selfdestruct"
         args = semantic.get("arguments") or []
@@ -147,7 +343,10 @@ def render_sfir_node_c_like(node: Json) -> str | None:
         target = semantic.get("target") or semantic.get("function_contract") or semantic.get("function") or "call"
         function = semantic.get("function") or "call"
         args = semantic.get("arguments") or []
-        call = f"{target}.{function}{_call_options(semantic)}({', '.join(map(str, args))})" if semantic.get("target") else f"{function}({', '.join(map(str, args))})"
+        if kind == "LowLevelCall" and semantic.get("target"):
+            call = f"{_call_display_kind(semantic.get('call_kind'))}({target}{', ' if args else ''}{', '.join(map(str, args))})"
+        else:
+            call = f"{target}.{function}{_call_options(semantic)}({', '.join(map(str, args))})" if semantic.get("target") else f"{function}({', '.join(map(str, args))})"
         return f"{lvalue} = {call};" if lvalue else f"{call};"
     if kind == "NewContract":
         contract = semantic.get("contract") or "Contract"
@@ -180,13 +379,18 @@ def render_sfir_node_c_like(node: Json) -> str | None:
         result = node.get("lvalue")
         return f"{result + ' = ' if result else ''}{target}.{method}({value});"
     if kind == "Return":
-        value = node.get("rvalue") or (semantic.get("resolved_operands") or semantic.get("values") or [None])[0]
+        value = node.get("rvalue")
+        if value is None:
+            resolved = semantic.get("resolved_operands") or semantic.get("values") or []
+            value = resolved[0] if len(resolved) == 1 else resolved
+        if semantic.get("operation") == "raw_return_data":
+            return (f"{value};" if value else "returnRawMemory();") + _path_witness_suffix(semantic)
         if isinstance(value, (list, tuple)):
             return f"return ({', '.join(map(str, value))});"
         return f"return {value};" if value else "return;"
     if kind in {"ValueAssign", "ValueCompute", "TypeConversion", "IndexAccess", "MemberAccess", "LengthRead", "CodeSizeQuery", "NewElementaryType"}:
         if lvalue and rvalue is not None:
-            return f"{lvalue} = {rvalue};"
+            return f"{lvalue} = {rvalue};" + _path_witness_suffix(semantic)
         operation = semantic.get("operation")
         args = semantic.get("arguments") or node.get("arguments") or []
         if lvalue and operation:
@@ -201,6 +405,21 @@ def render_sfir_node_c_like(node: Json) -> str | None:
     if kind == "Revert":
         function = str(semantic.get("function") or "")
         args = semantic.get("arguments") or []
+        error = semantic.get("error")
+        payload = semantic.get("payload")
+        source_object = semantic.get("source_object")
+        selector = semantic.get("selector")
+        raw_payload = semantic.get("raw_payload")
+        if error:
+            return f"revertCustom({error}{', ' if args else ''}{', '.join(map(str, args))});"
+        if source_object:
+            return f"revertBytes({source_object});"
+        if payload:
+            return f"revertRawBytes({payload});"
+        if selector:
+            return f"revertRawSelector({selector});"
+        if raw_payload:
+            return f"revertRawBytes({raw_payload});"
         if function.startswith("revert "):
             error = function[len("revert "):].split("(", 1)[0].strip()
             return f"revert {error}({', '.join(map(str, args))});"
@@ -430,6 +649,10 @@ def render_sfir_c_like(payload: Json) -> str:
         aliases = _aliases(function)
         by_id = _nodes_by_id(function)
         lines.extend([f"// {function.get('function_id')}", _function_header(function) + " {"])
+        definitions = _local_definition_lines(function)
+        if definitions:
+            lines.append("  // Nested semantic Yul function declarations (outside this FactCFG)")
+            lines.extend(definitions)
         for block in _ordered_blocks(function):
             block_id = str(block.get("block_id"))
             fused = block.get("fused_source_blocks") or []
@@ -471,6 +694,10 @@ def render_fact_cfg_text(payload: Json) -> str:
                 collapsed = edge.get("contracted_blocks") or []
                 via = f" collapsed={len(collapsed)}" if collapsed else ""
                 lines.append(f"    -> {aliases.get(str(edge.get('to')), '<missing>')} [{label}{guard}{via}]")
+        definitions = _local_definition_lines(function, "    ")
+        if definitions:
+            lines.append("  Nested semantic Yul function declarations (not FactCFG blocks):")
+            lines.extend(definitions)
         phis = (function.get("fact_ssa") or {}).get("phis") or []
         if phis:
             lines.append("  FactPhi:")
@@ -577,6 +804,21 @@ def render_fact_cfg_dot(function: Json) -> str:
         attrs = _dot_block_style(block)
         attrs["label"] = "\\l".join(label_lines) + "\\l"
         lines.append(f'  "{dot_escape(block_id)}" [{_attrs_to_dot(attrs)}];')
+    definitions = _local_function_nodes(function)
+    if definitions:
+        lines.append('  subgraph "cluster_nested_definitions" {')
+        lines.append('    label="Nested semantic Yul declarations (not FactCFG nodes)"; style="dashed"; color="#8a8f98";')
+        for index, definition in enumerate(definitions):
+            semantic = _semantic(definition)
+            name_text = semantic.get("name") or definition.get("lvalue") or "localFunction"
+            params = ", ".join(_local_parameter_text(item) for item in semantic.get("parameters") or [])
+            returns = ", ".join(_local_parameter_text(item) for item in semantic.get("returns") or [])
+            header = f"function {name_text}({params})" + (f" returns ({returns})" if returns else "")
+            body = _nested_body_lines(semantic.get("body"), "")
+            label = "\\l".join([header, *body]) + "\\l"
+            node_id = f"nested_definition_{index}"
+            lines.append(f'    "{dot_escape(node_id)}" [shape="note", style="dashed", color="#8a8f98", label="{dot_escape(label)}"];')
+        lines.append("  }")
     for edge in (function.get("fact_cfg") or {}).get("edges") or []:
         source = str(edge.get("from") or "")
         target = str(edge.get("to") or "")

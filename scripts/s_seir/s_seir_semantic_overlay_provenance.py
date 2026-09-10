@@ -15,16 +15,37 @@ Json = dict[str, Any]
 
 _SINK_KINDS = {
     "Predicate": {"Branch"},
+    "AddressZeroCheck": {"Branch"},
+    "BytesContentHash": {"MemoryHash"},
     "StateVariableWrite": {"StorageWrite"}, "MappingWrite": {"StorageWrite"},
     "StateVariableRead": {"StorageRead"}, "MappingRead": {"StorageRead"},
     "EventEmit": {"EventLog"}, "PathConditionedEventEmit": {"EventLog"},
     "RequireOverlay": {"Revert"}, "CustomErrorRevert": {"Revert"},
     "RawRevertBytes": {"Revert"}, "RevertOverlay": {"Revert"},
+    # These are completed path alternatives of a single terminal endpoint.
+    # They must use the terminal Revert sink, rather than whichever value
+    # derivation happened to be encountered first.
+    "PathConditionedCustomErrorRevert": {"Revert"},
+    "PathConditionedRevert": {"Revert"},
     "ExternalCall": {"Call", "StaticCall", "DelegateCall", "CallCode", "ExternalCall", "InternalCall"},
     "LowLevelCall": {"Call", "StaticCall", "DelegateCall", "CallCode", "ExternalCall"},
     "StaticCallOverlay": {"StaticCall"}, "DelegateCallOverlay": {"DelegateCall"},
-    "PrecompileCall": {"Call", "StaticCall"}, "ReturnValue": {"Return"},
+    "PrecompileCall": {"Call", "StaticCall"},
+    "AbiEncodedLowLevelCall": {"Call", "StaticCall", "DelegateCall", "CallCode"},
+    "RawReturnData": {"Return"}, "PathConditionedRawReturnData": {"Return"},
+    "ReturnValue": {"Return"},
+    "CallOutputRead": {"MemoryRead"}, "PrecompileOutputRead": {"MemoryRead"},
+    "PathConditionedPrecompileOutputRead": {"MemoryRead"},
+    "StructFieldRead": {"MemoryRead"}, "StructFieldWrite": {"MemoryWrite"},
+    "StoragePointerSlotBinding": {"ValueDef"},
 }
+
+# All other completed overlays use their explicit statement references and
+# effect CFG nodes as semantic provenance.  This fallback is intentionally
+# evidence-based (not source-order based): it covers value/object construction
+# overlays for which S-SEIR has no single terminal sink.  Local definitions are
+# declarations and deliberately stay outside their enclosing function CFG.
+_NESTED_DEFINITION_KINDS = {"YulLocalFunctionDefinition"}
 
 
 def attach_semantic_cfg_provenance(overlays: list[Any], effects: list[Any], control: Json) -> None:
@@ -38,6 +59,10 @@ def attach_semantic_cfg_provenance(overlays: list[Any], effects: list[Any], cont
     for overlay in overlays:
         attrs = getattr(overlay, "attrs", None)
         if not isinstance(attrs, dict):
+            continue
+        if str(getattr(overlay, "kind", "")) in _NESTED_DEFINITION_KINDS:
+            attrs["semantic_cfg_placement"] = "nested_definition"
+            attrs.setdefault("semantic_evidence_cfg_nodes", [])
             continue
         # CFG-native loop predicates have no sink effect: their unique
         # terminator block is already semantic-level provenance.  Preserve
