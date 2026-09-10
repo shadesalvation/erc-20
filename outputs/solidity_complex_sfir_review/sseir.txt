@@ -1,0 +1,74 @@
+Function IComplexQuoteOracle.quote(address, uint256)
+  function_id: IComplexQuoteOracle.quote(address, uint256)
+  SourceStatements:
+  Control:
+    blocks: 0
+    edges: 0
+  ExpressionRoles:
+  Effects:
+  SemanticOverlays:
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "IComplexQuoteOracle.quote(address, uint256)", "state_variables": []}
+    {"kind": "SSEIRStructTable", "structs": {}}
+    {"kind": "SSEIRConstantTable", "constants": {}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 3, "selectors": {"0x8f79306e": [{"selector": "0x8f79306e", "signature": "quote(address,uint256)", "name": "quote", "kind": "function", "contract": "IComplexQuoteOracle", "source": "ast", "src": "94:77:0"}], "0xdb01cbba": [{"selector": "0xdb01cbba", "signature": "_discount(uint256,uint256)", "name": "_discount", "kind": "function", "contract": "ComplexSoliditySFIR", "source": "ast", "src": "604:134:0"}], "0x96ead173": [{"selector": "0x96ead173", "signature": "settle(address,address,address,uint256,uint256[])", "name": "settle", "kind": "function", "contract": "ComplexSoliditySFIR", "source": "ast", "src": "744:1323:0"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "tests/fixtures/solidity_complex_sfir.sol", "analysis_source": "/tmp/sseir_branch_v2kc2ij1/solidity_complex_sfir.sol", "rewrite_count": 0, "enabled": true, "flattened_imports": false, "imported_files": [], "preprocessed_files": ["/home/ubuntu/erc-20/tests/fixtures/solidity_complex_sfir.sol"]}
+
+Function ComplexSoliditySFIR._discount(uint256, uint256)
+  function_id: ComplexSoliditySFIR._discount(uint256, uint256)
+  SourceStatements:
+    sol_s_1 [solidity] return quote > quota ? quota : quote
+  Control:
+    blocks: 4
+    edges: 3
+  ExpressionRoles:
+  Effects:
+  SemanticOverlays:
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "ComplexSoliditySFIR._discount(uint256, uint256)", "state_variables": [{"name": "accounts", "kind": "state", "type_string": "mapping(address => struct ComplexSoliditySFIR.Account)", "data_location": "default", "src": "308:45:0", "storage_slot": 0, "declaration_id": 23}, {"name": "allowances", "kind": "state", "type_string": "mapping(address => mapping(address => uint256))", "data_location": "default", "src": "359:67:0", "storage_slot": 1, "declaration_id": 29}]}
+    {"kind": "SSEIRStructTable", "structs": {"Account": {"name": "Account", "canonical_name": "ComplexSoliditySFIR.Account", "fields": [{"name": "balance", "type_string": "uint256", "offset": 0, "index": 0, "src": "235:15:0"}, {"name": "quota", "type_string": "uint256", "offset": 32, "index": 1, "src": "260:13:0"}, {"name": "enabled", "type_string": "bool", "offset": 64, "index": 2, "src": "283:12:0"}], "src": "210:92:0"}, "ComplexSoliditySFIR.Account": {"name": "Account", "canonical_name": "ComplexSoliditySFIR.Account", "fields": [{"name": "balance", "type_string": "uint256", "offset": 0, "index": 0, "src": "235:15:0"}, {"name": "quota", "type_string": "uint256", "offset": 32, "index": 1, "src": "260:13:0"}, {"name": "enabled", "type_string": "bool", "offset": 64, "index": 2, "src": "283:12:0"}], "src": "210:92:0"}}}
+    {"kind": "SSEIRConstantTable", "constants": {}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 3, "selectors": {"0x8f79306e": [{"selector": "0x8f79306e", "signature": "quote(address,uint256)", "name": "quote", "kind": "function", "contract": "IComplexQuoteOracle", "source": "ast", "src": "94:77:0"}], "0xdb01cbba": [{"selector": "0xdb01cbba", "signature": "_discount(uint256,uint256)", "name": "_discount", "kind": "function", "contract": "ComplexSoliditySFIR", "source": "ast", "src": "604:134:0"}], "0x96ead173": [{"selector": "0x96ead173", "signature": "settle(address,address,address,uint256,uint256[])", "name": "settle", "kind": "function", "contract": "ComplexSoliditySFIR", "source": "ast", "src": "744:1323:0"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "tests/fixtures/solidity_complex_sfir.sol", "analysis_source": "/tmp/sseir_branch_v2kc2ij1/solidity_complex_sfir.sol", "rewrite_count": 0, "enabled": true, "flattened_imports": false, "imported_files": [], "preprocessed_files": ["/home/ubuntu/erc-20/tests/fixtures/solidity_complex_sfir.sol"]}
+
+Function ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])
+  function_id: ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])
+  SourceStatements:
+    sol_s_1 [solidity] require(recipient != address(0) && amount != 0, "invalid settlement")
+    sol_s_2 [solidity] Account storage sender = accounts[msg.sender]
+    sol_s_3 [solidity] require(sender.enabled, "sender disabled")
+    sol_s_4 [solidity] uint256 weight = 1
+    sol_s_5 [solidity] for (uint256 i = 0; i < multipliers.length; ++i) { uint256 factor = multipliers[i]; if (factor != 0) { weight += factor; } }
+    sol_s_9 [solidity] uint256 i = 0
+    sol_s_10 [solidity] ++i
+    sol_s_6 [solidity] uint256 factor = multipliers[i]
+    sol_s_7 [solidity] if (factor != 0) { weight += factor; }
+    sol_s_8 [solidity] weight += factor
+    sol_s_11 [solidity] uint256 requested = amount * weight
+    sol_s_12 [solidity] uint256 actual = requested > sender.quota ? sender.quota : requested
+    sol_s_13 [solidity] require(actual <= sender.balance, "insufficient balance")
+    sol_s_14 [solidity] sender.balance -= actual
+    sol_s_15 [solidity] accounts[recipient].balance += actual
+    sol_s_16 [solidity] allowances[msg.sender][spender] = actual
+    sol_s_17 [solidity] uint256 quote = oracle.quote(recipient, actual)
+    sol_s_18 [solidity] uint256 discounted = _discount(quote, sender.quota)
+    sol_s_19 [solidity] if (discounted > 0) { accounts[recipient].quota += discounted; emit Settled(msg.sender, recipient, actual, discounted); } else { emit SettlementSkipped(msg.sender, actual); }
+    sol_s_21 [solidity] accounts[recipient].quota += discounted
+    sol_s_22 [solidity] emit Settled(msg.sender, recipient, actual, discounted)
+    sol_s_20 [solidity] emit SettlementSkipped(msg.sender, actual)
+    sol_s_23 [solidity] return discounted
+  Control:
+    blocks: 31
+    edges: 34
+  ExpressionRoles:
+  Effects:
+  SemanticOverlays:
+  SecurityFacts:
+  AnalysisFacts:
+    {"kind": "SSEIRCanonicalization", "mode": "native_s_seir_semantic_graph", "legacy_adapter_used": false, "function": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])", "state_variables": [{"name": "accounts", "kind": "state", "type_string": "mapping(address => struct ComplexSoliditySFIR.Account)", "data_location": "default", "src": "308:45:0", "storage_slot": 0, "declaration_id": 23}, {"name": "allowances", "kind": "state", "type_string": "mapping(address => mapping(address => uint256))", "data_location": "default", "src": "359:67:0", "storage_slot": 1, "declaration_id": 29}]}
+    {"kind": "SSEIRStructTable", "structs": {"Account": {"name": "Account", "canonical_name": "ComplexSoliditySFIR.Account", "fields": [{"name": "balance", "type_string": "uint256", "offset": 0, "index": 0, "src": "235:15:0"}, {"name": "quota", "type_string": "uint256", "offset": 32, "index": 1, "src": "260:13:0"}, {"name": "enabled", "type_string": "bool", "offset": 64, "index": 2, "src": "283:12:0"}], "src": "210:92:0"}, "ComplexSoliditySFIR.Account": {"name": "Account", "canonical_name": "ComplexSoliditySFIR.Account", "fields": [{"name": "balance", "type_string": "uint256", "offset": 0, "index": 0, "src": "235:15:0"}, {"name": "quota", "type_string": "uint256", "offset": 32, "index": 1, "src": "260:13:0"}, {"name": "enabled", "type_string": "bool", "offset": 64, "index": 2, "src": "283:12:0"}], "src": "210:92:0"}}}
+    {"kind": "SSEIRConstantTable", "constants": {}}
+    {"kind": "SSEIRSelectorRegistry", "selector_count": 3, "selectors": {"0x8f79306e": [{"selector": "0x8f79306e", "signature": "quote(address,uint256)", "name": "quote", "kind": "function", "contract": "IComplexQuoteOracle", "source": "ast", "src": "94:77:0"}], "0xdb01cbba": [{"selector": "0xdb01cbba", "signature": "_discount(uint256,uint256)", "name": "_discount", "kind": "function", "contract": "ComplexSoliditySFIR", "source": "ast", "src": "604:134:0"}], "0x96ead173": [{"selector": "0x96ead173", "signature": "settle(address,address,address,uint256,uint256[])", "name": "settle", "kind": "function", "contract": "ComplexSoliditySFIR", "source": "ast", "src": "744:1323:0"}]}}
+    {"kind": "SSEIRBranchPreprocess", "original_source": "tests/fixtures/solidity_complex_sfir.sol", "analysis_source": "/tmp/sseir_branch_v2kc2ij1/solidity_complex_sfir.sol", "rewrite_count": 0, "enabled": true, "flattened_imports": false, "imported_files": [], "preprocessed_files": ["/home/ubuntu/erc-20/tests/fixtures/solidity_complex_sfir.sol"]}

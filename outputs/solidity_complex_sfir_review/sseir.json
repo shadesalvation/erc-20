@@ -1,0 +1,1517 @@
+[
+  {
+    "function_id": "IComplexQuoteOracle.quote(address, uint256)",
+    "contract": "IComplexQuoteOracle",
+    "function": "quote",
+    "signature": "quote(address, uint256)",
+    "source_statements": [],
+    "control": {
+      "blocks": [],
+      "edges": [],
+      "loop_contexts": {},
+      "control_dependencies": [],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "IComplexQuoteOracle.quote(address, uint256)",
+        "state_variables": []
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {}
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {}
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 3,
+        "selectors": {
+          "0x8f79306e": [
+            {
+              "selector": "0x8f79306e",
+              "signature": "quote(address,uint256)",
+              "name": "quote",
+              "kind": "function",
+              "contract": "IComplexQuoteOracle",
+              "source": "ast",
+              "src": "94:77:0"
+            }
+          ],
+          "0xdb01cbba": [
+            {
+              "selector": "0xdb01cbba",
+              "signature": "_discount(uint256,uint256)",
+              "name": "_discount",
+              "kind": "function",
+              "contract": "ComplexSoliditySFIR",
+              "source": "ast",
+              "src": "604:134:0"
+            }
+          ],
+          "0x96ead173": [
+            {
+              "selector": "0x96ead173",
+              "signature": "settle(address,address,address,uint256,uint256[])",
+              "name": "settle",
+              "kind": "function",
+              "contract": "ComplexSoliditySFIR",
+              "source": "ast",
+              "src": "744:1323:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "tests/fixtures/solidity_complex_sfir.sol",
+        "analysis_source": "/tmp/sseir_branch_v2kc2ij1/solidity_complex_sfir.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/tests/fixtures/solidity_complex_sfir.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "ComplexSoliditySFIR._discount(uint256, uint256)",
+    "contract": "ComplexSoliditySFIR",
+    "function": "_discount",
+    "signature": "_discount(uint256, uint256)",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "return quote > quota ? quota : quote",
+        "src": "695:36:0",
+        "function_id": "ComplexSoliditySFIR._discount(uint256, uint256)",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "text": "entrypoint",
+            "src": "685:53:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "quote > quota"
+          },
+          "attrs": {
+            "text": "quote > quota",
+            "src": "695:36:slither",
+            "slither_node_type": "NodeType.IF"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "quota"
+          },
+          "attrs": {
+            "text": "quota",
+            "src": "695:36:slither",
+            "slither_node_type": "NodeType.RETURN"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "quote"
+          },
+          "attrs": {
+            "text": "quote",
+            "src": "695:36:slither",
+            "slither_node_type": "NodeType.RETURN"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n4",
+          "kind": "false"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n2",
+          "dependent": "bb_sol_slither_n4",
+          "edge_kind": "false",
+          "condition": "quote > quota",
+          "predicate": "!(quote > quota)"
+        },
+        {
+          "controller": "bb_sol_slither_n2",
+          "dependent": "bb_sol_slither_n3",
+          "edge_kind": "true",
+          "condition": "quote > quota",
+          "predicate": "quote > quota"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "ComplexSoliditySFIR._discount(uint256, uint256)",
+        "state_variables": [
+          {
+            "name": "accounts",
+            "kind": "state",
+            "type_string": "mapping(address => struct ComplexSoliditySFIR.Account)",
+            "data_location": "default",
+            "src": "308:45:0",
+            "storage_slot": 0,
+            "declaration_id": 23
+          },
+          {
+            "name": "allowances",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "359:67:0",
+            "storage_slot": 1,
+            "declaration_id": 29
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {
+          "Account": {
+            "name": "Account",
+            "canonical_name": "ComplexSoliditySFIR.Account",
+            "fields": [
+              {
+                "name": "balance",
+                "type_string": "uint256",
+                "offset": 0,
+                "index": 0,
+                "src": "235:15:0"
+              },
+              {
+                "name": "quota",
+                "type_string": "uint256",
+                "offset": 32,
+                "index": 1,
+                "src": "260:13:0"
+              },
+              {
+                "name": "enabled",
+                "type_string": "bool",
+                "offset": 64,
+                "index": 2,
+                "src": "283:12:0"
+              }
+            ],
+            "src": "210:92:0"
+          },
+          "ComplexSoliditySFIR.Account": {
+            "name": "Account",
+            "canonical_name": "ComplexSoliditySFIR.Account",
+            "fields": [
+              {
+                "name": "balance",
+                "type_string": "uint256",
+                "offset": 0,
+                "index": 0,
+                "src": "235:15:0"
+              },
+              {
+                "name": "quota",
+                "type_string": "uint256",
+                "offset": 32,
+                "index": 1,
+                "src": "260:13:0"
+              },
+              {
+                "name": "enabled",
+                "type_string": "bool",
+                "offset": 64,
+                "index": 2,
+                "src": "283:12:0"
+              }
+            ],
+            "src": "210:92:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {}
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 3,
+        "selectors": {
+          "0x8f79306e": [
+            {
+              "selector": "0x8f79306e",
+              "signature": "quote(address,uint256)",
+              "name": "quote",
+              "kind": "function",
+              "contract": "IComplexQuoteOracle",
+              "source": "ast",
+              "src": "94:77:0"
+            }
+          ],
+          "0xdb01cbba": [
+            {
+              "selector": "0xdb01cbba",
+              "signature": "_discount(uint256,uint256)",
+              "name": "_discount",
+              "kind": "function",
+              "contract": "ComplexSoliditySFIR",
+              "source": "ast",
+              "src": "604:134:0"
+            }
+          ],
+          "0x96ead173": [
+            {
+              "selector": "0x96ead173",
+              "signature": "settle(address,address,address,uint256,uint256[])",
+              "name": "settle",
+              "kind": "function",
+              "contract": "ComplexSoliditySFIR",
+              "source": "ast",
+              "src": "744:1323:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "tests/fixtures/solidity_complex_sfir.sol",
+        "analysis_source": "/tmp/sseir_branch_v2kc2ij1/solidity_complex_sfir.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/tests/fixtures/solidity_complex_sfir.sol"
+        ]
+      }
+    ]
+  },
+  {
+    "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+    "contract": "ComplexSoliditySFIR",
+    "function": "settle",
+    "signature": "settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+    "source_statements": [
+      {
+        "stmt_id": "sol_s_1",
+        "lang": "solidity",
+        "text": "require(recipient != address(0) && amount != 0, \"invalid settlement\")",
+        "src": "955:69:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_2",
+        "lang": "solidity",
+        "text": "Account storage sender = accounts[msg.sender]",
+        "src": "1035:45:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_3",
+        "lang": "solidity",
+        "text": "require(sender.enabled, \"sender disabled\")",
+        "src": "1090:42:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_4",
+        "lang": "solidity",
+        "text": "uint256 weight = 1",
+        "src": "1143:18:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_5",
+        "lang": "solidity",
+        "text": "for (uint256 i = 0; i < multipliers.length; ++i) { uint256 factor = multipliers[i]; if (factor != 0) { weight += factor; } }",
+        "src": "1171:184:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ForStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_9",
+        "lang": "solidity",
+        "text": "uint256 i = 0",
+        "src": "1176:13:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_10",
+        "lang": "solidity",
+        "text": "++i",
+        "src": "1215:3:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_6",
+        "lang": "solidity",
+        "text": "uint256 factor = multipliers[i]",
+        "src": "1234:31:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_7",
+        "lang": "solidity",
+        "text": "if (factor != 0) { weight += factor; }",
+        "src": "1279:66:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_8",
+        "lang": "solidity",
+        "text": "weight += factor",
+        "src": "1314:16:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_11",
+        "lang": "solidity",
+        "text": "uint256 requested = amount * weight",
+        "src": "1365:35:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_12",
+        "lang": "solidity",
+        "text": "uint256 actual = requested > sender.quota ? sender.quota : requested",
+        "src": "1410:68:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_13",
+        "lang": "solidity",
+        "text": "require(actual <= sender.balance, \"insufficient balance\")",
+        "src": "1488:57:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_14",
+        "lang": "solidity",
+        "text": "sender.balance -= actual",
+        "src": "1556:24:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_15",
+        "lang": "solidity",
+        "text": "accounts[recipient].balance += actual",
+        "src": "1590:37:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_16",
+        "lang": "solidity",
+        "text": "allowances[msg.sender][spender] = actual",
+        "src": "1637:40:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_17",
+        "lang": "solidity",
+        "text": "uint256 quote = oracle.quote(recipient, actual)",
+        "src": "1688:47:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_18",
+        "lang": "solidity",
+        "text": "uint256 discounted = _discount(quote, sender.quota)",
+        "src": "1745:51:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "VariableDeclarationStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_19",
+        "lang": "solidity",
+        "text": "if (discounted > 0) { accounts[recipient].quota += discounted; emit Settled(msg.sender, recipient, actual, discounted); } else { emit SettlementSkipped(msg.sender, actual); }",
+        "src": "1807:226:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "IfStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_21",
+        "lang": "solidity",
+        "text": "accounts[recipient].quota += discounted",
+        "src": "1841:39:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "ExpressionStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_22",
+        "lang": "solidity",
+        "text": "emit Settled(msg.sender, recipient, actual, discounted)",
+        "src": "1894:55:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_20",
+        "lang": "solidity",
+        "text": "emit SettlementSkipped(msg.sender, actual)",
+        "src": "1980:42:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "EmitStatement"
+        }
+      },
+      {
+        "stmt_id": "sol_s_23",
+        "lang": "solidity",
+        "text": "return discounted",
+        "src": "2043:17:0",
+        "function_id": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "block_id": null,
+        "origin": {
+          "nodeType": "Return"
+        }
+      }
+    ],
+    "control": {
+      "blocks": [
+        {
+          "block_id": "bb_sol_slither_n0",
+          "kind": "solidity",
+          "stmts": [],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "entrypoint"
+          },
+          "attrs": {
+            "text": "entrypoint",
+            "src": "945:1122:slither",
+            "slither_node_type": "NodeType.ENTRYPOINT"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n1",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_1"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(recipient != address(0) && amount != 0,invalid settlement)"
+          },
+          "attrs": {
+            "text": "require(bool,string)(recipient != address(0) && amount != 0,invalid settlement)",
+            "src": "955:69:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n2",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_2"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "sender = accounts[msg.sender]"
+          },
+          "attrs": {
+            "text": "sender = accounts[msg.sender]",
+            "src": "1035:45:slither",
+            "slither_node_type": "NodeType.VARIABLE"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n3",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_3"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(sender.enabled,sender disabled)"
+          },
+          "attrs": {
+            "text": "require(bool,string)(sender.enabled,sender disabled)",
+            "src": "1090:42:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n4",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_4"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "weight = 1"
+          },
+          "attrs": {
+            "text": "weight = 1",
+            "src": "1143:18:slither",
+            "slither_node_type": "NodeType.VARIABLE"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n5",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "startloop"
+          },
+          "attrs": {
+            "text": "startloop",
+            "src": "1171:184:slither",
+            "slither_node_type": "NodeType.STARTLOOP"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n6",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "endloop"
+          },
+          "attrs": {
+            "text": "endloop",
+            "src": "1171:184:slither",
+            "slither_node_type": "NodeType.ENDLOOP"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n7",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_9"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "i = 0"
+          },
+          "attrs": {
+            "text": "i = 0",
+            "src": "1176:13:slither",
+            "slither_node_type": "NodeType.VARIABLE"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n8",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "i < multipliers.length"
+          },
+          "attrs": {
+            "text": "i < multipliers.length",
+            "src": "1191:22:slither",
+            "slither_node_type": "NodeType.IFLOOP"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n9",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_6"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "factor = multipliers[i]"
+          },
+          "attrs": {
+            "text": "factor = multipliers[i]",
+            "src": "1234:31:slither",
+            "slither_node_type": "NodeType.VARIABLE"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n10",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_7",
+            "sol_s_5"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "factor != 0"
+          },
+          "attrs": {
+            "text": "factor != 0",
+            "src": "1283:11:slither",
+            "slither_node_type": "NodeType.IF"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n11",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_8"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "weight += factor"
+          },
+          "attrs": {
+            "text": "weight += factor",
+            "src": "1314:16:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n12",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_7"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "text": "endif",
+            "src": "1279:66:slither",
+            "slither_node_type": "NodeType.ENDIF"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n13",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_10"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "++ i"
+          },
+          "attrs": {
+            "text": "++ i",
+            "src": "1215:3:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n14",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_11"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "requested = amount * weight"
+          },
+          "attrs": {
+            "text": "requested = amount * weight",
+            "src": "1365:35:slither",
+            "slither_node_type": "NodeType.VARIABLE"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n16",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_13"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "require(bool,string)(actual <= sender.balance,insufficient balance)"
+          },
+          "attrs": {
+            "text": "require(bool,string)(actual <= sender.balance,insufficient balance)",
+            "src": "1488:57:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n17",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_14"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "sender.balance -= actual"
+          },
+          "attrs": {
+            "text": "sender.balance -= actual",
+            "src": "1556:24:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n18",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_15"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "accounts[recipient].balance += actual"
+          },
+          "attrs": {
+            "text": "accounts[recipient].balance += actual",
+            "src": "1590:37:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n19",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_16"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "allowances[msg.sender][spender] = actual"
+          },
+          "attrs": {
+            "text": "allowances[msg.sender][spender] = actual",
+            "src": "1637:40:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n20",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_17"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "quote = oracle.quote(recipient,actual)"
+          },
+          "attrs": {
+            "text": "quote = oracle.quote(recipient,actual)",
+            "src": "1688:47:slither",
+            "slither_node_type": "NodeType.VARIABLE"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n21",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_18"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "discounted = _discount(quote,sender.quota)"
+          },
+          "attrs": {
+            "text": "discounted = _discount(quote,sender.quota)",
+            "src": "1745:51:slither",
+            "slither_node_type": "NodeType.VARIABLE"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n22",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_19"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "discounted > 0"
+          },
+          "attrs": {
+            "text": "discounted > 0",
+            "src": "1811:14:slither",
+            "slither_node_type": "NodeType.IF"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n23",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_21"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "accounts[recipient].quota += discounted"
+          },
+          "attrs": {
+            "text": "accounts[recipient].quota += discounted",
+            "src": "1841:39:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n24",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_22"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "Settled(msg.sender,recipient,actual,discounted)"
+          },
+          "attrs": {
+            "text": "Settled(msg.sender,recipient,actual,discounted)",
+            "src": "1894:55:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n25",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_20"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "SettlementSkipped(msg.sender,actual)"
+          },
+          "attrs": {
+            "text": "SettlementSkipped(msg.sender,actual)",
+            "src": "1980:42:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n26",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_19"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "text": "endif",
+            "src": "1807:226:slither",
+            "slither_node_type": "NodeType.ENDIF"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n27",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_23"
+          ],
+          "terminator": {
+            "kind": "Return",
+            "text": "discounted"
+          },
+          "attrs": {
+            "text": "discounted",
+            "src": "2043:17:slither",
+            "slither_node_type": "NodeType.RETURN"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n28",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_12"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "requested > sender.quota"
+          },
+          "attrs": {
+            "text": "requested > sender.quota",
+            "src": "1410:68:slither",
+            "slither_node_type": "NodeType.IF"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n29",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_12"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "actual = sender.quota"
+          },
+          "attrs": {
+            "text": "actual = sender.quota",
+            "src": "1410:68:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n30",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_12"
+          ],
+          "terminator": {
+            "kind": "Fallthrough",
+            "text": "actual = requested"
+          },
+          "attrs": {
+            "text": "actual = requested",
+            "src": "1410:68:slither",
+            "slither_node_type": "NodeType.EXPRESSION"
+          }
+        },
+        {
+          "block_id": "bb_sol_slither_n31",
+          "kind": "solidity",
+          "stmts": [
+            "sol_s_12"
+          ],
+          "terminator": {
+            "kind": "Branch",
+            "condition": "endif"
+          },
+          "attrs": {
+            "text": "endif",
+            "src": "1410:68:slither",
+            "slither_node_type": "NodeType.ENDIF"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "bb_sol_slither_n0",
+          "to": "bb_sol_slither_n1",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n1",
+          "to": "bb_sol_slither_n2",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n2",
+          "to": "bb_sol_slither_n3",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n3",
+          "to": "bb_sol_slither_n4",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n4",
+          "to": "bb_sol_slither_n7",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n5",
+          "to": "bb_sol_slither_n8",
+          "kind": "loop"
+        },
+        {
+          "from": "bb_sol_slither_n6",
+          "to": "bb_sol_slither_n14",
+          "kind": "loop"
+        },
+        {
+          "from": "bb_sol_slither_n7",
+          "to": "bb_sol_slither_n5",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n8",
+          "to": "bb_sol_slither_n9",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n8",
+          "to": "bb_sol_slither_n6",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n9",
+          "to": "bb_sol_slither_n10",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n10",
+          "to": "bb_sol_slither_n11",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n10",
+          "to": "bb_sol_slither_n12",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n11",
+          "to": "bb_sol_slither_n12",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n12",
+          "to": "bb_sol_slither_n13",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n13",
+          "to": "bb_sol_slither_n8",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n14",
+          "to": "bb_sol_slither_n28",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n16",
+          "to": "bb_sol_slither_n17",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n17",
+          "to": "bb_sol_slither_n18",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n18",
+          "to": "bb_sol_slither_n19",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n19",
+          "to": "bb_sol_slither_n20",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n20",
+          "to": "bb_sol_slither_n21",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n21",
+          "to": "bb_sol_slither_n22",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n22",
+          "to": "bb_sol_slither_n23",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n22",
+          "to": "bb_sol_slither_n25",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n23",
+          "to": "bb_sol_slither_n24",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n24",
+          "to": "bb_sol_slither_n26",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n25",
+          "to": "bb_sol_slither_n26",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n26",
+          "to": "bb_sol_slither_n27",
+          "kind": "join"
+        },
+        {
+          "from": "bb_sol_slither_n28",
+          "to": "bb_sol_slither_n29",
+          "kind": "true"
+        },
+        {
+          "from": "bb_sol_slither_n28",
+          "to": "bb_sol_slither_n30",
+          "kind": "false"
+        },
+        {
+          "from": "bb_sol_slither_n29",
+          "to": "bb_sol_slither_n31",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n30",
+          "to": "bb_sol_slither_n31",
+          "kind": "fallthrough"
+        },
+        {
+          "from": "bb_sol_slither_n31",
+          "to": "bb_sol_slither_n16",
+          "kind": "join"
+        }
+      ],
+      "loop_contexts": {},
+      "control_dependencies": [
+        {
+          "controller": "bb_sol_slither_n8",
+          "dependent": "bb_sol_slither_n9",
+          "edge_kind": "true",
+          "condition": "i < multipliers.length",
+          "predicate": "i < multipliers.length"
+        },
+        {
+          "controller": "bb_sol_slither_n8",
+          "dependent": "bb_sol_slither_n10",
+          "edge_kind": "true",
+          "condition": "i < multipliers.length",
+          "predicate": "i < multipliers.length"
+        },
+        {
+          "controller": "bb_sol_slither_n8",
+          "dependent": "bb_sol_slither_n12",
+          "edge_kind": "true",
+          "condition": "i < multipliers.length",
+          "predicate": "i < multipliers.length"
+        },
+        {
+          "controller": "bb_sol_slither_n8",
+          "dependent": "bb_sol_slither_n13",
+          "edge_kind": "true",
+          "condition": "i < multipliers.length",
+          "predicate": "i < multipliers.length"
+        },
+        {
+          "controller": "bb_sol_slither_n8",
+          "dependent": "bb_sol_slither_n8",
+          "edge_kind": "true",
+          "condition": "i < multipliers.length",
+          "predicate": "i < multipliers.length"
+        },
+        {
+          "controller": "bb_sol_slither_n10",
+          "dependent": "bb_sol_slither_n11",
+          "edge_kind": "true",
+          "condition": "factor != 0",
+          "predicate": "factor != 0"
+        },
+        {
+          "controller": "bb_sol_slither_n22",
+          "dependent": "bb_sol_slither_n25",
+          "edge_kind": "false",
+          "condition": "discounted > 0",
+          "predicate": "!(discounted > 0)"
+        },
+        {
+          "controller": "bb_sol_slither_n22",
+          "dependent": "bb_sol_slither_n23",
+          "edge_kind": "true",
+          "condition": "discounted > 0",
+          "predicate": "discounted > 0"
+        },
+        {
+          "controller": "bb_sol_slither_n22",
+          "dependent": "bb_sol_slither_n24",
+          "edge_kind": "true",
+          "condition": "discounted > 0",
+          "predicate": "discounted > 0"
+        },
+        {
+          "controller": "bb_sol_slither_n28",
+          "dependent": "bb_sol_slither_n29",
+          "edge_kind": "true",
+          "condition": "requested > sender.quota",
+          "predicate": "requested > sender.quota"
+        },
+        {
+          "controller": "bb_sol_slither_n28",
+          "dependent": "bb_sol_slither_n30",
+          "edge_kind": "false",
+          "condition": "requested > sender.quota",
+          "predicate": "!(requested > sender.quota)"
+        }
+      ],
+      "assembly_boundaries": {}
+    },
+    "expr_roles": [],
+    "effects": [],
+    "semantic_overlays": [],
+    "security_facts": [],
+    "analysis_facts": [
+      {
+        "kind": "SSEIRCanonicalization",
+        "mode": "native_s_seir_semantic_graph",
+        "legacy_adapter_used": false,
+        "function": "ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])",
+        "state_variables": [
+          {
+            "name": "accounts",
+            "kind": "state",
+            "type_string": "mapping(address => struct ComplexSoliditySFIR.Account)",
+            "data_location": "default",
+            "src": "308:45:0",
+            "storage_slot": 0,
+            "declaration_id": 23
+          },
+          {
+            "name": "allowances",
+            "kind": "state",
+            "type_string": "mapping(address => mapping(address => uint256))",
+            "data_location": "default",
+            "src": "359:67:0",
+            "storage_slot": 1,
+            "declaration_id": 29
+          }
+        ]
+      },
+      {
+        "kind": "SSEIRStructTable",
+        "structs": {
+          "Account": {
+            "name": "Account",
+            "canonical_name": "ComplexSoliditySFIR.Account",
+            "fields": [
+              {
+                "name": "balance",
+                "type_string": "uint256",
+                "offset": 0,
+                "index": 0,
+                "src": "235:15:0"
+              },
+              {
+                "name": "quota",
+                "type_string": "uint256",
+                "offset": 32,
+                "index": 1,
+                "src": "260:13:0"
+              },
+              {
+                "name": "enabled",
+                "type_string": "bool",
+                "offset": 64,
+                "index": 2,
+                "src": "283:12:0"
+              }
+            ],
+            "src": "210:92:0"
+          },
+          "ComplexSoliditySFIR.Account": {
+            "name": "Account",
+            "canonical_name": "ComplexSoliditySFIR.Account",
+            "fields": [
+              {
+                "name": "balance",
+                "type_string": "uint256",
+                "offset": 0,
+                "index": 0,
+                "src": "235:15:0"
+              },
+              {
+                "name": "quota",
+                "type_string": "uint256",
+                "offset": 32,
+                "index": 1,
+                "src": "260:13:0"
+              },
+              {
+                "name": "enabled",
+                "type_string": "bool",
+                "offset": 64,
+                "index": 2,
+                "src": "283:12:0"
+              }
+            ],
+            "src": "210:92:0"
+          }
+        }
+      },
+      {
+        "kind": "SSEIRConstantTable",
+        "constants": {}
+      },
+      {
+        "kind": "SSEIRSelectorRegistry",
+        "selector_count": 3,
+        "selectors": {
+          "0x8f79306e": [
+            {
+              "selector": "0x8f79306e",
+              "signature": "quote(address,uint256)",
+              "name": "quote",
+              "kind": "function",
+              "contract": "IComplexQuoteOracle",
+              "source": "ast",
+              "src": "94:77:0"
+            }
+          ],
+          "0xdb01cbba": [
+            {
+              "selector": "0xdb01cbba",
+              "signature": "_discount(uint256,uint256)",
+              "name": "_discount",
+              "kind": "function",
+              "contract": "ComplexSoliditySFIR",
+              "source": "ast",
+              "src": "604:134:0"
+            }
+          ],
+          "0x96ead173": [
+            {
+              "selector": "0x96ead173",
+              "signature": "settle(address,address,address,uint256,uint256[])",
+              "name": "settle",
+              "kind": "function",
+              "contract": "ComplexSoliditySFIR",
+              "source": "ast",
+              "src": "744:1323:0"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "SSEIRBranchPreprocess",
+        "original_source": "tests/fixtures/solidity_complex_sfir.sol",
+        "analysis_source": "/tmp/sseir_branch_v2kc2ij1/solidity_complex_sfir.sol",
+        "rewrite_count": 0,
+        "enabled": true,
+        "flattened_imports": false,
+        "imported_files": [],
+        "preprocessed_files": [
+          "/home/ubuntu/erc-20/tests/fixtures/solidity_complex_sfir.sol"
+        ]
+      }
+    ]
+  }
+]

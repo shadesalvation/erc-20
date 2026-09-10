@@ -21,6 +21,11 @@ class SolidityAtomicOperationExtractor:
     REFERENCE_KINDS = {"Index", "Member"}
     VALUE_KINDS = {
         "Binary",
+        # Slither's SSA conversion keeps CodeSize as a concrete value
+        # operation.  Treat it like Length rather than letting it fall into
+        # the generic operation bucket, so its def-use result remains a
+        # first-class SFIR value query.
+        "CodeSize",
         "Unary",
         "TypeConversion",
         "Length",
@@ -168,6 +173,7 @@ class SolidityAtomicOperationExtractor:
         expression = self._expression(raw, value_defs, reference_defs)
         reference_definition: Json | None = None
         storage_access: Json | None = None
+        storage_alias: Json | None = None
         semantic_result = lvalue
         semantic_result_key = lvalue_key
 
@@ -215,6 +221,38 @@ class SolidityAtomicOperationExtractor:
             reference_defs[lvalue_key] = reference_definition
             value_defs[lvalue_key] = expression
 
+        # A Solidity ``storage`` local is an alias, not an ordinary value
+        # copy.  Slither encodes its target in the assignment rvalue and
+        # carries it through Phi nodes.  Preserve that relation only where
+        # SSA provides an exact, unambiguous reaching reference: this is what
+        # allows a later ``sender.balance -= amount`` to become a write to
+        # ``accounts[msg.sender].balance`` rather than a temporary arithmetic
+        # result.
+        if kind == "Assignment" and lvalue_key and self._is_storage_local(lvalue):
+            source_reference = self._reference_info(raw.get("rvalue"), reference_defs)
+            if source_reference and source_reference.get("state_variable"):
+                reference_defs[lvalue_key] = dict(source_reference)
+                storage_alias = {
+                    "local": self._source_name(lvalue),
+                    "location": dict(source_reference),
+                }
+        elif kind in {"Phi", "PhiCallback"} and lvalue_key:
+            source_references = [
+                self._reference_info(value, reference_defs)
+                for value in raw.get("read") or raw.get("rvalues") or []
+            ]
+            source_references = [
+                item for item in source_references
+                if item and item.get("state_variable")
+            ]
+            if source_references and len(source_references) == len(raw.get("read") or raw.get("rvalues") or []):
+                canonical = {
+                    json.dumps(item, sort_keys=True, default=str)
+                    for item in source_references
+                }
+                if len(canonical) == 1:
+                    reference_defs[lvalue_key] = dict(source_references[0])
+
         if kind in self.LVALUE_WRITE_KINDS:
             # SlithIR serializes ``delete nested[key]`` as
             # ``outer_ref = delete leaf_ref``.  The variable is the location
@@ -226,7 +264,14 @@ class SolidityAtomicOperationExtractor:
             else:
                 target = lvalue or raw.get("variable")
             target_info = self._reference_info(target, reference_defs)
-            if target_info and target_info.get("state_variable"):
+            # ``Account storage sender = accounts[msg.sender]`` carries a
+            # storage reference on its local lvalue, but creates no write. It
+            # is a binding whose target has just been propagated above.
+            if (
+                target_info
+                and target_info.get("state_variable")
+                and not (kind == "Assignment" and self._is_storage_local(target))
+            ):
                 storage_access = dict(target_info)
             elif self._is_state(target):
                 storage_access = {
@@ -246,7 +291,16 @@ class SolidityAtomicOperationExtractor:
             and kind not in self.REFERENCE_KINDS
             and kind != "Delete"
         ):
-            value_defs[lvalue_key] = expression
+            # A Phi of storage locals prints as the local name (``sender``),
+            # but its SSA inputs prove the exact source location.  Keep that
+            # location as the value definition so subsequent Member/Index
+            # operations do not regress from ``accounts[msg.sender].quota``
+            # to the alias spelling ``sender.quota``.
+            storage_alias_info = reference_defs.get(lvalue_key)
+            if self._is_storage_local(lvalue) and storage_alias_info:
+                value_defs[lvalue_key] = str(storage_alias_info.get("access") or expression)
+            else:
+                value_defs[lvalue_key] = expression
 
         storage_reads = self._storage_reads(raw, kind, reference_defs)
 
@@ -271,6 +325,7 @@ class SolidityAtomicOperationExtractor:
             "resolved_reads": resolved_reads,
             "writes": writes,
             "reference_definition": reference_definition,
+            "storage_alias": storage_alias,
             "storage_access": storage_access,
             "storage_reads": storage_reads,
             "source": "slithir_ssa" if raw.get("ssa") else "slithir",
@@ -435,6 +490,10 @@ class SolidityAtomicOperationExtractor:
             return source or f"convert({resolved[0]} -> {target_type})"
         if kind == "Length" and resolved:
             return f"{resolved[0]}.length"
+        if kind == "Unpack":
+            tuple_value = self._resolve_value(operation.get("tuple"), value_defs, reference_defs)
+            if tuple_value:
+                return f"{tuple_value}[{operation.get('index')}]"
         if kind in {"Phi", "PhiCallback"}:
             target = self._source_name(operation.get("lvalue"))
             if target and not target.startswith(("TMP_", "REF_", "TUPLE_")):
@@ -483,6 +542,14 @@ class SolidityAtomicOperationExtractor:
         if not isinstance(value, dict):
             return str(value or "")
         return str(value.get("text") or value.get("name") or "")
+
+    @staticmethod
+    def _is_storage_local(value: Any) -> bool:
+        return bool(
+            isinstance(value, dict)
+            and value.get("is_storage")
+            and not value.get("is_state")
+        )
 
     @staticmethod
     def _source_name(value: Any) -> str:

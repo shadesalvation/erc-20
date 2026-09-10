@@ -519,6 +519,32 @@ class SemanticFactIRBridgeTests(unittest.TestCase):
         self.assertIn("version", use_node["fact_ssa"]["reads"][0])
         self.assertFalse(any(item["kind"] == "unresolved_fact_ssa_read" for item in result["diagnostics"]))
 
+    def test_recovered_storage_location_has_an_exact_fact_ssa_binding(self) -> None:
+        control = {"blocks": [block("s0"), block("s1")], "edges": [{"from": "s0", "to": "s1", "kind": "next"}]}
+        location = {
+            "kind": "mapping", "access": "balances[owner]", "state_variable": "balances",
+            "keys": ["owner"],
+        }
+        read = {
+            **solidity("storage_read", "s0", reads=["balances[owner]"], writes=["loaded"]),
+            "kind": "StateRead", "semantic": {"location": location},
+        }
+        write = {
+            **solidity("storage_write", "s1", reads=["loaded"], writes=["balances[owner]"]),
+            "kind": "StateWrite", "semantic": {"location": location},
+        }
+        result = SemanticFactIRBridge().build_function(
+            function(control, VARIABLES + [{"name": "balances", "kind": "state", "type_string": "mapping(address => uint256)", "declaration_id": 3}]),
+            [read, write], [],
+        )
+        nodes = {node["semantic_id"].rsplit(":", 1)[-1]: node for node in result["semantic_nodes"]}
+        read_ref = nodes["storage_read"]["fact_ssa"]["reads"][0]
+        write_ref = nodes["storage_write"]["fact_ssa"]["writes"][0]
+        self.assertEqual(read_ref["binding_id"], write_ref["binding_id"])
+        self.assertIn(":storage_location:balances[owner]", write_ref["binding_id"])
+        self.assertIn("version", read_ref)
+        self.assertIn("version", write_ref)
+
     def test_event_path_candidates_form_one_canonical_node(self) -> None:
         def event(operation_id: str, condition: str) -> dict:
             return {

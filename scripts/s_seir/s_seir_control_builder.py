@@ -98,6 +98,12 @@ class ControlBuilder:
             notes.append(f"slither_warning: {self._slither_error}")
 
         assembly_ranges = self._slither_assembly_ranges(function, unit)
+        # Slither deliberately represents all TryStatement clauses as CATCH
+        # CFG nodes, including the first (successful) ``returns`` clause.
+        # Its public CFG edges therefore carry no success/catch labels.  Join
+        # those nodes to the compiler AST only through their identical source
+        # ranges; never infer clause roles from node numbers or CFG ordering.
+        try_contexts = self._slither_try_contexts(function, unit)
         loop_contexts = self._assembly_loop_contexts(unit, assembly_ranges)
         asm_for_node: dict[int, int] = {}
         slither_block_ids: dict[int, str] = {}
@@ -117,7 +123,7 @@ class ControlBuilder:
                 continue
             block_id = f"bb_sol_slither_n{node.node_id}"
             slither_block_ids[int(node.node_id)] = block_id
-            blocks.append(self._slither_block(block_id, node, unit))
+            blocks.append(self._slither_block(block_id, node, unit, try_contexts))
 
         for ab in unit.assembly_blocks:
             cfg = build_yul_cfg(ab.yul_ast)
@@ -166,13 +172,15 @@ class ControlBuilder:
                 )
                 if not target_id or source_id == target_id:
                     continue
-                add_edge(source_id, target_id, self._slither_edge_label(node, son))
+                add_edge(source_id, target_id, self._slither_edge_label(node, son, try_contexts))
 
         notes.append(f"slither_nodes={len(function.nodes)}")
         notes.append(f"assembly_blocks={len(unit.assembly_blocks)}")
         notes.append("assembly_edge_policy=slither_predecessors_to_yul_entry_and_yul_exit_to_slither_successors")
         if any(loop_contexts.values()):
             notes.append("function_level_loop_context_attached_to_assembly_blocks")
+        if try_contexts:
+            notes.append("slither_try_catch_outcomes_matched_to_solc_clause_ranges")
         graph_analysis = self._unified_graph_analysis(blocks, edges)
         boundary_contexts = self._assembly_boundary_contexts(
             unit,
@@ -197,6 +205,10 @@ class ControlBuilder:
             "control_dependency_closure": graph_analysis["control_dependency_closure"],
             "typed_def_use": graph_analysis["typed_def_use"],
             "assembly_boundaries": boundary_contexts,
+            "slither_declaration": self._slither_function_declaration(function),
+            "slither_contract_declaration": self._slither_contract_declaration(
+                getattr(function, "contract", None)
+            ),
         }
 
     def _build_skeleton(self, unit: FunctionUnit) -> dict[str, Any]:
@@ -351,6 +363,105 @@ class ControlBuilder:
             return candidates[0]
         return None
 
+    def _slither_function_declaration(self, function: Any) -> dict[str, Any]:
+        """Archive Slither's stable Function/Modifier declaration API.
+
+        This is declaration metadata, not a CFG operation.  In particular a
+        modifier application remains an explicit semantic node: Slither models
+        its body in a separate Modifier CFG around a PLACEHOLDER node.
+        """
+        declaration_kind = "modifier" if type(function).__name__ == "Modifier" else "function"
+        modifiers = [
+            self._serialize_slithir_callable(modifier)
+            for modifier in (getattr(function, "modifiers", []) or [])
+        ]
+        # ``Function.overrides``/``overridden_by`` are Slither's resolved
+        # declaration relations.  Keep them as declaration facts instead of
+        # turning an override into a synthetic CFG edge: dispatch still has
+        # the source call boundary and may be dynamic.
+        def callables(values: list[Any]) -> list[dict[str, Any]]:
+            unique: dict[str, dict[str, Any]] = {}
+            for value in values:
+                item = self._serialize_slithir_callable(value)
+                key = str(item.get("canonical_name") or item.get("full_name") or item.get("name"))
+                unique.setdefault(key, item)
+            return [unique[key] for key in sorted(unique)]
+
+        constructor_statement_targets = []
+        for statement in (getattr(function, "explicit_base_constructor_calls_statements", []) or []):
+            target = self._serialize_slithir_callable(getattr(statement, "modifier", None))
+            constructor_statement_targets.append({
+                "constructor": target,
+                # Slither's ModifierStatements owns the insertion nodes; the
+                # actual argument-bearing InternalCall stays in the normal
+                # SlithIR archive and is lifted once as an InternalCall.
+                "node_ids": [int(getattr(node, "node_id", -1)) for node in (getattr(statement, "nodes", []) or [])],
+            })
+        return {
+            "declaration_kind": declaration_kind,
+            "name": str(getattr(function, "name", "") or ""),
+            "full_name": str(getattr(function, "full_name", "") or ""),
+            "canonical_name": str(getattr(function, "canonical_name", "") or ""),
+            "visibility": str(getattr(function, "visibility", "") or ""),
+            "view": bool(getattr(function, "view", False)),
+            "pure": bool(getattr(function, "pure", False)),
+            "payable": bool(getattr(function, "payable", False)),
+            "implemented": bool(getattr(function, "is_implemented", False)),
+            "function_type": self._enum_text(getattr(function, "function_type", "")),
+            "is_constructor": bool(getattr(function, "is_constructor", False)),
+            "is_fallback": bool(getattr(function, "is_fallback", False)),
+            "is_receive": bool(getattr(function, "is_receive", False)),
+            "is_virtual": bool(getattr(function, "is_virtual", False)),
+            "is_override": bool(getattr(function, "is_override", False)),
+            "parameters": [
+                self._serialize_slithir_value(value)
+                for value in (getattr(function, "parameters", []) or [])
+            ],
+            "returns": [
+                self._serialize_slithir_value(value)
+                for value in (getattr(function, "returns", []) or [])
+            ],
+            "applied_modifiers": modifiers,
+            "overrides": callables(getattr(function, "overrides", []) or []),
+            "overridden_by": callables(getattr(function, "overridden_by", []) or []),
+            "explicit_base_constructor_calls": callables(
+                getattr(function, "explicit_base_constructor_calls", []) or []
+            ),
+            "explicit_base_constructor_call_statements": constructor_statement_targets,
+        }
+
+    def _slither_contract_declaration(self, contract: Any) -> dict[str, Any] | None:
+        """Archive Slither's contract inheritance/constructor API verbatim.
+
+        ``inheritance`` is Slither's linearized order whose first element is
+        the first parent to execute.  ``immediate_inheritance`` preserves the
+        source direct-parent order.  A base-constructor declaration relation
+        is not a normal message-call CFG edge, so it is emitted separately and
+        linked by the final SFIR program builder.
+        """
+        if contract is None:
+            return None
+
+        def contracts(values: list[Any]) -> list[dict[str, Any]]:
+            return [
+                {
+                    "name": str(getattr(value, "name", "") or ""),
+                }
+                for value in values
+            ]
+
+        return {
+            "name": str(getattr(contract, "name", "") or ""),
+            "kind": str(getattr(contract, "kind", "") or ""),
+            "immediate_inheritance": contracts(getattr(contract, "immediate_inheritance", []) or []),
+            "inheritance": contracts(getattr(contract, "inheritance", []) or []),
+            "inheritance_reverse": contracts(getattr(contract, "inheritance_reverse", []) or []),
+            "explicit_base_constructor_calls": [
+                self._serialize_slithir_callable(value)
+                for value in (getattr(contract, "explicit_base_constructor_calls", []) or [])
+            ],
+        }
+
     def _load_slither(self) -> Any | None:
         if self._slither_cache is not None:
             return self._slither_cache
@@ -478,13 +589,19 @@ class ControlBuilder:
             return None
         return asm_exit_ids.get(block_id) if prefer_exit else asm_entry_ids.get(block_id)
 
-    def _slither_block(self, block_id: str, node: Any, unit: FunctionUnit) -> dict[str, Any]:
+    def _slither_block(
+        self,
+        block_id: str,
+        node: Any,
+        unit: FunctionUnit,
+        try_contexts: dict[int, dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         text = self._slither_node_text(node)
         return {
             "block_id": block_id,
             "kind": "solidity",
             "stmts": self._solidity_refs(unit, node),
-            "terminator": self._slither_terminator(node, text),
+            "terminator": self._slither_terminator(node, text, try_contexts),
             "attrs": {
                 "slither_node_id": int(node.node_id),
                 "slither_node_type": str(getattr(node, "type", "")),
@@ -543,17 +660,30 @@ class ControlBuilder:
             "destination",
             "call_value",
             "call_gas",
+            "call_salt",
+            "contract_name",
+            "array_type",
+            "structure",
+            "structure_name",
+            "tuple",
         ):
             value = getattr(op, name, None)
             if value is not None:
                 item[name] = self._serialize_slithir_value(value)
-        for name in ("read", "arguments", "values"):
+        for name in ("read", "arguments", "values", "init_values"):
             values = getattr(op, name, None)
             if values is not None:
                 item[name] = [self._serialize_slithir_value(value) for value in values]
         operation_type = getattr(op, "type", None)
         if operation_type is not None:
             item["operator"] = self._enum_text(operation_type)
+        # InternalDynamicCall is intentionally not tied to a Function object:
+        # Slither exposes the declared callable shape separately as
+        # ``function_type``.  Preserve it verbatim instead of guessing a
+        # concrete callee from the current SSA inputs.
+        function_type = getattr(op, "function_type", None)
+        if function_type is not None:
+            item["function_type"] = str(function_type)
         node = getattr(op, "node", None)
         scope = getattr(node, "scope", None) if node is not None else None
         if scope is not None and hasattr(scope, "is_checked"):
@@ -561,6 +691,25 @@ class ControlBuilder:
         operation_name = getattr(op, "name", None)
         if operation_name is not None:
             item["name"] = str(operation_name)
+        argument_names = getattr(op, "names", None)
+        if isinstance(argument_names, (list, tuple)) and all(
+            isinstance(value, str) for value in argument_names
+        ):
+            item["argument_names"] = list(argument_names)
+        # These are semantic call/construction attributes, rather than
+        # presentation-only details.  Preserve them while the SlithIR object
+        # is still available: the atomic/SFIR stages must not parse ``text``
+        # to recover a call kind, named arguments, or creation salt.
+        for name in (
+            "type_call",
+            "nbr_arguments",
+            "call_id",
+            "is_modifier_call",
+            "index",
+        ):
+            value = getattr(op, name, None)
+            if isinstance(value, (str, int, float, bool)):
+                item[name] = self._enum_text(value) if name == "type_call" else value
         function = getattr(op, "function", None)
         if function is not None:
             item["function"] = self._serialize_slithir_callable(function)
@@ -615,20 +764,42 @@ class ControlBuilder:
         contract = getattr(value, "contract", None) or getattr(value, "contract_declarer", None)
         return {
             "kind": type(value).__name__,
+            "text": str(value),
             "name": str(getattr(value, "name", value)),
             "full_name": str(getattr(value, "full_name", getattr(value, "name", value))),
             "canonical_name": str(getattr(value, "canonical_name", "") or ""),
             "contract": str(getattr(contract, "name", "") or ""),
+            "type": str(getattr(value, "type", "") or ""),
+            "is_constructor": bool(getattr(value, "is_constructor", False)),
+            "is_fallback": bool(getattr(value, "is_fallback", False)),
+            "is_receive": bool(getattr(value, "is_receive", False)),
         }
 
-    @staticmethod
-    def _serialize_slithir_value(value: Any) -> dict[str, Any]:
+    @classmethod
+    def _serialize_slithir_value(
+        cls,
+        value: Any,
+        *,
+        depth: int = 0,
+        seen: set[int] | None = None,
+    ) -> dict[str, Any]:
+        """Archive Slither variables without flattening their alias evidence.
+
+        SlithIR's printable SSA form happens to include some pointer
+        information (for example ``REF_5(-> sender_2 (-> ['accounts']))``),
+        but that representation is not a stable semantic interface.  The
+        structured ``points_to`` and ``refers_to`` relations are the actual
+        API.  They are deliberately bounded here: an archive is evidence for
+        SFIR lifting, not a recursive dump of Slither's in-memory graph.
+        """
+        if seen is None:
+            seen = set()
         kind = type(value).__name__
         non_ssa = getattr(value, "non_ssa_version", None)
         base_name = str(non_ssa) if non_ssa is not None else str(getattr(value, "name", value))
         text = str(value)
         value_type = getattr(value, "type", None)
-        return {
+        item = {
             "kind": kind,
             "text": text,
             "name": str(getattr(value, "name", text)),
@@ -639,6 +810,47 @@ class ControlBuilder:
             "is_constant": kind == "Constant",
             "is_solidity_builtin": kind in {"SolidityVariable", "SolidityVariableComposed"},
         }
+        # A function value used by an InternalDynamicCall is not an ordinary
+        # identifier: Slither exposes its resolved declaration on the value
+        # itself. Preserve that proof so the final program linker need not
+        # infer a callee from a spelling such as ``addOne``.
+        canonical_name = getattr(value, "canonical_name", None)
+        if canonical_name:
+            item["canonical_name"] = str(canonical_name)
+            item["full_name"] = str(getattr(value, "full_name", "") or "")
+            contract = getattr(value, "contract", None) or getattr(value, "contract_declarer", None)
+            if contract is not None:
+                item["contract"] = str(getattr(contract, "name", "") or "")
+        index = getattr(value, "index", None)
+        if isinstance(index, (str, int, float, bool)):
+            item["ssa_index"] = index
+        location = getattr(value, "location", None)
+        if location is not None:
+            item["data_location"] = str(location)
+        if hasattr(value, "is_storage"):
+            item["is_storage"] = bool(getattr(value, "is_storage"))
+
+        # A cycle is unusual for SlithIR variables, but may be constructed by
+        # an analysis extension.  Retain the identity above and stop rather
+        # than turn a diagnostic archive into an unbounded traversal.
+        marker = id(value)
+        if depth >= 4 or marker in seen:
+            return item
+        nested_seen = set(seen)
+        nested_seen.add(marker)
+
+        points_to = getattr(value, "points_to", None)
+        if points_to is not None:
+            item["points_to"] = cls._serialize_slithir_value(
+                points_to, depth=depth + 1, seen=nested_seen
+            )
+        refers_to = getattr(value, "refers_to", None)
+        if refers_to:
+            item["refers_to"] = [
+                cls._serialize_slithir_value(target, depth=depth + 1, seen=nested_seen)
+                for target in sorted(refers_to, key=str)
+            ]
+        return item
 
     @classmethod
     def _unified_graph_analysis(cls, blocks: list[dict[str, Any]], edges: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1051,20 +1263,48 @@ class ControlBuilder:
         return f"{rng.start}:{rng.end - rng.start}:slither" if rng.valid else ""
 
     @staticmethod
-    def _slither_edge_label(node: Any, son: Any) -> str:
+    def _slither_edge_label(node: Any, son: Any, try_contexts: dict[int, dict[str, Any]] | None = None) -> str:
         if getattr(node, "son_true", None) is son:
             return "true"
         if getattr(node, "son_false", None) is son:
             return "false"
         node_type = str(getattr(node, "type", ""))
+        if node_type.endswith("TRY"):
+            context = (try_contexts or {}).get(int(getattr(son, "node_id", -1))) or {}
+            if context.get("try_node_id") == int(getattr(node, "node_id", -2)):
+                return str(context.get("edge_kind") or "try_outcome")
+        if node_type.endswith("BREAK"):
+            return "break"
+        if node_type.endswith("CONTINUE"):
+            return "continue"
         if "ENDIF" in node_type:
             return "join"
         if "STARTLOOP" in node_type or "ENDLOOP" in node_type:
             return "loop"
         return "fallthrough"
 
-    def _slither_terminator(self, node: Any, text: str) -> dict[str, Any]:
+    def _slither_terminator(
+        self,
+        node: Any,
+        text: str,
+        try_contexts: dict[int, dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         node_type = str(getattr(node, "type", ""))
+        context = (try_contexts or {}).get(int(getattr(node, "node_id", -1))) or {}
+        if node_type.endswith("TRY"):
+            return {"kind": "Try", "text": text, "try_id": context.get("try_id")}
+        if node_type.endswith("CATCH"):
+            return {
+                "kind": "Catch",
+                "catch_role": context.get("edge_kind"),
+                "try_id": context.get("try_id"),
+            }
+        if node_type.endswith("PLACEHOLDER"):
+            return {"kind": "ModifierPlaceholder"}
+        if node_type.endswith("BREAK"):
+            return {"kind": "Break"}
+        if node_type.endswith("CONTINUE"):
+            return {"kind": "Continue"}
         if node_type.endswith("IF") or node_type.endswith("IFLOOP"):
             return {"kind": "Branch", "condition": text}
         if "RETURN" in node_type:
@@ -1074,6 +1314,84 @@ class ControlBuilder:
         if not getattr(node, "sons", []):
             return {"kind": "Terminal", "text": text}
         return {"kind": "Fallthrough", "text": text}
+
+    def _slither_try_contexts(self, function: Any, unit: FunctionUnit) -> dict[int, dict[str, Any]]:
+        """Recover Try/Catch outcome roles from Slither + the matching solc AST.
+
+        Slither's parser creates a TRY node and links it to one CATCH node for
+        *every* ``TryCatchClause``. Clause zero is the successful ``returns``
+        scope and only later clauses are catches. Its CFG edges retain no role.
+        The compiler AST retains exact source spans, error names and parameter
+        types, so match only exact spans and leave ambiguity unannotated.
+        """
+        clauses_by_range: dict[tuple[int, int], list[dict[str, Any]]] = {}
+        tries_by_range: dict[tuple[int, int], dict[str, Any]] = {}
+
+        def visit(value: Any) -> None:
+            if isinstance(value, dict):
+                if value.get("nodeType") == "TryStatement":
+                    try_range = Range(*parse_src(str(value.get("src", ""))))
+                    clauses = [item for item in value.get("clauses") or [] if isinstance(item, dict)]
+                    if try_range.valid and clauses:
+                        try_id = f"try:{try_range.start}:{try_range.end}"
+                        tries_by_range[(try_range.start, try_range.end)] = {"try_id": try_id}
+                        for index, clause in enumerate(clauses):
+                            clause_range = Range(*parse_src(str(clause.get("src", ""))))
+                            if clause_range.valid:
+                                clauses_by_range.setdefault((clause_range.start, clause_range.end), []).append({
+                                    "try_id": try_id,
+                                    "edge_kind": self._try_clause_edge_kind(clause, index),
+                                })
+                for child in value.values():
+                    visit(child)
+            elif isinstance(value, list):
+                for child in value:
+                    visit(child)
+
+        visit(unit.ast_node.get("body") or {})
+        if not clauses_by_range:
+            return {}
+
+        contexts: dict[int, dict[str, Any]] = {}
+        for node in getattr(function, "nodes", []) or []:
+            node_id = int(getattr(node, "node_id", -1))
+            node_type = str(getattr(node, "type", ""))
+            node_range = self._range_from_slither_node(node)
+            key = (node_range.start, node_range.end)
+            if node_type.endswith("TRY"):
+                record = tries_by_range.get(key)
+                if record:
+                    contexts[node_id] = {"try_id": record["try_id"]}
+            elif node_type.endswith("CATCH"):
+                matches = clauses_by_range.get(key) or []
+                if len(matches) == 1:
+                    contexts[node_id] = dict(matches[0])
+
+        for node in getattr(function, "nodes", []) or []:
+            node_id = int(getattr(node, "node_id", -1))
+            context = contexts.get(node_id)
+            if not context or not str(getattr(node, "type", "")).endswith("TRY"):
+                continue
+            for son in getattr(node, "sons", []) or []:
+                son_context = contexts.get(int(getattr(son, "node_id", -1)))
+                if son_context and son_context.get("try_id") == context.get("try_id"):
+                    son_context["try_node_id"] = node_id
+        return contexts
+
+    @staticmethod
+    def _try_clause_edge_kind(clause: dict[str, Any], index: int) -> str:
+        if index == 0:
+            return "try_success"
+        error_name = str(clause.get("errorName") or "").strip()
+        if error_name:
+            return f"catch:{error_name}"
+        parameters = ((clause.get("parameters") or {}).get("parameters") or [])
+        parameter_types = [
+            str((item.get("typeDescriptions") or {}).get("typeString") or "").strip()
+            for item in parameters if isinstance(item, dict)
+        ]
+        parameter_types = [item for item in parameter_types if item]
+        return f"catch:{','.join(parameter_types)}" if parameter_types else "catch"
 
     @staticmethod
     def _yul_terminator(node: Any) -> dict[str, Any]:

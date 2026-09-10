@@ -31,6 +31,11 @@ FunctionSSEIR:
 
 当前已经删除 `ProjectionPolicy` 层。原因是目前还没有足够稳定的系统性规则判断某个语义是否能无损投影为 Solidity 高级语句；本阶段只专注语义恢复与统一建模。
 
+在 `FunctionSSEIR` 之上，当前 pipeline 还会生成独立的函数级
+`Semantic Fact IR`（下文简称 **SFIR**）。它是后续解混淆的输入边界，而不是
+`FunctionSSEIR` 的别名：S-SEIR 的 `effects`、MemorySSA、SinkResolver 查询轨迹仍只
+作为上游恢复证据；SFIR 只接收 Solidity 原子语义和已经完成的 Yul 高级语义。
+
 ## 2. 总体 Pipeline
 
 主入口：
@@ -51,6 +56,7 @@ Solidity source
   -> SourceStatementCollector
   -> TypeEnv
   -> ControlBuilder
+  -> SolidityAtomicOperationExtractor（附着 transient sol_atom 表）
   -> MemorySSA views
   -> ExpressionRoleAnalyzer
   -> EffectLifter
@@ -58,9 +64,19 @@ Solidity source
   -> SinkResolver
   -> SemanticOverlayBuilder
   -> SemanticNormalizer
+  -> PredicateLifter
+  -> CalldataArrayLifter
+  -> CalldataSelectorLifter
+  -> MemoryArrayPatternLifter
+  -> YulLocalFunctionLifter
+  -> semantic CFG provenance attachment
   -> SecurityFactBuilder
   -> FunctionSSEIR
-  -> JSON / CFG DOT / solidity-like / LLM assembly views
+  -> SoliditySemanticLifter + YulSemanticLifter
+  -> SemanticFactIRBridge
+  -> SFIR JSON / FactCFG / FactSSA / C-like views
+
+并行的调试输出：FunctionSSEIR JSON / CFG DOT / solidity-like / LLM assembly views
 ```
 
 对应代码顺序：
@@ -76,13 +92,23 @@ for unit in SourceStatementCollector(...).collect():
     apply_storage_layout(unit, storage_layouts)
     type_env = TypeEnv(unit)
     control = ControlBuilder(...).build(unit)
+    solidity_atomic_operations = SolidityAtomicOperationExtractor().extract(unit, control)
     mem = build_memory_ssa_views(unit, control)
     roles = ExpressionRoleAnalyzer().analyze(unit, type_env, mem)
     effects, facts = EffectLifter().lift(unit, mem, control)
     branch_effects, branch_facts = build_branch_materialization_nodes(unit, mem)
     overlays = SemanticOverlayBuilder(...).build(unit, type_env, roles, effects)
     roles, effects, overlays, normalizer_facts = SemanticNormalizer().normalize(...)
+    overlays = PredicateLifter().lift(type_env, effects, overlays, control)
+    overlays = CalldataArrayLifter().lift(type_env, effects, overlays, control)
+    overlays = CalldataSelectorLifter().lift(type_env, effects, overlays)
+    overlays = MemoryArrayPatternLifter().lift(unit, type_env, mem, effects, overlays, control)
+    overlays = YulLocalFunctionLifter().lift(unit, effects, overlays)
+    attach_semantic_cfg_provenance(overlays, effects, control)
     security_facts = SecurityFactBuilder().build(effects, overlays)
+    # solidity_atomic_operations 随 FunctionSSEIR 保存，供最终 SoliditySemanticLifter 使用
+
+semantic_fact_ir = build_function_level_semantic_fact_ir_payload(functions, ...)
 ```
 
 其中 `SinkResolver` 不是主入口中的独立一行调用，而是在
@@ -1474,7 +1500,7 @@ assembly_arithmetic_compare_ir.division_guards_for_expression
 
 ## 17. 当前输出文件
 
-Pipeline 输出两类文件：
+FunctionSSEIR 的默认输出仍有两类文件：
 
 ```Plain
 JSON:
@@ -1485,6 +1511,23 @@ Text:
 ```
 
 JSON 用于后续程序处理；Text 用于人工检查。
+
+此外，pipeline 默认输出最终 SFIR JSON：
+
+```Plain
+outputs/semantic_fact_ir.json
+```
+
+并可选输出：
+
+```Plain
+--semantic-fact-ir-text-output <file>  # semantic node / FactPhi 摘要
+--semantic-fact-c-output <file>        # 只从最终 SFIR 渲染的 C-like 基本块视图
+--semantic-fact-cfg-text-output <file> # 含每个块中 SFIR 操作的 Fact CFG 文本
+--semantic-fact-cfg-dot-dir <dir>      # 每函数一份 Fact CFG DOT
+--solidity-atomic-output <file>        # 上游 transient Slither 原子操作审计表
+--debug-output <file>                  # 完整 FunctionSSEIR 查询证据，非 SFIR 输入
+```
 
 ## 18. 当前原则
 
@@ -2840,3 +2883,380 @@ SemanticSinkMemoryQuery` 均不再出现。Mapping、revert、event、call 和�
 使用字节偏移，导出时先对规范化源码做 UTF-8 字节切片，再解码为文本。带中文注释
 和 CRLF 的 TKM 样例中，原来被截断为 `addres/assemb` 的语句已恢复为 `address t`、
 `address u` 和完整外部调用语句。
+
+## 23. SemanticNormalizer 之后的完成型语义提升
+
+本节记录当前 pipeline 中位于 `SemanticNormalizer` 之后、但在构建
+`FunctionSSEIR` 之前执行的提升器。它们的共同约束是：只把已经具备完整结构证据的
+候选替换为高级语义；不能证明 Solidity 等价性时，保留已有的保守语义，而不输出
+看起来更高级的猜测。
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_predicate_lifter.py
+scripts/s_seir/s_seir_calldata_array_lifter.py
+scripts/s_seir/s_seir_calldata_selector_lifter.py
+scripts/s_seir/s_seir_memory_array_pattern_lifter.py
+scripts/s_seir/s_seir_yul_local_function_lifter.py
+scripts/s_seir/s_seir_semantic_overlay_provenance.py
+```
+
+### 23.1 PredicateLifter：条件语义的完成表示
+
+前面的表达式原子化解决“按什么顺序计算”，但不会自动证明该值就是分支的
+Solidity 条件。`PredicateLifter` 以 `Branch` effect、CFG anchor 和 TypeEnv 为输入，
+建立唯一的 `Predicate` overlay，作为 Yul `if`、loop condition 和 `switch` 的规范条件
+表示。
+
+支持的保守改写包括：
+
+```Plain
+eq(a, b) / lt(a, b) / gt(a, b) / slt(a, b) / sgt(a, b)
+iszero(x)
+and/or（两个操作数都可证明为布尔值）
+calldatasize()       -> msg.data.length
+callvalue()          -> msg.value
+returndatasize()     -> returnDataSize()
+not(0)               -> type(uint256).max
+```
+
+`iszero(x)` 会按类型选择 `!(x)`、`x == 0` 或 `x == address(0)`。直接参与条件的
+`sload` 只在已经恢复到同一 effect / CFG anchor 的 `StateRead` 存在时，才改用状态访问
+语义；否则不会借用无关读取。
+
+```Yul
+if iszero(eq(sload(paused.slot), 0)) { revert(0, 0) }
+```
+
+在 `paused` 已由 TypeEnv 和 StateRead 恢复时，可形成条件 `paused != 0`；若不能恢复，
+则保守记录为 `opaquePredicate(pred_N)`，并带 `status=unresolved`，而不是捏造变量名。
+
+完成的 `Predicate` 会替代同一 Branch 的通用 condition
+`ExpressionNormalization/EvaluationStep` 作为下游规范表示；推导步骤仍保留在上游
+FunctionSSEIR 证据中。对空 `revert` 的结构化分支，SFIR 后续还会把“到 continuation 的
+边”为真、“到 revert 的边”为假，投影为 `Require` 的源码级含义。
+
+Yul loop 从 CFG `loop-condition` 的 `true:<condition>` 边读取实际谓词；Yul switch
+则从 terminator 和结构化 `case/default` 边形成 `switch_edges`。两者均依赖 CFG 身份，
+不按源码文本顺序匹配。
+
+### 23.2 calldata selector 与数组读取
+
+`CalldataSelectorLifter` 只接受精确且带类型的模式：
+
+```Yul
+let selector := shr(224, calldataload(0))
+```
+
+并要求赋值目标为单一 `bytes4` 值定义。满足时生成 `CalldataSelectorRead`：
+
+```Plain
+selector = msg.sig
+semantic_model = calldata_selector_word_shift
+```
+
+任意 `shr` 或任意 `calldataload` 不会被提升为 selector。
+
+数组读取分为“布局候选”和“行为等价完成”两个阶段。候选阶段可从 calldata ABI 布局发现：
+
+```Yul
+let value := calldataload(add(base, add(0x20, mul(i, 0x20))))
+```
+
+但 EVM 的越界 `calldataload` 返回零，Solidity `array[i]` 则会 revert。因此
+`CalldataArrayLifter` 只有同时证明下列条件才以 `CalldataArrayElementRead` 替换原
+`CalldataWordRead`：
+
+1. 已完成的 `Predicate` 恰为 `i < array.length`；
+2. predicate controller 支配读取块；
+3. 读取仅能从该 controller 的 true 边到达；若没有预先计算的 control dependency，
+   则用“真边可达、非真边不可达且不回穿 controller”的 CFG 搜索证明；
+4. 从 true successor 到读取点之前，`i` 未被重新定义。
+
+成功结果附带：
+
+```JSON
+{
+  "bounds_proof": {
+    "condition": "i < values.length",
+    "controlled_edge": "true",
+    "proof": "cfg_dominating_bounds_edge_without_index_redefinition"
+  }
+}
+```
+
+候选本身是瞬态 proof obligation：证明失败时删除候选、保留原始 word read；证明成功时
+删除候选和被替换的原始 word read，确保下游只存在一个规范语义。
+
+### 23.3 MemoryArrayPatternLifter：def-use 模式和多维数组
+
+旧的 memory object / array 模式（20.11）可识别局部 object 形状。当前的
+`MemoryArrayPatternLifter` 进一步将数组元素读取限制为“类型、SSA def-use、CFG 边界”
+共同成立的模式。基本一维模式是：
+
+```Plain
+mul(i, 0x20)
+  -> add(0x20, <mul-result>)
+  -> add(values, <offset-result>)
+  -> mload(<address-result>)
+```
+
+它不依赖字符串拆分：对 `mload(address)` 先从其参数 `address` 出发，沿唯一、支配该 load
+的 ValueDef 回溯 pointer/address alias；要求该地址具有常量 head offset 32、一个 word
+stride `index * 32`，且 base 为 TypeEnv 确认的 memory-array 参数或已经完成的前一维元素。
+`mload` 的结果是该地址处的 32-byte word；只有完整模式及匹配的 `lt(index, length)` 真边
+共同证明“该 word 是 Solidity 数组元素”时，才生成：
+
+```Plain
+target = values[i]
+kind   = MemoryArrayElementRead
+pattern_model = memory_array_read_def_use_word_stride
+```
+
+`mload(values)` 在类型满足时读取的是动态数组对象首 word，因而生成
+`MemoryArrayLengthRead`。数组元素类型本身仍为数组时，`mload(values + 32 + i * 32)` 的
+loaded word 是内层数组 pointer；已恢复的 `values[i]` 便成为下一轮固定点迭代的合法 base，
+同一地址模式可继续得到：
+
+```Solidity
+matrix[i][j]
+```
+
+而非把第二维错误当作对未知指针的 `mload`。未通过 bounds、base、唯一 reaching
+definition 或 stride 检查的模式不会产生数组 overlay，底层通用表达式保留为上游证据。
+
+### 23.4 Yul 局部函数边界
+
+Yul `function f(...) { ... }` 不是应当展开到调用点的宏。`YulLocalFunctionLifter`
+先提取定义，并单独为函数体建立语义 CFG；定义以 `YulLocalFunctionDefinition` overlay
+记录参数、返回值、函数体语义及 `semantic_cfg`。局部控制语义包括 assignment、if、
+switch、for、`leave`、`break`、`continue` 与 return edge。
+
+调用点只在 ValueDef 精确匹配 `target := f(args...)` 时生成：
+
+```Plain
+kind           = YulLocalFunctionCall
+semantic_model = yul_local_function_cfg
+target = f(args...)
+```
+
+调用节点以 definition overlay id 关联被调函数，但不把 callee 的 CFG、effect 或条件
+复制到 caller。这保留了函数调用顺序和可审阅边界，也避免 path clone。
+
+### 23.5 semantic CFG provenance
+
+完成型 overlay 需要进入独立 SFIR CFG，但 SFIR 不允许携带 recovery effect/path-state
+作为事实输入。因此 `attach_semantic_cfg_provenance()` 在 effects 仍可用时只提取安全的
+语义 provenance：
+
+```Plain
+semantic_anchor_cfg_node    # 唯一的语义锚点（若存在）
+semantic_evidence_cfg_nodes # 参与证明的 CFG 节点集合
+```
+
+已知 sink 类型（Predicate、状态读写、事件、require/revert、call、return）使用 effect
+身份和 CFG anchor 映射；loop predicate 保留显式 loop anchor。后续 SFIR 仅消费这些字段，
+不得反向读取 `effects/effect_id/path_states/slot_effect`。
+
+## 24. Solidity 原子操作与双语言共同事实层
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_solidity_atomic_ops.py
+scripts/s_seir/s_seir_solidity_semantic_lifter.py
+scripts/s_seir/s_seir_yul_semantic_lifter.py
+scripts/s_seir/s_seir_semantic_fact_adapter.py
+```
+
+### 24.1 SlithIR-SSA 原子操作表
+
+`SolidityAtomicOperationExtractor` 是传输/归一化层，不重新实现 Slither 的 lowering 或
+SSA。它为每条 Solidity CFG block 中的 SlithIR-SSA 操作分配稳定 `sol_atom_N`，并附带：
+
+```Plain
+cfg_block_id / Slither node id / source span / stmt_refs
+block-local operation order / CFG predecessor blocks / path conditions
+result_ssa / resolved reads / writes / typed reference chain
+```
+
+`Index`、`Member` 建立 typed reference chain，例如 `allowance[owner][spender]`；当后续
+操作消费该 reference 时，extractor 会在消费者之前插入显式 `StorageRead` 原子操作。
+因此“定位 storage location”“读取该 location”“使用读取值计算”可在事实层中保持为
+不同、顺序明确的操作。对 StateWrite、Delete、Phi 和控制谓词亦保留其不同角色，不能因
+展示方便而合并。
+
+该表可通过 `--solidity-atomic-output` 审计，但它是 SFIR 的上游输入，不是最终 IR。
+
+### 24.2 共同 SemanticFact schema
+
+`SoliditySemanticLifter` 对每个 `sol_atom` 只投影一个事实；其典型 kind 包括：
+
+```Plain
+StateRead / StateWrite / StorageLocationResolve
+ValueAssign / ValueCompute / ValuePhi
+IndexAccess / MemberAccess / LengthRead
+Require / Revert / EventEmit / Return
+InternalCall / ExternalCall / LibraryCall / LowLevelCall / BuiltinCall
+```
+
+事实有统一的 `kind/source_lang/origin/fact_role/stmt_refs/cfg_nodes/condition`、
+`lvalue/rvalue/reads/writes/order/semantic/evidence` 字段。常量保留在显示表达式中，
+但不会虚构 FactSSA definition。
+
+`YulSemanticLifter` 只从已完成的 semantic overlay 投影 Yul 事实，绝不重新运行
+MemorySSA、SinkResolver 或 slot 恢复。它还执行以下仅在证明覆盖关系后才允许的规范化：
+
+1. 用同 anchor、同 statement 的已恢复 StateRead 替代外层表达式中的 evaluator 临时值；
+2. 删除被高阶 StateRead、MappingSlot、数组读取、selector 或局部函数调用精确覆盖的
+   `ExpressionNormalization/EvaluationStep`；
+3. 去重相同语义锚点的 storage location，同时在 provenance 记录合并来源；
+4. 完成 call buffer 语义后，删除只服务该调用且没有未覆盖用途的 pointer transport；
+5. 规范化 path-conditioned event 的公共条件。
+
+覆盖判断使用 overlay/effect 的结构身份、source statement 和 semantic CFG anchor；不会因
+两个字符串相同就删除独立操作。无法证明覆盖时，通用值计算保留。
+
+## 25. 最终 Semantic Fact IR（SFIR）
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_semantic_fact_ir.py
+scripts/s_seir/s_seir_semantic_fact_adapter.py
+```
+
+### 25.1 输入边界与基本结构
+
+`build_function_level_semantic_fact_ir_payload()` 对每个 `FunctionSSEIR` 同时调用
+`SoliditySemanticLifter` 与 `YulSemanticLifter`，再交给 `SemanticFactIRBridge`。输出 schema
+为 `s-seir-semantic-fact-ir/v1`，按函数包含：
+
+```Plain
+fact_cfg          # 独立的语义控制图
+fact_ssa          # bindings、definitions、phi、reaching definitions
+semantic_nodes    # 唯一的 Solidity/Yul 高级操作
+semantic_edges    # data / data_phi / bridge_input / bridge_output
+boundary_links    # Solidity 与 Yul 的跨边界 def-use
+path_witnesses    # 按需导出的符号 guard
+diagnostics
+```
+
+SFIR 的处理单位是 function；同一语义节点不会按每条 path 克隆。顺序由 FactCFG 偏序与
+block 内 `operation_order` 共同表达，path 仅在需要时作为 witness 给出。
+
+严格边界如下：Yul 事实必须来自完成 overlay；桥接器会递归删除
+`effects/effect_id/path_states/slot_effect` 及 effect 产生的 path-instance。若仍检测到该类
+字段，节点被拒绝并产生 diagnostic。这样最终 IR 中不会重新出现 Yul 低层 effect。
+
+### 25.2 FactCFG 构建与控制语义
+
+FactCFG 从 function-level control 的 block/edge 建立新 id `fcfg:<function>:<source-block>`，
+并记录其引擎来源（Slither 或 S-SEIR semantic projection）、source block id、stmt refs 和
+terminator。上游 recovery CFG 中 `revert/return/stop` 后为分析边界保留的 structural edge
+不会进入 FactCFG，因为它不是可执行后继。
+
+事实放置只使用 `semantic_anchor_cfg_node` 或唯一 evidence CFG node。局部 Yul 函数定义
+拥有嵌套 `semantic_cfg`，因此是 `nested_definition`，不作为 caller FactCFG 的可执行节点。
+无法获得唯一 anchor 的节点不猜测放置，而记录 `unanchored_semantic_node` diagnostic。
+
+构图后执行两类语义保留的归一：
+
+1. `Require`：仅对 `branch -> empty revert / continuation` 的直接 CFG 形状，将分支改写为
+   `Require(condition)`；continuation 边为 true，failure 边为 false。
+2. `Predicate`：以已完成条件替换 raw Yul branch；switch 的 case/default edge 同步从
+   `switch_edges` 生成 guard，不把显示标签当作表达式。
+
+随后重新计算 reverse postorder、dominance 和 control dependencies。`path_witnesses` 由这些
+控制依赖及节点显式 condition 派生，不能作为新的语义定义。
+
+### 25.3 FactSSA 与跨语言 def-use
+
+FactSSA 不复用上游 MemorySSA。它针对最终语义节点的参数、return、state、局部 binding
+建立版本：入口声明产生 entry definition，节点的 `writes` 产生 semantic definition，CFG
+merge 上多个 reaching version 产生 FactPhi。读取通过 `fact_ssa.reads` 指向当前 version，
+并形成 `semantic_edges`。
+
+```Plain
+Solidity definition -> Yul use       : bridge_input
+Yul definition      -> Solidity use  : bridge_output
+同语言 definition   -> use           : data
+Phi incoming         -> use           : data_phi
+```
+
+这使混合 Solidity/Yul 函数可在 SFIR 内审计值的跨边界传递；同时，未解析 binding/read 会以
+`unresolved_fact_ssa_read` 明确报告，而不是绑定到相似名字的变量。
+
+### 25.4 仅收缩语义惰性的控制传输
+
+为使 SFIR 成为解混淆的可用起点，桥接器会收缩无语义操作的 transport block，并将被收缩
+block 的 source id、角色及 Solidity/Yul boundary transition 附在重定向后的 edge 或目标块。
+它还可融合满足“唯一无条件后继、后继唯一前驱、两块均无分支/终止语义”的线性语义块，
+融合后严格保持前块操作在先、后块操作在后。
+
+不会收缩或融合：分支、switch、loop back、return/revert/stop、存在多个前驱/后继的 merge，
+以及任何可能改变控制含义的块。因此控制边界仍保留在 `FactCFG` 和 edge provenance 中；
+收缩不等同于删除源码语义。
+
+## 26. 人类可读 SFIR 与 FactCFG 输出
+
+实现位置：
+
+```Plain
+scripts/s_seir/s_seir_semantic_fact_render.py
+```
+
+渲染器只接受最终 SFIR payload，绝不回退读取 SourceStatement、Effect 或 MemorySSA。该限制
+保证 C-like 文本不会把已从 SFIR 边界排除的 `mload/sload/keccak` 推导过程重新写回来。
+
+输出形式如下：
+
+| 输出 | 内容 | 用途 |
+|---|---|---|
+| SFIR JSON | 全部 schema 字段 | 程序化解混淆输入 |
+| SFIR text | block、semantic id/kind、FactPhi 摘要 | 快速核对 |
+| C-like | 基本块标签、高级语句、结构化条件和必要 goto | 人工阅读 |
+| FactCFG text | 每块的高级语句、terminator、edge guard、折叠信息 | 控制流审阅 |
+| FactCFG DOT | 上述 FactCFG 的逐函数图 | 图形审阅 |
+
+C-like 视图中的 `goto` 是 FactCFG 未被证明可收缩的控制边，不是重新生成的 Yul 跳转。
+线性无条件 transport 已折叠；仍显示的 `goto` 通常表示循环回边、分支汇合、多个前驱或
+终止边界。折叠过的中间块会以 `collapsed transport` 注释和 edge 的
+`contracted_blocks/boundary_transitions` 保存可追溯性。
+
+示例命令：
+
+```bash
+python scripts/s_seir/s_seir_pipeline.py samples/example.sol \
+  --semantic-fact-ir-output outputs/example.sfir.json \
+  --semantic-fact-ir-text-output outputs/example.sfir.txt \
+  --semantic-fact-c-output outputs/example.sfir.c \
+  --semantic-fact-cfg-text-output outputs/example.factcfg.txt \
+  --semantic-fact-cfg-dot-dir outputs/example.factcfg_dot
+```
+
+## 27. 当前实现的验证边界
+
+与本节新增功能对应的回归测试包括：
+
+```Plain
+scripts/s_seir/s_seir_predicate_lifter_tests.py
+scripts/s_seir/s_seir_memory_array_local_function_tests.py
+scripts/s_seir/s_seir_semantic_fact_ir_tests.py
+scripts/s_seir/s_seir_semantic_fact_render_tests.py
+scripts/s_seir/s_seir_semantic_fact_adapter_tests.py
+scripts/s_seir/s_seir_solidity_slithir_tests.py
+```
+
+这些测试覆盖 predicate/switch/loop 语义、calldata/memory-array 模式及 bounds proof、
+多维数组固定点、局部 Yul 函数边界、Solidity 原子操作、SFIR effect-transport 隔离、
+FactSSA Phi/跨语言边、Require/Switch 的 FactCFG 归一，以及 C-like/DOT 渲染。
+
+新增或修改提升规则时，至少应同时验证：
+
+1. 未证明的候选不会进入高阶 overlay；
+2. 同一完成语义在 SFIR 中只有一个 canonical node；
+3. Yul `effects/path_states` 不穿透 SFIR 边界；
+4. 收缩后仍存在从源到目标的等价 FactCFG 可达关系，且操作顺序没有反转；
+5. human-readable 输出仅来自 SFIR，不能以低层证据作为展示 fallback。

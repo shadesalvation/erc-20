@@ -1,0 +1,149 @@
+Semantic Fact CFG
+Source: tests/fixtures/solidity_complex_sfir.sol
+
+Function IComplexQuoteOracle.quote(address, uint256)
+
+Function ComplexSoliditySFIR._discount(uint256, uint256)
+  B0 [solidity] fcfg:ComplexSoliditySFIR._discount(uint256, uint256):bb_sol_slither_n2
+    terminator: Branch
+    /* collapsed transport: solidity-entry */
+    TMP_0 = quote_1 > quota_1;
+    if (quote > quota)
+    -> B2 [true guard=quote > quota]
+    -> B1 [false guard=!(quote > quota)]
+  B1 [solidity] fcfg:ComplexSoliditySFIR._discount(uint256, uint256):bb_sol_slither_n4
+    terminator: Return
+    return quote_1;
+  B2 [solidity] fcfg:ComplexSoliditySFIR._discount(uint256, uint256):bb_sol_slither_n3
+    terminator: Return
+    return quota_1;
+
+Function ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[])
+  B0 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n1 fused=5
+    terminator: Fallthrough
+    /* collapsed transport: solidity-entry */
+    /* type_conversion: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_2 */
+    TMP_2 = recipient_1 != TMP_1;
+    TMP_3 = amount_1 != 0;
+    TMP_4 = TMP_2 && TMP_3;
+    require(/* unresolved condition */);
+    /* resolved storage location: accounts[msg.sender]; */
+    REF_0 = accounts[msg.sender];
+    /* value_assign: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_8 */
+    /* member_access: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_9 */
+    require(/* unresolved condition */);
+    /* value_assign: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_11 */
+    /* value_assign: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_12 */
+    -> B1 [fallthrough]
+  B1 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n5
+    terminator: Fallthrough
+    -> B2 [loop]
+  B2 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n8
+    terminator: Branch
+    /* length_read: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_14 */
+    TMP_7 = i_2 < REF_2;
+    if (i < multipliers.length)
+    -> B3 [true guard=i < multipliers.length]
+    -> B8 [false guard=!(i < multipliers.length)]
+  B3 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n9
+    terminator: Fallthrough
+    /* index_access: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_17 */
+    /* value_assign: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_18 */
+    -> B4 [fallthrough]
+  B4 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n10
+    terminator: Branch
+    TMP_8 = factor_1 != 0;
+    if (factor != 0)
+    -> B5 [true guard=factor != 0]
+    -> B6 [false guard=!(factor != 0)]
+  B5 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n11
+    terminator: Fallthrough
+    weight_2 = weight_1 + factor_1;
+    -> B6 [fallthrough]
+  B6 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n12
+    terminator: Branch
+    -> B7 [join]
+  B7 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n13
+    terminator: Fallthrough
+    i_3 = i_2 + 1;
+    -> B2 [fallthrough]
+  B8 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n6
+    terminator: Fallthrough
+    -> B9 [loop]
+  B9 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n14
+    terminator: Fallthrough
+    TMP_9 = amount_1 * weight_1;
+    /* value_assign: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_25 */
+    -> B10 [fallthrough]
+  B10 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n28
+    terminator: Branch
+    /* member_access: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_57 */
+    TMP_17 = requested_1 > REF_14;
+    if (requested > sender.quota)
+    -> B12 [true guard=requested > sender.quota]
+    -> B11 [false guard=!(requested > sender.quota)]
+  B11 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n30
+    terminator: Fallthrough
+    /* value_assign: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_62 */
+    -> B13 [fallthrough]
+  B12 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n29
+    terminator: Fallthrough
+    /* member_access: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_60 */
+    /* value_assign: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_61 */
+    -> B13 [fallthrough]
+  B13 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n31
+    terminator: Branch
+    -> B14 [join]
+  B14 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n16 fused=6
+    terminator: Fallthrough
+    /* member_access: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_26 */
+    TMP_10 = actual_3 <= REF_4;
+    require(/* unresolved condition */);
+    /* member_access: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_29 */
+    REF_5 = REF_5 - actual_3;
+    /* resolved storage location: accounts[recipient]; */
+    /* resolved storage location: accounts[recipient].balance; */
+    REF_7 = accounts[recipient].balance;
+    accounts[recipient].balance = (accounts[recipient].balance + actual);
+    /* resolved storage location: allowances[msg.sender]; */
+    /* resolved storage location: allowances[msg.sender][spender]; */
+    allowances[msg.sender][spender] = actual;
+    TMP_12 = call(oracle_1, recipient_1, actual_3);
+    /* value_assign: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_43 */
+    /* member_access: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_44 */
+    TMP_13 = _discount(quote_1, REF_11);
+    /* value_assign: semantic node sfir:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):sol_atom_46 */
+    -> B15 [fallthrough]
+  B15 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n22
+    terminator: Branch
+    TMP_14 = discounted_1 > 0;
+    if (discounted > 0)
+    -> B17 [true guard=discounted > 0]
+    -> B16 [false guard=!(discounted > 0)]
+  B16 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n25
+    terminator: Fallthrough
+    emit SettlementSkipped();
+    -> B18 [fallthrough]
+  B17 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n23 fused=2
+    terminator: Fallthrough
+    /* resolved storage location: accounts[recipient]; */
+    /* resolved storage location: accounts[recipient].quota; */
+    REF_13 = accounts[recipient].quota;
+    accounts[recipient].quota = (accounts[recipient].quota + _discount(quote,sender.quota));
+    emit Settled();
+    -> B18 [fallthrough]
+  B18 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n26
+    terminator: Branch
+    -> B19 [join]
+  B19 [solidity] fcfg:ComplexSoliditySFIR.settle(contract IComplexQuoteOracle, address, address, uint256, uint256[]):bb_sol_slither_n27
+    terminator: Return
+    return discounted_1;
+  FactPhi:
+    fssa:decl:108:value:phi:1 = phi(fssa:decl:108:value:phi:7, fssa:decl:108:value:v30)
+    fssa:symbol:REF:value:phi:2 = phi(fssa:symbol:REF:value:v53, fssa:symbol:REF:value:v55)
+    fssa:decl:146:value:phi:3 = phi(fssa:decl:146:value:v56, fssa:decl:146:value:v57)
+    fssa:symbol:REF:value:phi:4 = phi(fssa:symbol:REF:value:v46, fssa:symbol:REF:value:v52)
+    fssa:symbol:TMP:value:phi:5 = phi(fssa:symbol:TMP:value:v22, fssa:symbol:TMP:value:v29)
+    fssa:symbol:REF:value:phi:6 = phi(fssa:symbol:REF:value:v21, fssa:symbol:REF:value:v27)
+    fssa:decl:108:value:phi:7 = phi(fssa:decl:108:value:phi:1, fssa:decl:108:value:v23)
+    fssa:decl:112:value:phi:8 = phi(fssa:decl:112:value:v24, fssa:decl:112:value:v31)

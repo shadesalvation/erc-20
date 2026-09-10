@@ -80,6 +80,11 @@ class SemanticFactIRBridge:
             solidity, yul = facts_by_function.get(function_id, ([], []))
             built.append(self.build_function(function, solidity, yul))
         semantic_nodes = [node for function in built for node in function["semantic_nodes"]]
+        modifier_application_links = self._modifier_application_links(built)
+        direct_call_links = self._direct_call_links(built)
+        dynamic_call_links = self._dynamic_call_links(built)
+        contracts = self._contract_declarations(built)
+        base_constructor_links = self._base_constructor_links(built, contracts)
         return _clean({
             "schema": self.schema,
             "source": source,
@@ -91,11 +96,345 @@ class SemanticFactIRBridge:
                 "recovery_boundary": "Yul recovery CFG, MemorySSA, SinkResolver and low-level effects remain upstream evidence and are not Fact IR inputs",
                 "ordering": "Fact CFG partial order plus block-local semantic order",
                 "path_policy": "canonical semantic nodes are not path-cloned; path witnesses are derived on demand",
+                "program_links": "cross-function links reference final function FactCFGs and semantic nodes; they never inline or duplicate callee semantics",
             },
             "function_count": len(built),
             "semantic_node_count": len(semantic_nodes),
+            "modifier_application_links": modifier_application_links,
+            "direct_call_links": direct_call_links,
+            "dynamic_call_links": dynamic_call_links,
+            "contracts": contracts,
+            "base_constructor_links": base_constructor_links,
             "functions": built,
         })
+
+    @staticmethod
+    def _contract_declarations(functions: list[Json]) -> list[Json]:
+        """Deduplicate contract declarations archived on Slither functions.
+
+        The pipeline remains function-level.  This table is deliberately only
+        a declaration index for inheritance/constructor relations, not an
+        invented inter-contract CFG or an inlining of parent constructors.
+        """
+        declarations: dict[str, Json] = {}
+        for function in functions:
+            declaration = function.get("contract_declaration") or {}
+            name = str(declaration.get("name") or "")
+            if not name:
+                continue
+            existing = declarations.get(name)
+            if existing is None:
+                declarations[name] = declaration
+            elif existing != declaration:
+                # Every function of one Slither contract should archive the
+                # same contract API result.  Preserve a visible diagnostic
+                # record rather than silently choosing a non-deterministic
+                # representation if an upstream version violates that.
+                existing["declaration_consistency"] = "inconsistent_function_archives"
+        return [declarations[name] for name in sorted(declarations)]
+
+    @staticmethod
+    def _base_constructor_links(functions: list[Json], contracts: list[Json]) -> list[Json]:
+        """Link Slither-resolved base constructor declarations to final SFIR.
+
+        Slither distinguishes a base call in a constructor modifier list from
+        one supplied on the contract declaration.  The former has an
+        argument-bearing ``InternalCall`` in the constructor CFG; the latter
+        is exposed as a contract declaration relation only.  Keep that
+        distinction instead of fabricating a normal call edge for header
+        syntax that Slither does not expose as an operation.
+        """
+        by_canonical: dict[str, list[Json]] = {}
+        for function in functions:
+            canonical = str((function.get("declaration") or {}).get("canonical_name") or "")
+            if canonical:
+                by_canonical.setdefault(canonical, []).append(function)
+
+        links: list[Json] = []
+        for function in functions:
+            declaration = function.get("declaration") or {}
+            if not declaration.get("is_constructor"):
+                continue
+            nodes = [item for item in function.get("semantic_nodes") or [] if isinstance(item, dict)]
+            for ordinal, target in enumerate(declaration.get("explicit_base_constructor_calls") or [], start=1):
+                canonical = str(target.get("canonical_name") or "")
+                matches = by_canonical.get(canonical) or []
+                call_nodes = [
+                    item for item in nodes
+                    if item.get("kind") == "BaseConstructorCall"
+                    and str((item.get("semantic") or {}).get("function_canonical_name") or "") == canonical
+                ]
+                link: Json = {
+                    "link_id": f"base_constructor:function:{function.get('function_id')}:{ordinal}",
+                    "kind": "constructor_explicit_base_call",
+                    "caller_function_id": function.get("function_id"),
+                    "callee_canonical_name": canonical or None,
+                    "call_semantic_ids": [item.get("semantic_id") for item in call_nodes],
+                    "arguments_recorded_in_call_semantics": bool(call_nodes),
+                }
+                if len(matches) == 1:
+                    link["resolution"] = "resolved"
+                    link["callee_function_id"] = matches[0].get("function_id")
+                else:
+                    link["resolution"] = "unresolved_base_constructor" if not matches else "ambiguous_base_constructor"
+                links.append(link)
+
+        function_contracts = {str(function.get("contract") or "") for function in functions}
+        for contract in contracts:
+            contract_name = str(contract.get("name") or "")
+            if contract_name not in function_contracts:
+                continue
+            for ordinal, target in enumerate(contract.get("explicit_base_constructor_calls") or [], start=1):
+                canonical = str(target.get("canonical_name") or "")
+                matches = by_canonical.get(canonical) or []
+                link = {
+                    "link_id": f"base_constructor:contract:{contract_name}:{ordinal}",
+                    "kind": "contract_declaration_base_call",
+                    "caller_contract": contract_name,
+                    "callee_canonical_name": canonical or None,
+                    "call_semantic_ids": [],
+                    "arguments_recorded_in_call_semantics": False,
+                    "source": "slither_contract.explicit_base_constructor_calls",
+                }
+                if len(matches) == 1:
+                    link["resolution"] = "resolved"
+                    link["callee_function_id"] = matches[0].get("function_id")
+                else:
+                    link["resolution"] = "unresolved_base_constructor" if not matches else "ambiguous_base_constructor"
+                links.append(link)
+        return links
+
+    @staticmethod
+    def _dynamic_call_links(functions: list[Json]) -> list[Json]:
+        """Resolve dynamic call candidates only through final SSA def-use.
+
+        Slither's InternalDynamicCall exposes a local function variable and a
+        FunctionType, not a candidate set. A candidate is accepted only when
+        its exact Function canonical name was preserved on a ValueAssign and
+        every reaching definition through ValuePhi is resolved recursively.
+        """
+        declarations = {
+            str((function.get("declaration") or {}).get("canonical_name") or ""): function
+            for function in functions
+            if (function.get("declaration") or {}).get("canonical_name")
+        }
+        links: list[Json] = []
+        for caller in functions:
+            nodes = [node for node in caller.get("semantic_nodes") or [] if isinstance(node, dict)]
+            definitions: dict[str, Json] = {}
+            for node in nodes:
+                lvalue = str(node.get("lvalue") or "")
+                if lvalue and node.get("kind") in {"ValueAssign", "ValuePhi"}:
+                    definitions[lvalue] = node
+
+            def resolve(value: str, seen: set[str]) -> tuple[set[str], bool]:
+                if not value or value in seen:
+                    return set(), False
+                node = definitions.get(value)
+                if not node:
+                    return set(), False
+                semantic = node.get("semantic") or {}
+                if node.get("kind") == "ValueAssign":
+                    canonical = str(semantic.get("function_value_canonical_name") or "")
+                    return ({canonical}, True) if canonical else (set(), False)
+                if node.get("kind") == "ValuePhi":
+                    inputs = [str(item) for item in semantic.get("inputs") or node.get("reads") or []]
+                    if not inputs:
+                        return set(), False
+                    candidates: set[str] = set()
+                    complete = True
+                    for item in inputs:
+                        found, item_complete = resolve(item, seen | {value})
+                        candidates.update(found)
+                        complete = complete and item_complete
+                    return candidates, complete and bool(candidates)
+                return set(), False
+
+            dynamic_nodes = [node for node in nodes if node.get("kind") == "InternalDynamicCall"]
+            for ordinal, node in enumerate(dynamic_nodes, start=1):
+                semantic = node.get("semantic") or {}
+                function_ssa = str(semantic.get("dynamic_function_ssa") or "")
+                candidates, complete = resolve(function_ssa, set())
+                resolved = sorted(candidate for candidate in candidates if candidate in declarations)
+                unresolved_targets = sorted(candidate for candidate in candidates if candidate not in declarations)
+                resolution = "resolved_complete" if complete and not unresolved_targets else (
+                    "partially_resolved" if resolved else "unresolved_dynamic_target"
+                )
+                links.append({
+                    "link_id": f"dynamic_call:{caller.get('function_id')}:{ordinal}",
+                    "kind": "dynamic_internal_call",
+                    "caller_function_id": caller.get("function_id"),
+                    "call_semantic_id": node.get("semantic_id"),
+                    "function_ssa": function_ssa or None,
+                    "function_type": semantic.get("function_type"),
+                    "candidate_canonical_names": sorted(candidates),
+                    "callee_function_ids": [declarations[item].get("function_id") for item in resolved],
+                    "unresolved_candidate_canonical_names": unresolved_targets,
+                    "resolution": resolution,
+                })
+        return links
+
+    @staticmethod
+    def _direct_call_links(functions: list[Json]) -> list[Json]:
+        """Reference Slither-resolved call declarations without crossing call boundaries.
+
+        ``InternalCall.function`` and ``LibraryCall.function`` are resolved
+        Function objects in Slither. ``HighLevelCall.function`` can likewise
+        name a declaration, but remains an external message-call boundary.
+        Dynamic calls deliberately do not enter this table: Slither exposes a
+        local function variable and FunctionType, not a callee candidate set.
+        """
+        by_canonical: dict[str, list[Json]] = {}
+        for function in functions:
+            declaration = function.get("declaration") or {}
+            canonical = str(declaration.get("canonical_name") or "")
+            if canonical:
+                by_canonical.setdefault(canonical, []).append(function)
+
+        relation_by_kind = {
+            "InternalCall": "internal_call",
+            "LibraryCall": "library_call",
+            "ExternalCall": "external_call_declaration",
+        }
+        links: list[Json] = []
+        for caller in functions:
+            cfg = caller.get("fact_cfg") or {}
+            block_by_id = {
+                str(block.get("block_id")): block
+                for block in cfg.get("blocks") or []
+                if isinstance(block, dict) and block.get("block_id")
+            }
+            positions: dict[str, tuple[int, int, str]] = {}
+            reverse_postorder = cfg.get("reverse_postorder") or {}
+            for block_id, block in block_by_id.items():
+                for index, semantic_id in enumerate(block.get("semantic_ids") or []):
+                    positions[str(semantic_id)] = (int(reverse_postorder.get(block_id, 1 << 30)), index, block_id)
+            nodes = [
+                node for node in caller.get("semantic_nodes") or []
+                if isinstance(node, dict) and node.get("kind") in relation_by_kind
+            ]
+            nodes.sort(key=lambda node: positions.get(str(node.get("semantic_id") or ""), (1 << 30, 1 << 30, "")))
+            for ordinal, node in enumerate(nodes, start=1):
+                semantic = node.get("semantic") or {}
+                canonical = str(semantic.get("function_canonical_name") or "")
+                semantic_id = str(node.get("semantic_id") or "")
+                position = positions.get(semantic_id)
+                link: Json = {
+                    "link_id": f"direct_call:{caller.get('function_id')}:{ordinal}",
+                    "kind": relation_by_kind[str(node.get("kind"))],
+                    "caller_function_id": caller.get("function_id"),
+                    "call_semantic_id": semantic_id,
+                    "callee_canonical_name": canonical or None,
+                    "arguments": list(semantic.get("arguments") or []),
+                    "caller_fact_block": position[2] if position else None,
+                }
+                candidates = by_canonical.get(canonical) or []
+                if len(candidates) == 1:
+                    link["resolution"] = "resolved"
+                    link["callee_function_id"] = candidates[0].get("function_id")
+                else:
+                    link["resolution"] = "unresolved_callee_declaration" if not candidates else "ambiguous_callee_declaration"
+                links.append(link)
+        return links
+
+    @staticmethod
+    def _modifier_application_links(functions: list[Json]) -> list[Json]:
+        """Link final modifier facts without inventing an interprocedural CFG.
+
+        Slither keeps the modifier body as a separate ``Modifier`` function,
+        inserts only a ``MODIFIER_CALL`` node in the wrapped function, and
+        represents ``_`` inside that separate CFG as ``PLACEHOLDER``.  The
+        final SFIR therefore records references among these already-built
+        graphs rather than splicing either graph into the other.
+        """
+        by_canonical: dict[str, list[Json]] = {}
+        for function in functions:
+            declaration = function.get("declaration") or {}
+            canonical = str(declaration.get("canonical_name") or "")
+            if canonical:
+                by_canonical.setdefault(canonical, []).append(function)
+
+        links: list[Json] = []
+        for caller in functions:
+            block_by_id = {
+                str(block.get("block_id")): block
+                for block in ((caller.get("fact_cfg") or {}).get("blocks") or [])
+                if isinstance(block, dict) and block.get("block_id")
+            }
+            positions: dict[str, tuple[int, int, str]] = {}
+            reverse_postorder = (caller.get("fact_cfg") or {}).get("reverse_postorder") or {}
+            for block_id, block in block_by_id.items():
+                for index, semantic_id in enumerate(block.get("semantic_ids") or []):
+                    positions[str(semantic_id)] = (int(reverse_postorder.get(block_id, 1 << 30)), index, block_id)
+            modifier_nodes = [
+                node for node in caller.get("semantic_nodes") or []
+                if isinstance(node, dict) and node.get("kind") == "ModifierApply"
+            ]
+            modifier_nodes.sort(key=lambda node: positions.get(str(node.get("semantic_id") or ""), (1 << 30, 1 << 30, "")))
+            for ordinal, node in enumerate(modifier_nodes, start=1):
+                semantic = node.get("semantic") or {}
+                semantic_id = str(node.get("semantic_id") or "")
+                canonical = str(semantic.get("modifier_function_id") or "")
+                position = positions.get(semantic_id)
+                link: Json = {
+                    "link_id": f"modifier_apply:{caller.get('function_id')}:{ordinal}",
+                    "kind": "modifier_application",
+                    "caller_function_id": caller.get("function_id"),
+                    "modifier_apply_semantic_id": semantic_id,
+                    "modifier_function_canonical_name": canonical or None,
+                    "arguments": list(semantic.get("arguments") or []),
+                    "caller_continuation": SemanticFactIRBridge._modifier_caller_continuation(
+                        block_by_id, position
+                    ),
+                }
+                candidates = by_canonical.get(canonical) or []
+                if len(candidates) != 1:
+                    link["resolution"] = "unresolved_modifier_function" if not candidates else "ambiguous_modifier_function"
+                    links.append(link)
+                    continue
+                modifier = candidates[0]
+                modifier_cfg = modifier.get("fact_cfg") or {}
+                modifier_blocks = [
+                    block for block in modifier_cfg.get("blocks") or []
+                    if isinstance(block, dict) and block.get("block_id")
+                ]
+                placeholder_blocks = [
+                    str(block["block_id"])
+                    for block in modifier_blocks
+                    if str((block.get("terminator") or {}).get("kind") or "") == "ModifierPlaceholder"
+                ]
+                block_lookup = {str(block["block_id"]): block for block in modifier_blocks}
+                link.update({
+                    "resolution": "resolved",
+                    "modifier_function_id": modifier.get("function_id"),
+                    "modifier_entry_blocks": list(modifier_cfg.get("entry_blocks") or []),
+                    "modifier_placeholder_blocks": placeholder_blocks,
+                    "modifier_after_placeholder_blocks": list(dict.fromkeys(
+                        successor
+                        for block_id in placeholder_blocks
+                        for successor in (block_lookup.get(block_id) or {}).get("successors") or []
+                    )),
+                })
+                links.append(link)
+        return links
+
+    @staticmethod
+    def _modifier_caller_continuation(
+        block_by_id: dict[str, Json],
+        position: tuple[int, int, str] | None,
+    ) -> Json:
+        if position is None:
+            return {"status": "unresolved_modifier_apply_placement"}
+        _order, index, block_id = position
+        block = block_by_id.get(block_id) or {}
+        semantic_ids = list(block.get("semantic_ids") or [])
+        after = semantic_ids[index + 1:]
+        return {
+            "status": "resolved",
+            "fact_block": block_id,
+            "following_semantic_ids": after,
+            "successor_blocks": list(block.get("successors") or []) if not after else [],
+        }
 
     def build_function(self, function: Any, solidity_nodes: list[Json], yul_nodes: list[Json]) -> Json:
         raw = _dict(function)
@@ -118,6 +457,7 @@ class SemanticFactIRBridge:
 
         self._normalize_require_guards(fact_cfg, semantic_nodes, raw_to_fact)
         self._normalize_branch_conditions(fact_cfg, semantic_nodes)
+        self._normalize_selfdestruct_terminators(fact_cfg, semantic_nodes)
         self._contract_trivial_unconditional_blocks(fact_cfg, semantic_nodes)
         # Establish a canonical order inside every original fact block before
         # any CFG fusion.  A later linear fusion appends the successor's
@@ -151,6 +491,8 @@ class SemanticFactIRBridge:
             "contract": getattr(function, "contract", None) or raw.get("contract"),
             "function": getattr(function, "function", None) or raw.get("function"),
             "signature": getattr(function, "signature", None) or raw.get("signature"),
+            "declaration": control.get("slither_declaration"),
+            "contract_declaration": control.get("slither_contract_declaration"),
             "fact_cfg": fact_cfg,
             "fact_ssa": fact_ssa,
             "semantic_nodes": semantic_nodes,
@@ -159,6 +501,38 @@ class SemanticFactIRBridge:
             "path_witnesses": path_witnesses,
             "diagnostics": diagnostics,
         })
+
+    @staticmethod
+    def _normalize_selfdestruct_terminators(fact_cfg: Json, nodes: list[Json]) -> None:
+        """Give a terminal Slither ``selfdestruct`` its final CFG meaning.
+
+        Slither exposes self-destruction as a SolidityCall on a normal
+        expression node; the CFG leaf is otherwise just ``Terminal``.  A
+        terminal SFIR block whose *last* semantic operation is the recovered
+        SelfDestruct may therefore state the source-level terminal action.
+        No block with a successor, or with a later fact, is rewritten.
+        """
+        by_semantic_id = {
+            str(node.get("semantic_id") or ""): node
+            for node in nodes if isinstance(node, dict)
+        }
+        for block in (fact_cfg.get("blocks") or []):
+            if (block.get("successors") or []):
+                continue
+            semantic_ids = list(block.get("semantic_ids") or [])
+            if not semantic_ids:
+                continue
+            last = by_semantic_id.get(str(semantic_ids[-1]))
+            if not last or last.get("kind") != "SelfDestruct":
+                continue
+            terminator = block.get("terminator") or {}
+            if str(terminator.get("kind") or "") not in {"Terminal", "Stop"}:
+                continue
+            block["terminator"] = {
+                "kind": "SelfDestruct",
+                "semantic_id": last.get("semantic_id"),
+                "function": (last.get("semantic") or {}).get("function"),
+            }
 
     @staticmethod
     def _normalize_require_guards(fact_cfg: Json, nodes: list[Json], raw_to_fact: dict[str, str]) -> None:
@@ -934,6 +1308,8 @@ class SemanticFactIRBridge:
             "kind": value.get("kind"),
             "condition": condition,
             "node_kind": node_kind,
+            "try_id": value.get("try_id"),
+            "catch_role": value.get("catch_role"),
         })
 
     @staticmethod
@@ -1074,6 +1450,19 @@ class SemanticFactIRBridge:
                 node["origin_id"] = str(node.get("fact_id") or origin_id)
                 node.pop("fact_id", None)
                 node.pop("anchor_cfg_node", None)
+                semantic = node.get("semantic") or {}
+                if isinstance(semantic, dict) and semantic.get("model_status") == "unmodeled":
+                    # Preserve the node in the canonical SFIR rather than
+                    # dropping a future Slither result.  The diagnostic makes
+                    # its recovery boundary explicit to a deobfuscator.
+                    diagnostics.append({
+                        "kind": "unmodeled_slither_semantic",
+                        "semantic_id": semantic_id,
+                        "source_lang": source_lang,
+                        "slithir_kind": semantic.get("slithir_kind")
+                        or ((node.get("evidence") or {}).get("atomic_operation") or {}).get("slithir_kind"),
+                        "reason": semantic.get("unmodeled_reason"),
+                    })
                 out.append(node)
         return out
 
@@ -1177,6 +1566,13 @@ class SemanticFactIRBridge:
     def _build_fact_ssa(self, function: Any, raw: Json, fact_cfg: Json, nodes: list[Json], raw_to_fact: dict[str, str]) -> tuple[Json, list[Json], list[Json], list[Json]]:
         diagnostics: list[Json] = []
         bindings = self._bindings(function, raw)
+        # State facts use source-level locations such as
+        # ``balances[owner]`` rather than identifier-shaped SSA temporaries.
+        # Establish their bindings before the fixed point so a state read has
+        # a symbolic entry version and a later state write can define the
+        # exact same location.  This is deliberately based only on an already
+        # recovered SFIR location, never on a physical Yul slot expression.
+        self._ensure_storage_location_bindings(nodes, bindings)
         # ``semantic_ids`` is the canonical block-local order.  In particular,
         # linear fusion has already concatenated P then S under a CFG proof;
         # sorting by source offsets or generated IDs here would destroy that
@@ -1218,7 +1614,7 @@ class SemanticFactIRBridge:
         # Parameters and named return variables are explicit entry definitions.
         for block_id in fact_cfg["entry_blocks"]:
             for binding in bindings.values():
-                if binding.get("kind") not in {"parameter", "return", "state"}:
+                if binding.get("kind") not in {"parameter", "return", "state"} and binding.get("facet") != "storage_location":
                     continue
                 entry_versions[block_id][binding["binding_id"]] = define(
                     binding, block_id, {}, -1, "entry", {"engine": "source_declaration"}
@@ -1228,7 +1624,7 @@ class SemanticFactIRBridge:
         for block_id, block_semantics in block_nodes.items():
             for node in block_semantics:
                 for write_index, value in enumerate(node.get("writes") or []):
-                    binding = self._binding_for_value(value, bindings)
+                    binding = self._binding_for_node_value(node, value, bindings)
                     if not binding:
                         continue
                     node_write_versions[(node["semantic_id"], write_index)] = define(
@@ -1308,7 +1704,7 @@ class SemanticFactIRBridge:
             for node in block_nodes.get(block_id, []):
                 read_refs: list[Json] = []
                 for value in node.get("reads") or []:
-                    binding = self._binding_for_value(value, bindings)
+                    binding = self._binding_for_node_value(node, value, bindings)
                     if not binding:
                         continue
                     version = current.get(binding["binding_id"])
@@ -1342,7 +1738,7 @@ class SemanticFactIRBridge:
                 write_refs: list[Json] = []
                 for write_index, value in enumerate(node.get("writes") or []):
                     version = node_write_versions.get((node["semantic_id"], write_index))
-                    binding = self._binding_for_value(value, bindings)
+                    binding = self._binding_for_node_value(node, value, bindings)
                     if not binding or not version:
                         continue
                     current[binding["binding_id"]] = version
@@ -1387,6 +1783,54 @@ class SemanticFactIRBridge:
                     "facet": facet,
                 }
         return out
+
+    def _ensure_storage_location_bindings(self, nodes: list[Json], bindings: dict[str, Json]) -> None:
+        for node in nodes:
+            self._storage_location_binding(node, bindings)
+
+    def _binding_for_node_value(self, node: Json, value: Any, bindings: dict[str, Json]) -> Json | None:
+        storage = self._storage_location_binding(node, bindings)
+        if storage and str(value or "") == str(storage.get("access") or ""):
+            return storage
+        return self._binding_for_value(value, bindings)
+
+    def _storage_location_binding(self, node: Json, bindings: dict[str, Json]) -> Json | None:
+        """Return the exact source-level storage binding used by a state fact.
+
+        A mapping/member location cannot pass the ordinary identifier grammar
+        (it contains brackets), but it is still a first-class mutable value in
+        SFIR.  Its identity is the fully recovered semantic location.  If the
+        location was not recovered, leave it unbound rather than manufacture a
+        potentially incorrect alias.
+        """
+        if node.get("kind") not in {"StateRead", "StateWrite"}:
+            return None
+        semantic = node.get("semantic") or {}
+        location = semantic.get("location") if isinstance(semantic, dict) else None
+        if not isinstance(location, dict):
+            return None
+        access = str(location.get("access") or "")
+        state_variable = str(location.get("state_variable") or "")
+        if not access or not state_variable:
+            return None
+        key = f"@storage:{access}"
+        if key in bindings:
+            return bindings[key]
+        state = bindings.get(self._base_name(state_variable, bindings))
+        root = str(state.get("binding_id")) if state else f"state:{state_variable}"
+        binding = {
+            "binding_id": f"{root}:storage_location:{access}",
+            "base_name": access,
+            "facet": "storage_location",
+            "kind": "storage_location",
+            "identity_status": "semantic_storage_location",
+            "access": access,
+            "state_variable": state_variable,
+            "keys": list(location.get("keys") or []),
+            "member": location.get("member"),
+        }
+        bindings[key] = binding
+        return binding
 
     def _binding_for_value(self, value: Any, bindings: dict[str, Json]) -> Json | None:
         if not isinstance(value, str):
