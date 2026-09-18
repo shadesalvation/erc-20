@@ -2,59 +2,57 @@
 
 ## Current Task
 
-**P0-T3 = COMPLETE** — 接口冻结与 Implementation Plan，2026-09-18。
+**P1-T1 = COMPLETE** — Semantic Action Identification，2026-09-19。
 
-P0-T1 = COMPLETE；P0-T2 = COMPLETE。两者 latest handoff 与当前 SFIR 源码/测试一致，123 个来源文件哈希核对无冲突。当前 branch `semantic-ir-next`，HEAD `b6f02567eed4fb6057003124435b3f19576f826c`。旧报告描述其当时的未提交迁移，不代表本次工作树仍有那些改动；本次起始只有四处依赖 checkout 的既有未跟踪内容，全部保留。
+P0-T1/P0-T2/P0-T3 均为 COMPLETE；本次按正式 bootstrap 核验 `P0-T3 = COMPLETE` 且此前 `Next Allowed Task = P1-T1`。当前 branch `semantic-ir-next`，Task 起始 HEAD `d96e7029113e4385df7665f1fbc4a5898f6a5f01`。起始及收尾均保留四处既有 OpenZeppelin dependency checkout，不归入 P1-T1 改动。
 
-本 Task 仅冻结文档、接口/ownership/依赖和一致性证据；没有实现 Phase 1、P2-T1A 或任何后续分析算法，没有修改生产源码、既有测试、oracle 或历史证据。
+本 Task 只实现 shared frozen-v1 research contract 与 SFIR→SemanticAction 投影，没有修改既有 SFIR/adapter/lifter、MemorySSA/SinkResolver、oracle 或历史证据，没有执行 P1-T2 或后续控制、依赖、顺序、STIR、benchmark/experiment 工作。
 
 ## Baseline / Validation Summary
 
-修改前及收尾均 **26 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**：25 个主线脚本 + 1 个归档模块（内部 5 个 unittest），计数单位为入口。归档只维持旧回归，不作为新主线能力。
+修改前：**26 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**。新增 P1-T1 targeted 入口后，收尾 runner：**27 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**；P1-T1 内部 19/19 unittest PASS，含真实 Solidity→SFIR 六类 action probe。测试数增加一项仅因新增 `s_seir_research_actions_tests.py`，未硬编码旧数量。
 
-- [baseline](docs/task_reports/P0-T3_evidence/baseline/results.json)、[final](docs/task_reports/P0-T3_evidence/final/results.json)
-- [upstream handoff](docs/task_reports/P0-T3_evidence/upstream_handoff.json)
-- [consistency](docs/task_reports/P0-T3_evidence/consistency.json)、[专项验收](docs/task_reports/P0-T3_evidence/acceptance.json)
-- [Git/change summary](docs/task_reports/P0-T3_evidence/change_summary.json)
+- [bootstrap](docs/task_reports/P1-T1_evidence/bootstrap.json)
+- [targeted tests](docs/task_reports/P1-T1_evidence/targeted_tests.json)
+- [final regression](docs/task_reports/P1-T1_evidence/final_regression/results.json)
+- [专项验收 21/21](docs/task_reports/P1-T1_evidence/acceptance.json)
+- [P1-T1 report](docs/task_reports/P1-T1.md)
 
 复现：
 
 ```bash
-.venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py /tmp/p0-t3-regression
-.venv/bin/python docs/task_reports/P0-T3_evidence/validate_contracts.py --final
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/s_seir/s_seir_research_actions_tests.py
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py /tmp/p1-t1-regression
 ```
 
-一致性校验 PASS；7/7 负向文档变异被拒绝，57/57 架构专项验收 PASS。校验覆盖 37 fixed + 1 supplement、无环依赖、G1–G8 ownership、关键 artifact producer/consumer、TASK_MAP 与计划、状态/四态 storage relation、源码未变、Git 范围；专项验收区分人工架构判断与机器结构检查。未来算法/solver/正式 benchmark/实验未执行，不计作 PASS。
+## Stable Outputs / Interfaces
 
-## Frozen Artifacts / Interfaces
+- `scripts/s_seir/s_seir_research_contracts.py`：`ArtifactEnvelope`、`EvidenceRecord`、`SourceRef`、`AnalysisStatus`、canonical JSON、stable identity、schema/status validation。
+- `scripts/s_seir/s_seir_research_actions.py`：`extract_semantic_actions(sfir_payload, input_fingerprint=None, config=None)` 与 `validate_semantic_action`。
+- frozen `SemanticAction` 六类：`StorageWrite / ExternalCall / EtherTransfer / Emit / Revert / Return`；required payload 保持 `kind / semantic_ref / operand_refs / control_anchor / replacement_refs`。
+- 每个进入范围的 effect occurrence 均为 `EMITTED / REPLACED / UNRESOLVED`；StateRead 明确不是 P1-T1 action。unknown/unsupported/unanchored 与上游 SFIR diagnostics 保持结构化，不静默成功。
+- identity basis 为 function + semantic occurrence provenance + action kind；repeat/reorder 稳定，不同 occurrence 不按 payload 合并；证据不足时 `RUN_LOCAL + INSUFFICIENT_EVIDENCE`。
+- call-with-value 是一个 ExternalCall + value operand；只有 SFIR `ValueTransferCall` 成为 EtherTransfer。Require/Assert failure 只在 evidence 充分时投影，并与 canonical Revert 去重。
+- operand refs 保留 storage location/key/update、call target/arguments/value/result、event args/topics、return values、revert/failure source 与已有 FactSSA refs；没有执行 dependency recovery。
 
-- [RESEARCH_FRAMEWORK](docs/research/RESEARCH_FRAMEWORK.md)：冻结研究问题、三个 Module、评价原则、全局不变量和研究人员变更决策边界。
-- [IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md)：Module contracts、Interface Freeze Table、Gap Resolution Map、Research Reference Map、directory/schema/result ownership、全部 Task dependency 和逐 Task 工程验收。
-- [TASK_MAP](docs/research/TASK_MAP.md)：精简导航，与正式计划一致。
-- [ADR P0-T3-001](docs/decisions/P0-T3-001-interface-freeze.md)、[P0-T3 report](docs/task_reports/P0-T3.md)。
-
-冻结 SemanticAction、SemanticControlEdge、Guard、StorageAddressRelation、Definition/Use、ValueIdentity、ValueFlow、CanonicalExpression、SemanticSlice、统一 State/Sink Dependency、SemanticEvent、OrderConstraint、TransitionCandidate、STIR；共享 identity/evidence/status/serialization 和 module result 契约见计划。M2 直接消费 M1；M3 直接消费 M1+M2。SFIR v1 不变；MemorySSA/SinkResolver 职责不变。
-
-**P2-T1A = REQUIRED**，固定 `P2-T1 → P2-T1A → P2-T2`；冻结 `SAME / DISTINCT / MAY_OVERLAP / INSUFFICIENT_EVIDENCE`，覆盖 ERC-20 named state、单层/嵌套 mapping、已恢复 Solidity/inline Yul/Mixed 路径、访问时点 key/Guard、unknown write/call clobber。不做通用 alias analyzer。
+P0-T3 冻结的 Module contracts、P2-T1A REQUIRED 链、G1–G8、目录/schema ownership 与 oracle isolation继续有效。SFIR schema仍为 `s-seir-semantic-fact-ir/v1`；本 Task没有改变 frozen interface，故无新 ADR。
 
 ## Known Limitations
 
-- 新接口是设计承诺，当前代码尚无完整 feasible control/SMT、VFG/slicing、Canonical STIR。P2-T1A REQUIRED 不表示算法完成。
-- 现有 storage identity 依赖 access 文本；key copy/redefinition/同值参数/unknown/clobber 缺口保持，owner 已分配。
-- msg.sender/msg.value/compound refs 与 Phi predecessor 配对存在边界；缺 refs 不表示无依赖。普通 FactSSA serial version 只作来源引用，不用作跨运行稳定身份。
-- 部分块内 source/id/list order、无出口 postdom 是 fallback；不构成最终顺序证明。循环 occurrence 无充分证据时保留 unknown transition。
-- 独立 Yul object→SFIR 入口缺失；只将已恢复 Solidity/inline Yul/Mixed 纳入当前基础。不支持情形须显式报告，未授权新增通用 frontend。
-- 研究参考缺原文支持，计划明确 `source support insufficient`；后续 Task 不得把任务指定思想冒称论文复现。
-- 依赖锁/统一构建/CI 仍缺；没有冻结真实 benchmark dataset 或运行正式实验，冻结的是 ownership/契约。未知 external effects、gas 投影缺失、完整跨合约/代理/重入仍有范围限制。
+- P1-T1 只能投影当前 SFIR 已恢复的 semantic occurrence；独立 Yul object frontend 仍不支持，按 UNSUPPORTED 保留。
+- Internal/Library/NewContract/SelfDestruct 等冻结六类之外的 effect-like kind 进入 unresolved coverage，不擅自扩展 action enum。
+- 缺 stable provenance 的 action 只能 `RUN_LOCAL`；正式调用方应提供 compilation input fingerprint，fallback 仅是 traversal-neutral SFIR digest。
+- unknown call target/arguments、storage location/update 等不表示空/无依赖；action保留 PARTIAL diagnostic。
+- 本 Task 未分析 feasibility、Guard、Def-Use/RD、storage equivalence、ValueFlow、slice/dependency、external state impact、order、commit/rollback 或 STIR。
+- 既有全局限制仍在：storage identity/phi/environment refs、未知 external effect、复杂循环/order、依赖锁/CI、正式 benchmark/dataset/experiment 尚未完成。
+- 独立 STORAGE-ADDR-EQ-001 仍为既有 PARTIAL，缺指定旧模型源码；不属于现行 SFIR/P1-T1，也未被改写为 PASS。
 
 ## Blocked Issues
 
-P0-T3 无当前阻塞。必要回归、一致性校验、57 项专项验收与交接全部完成，无未解释 regression。
-
-独立 STORAGE-ADDR-EQ-001 [review](docs/task_reports/STORAGE-ADDR-EQ-001_review.md) / [修复准备](docs/task_reports/STORAGE-ADDR-EQ-001.md) 保持 PARTIAL：指定旧模型源码缺失、原目标测试 ModuleNotFoundError 未解决；不属于现行 SFIR，也未被本 Task 豁免为 PASS。继续该事项需正确源码及单独授权。
+P1-T1 无当前阻塞。专项验收、必要回归、report、machine evidence 与 P1-T2/M2 handoff 均完成，无未解释 failure。
 
 ## Next Allowed Task
 
-P0-T3 已完成并停止；**等待单独授权 P1-T1 — Semantic Action Identification**。不自动进入下一 Task。
+P1-T1 已完成并停止；**等待单独授权 P1-T2 — Dispatcher / Flattened Region Detection**。不得重新提取 SemanticAction；按 [P1-T1 handoff](docs/task_reports/P1-T1.md#p1-t2-handoff) 直接消费 `result["actions"]`、action id、`semantic_ref`、`control_anchor`、evidence/status、replacement refs 与 unresolved coverage。
 
-后续 Bootstrap：RESEARCH_FRAMEWORK → TASK_MAP → PROJECT_STATUS → IMPLEMENTATION_PLAN 当前 Task/直接接口 → 当前 Task direct upstream handoff → 相关源码与测试，同时服从 AGENTS.md。P1-T1 先读 P0-T3 report 与计划 §1–§4/§10/§12 的 P1-T1，不重做 P0 扫描和 capability review。
+后续 bootstrap 仍为：RESEARCH_FRAMEWORK → TASK_MAP → PROJECT_STATUS → IMPLEMENTATION_PLAN 当前 Task/直接接口 → direct upstream report/handoff → 相关源码/测试，同时服从 AGENTS.md。不自动进入 P1-T2。

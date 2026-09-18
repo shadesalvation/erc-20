@@ -1,0 +1,183 @@
+{
+  "task": "P1-T1",
+  "status": "PASS",
+  "regression": {
+    "results": "final_regression/results.json",
+    "counts": {
+      "PASS": 27,
+      "FAIL": 0,
+      "SKIP": 0,
+      "TIMEOUT": 0
+    }
+  },
+  "checks": [
+    {
+      "id": "A01",
+      "criterion": "六种 frozen SemanticAction 均可识别",
+      "result": "PASS",
+      "test": "test_all_six_frozen_actions_and_shared_contract; test_real_solidity_frontend_produces_all_six_actions",
+      "file": "scripts/s_seir/s_seir_research_actions_tests.py",
+      "evidence": "targeted_tests.json"
+    },
+    {
+      "id": "A02",
+      "criterion": "Action 直接建立在 SFIR 上",
+      "result": "PASS",
+      "test": "all tests construct or consume s-seir-semantic-fact-ir/v1; real frontend probe",
+      "file": "scripts/s_seir/s_seir_research_actions.py:extract_semantic_actions",
+      "evidence": "targeted_tests.json"
+    },
+    {
+      "id": "A03",
+      "criterion": "没有第二套 source/opcode extractor",
+      "result": "PASS",
+      "test": "test_no_oracle_evaluator_or_source_parser_dependency",
+      "file": "scripts/s_seir/s_seir_research_actions.py",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A04",
+      "criterion": "Solidity / 已支持 Yul / Mixed 同义行为统一 kind",
+      "result": "PASS",
+      "test": "test_solidity_yul_and_mixed_use_one_contract; real frontend probe",
+      "file": "scripts/s_seir/s_seir_research_actions_tests.py",
+      "evidence": "targeted_tests.json"
+    },
+    {
+      "id": "A05",
+      "criterion": "SemanticAction frozen fields 完整",
+      "result": "PASS",
+      "test": "test_all_six_frozen_actions_and_shared_contract; validate_semantic_action",
+      "file": "scripts/s_seir/s_seir_research_actions.py:validate_semantic_action",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A06",
+      "criterion": "identity deterministic",
+      "result": "PASS",
+      "test": "test_repeatability_and_canonical_serialization",
+      "file": "scripts/s_seir/s_seir_research_contracts.py:stable_identity",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A07",
+      "criterion": "traversal reorder 不改变 identity",
+      "result": "PASS",
+      "test": "test_traversal_reorder_does_not_change_identity",
+      "file": "scripts/s_seir/s_seir_research_actions.py:sfir_input_fingerprint",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A08",
+      "criterion": "不同 occurrence 不错误 deduplicate",
+      "result": "PASS",
+      "test": "test_identical_payload_distinct_occurrences_are_not_deduplicated",
+      "file": "scripts/s_seir/s_seir_research_actions.py:_occurrence_identity",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A09",
+      "criterion": "replacement effect 不重复计数",
+      "result": "PASS",
+      "test": "test_merged_recovery_representation_is_evidence_only",
+      "file": "scripts/s_seir/s_seir_research_actions.py:_replacement_refs",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A10",
+      "criterion": "call-with-value 不额外生成 EtherTransfer",
+      "result": "PASS",
+      "test": "test_call_with_value_is_one_external_call_not_ether_transfer; real frontend probe",
+      "file": "scripts/s_seir/s_seir_research_actions.py:DIRECT_KIND_MAP",
+      "evidence": "targeted_tests.json"
+    },
+    {
+      "id": "A11",
+      "criterion": "Require/Assert failure 不重复生成 Revert",
+      "result": "PASS",
+      "test": "test_require_failure_and_canonical_revert_are_not_double_counted",
+      "file": "scripts/s_seir/s_seir_research_actions.py:_existing_failure_revert",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A12",
+      "criterion": "effect-like occurrence 无 silent omission",
+      "result": "PASS",
+      "test": "test_unrecognized_effect_like_occurrence_is_unresolved_not_dropped",
+      "file": "scripts/s_seir/s_seir_research_actions.py:_coverage_record",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A13",
+      "criterion": "unknown / unsupported 有结构化诊断",
+      "result": "PASS",
+      "test": "test_unknown_operands_and_unanchored_action_are_emitted_with_diagnostics; test_unsupported_representation_and_upstream_unknown_are_structured",
+      "file": "scripts/s_seir/s_seir_research_contracts.py:analysis_status",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A14",
+      "criterion": "control_anchor 没有被当作 feasibility proof",
+      "result": "PASS",
+      "test": "test_unknown_operands_and_unanchored_action_are_emitted_with_diagnostics",
+      "file": "scripts/s_seir/s_seir_research_actions.py:_control_anchor",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A15",
+      "criterion": "control_anchor 没有被当作 execution-order proof",
+      "result": "PASS",
+      "test": "SemanticAction payload contains no order conclusion; control anchor is SourceRef only",
+      "file": "scripts/s_seir/s_seir_research_actions.py:_control_anchor",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A16",
+      "criterion": "downstream-needed operand/state/effect refs 未丢失",
+      "result": "PASS",
+      "test": "test_m2_ready_operands_and_storage_refs_survive_projection",
+      "file": "scripts/s_seir/s_seir_research_actions.py:_operand_refs",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A17",
+      "criterion": "SemanticAction 同时可作 M1 control anchor 与 M2 future sink anchor",
+      "result": "PASS",
+      "test": "frozen control_anchor plus role-addressed operand_refs contract",
+      "file": "scripts/s_seir/s_seir_research_actions.py",
+      "evidence": "targeted_tests.json"
+    },
+    {
+      "id": "A18",
+      "criterion": "没有提前执行 Def-Use / ValueFlow / Slicing / State Dependency",
+      "result": "PASS",
+      "test": "test_m2_ready_operands_and_storage_refs_survive_projection asserts forbidden analysis outputs absent",
+      "file": "scripts/s_seir/s_seir_research_actions_tests.py",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A19",
+      "criterion": "shared identity/evidence/status/serialization contract 可复用",
+      "result": "PASS",
+      "test": "test_shared_contract_rejects_invalid_status_and_serializes_large_int; validate_semantic_action",
+      "file": "scripts/s_seir/s_seir_research_contracts.py",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A20",
+      "criterion": "production recovery 无 oracle access",
+      "result": "PASS",
+      "test": "test_no_oracle_evaluator_or_source_parser_dependency",
+      "file": "scripts/s_seir/s_seir_research_actions.py; scripts/s_seir/s_seir_research_contracts.py",
+      "evidence": "final_regression/s_seir_research_actions_tests.log"
+    },
+    {
+      "id": "A21",
+      "criterion": "当前相关 SFIR regression 无未解释失败",
+      "result": "PASS",
+      "test": "P0 baseline runner discovers all scripts/s_seir/*tests.py plus archived regression",
+      "file": "docs/task_reports/P1-T1_evidence/final_regression/results.json",
+      "evidence": "final_regression/results.json"
+    }
+  ]
+}
