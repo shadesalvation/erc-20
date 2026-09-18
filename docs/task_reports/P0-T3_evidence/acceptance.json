@@ -1,0 +1,468 @@
+{
+  "scope": "P0-T3 architecture freeze only",
+  "items": [
+    {
+      "id": "A01",
+      "category": "Module Boundary",
+      "criterion": "Module 1 / 2 / 3 职责无重叠",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §2 / §12；RESEARCH_FRAMEWORK.md 模块职责；consistency.json 依赖 DAG"
+    },
+    {
+      "id": "A02",
+      "category": "Module Boundary",
+      "criterion": "Module 2 直接消费 Module 1",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §2 / §12；RESEARCH_FRAMEWORK.md 模块职责；consistency.json 依赖 DAG"
+    },
+    {
+      "id": "A03",
+      "category": "Module Boundary",
+      "criterion": "Module 2 不重新做控制恢复",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §2 / §12；RESEARCH_FRAMEWORK.md 模块职责；consistency.json 依赖 DAG"
+    },
+    {
+      "id": "A04",
+      "category": "Module Boundary",
+      "criterion": "Module 3 直接消费 Module 1 + Module 2",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §2 / §12；RESEARCH_FRAMEWORK.md 模块职责；consistency.json 依赖 DAG"
+    },
+    {
+      "id": "A05",
+      "category": "Module Boundary",
+      "criterion": "Module 3 不重新做前两模块",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §2 / §12；RESEARCH_FRAMEWORK.md 模块职责；consistency.json 依赖 DAG"
+    },
+    {
+      "id": "A06",
+      "category": "SFIR Reuse",
+      "criterion": "Fact CFG 不重复实现",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §4 / §12；upstream_handoff.json；consistency.json source_hashes_unchanged"
+    },
+    {
+      "id": "A07",
+      "category": "SFIR Reuse",
+      "criterion": "FactSSA 不重复实现",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §4 / §12；upstream_handoff.json；consistency.json source_hashes_unchanged"
+    },
+    {
+      "id": "A08",
+      "category": "SFIR Reuse",
+      "criterion": "existing RD 不重复实现",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §4 / §12；upstream_handoff.json；consistency.json source_hashes_unchanged"
+    },
+    {
+      "id": "A09",
+      "category": "SFIR Reuse",
+      "criterion": "StateRead / StateWrite / storage representation 优先复用",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §4 / §12；upstream_handoff.json；consistency.json source_hashes_unchanged"
+    },
+    {
+      "id": "A10",
+      "category": "SFIR Reuse",
+      "criterion": "MemorySSA / SinkResolver 不无理由复制",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §4 / §12；upstream_handoff.json；consistency.json source_hashes_unchanged"
+    },
+    {
+      "id": "A11",
+      "category": "SFIR Reuse",
+      "criterion": "无平行 IR",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §4 / §12；upstream_handoff.json；consistency.json source_hashes_unchanged"
+    },
+    {
+      "id": "A12",
+      "category": "G1～G8",
+      "criterion": "每个 Gap 有 owner",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §8；consistency.json gap_owners_checked"
+    },
+    {
+      "id": "A13",
+      "category": "G1～G8",
+      "criterion": "每个 Gap 有 downstream impact",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §8；consistency.json gap_owners_checked"
+    },
+    {
+      "id": "A14",
+      "category": "G1～G8",
+      "criterion": "每个 Gap 有 non-goal",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §8；consistency.json gap_owners_checked"
+    },
+    {
+      "id": "A15",
+      "category": "G1～G8",
+      "criterion": "无 orphan gap",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §8；consistency.json gap_owners_checked"
+    },
+    {
+      "id": "A16",
+      "category": "Storage Address Equivalence",
+      "criterion": "P2-T1A = REQUIRED",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A17",
+      "category": "Storage Address Equivalence",
+      "criterion": "位于 P2-T1 与 P2-T2 之间",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A18",
+      "category": "Storage Address Equivalence",
+      "criterion": "最小范围明确",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A19",
+      "category": "Storage Address Equivalence",
+      "criterion": "能语义区分：",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A20",
+      "category": "Storage Address Equivalence",
+      "criterion": "可证同址",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A21",
+      "category": "Storage Address Equivalence",
+      "criterion": "可证异址",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A22",
+      "category": "Storage Address Equivalence",
+      "criterion": "可能重叠",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A23",
+      "category": "Storage Address Equivalence",
+      "criterion": "证据不足",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A24",
+      "category": "Storage Address Equivalence",
+      "criterion": "unknown / may 不被当作异址",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A25",
+      "category": "Storage Address Equivalence",
+      "criterion": "不扩展为通用 Alias Analyzer",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §5 / §12；task_registry.json；consistency.json P2-T1A"
+    },
+    {
+      "id": "A26",
+      "category": "Interface Freeze",
+      "criterion": "SemanticAction 有 stable identity",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §3–§7；consistency.json critical_artifact_producer_consumer_checked"
+    },
+    {
+      "id": "A27",
+      "category": "Interface Freeze",
+      "criterion": "Guard 有 canonical / equivalence contract",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §3–§7；consistency.json critical_artifact_producer_consumer_checked"
+    },
+    {
+      "id": "A28",
+      "category": "Interface Freeze",
+      "criterion": "Value Flow 有 dependency/evidence contract",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §3–§7；consistency.json critical_artifact_producer_consumer_checked"
+    },
+    {
+      "id": "A29",
+      "category": "Interface Freeze",
+      "criterion": "State Dependency schema 统一",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §3–§7；consistency.json critical_artifact_producer_consumer_checked"
+    },
+    {
+      "id": "A30",
+      "category": "Interface Freeze",
+      "criterion": "SemanticEvent / STIR 边界明确",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §3–§7；consistency.json critical_artifact_producer_consumer_checked"
+    },
+    {
+      "id": "A31",
+      "category": "Interface Freeze",
+      "criterion": "Order 为 partial order",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §3–§7；consistency.json critical_artifact_producer_consumer_checked"
+    },
+    {
+      "id": "A32",
+      "category": "Interface Freeze",
+      "criterion": "Failure / rollback 明确",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §3–§7；consistency.json critical_artifact_producer_consumer_checked"
+    },
+    {
+      "id": "A33",
+      "category": "Interface Freeze",
+      "criterion": "unknown / unsupported 可跨模块传播",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §3–§7；consistency.json critical_artifact_producer_consumer_checked"
+    },
+    {
+      "id": "A34",
+      "category": "Repository Compatibility",
+      "criterion": "计划兼容当前真实主线",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §10；upstream_handoff.json；change_summary.json"
+    },
+    {
+      "id": "A35",
+      "category": "Repository Compatibility",
+      "criterion": "未为了形式创建平行 `src/`",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §10；upstream_handoff.json；change_summary.json"
+    },
+    {
+      "id": "A36",
+      "category": "Repository Compatibility",
+      "criterion": "未把历史/归档实现当现行能力",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §10；upstream_handoff.json；change_summary.json"
+    },
+    {
+      "id": "A37",
+      "category": "Repository Compatibility",
+      "criterion": "未重新设计 SFIR",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §1 / §10；upstream_handoff.json；change_summary.json"
+    },
+    {
+      "id": "A38",
+      "category": "TASK_MAP",
+      "criterion": "与 `IMPLEMENTATION_PLAN.md` 一致",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "docs/research/TASK_MAP.md；IMPLEMENTATION_PLAN.md §12；consistency.json navigation_rows_consistent"
+    },
+    {
+      "id": "A39",
+      "category": "TASK_MAP",
+      "criterion": "P2-T1A 状态一致",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "docs/research/TASK_MAP.md；IMPLEMENTATION_PLAN.md §12；consistency.json navigation_rows_consistent"
+    },
+    {
+      "id": "A40",
+      "category": "TASK_MAP",
+      "criterion": "Task responsibility / input / output / consumer 一致",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "docs/research/TASK_MAP.md；IMPLEMENTATION_PLAN.md §12；consistency.json navigation_rows_consistent"
+    },
+    {
+      "id": "A41",
+      "category": "TASK_MAP",
+      "criterion": "未保存详细 API 或临时状态",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "docs/research/TASK_MAP.md；IMPLEMENTATION_PLAN.md §12；consistency.json navigation_rows_consistent"
+    },
+    {
+      "id": "A42",
+      "category": "RESEARCH_FRAMEWORK",
+      "criterion": "与研究目标一致",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "docs/research/RESEARCH_FRAMEWORK.md；IMPLEMENTATION_PLAN.md §2 / §13；docs/decisions/P0-T3-001-interface-freeze.md"
+    },
+    {
+      "id": "A43",
+      "category": "RESEARCH_FRAMEWORK",
+      "criterion": "与三个 Module contract 一致",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "docs/research/RESEARCH_FRAMEWORK.md；IMPLEMENTATION_PLAN.md §2 / §13；docs/decisions/P0-T3-001-interface-freeze.md"
+    },
+    {
+      "id": "A44",
+      "category": "RESEARCH_FRAMEWORK",
+      "criterion": "与 evaluation principle 一致",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "docs/research/RESEARCH_FRAMEWORK.md；IMPLEMENTATION_PLAN.md §2 / §13；docs/decisions/P0-T3-001-interface-freeze.md"
+    },
+    {
+      "id": "A45",
+      "category": "RESEARCH_FRAMEWORK",
+      "criterion": "不包含临时 bug / 测试数字 / 当前状态",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "docs/research/RESEARCH_FRAMEWORK.md；IMPLEMENTATION_PLAN.md §2 / §13；docs/decisions/P0-T3-001-interface-freeze.md"
+    },
+    {
+      "id": "A46",
+      "category": "RESEARCH_FRAMEWORK",
+      "criterion": "change-control 清楚",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "docs/research/RESEARCH_FRAMEWORK.md；IMPLEMENTATION_PLAN.md §2 / §13；docs/decisions/P0-T3-001-interface-freeze.md"
+    },
+    {
+      "id": "A47",
+      "category": "Dependency Map",
+      "criterion": "37 个固定 Task 数量一致",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §12；task_registry.json；consistency.json fixed_tasks / supplemental_tasks / acyclic"
+    },
+    {
+      "id": "A48",
+      "category": "Dependency Map",
+      "criterion": "P2-T1A 不重复计入",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §12；task_registry.json；consistency.json fixed_tasks / supplemental_tasks / acyclic"
+    },
+    {
+      "id": "A49",
+      "category": "Dependency Map",
+      "criterion": "无悬空 dependency",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §12；task_registry.json；consistency.json fixed_tasks / supplemental_tasks / acyclic"
+    },
+    {
+      "id": "A50",
+      "category": "Dependency Map",
+      "criterion": "producer → consumer 可追踪",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §12；task_registry.json；consistency.json fixed_tasks / supplemental_tasks / acyclic"
+    },
+    {
+      "id": "A51",
+      "category": "Oracle Isolation",
+      "criterion": "recovery pipeline 不读取 oracle",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §10 / §11；RESEARCH_FRAMEWORK.md Evaluation Principle；change_summary.json（本 Task 仅冻结，未来运行时隔离由 owner 实现验收）"
+    },
+    {
+      "id": "A52",
+      "category": "Oracle Isolation",
+      "criterion": "evaluator 才可读取 oracle",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §10 / §11；RESEARCH_FRAMEWORK.md Evaluation Principle；change_summary.json（本 Task 仅冻结，未来运行时隔离由 owner 实现验收）"
+    },
+    {
+      "id": "A53",
+      "category": "Oracle Isolation",
+      "criterion": "recovery / benchmark / experiment result 职责隔离",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "IMPLEMENTATION_PLAN.md §10 / §11；RESEARCH_FRAMEWORK.md Evaluation Principle；change_summary.json（本 Task 仅冻结，未来运行时隔离由 owner 实现验收）"
+    },
+    {
+      "id": "A54",
+      "category": "Current Task Boundary",
+      "criterion": "没有实现 Phase 1",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "consistency.json source_hashes_unchanged；change_summary.json；git_diff_stat.txt / git_status_after.txt"
+    },
+    {
+      "id": "A55",
+      "category": "Current Task Boundary",
+      "criterion": "没有实现 P2-T1A",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "consistency.json source_hashes_unchanged；change_summary.json；git_diff_stat.txt / git_status_after.txt"
+    },
+    {
+      "id": "A56",
+      "category": "Current Task Boundary",
+      "criterion": "没有提前实现后续分析",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "consistency.json source_hashes_unchanged；change_summary.json；git_diff_stat.txt / git_status_after.txt"
+    },
+    {
+      "id": "A57",
+      "category": "Current Task Boundary",
+      "criterion": "没有无关大范围代码修改",
+      "status": "PASS",
+      "method": "MANUAL_CONTRACT_REVIEW + structural consistency checks (not future algorithm tests)",
+      "evidence": "consistency.json source_hashes_unchanged；change_summary.json；git_diff_stat.txt / git_status_after.txt"
+    }
+  ],
+  "not_executed": [
+    {
+      "item": "未来算法/SMT/正式 benchmark/正式实验验收",
+      "status": "N/A",
+      "reason": "当前任务明确禁止实现或执行；接口冻结不等于能力已实现"
+    }
+  ]
+}

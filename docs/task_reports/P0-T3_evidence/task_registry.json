@@ -1,0 +1,733 @@
+{
+  "schema": "p0-t3-plan-registry/v1",
+  "fixed_count": 37,
+  "supplemental": {
+    "P2-T1A": "REQUIRED"
+  },
+  "tasks": [
+    {
+      "id": "P0-T1",
+      "responsibility": "仓库扫描与 Baseline",
+      "input": "Repository",
+      "output": "Repository facts + baseline",
+      "dependencies": [],
+      "owner": "docs/architecture/repository_overview.md",
+      "interfaces": "现有入口与回归",
+      "forbidden": "不重做已完成扫描",
+      "limitations": "现有环境不能替代依赖锁",
+      "consumers": [
+        "P0-T2",
+        "P0-T3"
+      ]
+    },
+    {
+      "id": "P0-T2",
+      "responsibility": "SFIR Capability Map",
+      "input": "P0-T1 仓库事实与 baseline",
+      "output": "Capability map + G1–G8 evidence",
+      "dependencies": [
+        "P0-T1"
+      ],
+      "owner": "docs/architecture/sfir_capability_map.md",
+      "interfaces": "SFIR capability",
+      "forbidden": "不重做完整 capability review",
+      "limitations": "观察 PASS 不表示缺口已补足",
+      "consumers": [
+        "P0-T3"
+      ]
+    },
+    {
+      "id": "P0-T3",
+      "responsibility": "接口冻结与 Implementation Plan",
+      "input": "P0-T1 facts + P0-T2 gaps",
+      "output": "Frozen framework + plan + contracts",
+      "dependencies": [
+        "P0-T1",
+        "P0-T2"
+      ],
+      "owner": "IMPLEMENTATION_PLAN.md",
+      "interfaces": "全部冻结契约",
+      "forbidden": "不实现任何后续分析",
+      "limitations": "契约冻结不表示算法存在",
+      "consumers": [
+        "P1-T1"
+      ]
+    },
+    {
+      "id": "P1-T1",
+      "responsibility": "Semantic Action Identification",
+      "input": "SFIR + P0-T3 Module 1 contract",
+      "output": "SemanticAction",
+      "dependencies": [
+        "P0-T3"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_actions.py",
+      "interfaces": "SemanticAction",
+      "forbidden": "不复制 SFIR Call/Event/Storage IR",
+      "limitations": "未锚定语义与未知 operand 必须显式",
+      "consumers": [
+        "P1-T2",
+        "P1-T5",
+        "P1-T7"
+      ]
+    },
+    {
+      "id": "P1-T2",
+      "responsibility": "Dispatcher / Flattened Region Detection",
+      "input": "SFIR CFG + SemanticAction",
+      "output": "FlattenedRegion",
+      "dependencies": [
+        "P1-T1"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_regions.py",
+      "interfaces": "FlattenedRegion",
+      "forbidden": "不重做 SemanticAction",
+      "limitations": "无出口/不可约控制不能假定支持",
+      "consumers": [
+        "P1-T3",
+        "P1-T4",
+        "P1-T5"
+      ]
+    },
+    {
+      "id": "P1-T3",
+      "responsibility": "k-switch Abstract Domain and Context",
+      "input": "FlattenedRegion + SFIR typed operands",
+      "output": "AbstractDomainContract",
+      "dependencies": [
+        "P1-T2"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_abstract_domain.py",
+      "interfaces": "AbstractDomainContract",
+      "forbidden": "不重做 flattening detection；不做完整 fixed point",
+      "limitations": "类型/位宽缺失保留 UNKNOWN",
+      "consumers": [
+        "P1-T4"
+      ]
+    },
+    {
+      "id": "P1-T4",
+      "responsibility": "Fixed-Point Propagation Engine",
+      "input": "FlattenedRegion + AbstractDomainContract",
+      "output": "AbstractPropagation",
+      "dependencies": [
+        "P1-T2",
+        "P1-T3"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_propagation.py",
+      "interfaces": "AbstractPropagation",
+      "forbidden": "不重新定义 abstract state",
+      "limitations": "资源截止不得标为 fixed point",
+      "consumers": [
+        "P1-T5"
+      ]
+    },
+    {
+      "id": "P1-T5",
+      "responsibility": "Candidate Semantic Control Edge Reconstruction",
+      "input": "SemanticAction + FlattenedRegion + AbstractPropagation",
+      "output": "Candidate SemanticControlEdge",
+      "dependencies": [
+        "P1-T1",
+        "P1-T2",
+        "P1-T4"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_control_edges.py",
+      "interfaces": "SemanticControlEdge",
+      "forbidden": "不重做 detector/domain；不执行 SMT",
+      "limitations": "高召回候选允许假边且保留 truncation",
+      "consumers": [
+        "P1-T6"
+      ]
+    },
+    {
+      "id": "P1-T6",
+      "responsibility": "Local Symbolic Execution + SMT",
+      "input": "Candidate SemanticControlEdge + abstract context + SFIR",
+      "output": "Refined SemanticControlEdge + Guard + SolverEvidence",
+      "dependencies": [
+        "P1-T5"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_local_refinement.py",
+      "interfaces": "SemanticControlEdge; Guard; SolverEvidence",
+      "forbidden": "不做 production whole-program symbolic execution",
+      "limitations": "局部 SAT 的路径前提须保留；UNKNOWN/TIMEOUT 不删边",
+      "consumers": [
+        "P1-T7"
+      ]
+    },
+    {
+      "id": "P1-T7",
+      "responsibility": "Guard Canonicalization + Module 1 Evaluation",
+      "input": "Refined SemanticControlEdge + Guard + SemanticAction",
+      "output": "Module1Result + Module1Evaluation",
+      "dependencies": [
+        "P1-T1",
+        "P1-T6"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_guards.py; experiments/evaluators/module1.py",
+      "interfaces": "Guard; Module1Result; EvaluationResult",
+      "forbidden": "不重做候选恢复或 solver engine",
+      "limitations": "字符串不同不证明 Guard 不等价",
+      "consumers": [
+        "P2-T1",
+        "P2-T1A",
+        "P2-T2",
+        "P2-T4",
+        "P2-T6",
+        "P2-T7",
+        "P2-T8",
+        "P3-T1",
+        "P3-T2",
+        "P3-T3",
+        "P3-T5",
+        "P4-T1",
+        "P5-T1",
+        "P5-T2"
+      ]
+    },
+    {
+      "id": "P2-T1",
+      "responsibility": "Def-Use Infrastructure",
+      "input": "Module1Result + SFIR FactSSA/operands",
+      "output": "Definition + Use + DefUseIndex",
+      "dependencies": [
+        "P1-T7"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_def_use.py",
+      "interfaces": "Definition; Use; DefUseIndex",
+      "forbidden": "不重做 control recovery 或完整数据流框架",
+      "limitations": "空 refs、环境值、compound operand 必须审计",
+      "consumers": [
+        "P2-T1A",
+        "P2-T2",
+        "P2-T3",
+        "P2-T4"
+      ]
+    },
+    {
+      "id": "P2-T1A",
+      "responsibility": "Minimal Storage Alias / Address Equivalence",
+      "input": "Definition/Use + SFIR storage/layout + Module1Result",
+      "output": "StorageAddressRelation",
+      "dependencies": [
+        "P2-T1",
+        "P1-T7"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_storage_relation.py",
+      "interfaces": "StorageAccessView; StorageAddressRelation",
+      "forbidden": "不做通用 alias/任意 slot 算术/新 Storage IR",
+      "limitations": "key copy/redefinition、可能同值参数、未知写及 call clobber",
+      "consumers": [
+        "P2-T2",
+        "P2-T4",
+        "P2-T6",
+        "P2-T8"
+      ]
+    },
+    {
+      "id": "P2-T2",
+      "responsibility": "Reaching Definitions",
+      "input": "DefUseIndex + StorageAddressRelation + Module1Result + existing RD",
+      "output": "ReachingDefinitionSet",
+      "dependencies": [
+        "P2-T1",
+        "P2-T1A",
+        "P1-T7"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_reaching.py; scripts/s_seir/s_seir_semantic_fact_ir.py",
+      "interfaces": "ReachingDefinitionSet",
+      "forbidden": "不重做 P2-T1A 或普通 CFG/RD 框架",
+      "limitations": "仅已证 UNSAT 边可剔除；may/unknown 不强覆盖",
+      "consumers": [
+        "P2-T3",
+        "P2-T4"
+      ]
+    },
+    {
+      "id": "P2-T3",
+      "responsibility": "SSA / Explicit Value Identity",
+      "input": "Definition/Use + ReachingDefinitionSet + FactSSA",
+      "output": "ValueIdentity",
+      "dependencies": [
+        "P2-T1",
+        "P2-T2"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_value_identity.py",
+      "interfaces": "ValueIdentity",
+      "forbidden": "不建立第二套 SSA framework",
+      "limitations": "phi 不可按两个列表的相同下标配对",
+      "consumers": [
+        "P2-T4"
+      ]
+    },
+    {
+      "id": "P2-T4",
+      "responsibility": "Value Flow Graph",
+      "input": "DefUseIndex + ReachingDefinitionSet + ValueIdentity + StorageAddressRelation + Module1Result",
+      "output": "ValueFlowGraph",
+      "dependencies": [
+        "P2-T1",
+        "P2-T1A",
+        "P2-T2",
+        "P2-T3",
+        "P1-T7"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_value_flow.py",
+      "interfaces": "ValueFlow; ValueFlowGraph",
+      "forbidden": "不重做 CFG/SSA/RD；不把 semantic_edges 宣称完整 VFG",
+      "limitations": "未知 state/input 来源必须有显式边",
+      "consumers": [
+        "P2-T5",
+        "P2-T6",
+        "P2-T8"
+      ]
+    },
+    {
+      "id": "P2-T5",
+      "responsibility": "Expression Normalization",
+      "input": "ValueFlowGraph + typed SFIR expressions",
+      "output": "CanonicalExpression",
+      "dependencies": [
+        "P2-T4"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_expressions.py",
+      "interfaces": "CanonicalExpression",
+      "forbidden": "不恢复原始语法；不引入通用 synthesis engine",
+      "limitations": "checked arithmetic、溢出和副作用约束",
+      "consumers": [
+        "P2-T6",
+        "P2-T7",
+        "P2-T8"
+      ]
+    },
+    {
+      "id": "P2-T6",
+      "responsibility": "Semantic Sink + Backward Slicing",
+      "input": "ValueFlowGraph + CanonicalExpression + Module1Result + StorageAddressRelation",
+      "output": "SemanticSlice",
+      "dependencies": [
+        "P2-T4",
+        "P2-T5",
+        "P1-T7",
+        "P2-T1A"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_slicing.py",
+      "interfaces": "SemanticSlice",
+      "forbidden": "不建立另一套 Guard；不替代 MemorySSA/SinkResolver",
+      "limitations": "StorageWrite 首版；data 与 control 均需闭合",
+      "consumers": [
+        "P2-T7",
+        "P2-T8"
+      ]
+    },
+    {
+      "id": "P2-T7",
+      "responsibility": "Contract State Dependency Lifting + Module 2 Evaluation",
+      "input": "SemanticSlice + CanonicalExpression + Module1Result",
+      "output": "StateDependency + Module2StorageResult + Module2Evaluation",
+      "dependencies": [
+        "P2-T6",
+        "P2-T5",
+        "P1-T7"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_dependencies.py; experiments/evaluators/module2.py",
+      "interfaces": "StateDependency; Module2Result; EvaluationResult",
+      "forbidden": "不重做 slicing 或 normalization",
+      "limitations": "未知旧状态不得解释为常量/无依赖",
+      "consumers": [
+        "P2-T8",
+        "P3-T1",
+        "P5-T3"
+      ]
+    },
+    {
+      "id": "P2-T8",
+      "responsibility": "Multi-Sink Semantic Dependency Extension",
+      "input": "ValueFlowGraph + expressions + slices + StateDependency + Module1Result + StorageAddressRelation",
+      "output": "SinkDependency + Module2Result + Module2Evaluation",
+      "dependencies": [
+        "P2-T4",
+        "P2-T5",
+        "P2-T6",
+        "P2-T7",
+        "P1-T7",
+        "P2-T1A"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_dependencies.py; experiments/evaluators/module2.py",
+      "interfaces": "SinkDependency; Module2Result; EvaluationResult",
+      "forbidden": "不建立第二套 slicing engine",
+      "limitations": "call kind/target/args/value、persistent/failure dependency 与未知影响",
+      "consumers": [
+        "P3-T1",
+        "P3-T2",
+        "P3-T3",
+        "P3-T4",
+        "P3-T5",
+        "P4-T1",
+        "P5-T1",
+        "P5-T3"
+      ]
+    },
+    {
+      "id": "P3-T1",
+      "responsibility": "Semantic Event Schema",
+      "input": "Module1Result + Module2StorageResult + Module2Result + SFIR StateRead",
+      "output": "SemanticEvent",
+      "dependencies": [
+        "P1-T7",
+        "P2-T7",
+        "P2-T8"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_events.py",
+      "interfaces": "SemanticEvent",
+      "forbidden": "不重做 Module 1/2 或重复计入旧 effects",
+      "limitations": "StateRead 不是新的 SemanticAction；替代表示只计效一次",
+      "consumers": [
+        "P3-T2",
+        "P3-T5"
+      ]
+    },
+    {
+      "id": "P3-T2",
+      "responsibility": "Transition Grouping",
+      "input": "SemanticEvent + Module1Result + Module2Result",
+      "output": "TransitionCandidate",
+      "dependencies": [
+        "P3-T1",
+        "P1-T7",
+        "P2-T8"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_transitions.py",
+      "interfaces": "TransitionCandidate",
+      "forbidden": "不按源码相邻关系代替 grouping 证据",
+      "limitations": "循环/不确定分组保留 candidate",
+      "consumers": [
+        "P3-T3",
+        "P3-T4",
+        "P3-T5"
+      ]
+    },
+    {
+      "id": "P3-T3",
+      "responsibility": "Partial Order Recovery",
+      "input": "TransitionCandidate + feasible control + data/state/control evidence",
+      "output": "OrderConstraint + PartialOrder",
+      "dependencies": [
+        "P3-T2",
+        "P1-T7",
+        "P2-T8"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_order.py",
+      "interfaces": "OrderConstraint; PartialOrder",
+      "forbidden": "不重建 CFG；不强制 total order",
+      "limitations": "source position/semantic id/list order 不可证明顺序",
+      "consumers": [
+        "P3-T4",
+        "P3-T5"
+      ]
+    },
+    {
+      "id": "P3-T4",
+      "responsibility": "Revert / Failure Semantics",
+      "input": "TransitionCandidate + PartialOrder + failure dependencies",
+      "output": "FailureSemantics",
+      "dependencies": [
+        "P3-T2",
+        "P3-T3",
+        "P2-T8"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_failure.py",
+      "interfaces": "FailureSemantics",
+      "forbidden": "不做完整重入/代理/跨合约执行",
+      "limitations": "低级 call false 不自动等于 caller revert",
+      "consumers": [
+        "P3-T5"
+      ]
+    },
+    {
+      "id": "P3-T5",
+      "responsibility": "Canonical State Transition IR",
+      "input": "SemanticEvent + TransitionCandidate + PartialOrder + FailureSemantics + M1/M2",
+      "output": "StateTransitionIR + Module3Result",
+      "dependencies": [
+        "P3-T1",
+        "P3-T2",
+        "P3-T3",
+        "P3-T4",
+        "P1-T7",
+        "P2-T8"
+      ],
+      "owner": "scripts/s_seir/s_seir_research_stir.py",
+      "interfaces": "StateTransitionIR; Module3Result",
+      "forbidden": "不重做前两模块；不复制 SFIR",
+      "limitations": "不完备摘要不能宣称 whole-transition equivalence",
+      "consumers": [
+        "P3-T6"
+      ]
+    },
+    {
+      "id": "P3-T6",
+      "responsibility": "Module 3 Evaluation + Order Benchmark",
+      "input": "Module3Result + canonical M1/M2 outputs",
+      "output": "Module3Evaluation + order micro cases",
+      "dependencies": [
+        "P3-T5"
+      ],
+      "owner": "experiments/evaluators/module3.py; benchmarks/micro/order/",
+      "interfaces": "EvaluationResult; BenchmarkManifest",
+      "forbidden": "evaluator 不参与 recovery",
+      "limitations": "相同行为不同关键顺序必须作为负对照",
+      "consumers": [
+        "P4-T1",
+        "P5-T1",
+        "P5-T4"
+      ]
+    },
+    {
+      "id": "P4-T1",
+      "responsibility": "Benchmark Schema + Micro Benchmark",
+      "input": "三个 Module canonical outputs/evaluators + micro cases",
+      "output": "BenchmarkManifest + micro benchmark + oracle contract",
+      "dependencies": [
+        "P1-T7",
+        "P2-T8",
+        "P3-T6"
+      ],
+      "owner": "benchmarks/schema/; benchmarks/micro/",
+      "interfaces": "BenchmarkManifest; OracleRecord",
+      "forbidden": "不把 oracle 变成 recovery 输入",
+      "limitations": "配对有效性与语义恢复准确性分开",
+      "consumers": [
+        "P4-T2",
+        "P4-T3",
+        "P4-T4"
+      ]
+    },
+    {
+      "id": "P4-T2",
+      "responsibility": "Controlled Obfuscation + Pair Generation",
+      "input": "BenchmarkManifest + approved transformation profiles",
+      "output": "Validated pairs + transformation metadata",
+      "dependencies": [
+        "P4-T1"
+      ],
+      "owner": "benchmarks/generation/; benchmarks/validation/",
+      "interfaces": "BenchmarkManifest; DatasetFingerprint",
+      "forbidden": "不修改 recovery algorithm",
+      "limitations": "变换失败保留记录；seed/profile 可追踪",
+      "consumers": [
+        "P4-T3",
+        "P4-T4"
+      ]
+    },
+    {
+      "id": "P4-T3",
+      "responsibility": "ERC-20-style Paired Benchmark",
+      "input": "Benchmark schema + validated pairs",
+      "output": "ERC-20 pairs + reviewed oracle",
+      "dependencies": [
+        "P4-T1",
+        "P4-T2"
+      ],
+      "owner": "benchmarks/cases/erc20/; benchmarks/oracles/",
+      "interfaces": "BenchmarkManifest; OracleRecord",
+      "forbidden": "不使用 original source 帮助 obfuscated recovery",
+      "limitations": "transfer/approve/transferFrom/mint/burn；standalone Yul 显式 unsupported",
+      "consumers": [
+        "P4-T4"
+      ]
+    },
+    {
+      "id": "P4-T4",
+      "responsibility": "Larger Contracts + Dataset Freeze",
+      "input": "Micro/ERC-20 pairs + reviewed oracle + transformation metadata",
+      "output": "Frozen dataset + manifest + fingerprint + coverage matrix",
+      "dependencies": [
+        "P4-T1",
+        "P4-T2",
+        "P4-T3"
+      ],
+      "owner": "benchmarks/manifests/; benchmarks/validation/",
+      "interfaces": "BenchmarkManifest; DatasetFingerprint",
+      "forbidden": "不因失败删除样例或扩展研究目标",
+      "limitations": "较完整合约仅补充外部有效性",
+      "consumers": [
+        "P5-T1",
+        "P5-T2",
+        "P5-T3",
+        "P5-T4",
+        "P5-T5"
+      ]
+    },
+    {
+      "id": "P5-T1",
+      "responsibility": "Unified Result Schema + Evaluator Contract",
+      "input": "三个 Module evaluators + frozen dataset",
+      "output": "ExperimentResult contract",
+      "dependencies": [
+        "P1-T7",
+        "P2-T8",
+        "P3-T6",
+        "P4-T4"
+      ],
+      "owner": "experiments/schema/; experiments/evaluators/",
+      "interfaces": "ExperimentResult; EvaluationResult",
+      "forbidden": "不改 recovery/benchmark 冻结语义",
+      "limitations": "environment/versions/budget/seed/fingerprint 必须保存",
+      "consumers": [
+        "P5-T2",
+        "P5-T3",
+        "P5-T4"
+      ]
+    },
+    {
+      "id": "P5-T2",
+      "responsibility": "Experiment 1 Runner",
+      "input": "Module1Evaluation + frozen dataset + ExperimentResult contract",
+      "output": "Experiment1 raw results",
+      "dependencies": [
+        "P1-T7",
+        "P4-T4",
+        "P5-T1"
+      ],
+      "owner": "experiments/runners/experiment1.py",
+      "interfaces": "ExperimentResult",
+      "forbidden": "runner 不修改 recovery algorithm",
+      "limitations": "timeout/unsupported 不从分母静默去除",
+      "consumers": [
+        "P5-T5",
+        "P6-T1"
+      ]
+    },
+    {
+      "id": "P5-T3",
+      "responsibility": "Experiment 2 Runner",
+      "input": "Module2Evaluation + frozen dataset + ExperimentResult contract",
+      "output": "Experiment2 raw results",
+      "dependencies": [
+        "P2-T7",
+        "P2-T8",
+        "P4-T4",
+        "P5-T1"
+      ],
+      "owner": "experiments/runners/experiment2.py",
+      "interfaces": "ExperimentResult",
+      "forbidden": "runner 不修改 recovery algorithm",
+      "limitations": "StorageWrite 与 Multi-Sink 分层报告",
+      "consumers": [
+        "P5-T5",
+        "P6-T2"
+      ]
+    },
+    {
+      "id": "P5-T4",
+      "responsibility": "Experiment 3 Runner",
+      "input": "Module3Evaluation + frozen dataset + ExperimentResult contract",
+      "output": "Experiment3 raw results",
+      "dependencies": [
+        "P3-T6",
+        "P4-T4",
+        "P5-T1"
+      ],
+      "owner": "experiments/runners/experiment3.py",
+      "interfaces": "ExperimentResult",
+      "forbidden": "runner 不修改 recovery algorithm",
+      "limitations": "Guard/state/effect/failure/order 任一未知不能宣称完整等价",
+      "consumers": [
+        "P5-T5",
+        "P6-T3"
+      ]
+    },
+    {
+      "id": "P5-T5",
+      "responsibility": "Aggregation + Export",
+      "input": "Experiment1/2/3 raw results + frozen manifest",
+      "output": "AggregateResult + tables + failure distribution",
+      "dependencies": [
+        "P5-T2",
+        "P5-T3",
+        "P5-T4",
+        "P4-T4"
+      ],
+      "owner": "experiments/aggregation/",
+      "interfaces": "AggregateResult",
+      "forbidden": "不重跑或修改 recovery/oracle",
+      "limitations": "保留全部样例；overall/category/representation/profile/strength/base-case 分组",
+      "consumers": [
+        "P6-T1",
+        "P6-T2",
+        "P6-T3",
+        "P6-T4"
+      ]
+    },
+    {
+      "id": "P6-T1",
+      "responsibility": "Control Recovery Ablation",
+      "input": "Experiment1 results + evaluator + frozen dataset + aggregate",
+      "output": "Control ablation results",
+      "dependencies": [
+        "P5-T2",
+        "P5-T5"
+      ],
+      "owner": "experiments/ablations/control.py",
+      "interfaces": "ExperimentResult; AggregateResult",
+      "forbidden": "whole-program symbolic 仅独立 baseline；不进入生产",
+      "limitations": "同预算比较 AI-only/local-SMT/whole-program baseline；k sensitivity",
+      "consumers": [
+        "P6-T4"
+      ]
+    },
+    {
+      "id": "P6-T2",
+      "responsibility": "Sink-Guided Ablation",
+      "input": "Experiment2 results + evaluator + frozen dataset + aggregate",
+      "output": "Sink-guided ablation results",
+      "dependencies": [
+        "P5-T3",
+        "P5-T5"
+      ],
+      "owner": "experiments/ablations/dependency.py",
+      "interfaces": "ExperimentResult; AggregateResult",
+      "forbidden": "不另建生产 slicing engine",
+      "limitations": "semantic relevance 消融同 dataset/evaluator/budget",
+      "consumers": [
+        "P6-T4"
+      ]
+    },
+    {
+      "id": "P6-T3",
+      "responsibility": "Order-Aware Ablation",
+      "input": "Experiment3 results + evaluator + frozen dataset + aggregate",
+      "output": "Order-aware ablation results",
+      "dependencies": [
+        "P5-T4",
+        "P5-T5"
+      ],
+      "owner": "experiments/ablations/order.py",
+      "interfaces": "ExperimentResult; AggregateResult",
+      "forbidden": "不改变生产 Order contract",
+      "limitations": "移除 order 只为实验变体，失败样例保留",
+      "consumers": [
+        "P6-T4"
+      ]
+    },
+    {
+      "id": "P6-T4",
+      "responsibility": "Full Regression / Failure Attribution / Reproduction",
+      "input": "全部模块 + dataset + experiments + ablations",
+      "output": "FINAL_EXPERIMENT_REPORT.md + REPRODUCE.md + regression package",
+      "dependencies": [
+        "P6-T1",
+        "P6-T2",
+        "P6-T3",
+        "P5-T5"
+      ],
+      "owner": "FINAL_EXPERIMENT_REPORT.md; REPRODUCE.md; experiments/reproduction/",
+      "interfaces": "全部结果/复现契约",
+      "forbidden": "不通过放宽判定制造复现通过",
+      "limitations": "工具链未锁定时明确跨机器限制",
+      "consumers": []
+    }
+  ]
+}
