@@ -1,0 +1,83 @@
+{
+  "task": "P1-T2",
+  "status": "PASS",
+  "passed": 15,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "positive-and-negative-detection",
+      "status": "PASS",
+      "evidence": "PositiveDetectionTests and NegativeAndBoundaryTests locate flattened regions while rejecting ordinary switch/loop/branch structures."
+    },
+    {
+      "id": "frozen-payload",
+      "status": "PASS",
+      "evidence": "validate_flattened_region enforces exactly dispatcher_ref, region_cfg_refs, control_state_candidates, cases, entries, exits, detection_evidence."
+    },
+    {
+      "id": "single-formal-artifact",
+      "status": "PASS",
+      "evidence": "Production exports only erc20-research/flattened-region/v1; dispatcher/state/case/entry/exit are payload records or SourceRefs."
+    },
+    {
+      "id": "identity-basis",
+      "status": "PASS",
+      "evidence": "_build_region hashes cfg_origin_set plus dispatcher_occurrence; collection reorder regression preserves the id."
+    },
+    {
+      "id": "existing-sfir-state-evidence-only",
+      "status": "PASS",
+      "evidence": "_control_state_candidates consumes existing semantic-node reads/writes, FactSSA refs, placement, condition context, and SourceRefs only."
+    },
+    {
+      "id": "no-future-analysis",
+      "status": "PASS",
+      "evidence": "AST isolation test finds no Def-Use, reaching definitions, value-flow, abstract-state, fixed-point, transfer/join, solver backend, or parser implementation."
+    },
+    {
+      "id": "p1-t1-direct-reuse",
+      "status": "PASS",
+      "evidence": "Detector validates existing SemanticActions and consumes id, semantic_ref, control_anchor, replacement_refs, evidence_refs, status, result coverage, and unresolved diagnostics without mutation."
+    },
+    {
+      "id": "no-region-preserves-actions",
+      "status": "PASS",
+      "evidence": "Ordinary business-switch test retains the P1-T1 action ids while returning no region."
+    },
+    {
+      "id": "unsupported-and-ambiguous-explicit",
+      "status": "PASS",
+      "evidence": "No-exit and multi-entry SCC return UNSUPPORTED/PARTIAL; ambiguous or evidence-poor candidates return INSUFFICIENT_EVIDENCE/PARTIAL."
+    },
+    {
+      "id": "analysis-status-only",
+      "status": "PASS",
+      "evidence": "All artifacts/evidence use shared proof/completion/solver status; no numerical or HIGH/MEDIUM/LOW confidence system exists."
+    },
+    {
+      "id": "solver-not-run",
+      "status": "PASS",
+      "evidence": "Targeted tests assert solver=NOT_RUN on result, regions, candidates, and evidence."
+    },
+    {
+      "id": "no-second-parser-or-cfg",
+      "status": "PASS",
+      "evidence": "Production imports shared research modules and traverses supplied fact_cfg; it has no Solidity/Yul parser or CFG builder."
+    },
+    {
+      "id": "shared-contract-reused",
+      "status": "PASS",
+      "evidence": "ArtifactEnvelope, EvidenceRecord, SourceRef, AnalysisStatus, canonicalization, and stable identity are imported from s_seir_research_contracts."
+    },
+    {
+      "id": "oracle-isolation",
+      "status": "PASS",
+      "evidence": "AST isolation test confirms production has no oracle/expected/evaluator/benchmark dependency."
+    },
+    {
+      "id": "regressions",
+      "status": "PASS",
+      "evidence": "P1-T1 targeted 19/19 PASS; final baseline runner 28 PASS, 0 FAIL, 0 SKIP, 0 TIMEOUT."
+    }
+  ]
+}

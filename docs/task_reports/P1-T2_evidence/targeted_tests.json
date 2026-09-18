@@ -1,0 +1,62 @@
+{
+  "task": "P1-T2",
+  "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/s_seir/s_seir_research_regions_tests.py",
+  "status": "PASS",
+  "tests": 14,
+  "groups": {
+    "positive_detection": {
+      "status": "PASS",
+      "tests": 5,
+      "coverage": [
+        "flattened straight-line",
+        "flattened if/else equivalent multi-branch",
+        "flattened loop",
+        "fake/unrelated block",
+        "Yul/Mixed switch through unified SFIR",
+        "CFG-edge and function entries",
+        "structural exits"
+      ]
+    },
+    "negative_and_boundary": {
+      "status": "PASS",
+      "tests": 4,
+      "coverage": [
+        "ordinary business switch",
+        "ordinary loop",
+        "ordinary branch/join",
+        "non-flattened function with SemanticAction",
+        "ambiguous dispatcher component",
+        "insufficient state evidence",
+        "no-exit candidate",
+        "multi-entry irreducible candidate"
+      ]
+    },
+    "contract_and_stability": {
+      "status": "PASS",
+      "tests": 5,
+      "coverage": [
+        "P1-T1 action identity preservation",
+        "replacement provenance without duplicate effect",
+        "unresolved/unanchored action retention",
+        "collection-reorder stable region identity",
+        "variable-name independence",
+        "frozen payload and shared contract",
+        "oracle/parser/future-analysis isolation",
+        "solver NOT_RUN",
+        "unsupported non-SFIR input"
+      ]
+    }
+  },
+  "p1_t1_targeted_regression": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/s_seir/s_seir_research_actions_tests.py",
+    "tests": 19,
+    "status": "PASS"
+  },
+  "final_regression": {
+    "result": "docs/task_reports/P1-T2_evidence/final_regression/results.json",
+    "PASS": 28,
+    "FAIL": 0,
+    "SKIP": 0,
+    "TIMEOUT": 0
+  }
+}
