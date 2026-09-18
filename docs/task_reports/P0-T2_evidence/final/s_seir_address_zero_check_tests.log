@@ -1,0 +1,5 @@
+PASS iszero_shl_address: iszero(shl(96, newOwner)) -> newOwner == address(0) [iszero(address_projection)]
+PASS eq_address_zero: eq(recipient, 0) -> recipient == address(0) [eq(address_projection, 0)]
+PASS double_iszero_shl_address: iszero(iszero(shl(96, target))) -> target != address(0) [iszero(iszero(address_projection))]
+PASS ssa_clean_address: iszero(clean) -> account == address(0) [iszero(address_projection)]
+PASS masked_address_zero: eq(and(spender, 0xffffffffffffffffffffffffffffffffffffffff), 0) -> spender == address(0) [eq(address_projection, 0)]

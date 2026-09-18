@@ -1,0 +1,459 @@
+[
+  {
+    "test": "s_seir_solidity_atomic_ops_tests",
+    "status": "FAIL",
+    "traceback": "Traceback (most recent call last):\n  File \"/home/ubuntu/erc-20/docs/task_reports/P0-T1_baseline/diagnose_failures.py\", line 16, in <module>\n    module.run()\n  File \"/home/ubuntu/erc-20/scripts/s_seir/s_seir_solidity_atomic_ops_tests.py\", line 97, in run\n    assert allowance_write[\"semantic\"][\"value\"] == \"value\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+    "evidence": {
+      "allowance_write": {
+        "fact_id": "fact_32",
+        "operation_id": "sol_atom_8",
+        "kind": "StateWrite",
+        "source_lang": "solidity",
+        "origin": "solidity_atomic_operation",
+        "fact_role": "effect",
+        "function_id": "GuardedERC20.approve(address, uint256)",
+        "function": "approve",
+        "contract": "GuardedERC20",
+        "signature": "approve(address, uint256)",
+        "stmt_refs": [
+          "sol_s_3"
+        ],
+        "cfg_nodes": [
+          "bb_sol_slither_n4"
+        ],
+        "lvalue": "allowance[msg.sender][spender]",
+        "rvalue": "value_1",
+        "reads": [
+          "value_1"
+        ],
+        "writes": [
+          "allowance[msg.sender][spender]"
+        ],
+        "cfg_predecessor_blocks": [
+          "bb_sol_slither_n3"
+        ],
+        "order": {
+          "kind": "cfg_partial_order",
+          "cfg_block_order": 3,
+          "operation_order": 3
+        },
+        "semantic": {
+          "operation": "state_write",
+          "atomic_operation_count": 1,
+          "access": "allowance[msg.sender][spender]",
+          "state_variable": "allowance",
+          "keys": [
+            "msg.sender",
+            "spender"
+          ],
+          "location": {
+            "kind": "mapping",
+            "access": "allowance[msg.sender][spender]",
+            "state_variable": "allowance",
+            "keys": [
+              "msg.sender",
+              "spender"
+            ]
+          },
+          "value": "value_1"
+        },
+        "evidence": {
+          "atomic_operation": {
+            "atom_id": "sol_atom_8",
+            "source_span": "2059:38:slither",
+            "source_expression": "allowance[msg.sender][spender] = value",
+            "slithir_kind": "Assignment",
+            "slithir_text": "REF_3(uint256) (->allowance_1) := value_1(uint256)",
+            "physical_reference": "REF_3"
+          }
+        },
+        "control_predecessors": [
+          "fact_31"
+        ],
+        "guard_conditions": [
+          "!(spender == address(0))"
+        ],
+        "condition": "!(spender == address(0))"
+      }
+    }
+  },
+  {
+    "test": "s_seir_solidity_slithir_tests",
+    "status": "FAIL",
+    "traceback": "Traceback (most recent call last):\n  File \"/home/ubuntu/erc-20/docs/task_reports/P0-T1_baseline/diagnose_failures.py\", line 16, in <module>\n    module.run()\n  File \"/home/ubuntu/erc-20/scripts/s_seir/s_seir_solidity_slithir_tests.py\", line 206, in run\n    assert any(\"FIXED\" in str(item.get(\"condition\")) for item in semantic_facts(facts, \"ConstantContextCase\", \"guarded\"))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+    "evidence": {
+      "guarded_facts": [
+        {
+          "fact_id": "fact_25",
+          "operation_id": "sol_atom_2:state_read:1",
+          "kind": "StateRead",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "lvalue": "FIXED_1",
+          "rvalue": "FIXED",
+          "reads": [
+            "FIXED"
+          ],
+          "writes": [
+            "FIXED_1"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 0
+          },
+          "semantic": {
+            "operation": "state_read",
+            "atomic_operation_count": 1,
+            "access": "FIXED",
+            "state_variable": "FIXED",
+            "location": {
+              "kind": "state_variable",
+              "access": "FIXED",
+              "state_variable": "FIXED"
+            }
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_2:state_read:1",
+              "source_span": "1547:15:slither",
+              "source_expression": "FIXED",
+              "slithir_kind": "StorageRead",
+              "implicit_slithir_operation": true,
+              "physical_reference": "FIXED_1"
+            }
+          },
+          "control_predecessors": [],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ]
+        },
+        {
+          "fact_id": "fact_26",
+          "operation_id": "sol_atom_2",
+          "kind": "ValueCompute",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "support",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "lvalue": "TMP_11",
+          "rvalue": "target_1 == FIXED_1",
+          "reads": [
+            "target_1",
+            "FIXED_1"
+          ],
+          "writes": [
+            "TMP_11"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 1
+          },
+          "semantic": {
+            "operation": "value_compute",
+            "atomic_operation": "Binary",
+            "atomic_operation_count": 1,
+            "operator": "==",
+            "result_ssa": "TMP_11",
+            "operand_ssa": [
+              "target_1",
+              "FIXED_1"
+            ],
+            "resolved_operands": [
+              "target",
+              "FIXED"
+            ],
+            "checked": true,
+            "runtime_operation": true
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_2",
+              "source_span": "1547:15:slither",
+              "source_expression": "target == FIXED",
+              "slithir_kind": "Binary",
+              "slithir_text": "TMP_11(bool) = target_1 == FIXED_1",
+              "physical_reference": "TMP_11"
+            }
+          },
+          "control_predecessors": [
+            "fact_25"
+          ]
+        },
+        {
+          "fact_id": "fact_27",
+          "operation_id": "sol_atom_3",
+          "kind": "BranchCondition",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "control",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "rvalue": "TMP_11",
+          "reads": [
+            "TMP_11"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 2
+          },
+          "semantic": {
+            "operation": "branch_condition",
+            "atomic_operation": "Condition",
+            "atomic_operation_count": 1,
+            "operand_ssa": [
+              "TMP_11"
+            ],
+            "resolved_operands": [
+              "(target == FIXED)"
+            ],
+            "checked": true,
+            "runtime_operation": false,
+            "predicate": "(target == FIXED)"
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_3",
+              "source_span": "1547:15:slither",
+              "source_expression": "target == FIXED",
+              "slithir_kind": "Condition",
+              "slithir_text": "CONDITION TMP_11"
+            }
+          },
+          "control_predecessors": [
+            "fact_26"
+          ]
+        },
+        {
+          "fact_id": "fact_28",
+          "kind": "ValueCompute",
+          "source_lang": "yul",
+          "origin": "yul_sseir_semantic_overlay",
+          "function": "guarded",
+          "fact_role": "support",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_asm2_n2"
+          ],
+          "lvalue": "result",
+          "rvalue": "1",
+          "writes": [
+            "result"
+          ],
+          "semantic": {
+            "atomic_operation_count": 1,
+            "target": "result",
+            "expression_normalized": "1",
+            "context": "value"
+          },
+          "evidence": {
+            "overlay": "ov_1",
+            "overlay_kind": "ExpressionNormalization"
+          },
+          "function_id": "ConstantContextCase.guarded(address)",
+          "semantic_provenance": {
+            "semantic_source": {
+              "overlay_id": "ov_1",
+              "overlay_kind": "ExpressionNormalization"
+            },
+            "evidence_cfg_nodes": [
+              "bb_asm2_n2"
+            ],
+            "anchor_cfg_node": "bb_asm2_n2"
+          },
+          "operation_id": "yul_overlay:ov_1",
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 3,
+            "operation_order": 1
+          },
+          "control_predecessors": [
+            "fact_27"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_asm2_n0"
+          ]
+        },
+        {
+          "fact_id": "fact_29",
+          "operation_id": "sol_atom_4",
+          "kind": "ValuePhi",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "analysis_support",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n5"
+          ],
+          "lvalue": "result_2",
+          "rvalue": [
+            "result_0",
+            "result_1"
+          ],
+          "reads": [
+            "result_0",
+            "result_1"
+          ],
+          "writes": [
+            "result_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1",
+            "bb_asm2_n1"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 5,
+            "operation_order": 0
+          },
+          "semantic": {
+            "operation": "phi",
+            "atomic_operation": "Phi",
+            "atomic_operation_count": 1,
+            "result_ssa": "result_2",
+            "operand_ssa": [
+              "result_0",
+              "result_1"
+            ],
+            "resolved_operands": [
+              "result"
+            ],
+            "checked": true,
+            "runtime_operation": false,
+            "phi_role": "function_cfg_merge",
+            "inputs": [
+              "result_0",
+              "result_1"
+            ],
+            "origin_nodes": [
+              {
+                "node_id": 0,
+                "node_type": "NodeType.ENTRYPOINT",
+                "function": "ConstantContextCase.guarded(address)"
+              },
+              {
+                "node_id": 3,
+                "node_type": "NodeType.EXPRESSION",
+                "function": "ConstantContextCase.guarded(address)"
+              }
+            ]
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_4",
+              "source_span": "1543:69:slither",
+              "slithir_kind": "Phi",
+              "slithir_text": "result_2(bool) := ϕ(['result_0', 'result_1'])",
+              "physical_reference": "result_2"
+            }
+          },
+          "control_predecessors": [
+            "fact_27",
+            "fact_28"
+          ]
+        },
+        {
+          "fact_id": "fact_30",
+          "operation_id": "sol_atom_5",
+          "kind": "Return",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "cfg_nodes": [
+            "bb_sol_slither_n6"
+          ],
+          "rvalue": "result_2",
+          "reads": [
+            "result_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n5"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 6,
+            "operation_order": 0
+          },
+          "semantic": {
+            "operation": "return",
+            "atomic_operation": "Return",
+            "atomic_operation_count": 1,
+            "operand_ssa": [
+              "result_2"
+            ],
+            "resolved_operands": [
+              "result"
+            ],
+            "checked": true,
+            "runtime_operation": true,
+            "values": [
+              "result_2"
+            ]
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_5",
+              "source_span": "1519:13:slither",
+              "source_expression": "result",
+              "slithir_kind": "Return",
+              "slithir_text": "RETURN result_2"
+            }
+          },
+          "control_predecessors": [
+            "fact_29"
+          ]
+        }
+      ]
+    }
+  }
+]

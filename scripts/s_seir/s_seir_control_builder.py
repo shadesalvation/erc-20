@@ -799,17 +799,31 @@ class ControlBuilder:
         base_name = str(non_ssa) if non_ssa is not None else str(getattr(value, "name", value))
         text = str(value)
         value_type = getattr(value, "type", None)
+        # Slither keeps declared constants as StateIRVariable SSA wrappers.
+        # The declaration flag, not the wrapper's class, determines whether
+        # consuming the operand is a persistent-state read.
+        declared_constant = kind in {"StateIRVariable", "StateVariable"} and bool(
+            getattr(value, "is_constant", False)
+        )
         item = {
             "kind": kind,
             "text": text,
             "name": str(getattr(value, "name", text)),
             "base_name": base_name,
             "type": str(value_type) if value_type is not None else None,
-            "is_state": kind in {"StateIRVariable", "StateVariable"},
+            "is_state": kind in {"StateIRVariable", "StateVariable"} and not declared_constant,
             "is_reference": "ReferenceVariable" in kind,
-            "is_constant": kind == "Constant",
+            "is_constant": kind == "Constant" or declared_constant,
             "is_solidity_builtin": kind in {"SolidityVariable", "SolidityVariableComposed"},
         }
+        if declared_constant:
+            initializer = getattr(value, "expression", None)
+            item["constant_declaration"] = {
+                "name": base_name,
+                "canonical_name": str(getattr(value, "canonical_name", base_name)),
+                "type": item["type"],
+                "initializer": str(initializer) if initializer is not None else None,
+            }
         # A function value used by an InternalDynamicCall is not an ordinary
         # identifier: Slither exposes its resolved declaration on the value
         # itself. Preserve that proof so the final program linker need not

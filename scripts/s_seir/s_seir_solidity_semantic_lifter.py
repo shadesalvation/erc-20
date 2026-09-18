@@ -565,6 +565,16 @@ class SoliditySemanticLifter:
                 "unmodeled_reason": "unknown_slithir_operation_kind",
                 "slithir_kind": atom.get("kind"),
             })
+        # Named compile-time operands have declarations, not runtime SSA
+        # definitions. Retain their initializer as evidence without evaluating
+        # it or treating the declaration as a persistent-state dependency.
+        constant_operands = []
+        for value in atom.get("read") or []:
+            declaration = value.get("constant_declaration") if isinstance(value, dict) else None
+            if declaration and declaration not in constant_operands:
+                constant_operands.append(dict(declaration))
+        if constant_operands:
+            semantic["constant_operands"] = constant_operands
         return _clean(semantic)
 
     @staticmethod
@@ -606,6 +616,8 @@ class SoliditySemanticLifter:
             return ""
         if not isinstance(value, dict):
             return str(value)
+        if value.get("constant_declaration"):
+            return str(value["constant_declaration"]["name"])
         text = str(value.get("text") or value.get("name") or value.get("base_name") or "")
         if value.get("is_constant") and text in {"True", "False"}:
             return text.lower()

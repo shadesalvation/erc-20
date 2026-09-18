@@ -1,0 +1,3970 @@
+{
+  "schema": "s-seir-semantic-fact-ir/v1",
+  "model_boundary": {
+    "processing_unit": "function",
+    "name": "Semantic Fact IR",
+    "yul_input": "completed S-SEIR high-level semantic overlays only; control summaries provide Fact CFG structure but never synthetic semantic definitions",
+    "recovery_boundary": "Yul recovery CFG, MemorySSA, SinkResolver and low-level effects remain upstream evidence and are not Fact IR inputs",
+    "ordering": "Fact CFG partial order plus block-local semantic order",
+    "path_policy": "canonical semantic nodes are not path-cloned; path witnesses are derived on demand",
+    "program_links": "cross-function links reference final function FactCFGs and semantic nodes; they never inline or duplicate callee semantics"
+  },
+  "function_count": 2,
+  "semantic_node_count": 15,
+  "modifier_application_links": [],
+  "direct_call_links": [],
+  "dynamic_call_links": [],
+  "contracts": [
+    {
+      "name": "ConstantContextCase",
+      "kind": "",
+      "immediate_inheritance": [],
+      "inheritance": [],
+      "inheritance_reverse": [],
+      "explicit_base_constructor_calls": []
+    },
+    {
+      "name": "GuardedERC20",
+      "kind": "",
+      "immediate_inheritance": [],
+      "inheritance": [],
+      "inheritance_reverse": [],
+      "explicit_base_constructor_calls": []
+    }
+  ],
+  "base_constructor_links": [],
+  "functions": [
+    {
+      "function_id": "ConstantContextCase.guarded(address)",
+      "contract": "ConstantContextCase",
+      "function": "guarded",
+      "signature": "guarded(address)",
+      "declaration": {
+        "declaration_kind": "function",
+        "name": "guarded",
+        "full_name": "guarded(address)",
+        "canonical_name": "ConstantContextCase.guarded(address)",
+        "visibility": "external",
+        "view": true,
+        "pure": true,
+        "payable": false,
+        "implemented": true,
+        "function_type": "NORMAL",
+        "is_constructor": false,
+        "is_fallback": false,
+        "is_receive": false,
+        "is_virtual": false,
+        "is_override": false,
+        "parameters": [
+          {
+            "kind": "LocalVariable",
+            "text": "target",
+            "name": "target",
+            "base_name": "target",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false,
+            "canonical_name": "ConstantContextCase.guarded(address).target",
+            "full_name": "",
+            "data_location": "memory",
+            "is_storage": false
+          }
+        ],
+        "returns": [
+          {
+            "kind": "LocalVariable",
+            "text": "result",
+            "name": "result",
+            "base_name": "result",
+            "type": "bool",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false,
+            "canonical_name": "ConstantContextCase.guarded(address).result",
+            "full_name": "",
+            "data_location": "memory",
+            "is_storage": false
+          }
+        ],
+        "applied_modifiers": [],
+        "overrides": [],
+        "overridden_by": [],
+        "explicit_base_constructor_calls": [],
+        "explicit_base_constructor_call_statements": []
+      },
+      "contract_declaration": {
+        "name": "ConstantContextCase",
+        "kind": "",
+        "immediate_inheritance": [],
+        "inheritance": [],
+        "inheritance_reverse": [],
+        "explicit_base_constructor_calls": []
+      },
+      "fact_cfg": {
+        "blocks": [
+          {
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "kind": "solidity",
+            "origin": {
+              "engine": "slither",
+              "source_block_id": "bb_sol_slither_n1",
+              "slither_node_id": 1
+            },
+            "stmt_refs": [
+              "sol_s_1"
+            ],
+            "terminator": {
+              "kind": "Branch",
+              "condition": "target == FIXED"
+            },
+            "semantic_ids": [
+              "sfir:ConstantContextCase.guarded(address):sol_atom_2:state_read:1",
+              "sfir:ConstantContextCase.guarded(address):sol_atom_2",
+              "sfir:ConstantContextCase.guarded(address):sol_atom_3"
+            ],
+            "predecessors": [],
+            "successors": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+              "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2"
+            ],
+            "_sequence": 1,
+            "collapsed_entry_transport": [
+              {
+                "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n0",
+                "source_block_id": "bb_sol_slither_n0",
+                "source_lang": "solidity",
+                "role": "solidity-entry"
+              }
+            ],
+            "entry_boundary_transitions": []
+          },
+          {
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+            "kind": "solidity",
+            "origin": {
+              "engine": "slither",
+              "source_block_id": "bb_sol_slither_n5",
+              "slither_node_id": 5
+            },
+            "stmt_refs": [
+              "sol_s_1"
+            ],
+            "terminator": {
+              "kind": "Branch",
+              "condition": "endif"
+            },
+            "semantic_ids": [
+              "sfir:ConstantContextCase.guarded(address):sol_atom_4"
+            ],
+            "predecessors": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+              "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2"
+            ],
+            "successors": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6"
+            ],
+            "_sequence": 2
+          },
+          {
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6",
+            "kind": "solidity",
+            "origin": {
+              "engine": "slither",
+              "source_block_id": "bb_sol_slither_n6",
+              "slither_node_id": 6
+            },
+            "stmt_refs": [],
+            "terminator": {
+              "kind": "Return"
+            },
+            "semantic_ids": [
+              "sfir:ConstantContextCase.guarded(address):sol_atom_5"
+            ],
+            "predecessors": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5"
+            ],
+            "successors": [],
+            "_sequence": 3
+          },
+          {
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+            "kind": "yul",
+            "origin": {
+              "engine": "sseir_semantic_projection",
+              "source_block_id": "bb_asm2_n2",
+              "semantic_source_node_id": 2
+            },
+            "stmt_refs": [
+              "asm_s_1"
+            ],
+            "terminator": {
+              "kind": "YulNode",
+              "node_kind": "statement"
+            },
+            "semantic_ids": [
+              "sfir:ConstantContextCase.guarded(address):yul_overlay:ov_1"
+            ],
+            "predecessors": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1"
+            ],
+            "successors": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5"
+            ],
+            "_sequence": 6
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": "e5",
+            "from": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "to": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+            "kind": "false",
+            "guard": "!(target == FIXED)"
+          },
+          {
+            "edge_id": "e7",
+            "from": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+            "to": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6",
+            "kind": "join"
+          },
+          {
+            "edge_id": "e4",
+            "from": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "to": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+            "kind": "true",
+            "guard": "target == FIXED",
+            "collapsed_transport": [
+              {
+                "block_id": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n0",
+                "source_block_id": "bb_asm2_n0",
+                "source_lang": "yul",
+                "role": "entry"
+              }
+            ],
+            "boundary_transitions": [
+              {
+                "from_lang": "solidity",
+                "to_lang": "yul",
+                "from_source_block": "bb_sol_slither_n1",
+                "to_source_block": "bb_asm2_n0"
+              }
+            ],
+            "contracted_edge_ids": [
+              "e1"
+            ],
+            "normalization": "semantic_transport_block_elimination"
+          },
+          {
+            "edge_id": "e2",
+            "from": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+            "to": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+            "kind": "next",
+            "collapsed_transport": [
+              {
+                "block_id": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n1",
+                "source_block_id": "bb_asm2_n1",
+                "source_lang": "yul",
+                "role": "exit"
+              }
+            ],
+            "boundary_transitions": [
+              {
+                "from_lang": "yul",
+                "to_lang": "solidity",
+                "from_source_block": "bb_asm2_n1",
+                "to_source_block": "bb_sol_slither_n5"
+              }
+            ],
+            "contracted_edge_ids": [
+              "e6"
+            ],
+            "normalization": "semantic_transport_block_elimination"
+          }
+        ],
+        "entry_blocks": [
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1"
+        ],
+        "reverse_postorder": {
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1": 0,
+          "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2": 1,
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5": 2,
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6": 3
+        },
+        "dominance": {
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1": [
+            "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1"
+          ],
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5": [
+            "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5"
+          ],
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6": [
+            "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+            "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6"
+          ],
+          "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2": [
+            "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+            "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1"
+          ]
+        },
+        "control_dependencies": [
+          {
+            "controller": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "dependent": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+            "edge_id": "e4",
+            "predicate": "target == FIXED"
+          }
+        ],
+        "normalization": {
+          "semantic_transport_block_elimination": {
+            "removed_blocks": [
+              {
+                "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n0",
+                "source_block_id": "bb_sol_slither_n0",
+                "role": "solidity-entry",
+                "mode": "redirect",
+                "successor": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+                "predecessor_count": 0
+              },
+              {
+                "block_id": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n0",
+                "source_block_id": "bb_asm2_n0",
+                "role": "entry",
+                "mode": "redirect",
+                "successor": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+                "predecessor_count": 1
+              },
+              {
+                "block_id": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n1",
+                "source_block_id": "bb_asm2_n1",
+                "role": "exit",
+                "mode": "redirect",
+                "successor": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+                "predecessor_count": 1
+              }
+            ],
+            "policy": "canonical_sfir_cfg_erases_zero_semantic_unconditional_transport_blocks"
+          }
+        }
+      },
+      "fact_ssa": {
+        "bindings": [
+          {
+            "binding_id": "decl:146:value",
+            "base_name": "target",
+            "facet": "value",
+            "kind": "parameter",
+            "type": "address",
+            "declaration_id": 146,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:149:value",
+            "base_name": "result",
+            "facet": "value",
+            "kind": "return",
+            "type": "bool",
+            "declaration_id": 149,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "state:FIXED:storage_location:FIXED",
+            "base_name": "FIXED",
+            "facet": "storage_location",
+            "kind": "storage_location",
+            "identity_status": "semantic_storage_location",
+            "access": "FIXED",
+            "state_variable": "FIXED",
+            "keys": []
+          },
+          {
+            "binding_id": "symbol:FIXED_1:value",
+            "base_name": "FIXED_1",
+            "facet": "value",
+            "identity_status": "name_scoped"
+          },
+          {
+            "binding_id": "symbol:TMP:value",
+            "base_name": "TMP",
+            "facet": "value",
+            "identity_status": "name_scoped"
+          }
+        ],
+        "definitions": [
+          {
+            "version": "fssa:decl:146:value:v1",
+            "binding_id": "decl:146:value",
+            "base_name": "target",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:149:value:v2",
+            "binding_id": "decl:149:value",
+            "base_name": "result",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:state:FIXED:storage_location:FIXED:v3",
+            "binding_id": "state:FIXED:storage_location:FIXED",
+            "base_name": "FIXED",
+            "facet": "storage_location",
+            "definition_kind": "entry",
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:symbol:FIXED_1:value:v4",
+            "binding_id": "symbol:FIXED_1:value",
+            "base_name": "FIXED_1",
+            "facet": "value",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "operation_order": 0,
+            "owner_semantic_id": "sfir:ConstantContextCase.guarded(address):sol_atom_2:state_read:1",
+            "origin": {
+              "engine": "solidity_atomic_operation",
+              "origin_id": "solidity:ConstantContextCase.guarded(address):sol_atom_2:state_read:1"
+            }
+          },
+          {
+            "version": "fssa:symbol:TMP:value:v5",
+            "binding_id": "symbol:TMP:value",
+            "base_name": "TMP",
+            "facet": "value",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "operation_order": 1,
+            "owner_semantic_id": "sfir:ConstantContextCase.guarded(address):sol_atom_2",
+            "origin": {
+              "engine": "solidity_atomic_operation",
+              "origin_id": "solidity:ConstantContextCase.guarded(address):sol_atom_2"
+            }
+          },
+          {
+            "version": "fssa:decl:149:value:v6",
+            "binding_id": "decl:149:value",
+            "base_name": "result",
+            "facet": "value",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+            "operation_order": 0,
+            "owner_semantic_id": "sfir:ConstantContextCase.guarded(address):sol_atom_4",
+            "origin": {
+              "engine": "solidity_atomic_operation",
+              "origin_id": "solidity:ConstantContextCase.guarded(address):sol_atom_4"
+            }
+          },
+          {
+            "version": "fssa:decl:149:value:v7",
+            "binding_id": "decl:149:value",
+            "base_name": "result",
+            "facet": "value",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+            "operation_order": 1,
+            "owner_semantic_id": "sfir:ConstantContextCase.guarded(address):yul_overlay:ov_1",
+            "origin": {
+              "engine": "yul_sseir_semantic_overlay",
+              "origin_id": "fact_1"
+            }
+          }
+        ],
+        "phis": [
+          {
+            "version": "fssa:decl:149:value:phi:1",
+            "binding_id": "decl:149:value",
+            "definition_kind": "phi",
+            "block_id": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+            "incoming_versions": [
+              "fssa:decl:149:value:v2",
+              "fssa:decl:149:value:v7"
+            ],
+            "predecessor_blocks": [
+              "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1"
+            ]
+          }
+        ],
+        "reaching_definitions_in": {
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1": {},
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5": {
+            "decl:146:value": [
+              "fssa:decl:146:value:v1"
+            ],
+            "decl:149:value": [
+              "fssa:decl:149:value:v2",
+              "fssa:decl:149:value:v7"
+            ],
+            "state:FIXED:storage_location:FIXED": [
+              "fssa:state:FIXED:storage_location:FIXED:v3"
+            ],
+            "symbol:FIXED_1:value": [
+              "fssa:symbol:FIXED_1:value:v4"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v5"
+            ]
+          },
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6": {
+            "decl:146:value": [
+              "fssa:decl:146:value:v1"
+            ],
+            "decl:149:value": [
+              "fssa:decl:149:value:v6"
+            ],
+            "state:FIXED:storage_location:FIXED": [
+              "fssa:state:FIXED:storage_location:FIXED:v3"
+            ],
+            "symbol:FIXED_1:value": [
+              "fssa:symbol:FIXED_1:value:v4"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v5"
+            ]
+          },
+          "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2": {
+            "decl:146:value": [
+              "fssa:decl:146:value:v1"
+            ],
+            "decl:149:value": [
+              "fssa:decl:149:value:v2"
+            ],
+            "state:FIXED:storage_location:FIXED": [
+              "fssa:state:FIXED:storage_location:FIXED:v3"
+            ],
+            "symbol:FIXED_1:value": [
+              "fssa:symbol:FIXED_1:value:v4"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v5"
+            ]
+          }
+        },
+        "reaching_definitions_out": {
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1": {
+            "decl:146:value": [
+              "fssa:decl:146:value:v1"
+            ],
+            "decl:149:value": [
+              "fssa:decl:149:value:v2"
+            ],
+            "state:FIXED:storage_location:FIXED": [
+              "fssa:state:FIXED:storage_location:FIXED:v3"
+            ],
+            "symbol:FIXED_1:value": [
+              "fssa:symbol:FIXED_1:value:v4"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v5"
+            ]
+          },
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5": {
+            "decl:146:value": [
+              "fssa:decl:146:value:v1"
+            ],
+            "decl:149:value": [
+              "fssa:decl:149:value:v6"
+            ],
+            "state:FIXED:storage_location:FIXED": [
+              "fssa:state:FIXED:storage_location:FIXED:v3"
+            ],
+            "symbol:FIXED_1:value": [
+              "fssa:symbol:FIXED_1:value:v4"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v5"
+            ]
+          },
+          "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6": {
+            "decl:146:value": [
+              "fssa:decl:146:value:v1"
+            ],
+            "decl:149:value": [
+              "fssa:decl:149:value:v6"
+            ],
+            "state:FIXED:storage_location:FIXED": [
+              "fssa:state:FIXED:storage_location:FIXED:v3"
+            ],
+            "symbol:FIXED_1:value": [
+              "fssa:symbol:FIXED_1:value:v4"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v5"
+            ]
+          },
+          "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2": {
+            "decl:146:value": [
+              "fssa:decl:146:value:v1"
+            ],
+            "decl:149:value": [
+              "fssa:decl:149:value:v7"
+            ],
+            "state:FIXED:storage_location:FIXED": [
+              "fssa:state:FIXED:storage_location:FIXED:v3"
+            ],
+            "symbol:FIXED_1:value": [
+              "fssa:symbol:FIXED_1:value:v4"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v5"
+            ]
+          }
+        }
+      },
+      "semantic_nodes": [
+        {
+          "operation_id": "sol_atom_2:state_read:1",
+          "kind": "StateRead",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "lvalue": "FIXED_1",
+          "rvalue": "FIXED",
+          "reads": [
+            "FIXED"
+          ],
+          "writes": [
+            "FIXED_1"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 0,
+            "atomic_sequence": 2
+          },
+          "semantic": {
+            "operation": "state_read",
+            "atomic_operation_count": 1,
+            "access": "FIXED",
+            "state_variable": "FIXED",
+            "location": {
+              "kind": "state_variable",
+              "access": "FIXED",
+              "state_variable": "FIXED"
+            }
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_2:state_read:1",
+              "source_span": "1547:15:slither",
+              "source_expression": "FIXED",
+              "slithir_kind": "StorageRead",
+              "implicit_slithir_operation": true,
+              "physical_reference": "FIXED_1"
+            }
+          },
+          "semantic_id": "sfir:ConstantContextCase.guarded(address):sol_atom_2:state_read:1",
+          "origin_id": "solidity:ConstantContextCase.guarded(address):sol_atom_2:state_read:1",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "operation_order": 0,
+            "evidence_blocks": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "FIXED",
+                "binding_id": "state:FIXED:storage_location:FIXED",
+                "version": "fssa:state:FIXED:storage_location:FIXED:v3"
+              }
+            ],
+            "writes": [
+              {
+                "value": "FIXED_1",
+                "binding_id": "symbol:FIXED_1:value",
+                "version": "fssa:symbol:FIXED_1:value:v4"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "sol_atom_2",
+          "kind": "ValueCompute",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "support",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "lvalue": "TMP_11",
+          "rvalue": "target_1 == FIXED_1",
+          "reads": [
+            "target_1",
+            "FIXED_1"
+          ],
+          "writes": [
+            "TMP_11"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 1,
+            "atomic_sequence": 3
+          },
+          "semantic": {
+            "operation": "value_compute",
+            "atomic_operation": "Binary",
+            "atomic_operation_count": 1,
+            "operator": "==",
+            "result_ssa": "TMP_11",
+            "operand_ssa": [
+              "target_1",
+              "FIXED_1"
+            ],
+            "resolved_operands": [
+              "target",
+              "FIXED"
+            ],
+            "checked": true,
+            "runtime_operation": true
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_2",
+              "source_span": "1547:15:slither",
+              "source_expression": "target == FIXED",
+              "slithir_kind": "Binary",
+              "slithir_text": "TMP_11(bool) = target_1 == FIXED_1",
+              "physical_reference": "TMP_11"
+            }
+          },
+          "semantic_id": "sfir:ConstantContextCase.guarded(address):sol_atom_2",
+          "origin_id": "solidity:ConstantContextCase.guarded(address):sol_atom_2",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "operation_order": 1,
+            "evidence_blocks": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "target_1",
+                "binding_id": "decl:146:value",
+                "version": "fssa:decl:146:value:v1"
+              },
+              {
+                "value": "FIXED_1",
+                "binding_id": "symbol:FIXED_1:value",
+                "version": "fssa:symbol:FIXED_1:value:v4"
+              }
+            ],
+            "writes": [
+              {
+                "value": "TMP_11",
+                "binding_id": "symbol:TMP:value",
+                "version": "fssa:symbol:TMP:value:v5"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "sol_atom_3",
+          "kind": "BranchCondition",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "control",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "rvalue": "TMP_11",
+          "reads": [
+            "TMP_11"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 2,
+            "atomic_sequence": 4
+          },
+          "semantic": {
+            "operation": "branch_condition",
+            "atomic_operation": "Condition",
+            "atomic_operation_count": 1,
+            "operand_ssa": [
+              "TMP_11"
+            ],
+            "resolved_operands": [
+              "(target == FIXED)"
+            ],
+            "checked": true,
+            "runtime_operation": false,
+            "predicate": "(target == FIXED)"
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_3",
+              "source_span": "1547:15:slither",
+              "source_expression": "target == FIXED",
+              "slithir_kind": "Condition",
+              "slithir_text": "CONDITION TMP_11"
+            }
+          },
+          "semantic_id": "sfir:ConstantContextCase.guarded(address):sol_atom_3",
+          "origin_id": "solidity:ConstantContextCase.guarded(address):sol_atom_3",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1",
+            "operation_order": 2,
+            "evidence_blocks": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n1"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "TMP_11",
+                "binding_id": "symbol:TMP:value",
+                "version": "fssa:symbol:TMP:value:v5"
+              }
+            ],
+            "writes": []
+          }
+        },
+        {
+          "operation_id": "sol_atom_4",
+          "kind": "ValuePhi",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "analysis_support",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n5"
+          ],
+          "lvalue": "result_2",
+          "rvalue": [
+            "result_1",
+            "result_0"
+          ],
+          "reads": [
+            "result_1",
+            "result_0"
+          ],
+          "writes": [
+            "result_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1",
+            "bb_asm2_n1"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 2,
+            "operation_order": 0,
+            "atomic_sequence": 5
+          },
+          "semantic": {
+            "operation": "phi",
+            "atomic_operation": "Phi",
+            "atomic_operation_count": 1,
+            "result_ssa": "result_2",
+            "operand_ssa": [
+              "result_1",
+              "result_0"
+            ],
+            "resolved_operands": [
+              "result"
+            ],
+            "checked": true,
+            "runtime_operation": false,
+            "phi_role": "function_cfg_merge",
+            "inputs": [
+              "result_1",
+              "result_0"
+            ],
+            "origin_nodes": [
+              {
+                "node_id": 0,
+                "node_type": "NodeType.ENTRYPOINT",
+                "function": "ConstantContextCase.guarded(address)"
+              },
+              {
+                "node_id": 3,
+                "node_type": "NodeType.EXPRESSION",
+                "function": "ConstantContextCase.guarded(address)"
+              }
+            ]
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_4",
+              "source_span": "1543:69:slither",
+              "slithir_kind": "Phi",
+              "slithir_text": "result_2(bool) := ϕ(['result_1', 'result_0'])",
+              "physical_reference": "result_2"
+            }
+          },
+          "semantic_id": "sfir:ConstantContextCase.guarded(address):sol_atom_4",
+          "origin_id": "solidity:ConstantContextCase.guarded(address):sol_atom_4",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5",
+            "operation_order": 0,
+            "evidence_blocks": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n5"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "result_1",
+                "binding_id": "decl:149:value",
+                "version": "fssa:decl:149:value:phi:1"
+              },
+              {
+                "value": "result_0",
+                "binding_id": "decl:149:value",
+                "version": "fssa:decl:149:value:phi:1"
+              }
+            ],
+            "writes": [
+              {
+                "value": "result_2",
+                "binding_id": "decl:149:value",
+                "version": "fssa:decl:149:value:v6"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "sol_atom_5",
+          "kind": "Return",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "ConstantContextCase.guarded(address)",
+          "function": "guarded",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "cfg_nodes": [
+            "bb_sol_slither_n6"
+          ],
+          "rvalue": "result_2",
+          "reads": [
+            "result_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n5"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 3,
+            "operation_order": 0,
+            "atomic_sequence": 6
+          },
+          "semantic": {
+            "operation": "return",
+            "atomic_operation": "Return",
+            "atomic_operation_count": 1,
+            "operand_ssa": [
+              "result_2"
+            ],
+            "resolved_operands": [
+              "result"
+            ],
+            "checked": true,
+            "runtime_operation": true,
+            "values": [
+              "result_2"
+            ]
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_5",
+              "source_span": "1519:13:slither",
+              "source_expression": "result",
+              "slithir_kind": "Return",
+              "slithir_text": "RETURN result_2"
+            }
+          },
+          "semantic_id": "sfir:ConstantContextCase.guarded(address):sol_atom_5",
+          "origin_id": "solidity:ConstantContextCase.guarded(address):sol_atom_5",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6",
+            "operation_order": 0,
+            "evidence_blocks": [
+              "fcfg:ConstantContextCase.guarded(address):bb_sol_slither_n6"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "result_2",
+                "binding_id": "decl:149:value",
+                "version": "fssa:decl:149:value:v6"
+              }
+            ],
+            "writes": []
+          }
+        },
+        {
+          "kind": "ValueCompute",
+          "source_lang": "yul",
+          "origin": "yul_sseir_semantic_overlay",
+          "function": "guarded",
+          "fact_role": "support",
+          "contract": "ConstantContextCase",
+          "signature": "guarded(address)",
+          "stmt_refs": [
+            "asm_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_asm2_n2"
+          ],
+          "lvalue": "result",
+          "rvalue": "1",
+          "writes": [
+            "result"
+          ],
+          "semantic": {
+            "atomic_operation_count": 1,
+            "target": "result",
+            "expression_normalized": "1",
+            "context": "value"
+          },
+          "evidence": {
+            "overlay": "ov_1",
+            "overlay_kind": "ExpressionNormalization"
+          },
+          "function_id": "ConstantContextCase.guarded(address)",
+          "semantic_provenance": {
+            "semantic_source": {
+              "overlay_id": "ov_1",
+              "overlay_kind": "ExpressionNormalization"
+            },
+            "evidence_cfg_nodes": [
+              "bb_asm2_n2"
+            ],
+            "anchor_cfg_node": "bb_asm2_n2"
+          },
+          "operation_id": "yul_overlay:ov_1",
+          "order": {
+            "kind": "cfg_partial_order",
+            "operation_order": 1
+          },
+          "reads": [],
+          "semantic_id": "sfir:ConstantContextCase.guarded(address):yul_overlay:ov_1",
+          "origin_id": "fact_1",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+            "operation_order": 1,
+            "evidence_blocks": [
+              "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [],
+            "writes": [
+              {
+                "value": "result",
+                "binding_id": "decl:149:value",
+                "version": "fssa:decl:149:value:v7"
+              }
+            ]
+          }
+        }
+      ],
+      "semantic_edges": [
+        {
+          "from": "sfir:ConstantContextCase.guarded(address):sol_atom_2:state_read:1",
+          "to": "sfir:ConstantContextCase.guarded(address):sol_atom_2",
+          "kind": "data",
+          "value_ref": "fssa:symbol:FIXED_1:value:v4"
+        },
+        {
+          "from": "sfir:ConstantContextCase.guarded(address):sol_atom_2",
+          "to": "sfir:ConstantContextCase.guarded(address):sol_atom_3",
+          "kind": "data",
+          "value_ref": "fssa:symbol:TMP:value:v5"
+        },
+        {
+          "from": "sfir:ConstantContextCase.guarded(address):yul_overlay:ov_1",
+          "to": "sfir:ConstantContextCase.guarded(address):sol_atom_4",
+          "kind": "data_phi",
+          "value_ref": "fssa:decl:149:value:v7"
+        },
+        {
+          "from": "sfir:ConstantContextCase.guarded(address):sol_atom_4",
+          "to": "sfir:ConstantContextCase.guarded(address):sol_atom_5",
+          "kind": "data",
+          "value_ref": "fssa:decl:149:value:v6"
+        }
+      ],
+      "boundary_links": [],
+      "path_witnesses": [
+        {
+          "witness_id": "pw:sfir:ConstantContextCase.guarded(address):yul_overlay:ov_1",
+          "semantic_id": "sfir:ConstantContextCase.guarded(address):yul_overlay:ov_1",
+          "anchor_block": "fcfg:ConstantContextCase.guarded(address):bb_asm2_n2",
+          "guards": [
+            "target == FIXED"
+          ],
+          "control_edge_ids": [
+            "e4"
+          ],
+          "status": "symbolic"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "function_id": "GuardedERC20.approve(address, uint256)",
+      "contract": "GuardedERC20",
+      "function": "approve",
+      "signature": "approve(address, uint256)",
+      "declaration": {
+        "declaration_kind": "function",
+        "name": "approve",
+        "full_name": "approve(address,uint256)",
+        "canonical_name": "GuardedERC20.approve(address,uint256)",
+        "visibility": "external",
+        "view": false,
+        "pure": false,
+        "payable": false,
+        "implemented": true,
+        "function_type": "NORMAL",
+        "is_constructor": false,
+        "is_fallback": false,
+        "is_receive": false,
+        "is_virtual": false,
+        "is_override": false,
+        "parameters": [
+          {
+            "kind": "LocalVariable",
+            "text": "spender",
+            "name": "spender",
+            "base_name": "spender",
+            "type": "address",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false,
+            "canonical_name": "GuardedERC20.approve(address,uint256).spender",
+            "full_name": "",
+            "data_location": "memory",
+            "is_storage": false
+          },
+          {
+            "kind": "LocalVariable",
+            "text": "value",
+            "name": "value",
+            "base_name": "value",
+            "type": "uint256",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false,
+            "canonical_name": "GuardedERC20.approve(address,uint256).value",
+            "full_name": "",
+            "data_location": "memory",
+            "is_storage": false
+          }
+        ],
+        "returns": [
+          {
+            "kind": "LocalVariable",
+            "text": "",
+            "name": "",
+            "base_name": "",
+            "type": "bool",
+            "is_state": false,
+            "is_reference": false,
+            "is_constant": false,
+            "is_solidity_builtin": false,
+            "canonical_name": "GuardedERC20.approve(address,uint256).",
+            "full_name": "",
+            "data_location": "memory",
+            "is_storage": false
+          }
+        ],
+        "applied_modifiers": [],
+        "overrides": [],
+        "overridden_by": [],
+        "explicit_base_constructor_calls": [],
+        "explicit_base_constructor_call_statements": []
+      },
+      "contract_declaration": {
+        "name": "GuardedERC20",
+        "kind": "",
+        "immediate_inheritance": [],
+        "inheritance": [],
+        "inheritance_reverse": [],
+        "explicit_base_constructor_calls": []
+      },
+      "fact_cfg": {
+        "blocks": [
+          {
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "kind": "solidity",
+            "origin": {
+              "engine": "slither",
+              "source_block_id": "bb_sol_slither_n1",
+              "slither_node_id": 1
+            },
+            "stmt_refs": [
+              "sol_s_1"
+            ],
+            "terminator": {
+              "kind": "Branch",
+              "condition": "spender == address(0)"
+            },
+            "semantic_ids": [
+              "sfir:GuardedERC20.approve(address, uint256):sol_atom_1",
+              "sfir:GuardedERC20.approve(address, uint256):sol_atom_2",
+              "sfir:GuardedERC20.approve(address, uint256):sol_atom_3"
+            ],
+            "predecessors": [],
+            "successors": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2",
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3"
+            ],
+            "_sequence": 1,
+            "collapsed_entry_transport": [
+              {
+                "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n0",
+                "source_block_id": "bb_sol_slither_n0",
+                "source_lang": "solidity",
+                "role": "solidity-entry"
+              }
+            ],
+            "entry_boundary_transitions": []
+          },
+          {
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2",
+            "kind": "solidity",
+            "origin": {
+              "engine": "slither",
+              "source_block_id": "bb_sol_slither_n2",
+              "slither_node_id": 2
+            },
+            "stmt_refs": [
+              "sol_s_2"
+            ],
+            "terminator": {
+              "kind": "Revert"
+            },
+            "semantic_ids": [
+              "sfir:GuardedERC20.approve(address, uint256):sol_atom_4"
+            ],
+            "predecessors": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1"
+            ],
+            "successors": [],
+            "_sequence": 2
+          },
+          {
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3",
+            "kind": "solidity",
+            "origin": {
+              "engine": "slither",
+              "source_block_id": "bb_sol_slither_n3",
+              "slither_node_id": 3
+            },
+            "stmt_refs": [
+              "sol_s_1"
+            ],
+            "terminator": {
+              "kind": "Branch",
+              "condition": "endif"
+            },
+            "semantic_ids": [],
+            "predecessors": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1"
+            ],
+            "successors": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4"
+            ],
+            "_sequence": 3
+          },
+          {
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "kind": "solidity",
+            "origin": {
+              "engine": "slither",
+              "source_block_id": "bb_sol_slither_n4",
+              "slither_node_id": 4
+            },
+            "stmt_refs": [
+              "sol_s_3",
+              "sol_s_4"
+            ],
+            "terminator": {
+              "kind": "Fallthrough"
+            },
+            "semantic_ids": [
+              "sfir:GuardedERC20.approve(address, uint256):sol_atom_5",
+              "sfir:GuardedERC20.approve(address, uint256):sol_atom_6",
+              "sfir:GuardedERC20.approve(address, uint256):sol_atom_8",
+              "sfir:GuardedERC20.approve(address, uint256):sol_atom_9"
+            ],
+            "predecessors": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3"
+            ],
+            "successors": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6"
+            ],
+            "_sequence": 4,
+            "fused_source_blocks": [
+              "bb_sol_slither_n4",
+              "bb_sol_slither_n5"
+            ],
+            "linear_fusion": {
+              "kind": "linear_semantic_block_fusion",
+              "fused_block_ids": [
+                "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+                "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n5"
+              ],
+              "fused_source_blocks": [
+                "bb_sol_slither_n4",
+                "bb_sol_slither_n5"
+              ]
+            }
+          },
+          {
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6",
+            "kind": "solidity",
+            "origin": {
+              "engine": "slither",
+              "source_block_id": "bb_sol_slither_n6",
+              "slither_node_id": 6
+            },
+            "stmt_refs": [
+              "sol_s_5"
+            ],
+            "terminator": {
+              "kind": "Return"
+            },
+            "semantic_ids": [
+              "sfir:GuardedERC20.approve(address, uint256):sol_atom_10"
+            ],
+            "predecessors": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4"
+            ],
+            "successors": [],
+            "_sequence": 6
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": "e2",
+            "from": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "to": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2",
+            "kind": "true",
+            "guard": "spender == address(0)"
+          },
+          {
+            "edge_id": "e3",
+            "from": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "to": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3",
+            "kind": "false",
+            "guard": "!(spender == address(0))"
+          },
+          {
+            "edge_id": "e5",
+            "from": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3",
+            "to": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "kind": "join"
+          },
+          {
+            "edge_id": "e7",
+            "from": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "to": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6",
+            "kind": "fallthrough",
+            "normalization": "linear_semantic_block_fusion",
+            "fused_block_ids": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n5"
+            ]
+          }
+        ],
+        "entry_blocks": [
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1"
+        ],
+        "reverse_postorder": {
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1": 0,
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3": 1,
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4": 2,
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6": 3,
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2": 4
+        },
+        "dominance": {
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1": [
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1"
+          ],
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2": [
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2"
+          ],
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3": [
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3"
+          ],
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4": [
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3",
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4"
+          ],
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6": [
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3",
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6"
+          ]
+        },
+        "control_dependencies": [
+          {
+            "controller": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "dependent": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2",
+            "edge_id": "e2",
+            "predicate": "spender == address(0)"
+          },
+          {
+            "controller": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "dependent": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3",
+            "edge_id": "e3",
+            "predicate": "!(spender == address(0))"
+          },
+          {
+            "controller": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "dependent": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "edge_id": "e3",
+            "predicate": "!(spender == address(0))"
+          },
+          {
+            "controller": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "dependent": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6",
+            "edge_id": "e3",
+            "predicate": "!(spender == address(0))"
+          }
+        ],
+        "normalization": {
+          "linear_semantic_block_fusion": {
+            "fused_blocks": [
+              {
+                "survivor_block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+                "removed_block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n5",
+                "survivor_source_blocks": [
+                  "bb_sol_slither_n4",
+                  "bb_sol_slither_n5"
+                ],
+                "semantic_ids": [
+                  "sfir:GuardedERC20.approve(address, uint256):sol_atom_9"
+                ]
+              }
+            ],
+            "policy": "canonical_sfir_cfg_fuses_only_unique_guard_free_same_language_semantic_blocks"
+          },
+          "semantic_transport_block_elimination": {
+            "removed_blocks": [
+              {
+                "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n0",
+                "source_block_id": "bb_sol_slither_n0",
+                "role": "solidity-entry",
+                "mode": "redirect",
+                "successor": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+                "predecessor_count": 0
+              }
+            ],
+            "policy": "canonical_sfir_cfg_erases_zero_semantic_unconditional_transport_blocks"
+          }
+        }
+      },
+      "fact_ssa": {
+        "bindings": [
+          {
+            "binding_id": "decl:198:value",
+            "base_name": "spender",
+            "facet": "value",
+            "kind": "parameter",
+            "type": "address",
+            "declaration_id": 198,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:200:value",
+            "base_name": "value",
+            "facet": "value",
+            "kind": "parameter",
+            "type": "uint256",
+            "declaration_id": 200,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:55:storage_offset",
+            "base_name": "name",
+            "facet": "storage_offset",
+            "kind": "state",
+            "type": "string",
+            "declaration_id": 55,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:55:storage_slot",
+            "base_name": "name",
+            "facet": "storage_slot",
+            "kind": "state",
+            "type": "string",
+            "declaration_id": 55,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:55:value",
+            "base_name": "name",
+            "facet": "value",
+            "kind": "state",
+            "type": "string",
+            "declaration_id": 55,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:57:storage_offset",
+            "base_name": "symbol",
+            "facet": "storage_offset",
+            "kind": "state",
+            "type": "string",
+            "declaration_id": 57,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:57:storage_slot",
+            "base_name": "symbol",
+            "facet": "storage_slot",
+            "kind": "state",
+            "type": "string",
+            "declaration_id": 57,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:57:value",
+            "base_name": "symbol",
+            "facet": "value",
+            "kind": "state",
+            "type": "string",
+            "declaration_id": 57,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:62:storage_offset",
+            "base_name": "totalSupply",
+            "facet": "storage_offset",
+            "kind": "state",
+            "type": "uint256",
+            "declaration_id": 62,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:62:storage_slot",
+            "base_name": "totalSupply",
+            "facet": "storage_slot",
+            "kind": "state",
+            "type": "uint256",
+            "declaration_id": 62,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:62:value",
+            "base_name": "totalSupply",
+            "facet": "value",
+            "kind": "state",
+            "type": "uint256",
+            "declaration_id": 62,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:64:storage_offset",
+            "base_name": "owner",
+            "facet": "storage_offset",
+            "kind": "state",
+            "type": "address",
+            "declaration_id": 64,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:64:storage_slot",
+            "base_name": "owner",
+            "facet": "storage_slot",
+            "kind": "state",
+            "type": "address",
+            "declaration_id": 64,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:64:value",
+            "base_name": "owner",
+            "facet": "value",
+            "kind": "state",
+            "type": "address",
+            "declaration_id": 64,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:66:storage_offset",
+            "base_name": "transferLock",
+            "facet": "storage_offset",
+            "kind": "state",
+            "type": "uint256",
+            "declaration_id": 66,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:66:storage_slot",
+            "base_name": "transferLock",
+            "facet": "storage_slot",
+            "kind": "state",
+            "type": "uint256",
+            "declaration_id": 66,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:66:value",
+            "base_name": "transferLock",
+            "facet": "value",
+            "kind": "state",
+            "type": "uint256",
+            "declaration_id": 66,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:68:storage_offset",
+            "base_name": "maxOwnerMint",
+            "facet": "storage_offset",
+            "kind": "state",
+            "type": "uint256",
+            "declaration_id": 68,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:68:storage_slot",
+            "base_name": "maxOwnerMint",
+            "facet": "storage_slot",
+            "kind": "state",
+            "type": "uint256",
+            "declaration_id": 68,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:68:value",
+            "base_name": "maxOwnerMint",
+            "facet": "value",
+            "kind": "state",
+            "type": "uint256",
+            "declaration_id": 68,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:70:storage_offset",
+            "base_name": "deploymentSalt",
+            "facet": "storage_offset",
+            "kind": "state",
+            "type": "bytes32",
+            "declaration_id": 70,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:70:storage_slot",
+            "base_name": "deploymentSalt",
+            "facet": "storage_slot",
+            "kind": "state",
+            "type": "bytes32",
+            "declaration_id": 70,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:70:value",
+            "base_name": "deploymentSalt",
+            "facet": "value",
+            "kind": "state",
+            "type": "bytes32",
+            "declaration_id": 70,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:74:storage_offset",
+            "base_name": "balanceOf",
+            "facet": "storage_offset",
+            "kind": "state",
+            "type": "mapping(address => uint256)",
+            "declaration_id": 74,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:74:storage_slot",
+            "base_name": "balanceOf",
+            "facet": "storage_slot",
+            "kind": "state",
+            "type": "mapping(address => uint256)",
+            "declaration_id": 74,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:74:value",
+            "base_name": "balanceOf",
+            "facet": "value",
+            "kind": "state",
+            "type": "mapping(address => uint256)",
+            "declaration_id": 74,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:80:storage_offset",
+            "base_name": "allowance",
+            "facet": "storage_offset",
+            "kind": "state",
+            "type": "mapping(address => mapping(address => uint256))",
+            "declaration_id": 80,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:80:storage_slot",
+            "base_name": "allowance",
+            "facet": "storage_slot",
+            "kind": "state",
+            "type": "mapping(address => mapping(address => uint256))",
+            "declaration_id": 80,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:80:value",
+            "base_name": "allowance",
+            "facet": "value",
+            "kind": "state",
+            "type": "mapping(address => mapping(address => uint256))",
+            "declaration_id": 80,
+            "identity_status": "ast_declaration"
+          },
+          {
+            "binding_id": "decl:80:value:storage_location:allowance[msg.sender][spender]",
+            "base_name": "allowance[msg.sender][spender]",
+            "facet": "storage_location",
+            "kind": "storage_location",
+            "identity_status": "semantic_storage_location",
+            "access": "allowance[msg.sender][spender]",
+            "state_variable": "allowance",
+            "keys": [
+              "msg.sender",
+              "spender"
+            ]
+          },
+          {
+            "binding_id": "symbol:REF:value",
+            "base_name": "REF",
+            "facet": "value",
+            "identity_status": "name_scoped"
+          },
+          {
+            "binding_id": "symbol:TMP:value",
+            "base_name": "TMP",
+            "facet": "value",
+            "identity_status": "name_scoped"
+          }
+        ],
+        "definitions": [
+          {
+            "version": "fssa:decl:198:value:v1",
+            "binding_id": "decl:198:value",
+            "base_name": "spender",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:200:value:v2",
+            "binding_id": "decl:200:value",
+            "base_name": "value",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:55:value:v3",
+            "binding_id": "decl:55:value",
+            "base_name": "name",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:55:storage_slot:v4",
+            "binding_id": "decl:55:storage_slot",
+            "base_name": "name",
+            "facet": "storage_slot",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:55:storage_offset:v5",
+            "binding_id": "decl:55:storage_offset",
+            "base_name": "name",
+            "facet": "storage_offset",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:57:value:v6",
+            "binding_id": "decl:57:value",
+            "base_name": "symbol",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:57:storage_slot:v7",
+            "binding_id": "decl:57:storage_slot",
+            "base_name": "symbol",
+            "facet": "storage_slot",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:57:storage_offset:v8",
+            "binding_id": "decl:57:storage_offset",
+            "base_name": "symbol",
+            "facet": "storage_offset",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:62:value:v9",
+            "binding_id": "decl:62:value",
+            "base_name": "totalSupply",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:62:storage_slot:v10",
+            "binding_id": "decl:62:storage_slot",
+            "base_name": "totalSupply",
+            "facet": "storage_slot",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:62:storage_offset:v11",
+            "binding_id": "decl:62:storage_offset",
+            "base_name": "totalSupply",
+            "facet": "storage_offset",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:64:value:v12",
+            "binding_id": "decl:64:value",
+            "base_name": "owner",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:64:storage_slot:v13",
+            "binding_id": "decl:64:storage_slot",
+            "base_name": "owner",
+            "facet": "storage_slot",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:64:storage_offset:v14",
+            "binding_id": "decl:64:storage_offset",
+            "base_name": "owner",
+            "facet": "storage_offset",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:66:value:v15",
+            "binding_id": "decl:66:value",
+            "base_name": "transferLock",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:66:storage_slot:v16",
+            "binding_id": "decl:66:storage_slot",
+            "base_name": "transferLock",
+            "facet": "storage_slot",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:66:storage_offset:v17",
+            "binding_id": "decl:66:storage_offset",
+            "base_name": "transferLock",
+            "facet": "storage_offset",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:68:value:v18",
+            "binding_id": "decl:68:value",
+            "base_name": "maxOwnerMint",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:68:storage_slot:v19",
+            "binding_id": "decl:68:storage_slot",
+            "base_name": "maxOwnerMint",
+            "facet": "storage_slot",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:68:storage_offset:v20",
+            "binding_id": "decl:68:storage_offset",
+            "base_name": "maxOwnerMint",
+            "facet": "storage_offset",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:70:value:v21",
+            "binding_id": "decl:70:value",
+            "base_name": "deploymentSalt",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:70:storage_slot:v22",
+            "binding_id": "decl:70:storage_slot",
+            "base_name": "deploymentSalt",
+            "facet": "storage_slot",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:70:storage_offset:v23",
+            "binding_id": "decl:70:storage_offset",
+            "base_name": "deploymentSalt",
+            "facet": "storage_offset",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:74:value:v24",
+            "binding_id": "decl:74:value",
+            "base_name": "balanceOf",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:74:storage_slot:v25",
+            "binding_id": "decl:74:storage_slot",
+            "base_name": "balanceOf",
+            "facet": "storage_slot",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:74:storage_offset:v26",
+            "binding_id": "decl:74:storage_offset",
+            "base_name": "balanceOf",
+            "facet": "storage_offset",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:80:value:v27",
+            "binding_id": "decl:80:value",
+            "base_name": "allowance",
+            "facet": "value",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:80:storage_slot:v28",
+            "binding_id": "decl:80:storage_slot",
+            "base_name": "allowance",
+            "facet": "storage_slot",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:80:storage_offset:v29",
+            "binding_id": "decl:80:storage_offset",
+            "base_name": "allowance",
+            "facet": "storage_offset",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v30",
+            "binding_id": "decl:80:value:storage_location:allowance[msg.sender][spender]",
+            "base_name": "allowance[msg.sender][spender]",
+            "facet": "storage_location",
+            "definition_kind": "entry",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": -1,
+            "origin": {
+              "engine": "source_declaration"
+            }
+          },
+          {
+            "version": "fssa:symbol:TMP:value:v31",
+            "binding_id": "symbol:TMP:value",
+            "base_name": "TMP",
+            "facet": "value",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": 0,
+            "owner_semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_1",
+            "origin": {
+              "engine": "solidity_atomic_operation",
+              "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_1"
+            }
+          },
+          {
+            "version": "fssa:symbol:TMP:value:v32",
+            "binding_id": "symbol:TMP:value",
+            "base_name": "TMP",
+            "facet": "value",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": 1,
+            "owner_semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_2",
+            "origin": {
+              "engine": "solidity_atomic_operation",
+              "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_2"
+            }
+          },
+          {
+            "version": "fssa:symbol:TMP:value:v33",
+            "binding_id": "symbol:TMP:value",
+            "base_name": "TMP",
+            "facet": "value",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2",
+            "operation_order": 0,
+            "owner_semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_4",
+            "origin": {
+              "engine": "solidity_atomic_operation",
+              "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_4"
+            }
+          },
+          {
+            "version": "fssa:symbol:REF:value:v34",
+            "binding_id": "symbol:REF:value",
+            "base_name": "REF",
+            "facet": "value",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "operation_order": 0,
+            "owner_semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_5",
+            "origin": {
+              "engine": "solidity_atomic_operation",
+              "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_5"
+            }
+          },
+          {
+            "version": "fssa:symbol:REF:value:v35",
+            "binding_id": "symbol:REF:value",
+            "base_name": "REF",
+            "facet": "value",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "operation_order": 1,
+            "owner_semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_6",
+            "origin": {
+              "engine": "solidity_atomic_operation",
+              "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_6"
+            }
+          },
+          {
+            "version": "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v36",
+            "binding_id": "decl:80:value:storage_location:allowance[msg.sender][spender]",
+            "base_name": "allowance[msg.sender][spender]",
+            "facet": "storage_location",
+            "definition_kind": "semantic_definition",
+            "block_id": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "operation_order": 3,
+            "owner_semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_8",
+            "origin": {
+              "engine": "solidity_atomic_operation",
+              "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_8"
+            }
+          }
+        ],
+        "phis": [],
+        "reaching_definitions_in": {
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1": {},
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2": {
+            "decl:198:value": [
+              "fssa:decl:198:value:v1"
+            ],
+            "decl:200:value": [
+              "fssa:decl:200:value:v2"
+            ],
+            "decl:55:value": [
+              "fssa:decl:55:value:v3"
+            ],
+            "decl:55:storage_slot": [
+              "fssa:decl:55:storage_slot:v4"
+            ],
+            "decl:55:storage_offset": [
+              "fssa:decl:55:storage_offset:v5"
+            ],
+            "decl:57:value": [
+              "fssa:decl:57:value:v6"
+            ],
+            "decl:57:storage_slot": [
+              "fssa:decl:57:storage_slot:v7"
+            ],
+            "decl:57:storage_offset": [
+              "fssa:decl:57:storage_offset:v8"
+            ],
+            "decl:62:value": [
+              "fssa:decl:62:value:v9"
+            ],
+            "decl:62:storage_slot": [
+              "fssa:decl:62:storage_slot:v10"
+            ],
+            "decl:62:storage_offset": [
+              "fssa:decl:62:storage_offset:v11"
+            ],
+            "decl:64:value": [
+              "fssa:decl:64:value:v12"
+            ],
+            "decl:64:storage_slot": [
+              "fssa:decl:64:storage_slot:v13"
+            ],
+            "decl:64:storage_offset": [
+              "fssa:decl:64:storage_offset:v14"
+            ],
+            "decl:66:value": [
+              "fssa:decl:66:value:v15"
+            ],
+            "decl:66:storage_slot": [
+              "fssa:decl:66:storage_slot:v16"
+            ],
+            "decl:66:storage_offset": [
+              "fssa:decl:66:storage_offset:v17"
+            ],
+            "decl:68:value": [
+              "fssa:decl:68:value:v18"
+            ],
+            "decl:68:storage_slot": [
+              "fssa:decl:68:storage_slot:v19"
+            ],
+            "decl:68:storage_offset": [
+              "fssa:decl:68:storage_offset:v20"
+            ],
+            "decl:70:value": [
+              "fssa:decl:70:value:v21"
+            ],
+            "decl:70:storage_slot": [
+              "fssa:decl:70:storage_slot:v22"
+            ],
+            "decl:70:storage_offset": [
+              "fssa:decl:70:storage_offset:v23"
+            ],
+            "decl:74:value": [
+              "fssa:decl:74:value:v24"
+            ],
+            "decl:74:storage_slot": [
+              "fssa:decl:74:storage_slot:v25"
+            ],
+            "decl:74:storage_offset": [
+              "fssa:decl:74:storage_offset:v26"
+            ],
+            "decl:80:value": [
+              "fssa:decl:80:value:v27"
+            ],
+            "decl:80:storage_slot": [
+              "fssa:decl:80:storage_slot:v28"
+            ],
+            "decl:80:storage_offset": [
+              "fssa:decl:80:storage_offset:v29"
+            ],
+            "decl:80:value:storage_location:allowance[msg.sender][spender]": [
+              "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v30"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v32"
+            ]
+          },
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3": {
+            "decl:198:value": [
+              "fssa:decl:198:value:v1"
+            ],
+            "decl:200:value": [
+              "fssa:decl:200:value:v2"
+            ],
+            "decl:55:value": [
+              "fssa:decl:55:value:v3"
+            ],
+            "decl:55:storage_slot": [
+              "fssa:decl:55:storage_slot:v4"
+            ],
+            "decl:55:storage_offset": [
+              "fssa:decl:55:storage_offset:v5"
+            ],
+            "decl:57:value": [
+              "fssa:decl:57:value:v6"
+            ],
+            "decl:57:storage_slot": [
+              "fssa:decl:57:storage_slot:v7"
+            ],
+            "decl:57:storage_offset": [
+              "fssa:decl:57:storage_offset:v8"
+            ],
+            "decl:62:value": [
+              "fssa:decl:62:value:v9"
+            ],
+            "decl:62:storage_slot": [
+              "fssa:decl:62:storage_slot:v10"
+            ],
+            "decl:62:storage_offset": [
+              "fssa:decl:62:storage_offset:v11"
+            ],
+            "decl:64:value": [
+              "fssa:decl:64:value:v12"
+            ],
+            "decl:64:storage_slot": [
+              "fssa:decl:64:storage_slot:v13"
+            ],
+            "decl:64:storage_offset": [
+              "fssa:decl:64:storage_offset:v14"
+            ],
+            "decl:66:value": [
+              "fssa:decl:66:value:v15"
+            ],
+            "decl:66:storage_slot": [
+              "fssa:decl:66:storage_slot:v16"
+            ],
+            "decl:66:storage_offset": [
+              "fssa:decl:66:storage_offset:v17"
+            ],
+            "decl:68:value": [
+              "fssa:decl:68:value:v18"
+            ],
+            "decl:68:storage_slot": [
+              "fssa:decl:68:storage_slot:v19"
+            ],
+            "decl:68:storage_offset": [
+              "fssa:decl:68:storage_offset:v20"
+            ],
+            "decl:70:value": [
+              "fssa:decl:70:value:v21"
+            ],
+            "decl:70:storage_slot": [
+              "fssa:decl:70:storage_slot:v22"
+            ],
+            "decl:70:storage_offset": [
+              "fssa:decl:70:storage_offset:v23"
+            ],
+            "decl:74:value": [
+              "fssa:decl:74:value:v24"
+            ],
+            "decl:74:storage_slot": [
+              "fssa:decl:74:storage_slot:v25"
+            ],
+            "decl:74:storage_offset": [
+              "fssa:decl:74:storage_offset:v26"
+            ],
+            "decl:80:value": [
+              "fssa:decl:80:value:v27"
+            ],
+            "decl:80:storage_slot": [
+              "fssa:decl:80:storage_slot:v28"
+            ],
+            "decl:80:storage_offset": [
+              "fssa:decl:80:storage_offset:v29"
+            ],
+            "decl:80:value:storage_location:allowance[msg.sender][spender]": [
+              "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v30"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v32"
+            ]
+          },
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4": {
+            "decl:198:value": [
+              "fssa:decl:198:value:v1"
+            ],
+            "decl:200:value": [
+              "fssa:decl:200:value:v2"
+            ],
+            "decl:55:value": [
+              "fssa:decl:55:value:v3"
+            ],
+            "decl:55:storage_slot": [
+              "fssa:decl:55:storage_slot:v4"
+            ],
+            "decl:55:storage_offset": [
+              "fssa:decl:55:storage_offset:v5"
+            ],
+            "decl:57:value": [
+              "fssa:decl:57:value:v6"
+            ],
+            "decl:57:storage_slot": [
+              "fssa:decl:57:storage_slot:v7"
+            ],
+            "decl:57:storage_offset": [
+              "fssa:decl:57:storage_offset:v8"
+            ],
+            "decl:62:value": [
+              "fssa:decl:62:value:v9"
+            ],
+            "decl:62:storage_slot": [
+              "fssa:decl:62:storage_slot:v10"
+            ],
+            "decl:62:storage_offset": [
+              "fssa:decl:62:storage_offset:v11"
+            ],
+            "decl:64:value": [
+              "fssa:decl:64:value:v12"
+            ],
+            "decl:64:storage_slot": [
+              "fssa:decl:64:storage_slot:v13"
+            ],
+            "decl:64:storage_offset": [
+              "fssa:decl:64:storage_offset:v14"
+            ],
+            "decl:66:value": [
+              "fssa:decl:66:value:v15"
+            ],
+            "decl:66:storage_slot": [
+              "fssa:decl:66:storage_slot:v16"
+            ],
+            "decl:66:storage_offset": [
+              "fssa:decl:66:storage_offset:v17"
+            ],
+            "decl:68:value": [
+              "fssa:decl:68:value:v18"
+            ],
+            "decl:68:storage_slot": [
+              "fssa:decl:68:storage_slot:v19"
+            ],
+            "decl:68:storage_offset": [
+              "fssa:decl:68:storage_offset:v20"
+            ],
+            "decl:70:value": [
+              "fssa:decl:70:value:v21"
+            ],
+            "decl:70:storage_slot": [
+              "fssa:decl:70:storage_slot:v22"
+            ],
+            "decl:70:storage_offset": [
+              "fssa:decl:70:storage_offset:v23"
+            ],
+            "decl:74:value": [
+              "fssa:decl:74:value:v24"
+            ],
+            "decl:74:storage_slot": [
+              "fssa:decl:74:storage_slot:v25"
+            ],
+            "decl:74:storage_offset": [
+              "fssa:decl:74:storage_offset:v26"
+            ],
+            "decl:80:value": [
+              "fssa:decl:80:value:v27"
+            ],
+            "decl:80:storage_slot": [
+              "fssa:decl:80:storage_slot:v28"
+            ],
+            "decl:80:storage_offset": [
+              "fssa:decl:80:storage_offset:v29"
+            ],
+            "decl:80:value:storage_location:allowance[msg.sender][spender]": [
+              "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v30"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v32"
+            ]
+          },
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6": {
+            "decl:198:value": [
+              "fssa:decl:198:value:v1"
+            ],
+            "decl:200:value": [
+              "fssa:decl:200:value:v2"
+            ],
+            "decl:55:value": [
+              "fssa:decl:55:value:v3"
+            ],
+            "decl:55:storage_slot": [
+              "fssa:decl:55:storage_slot:v4"
+            ],
+            "decl:55:storage_offset": [
+              "fssa:decl:55:storage_offset:v5"
+            ],
+            "decl:57:value": [
+              "fssa:decl:57:value:v6"
+            ],
+            "decl:57:storage_slot": [
+              "fssa:decl:57:storage_slot:v7"
+            ],
+            "decl:57:storage_offset": [
+              "fssa:decl:57:storage_offset:v8"
+            ],
+            "decl:62:value": [
+              "fssa:decl:62:value:v9"
+            ],
+            "decl:62:storage_slot": [
+              "fssa:decl:62:storage_slot:v10"
+            ],
+            "decl:62:storage_offset": [
+              "fssa:decl:62:storage_offset:v11"
+            ],
+            "decl:64:value": [
+              "fssa:decl:64:value:v12"
+            ],
+            "decl:64:storage_slot": [
+              "fssa:decl:64:storage_slot:v13"
+            ],
+            "decl:64:storage_offset": [
+              "fssa:decl:64:storage_offset:v14"
+            ],
+            "decl:66:value": [
+              "fssa:decl:66:value:v15"
+            ],
+            "decl:66:storage_slot": [
+              "fssa:decl:66:storage_slot:v16"
+            ],
+            "decl:66:storage_offset": [
+              "fssa:decl:66:storage_offset:v17"
+            ],
+            "decl:68:value": [
+              "fssa:decl:68:value:v18"
+            ],
+            "decl:68:storage_slot": [
+              "fssa:decl:68:storage_slot:v19"
+            ],
+            "decl:68:storage_offset": [
+              "fssa:decl:68:storage_offset:v20"
+            ],
+            "decl:70:value": [
+              "fssa:decl:70:value:v21"
+            ],
+            "decl:70:storage_slot": [
+              "fssa:decl:70:storage_slot:v22"
+            ],
+            "decl:70:storage_offset": [
+              "fssa:decl:70:storage_offset:v23"
+            ],
+            "decl:74:value": [
+              "fssa:decl:74:value:v24"
+            ],
+            "decl:74:storage_slot": [
+              "fssa:decl:74:storage_slot:v25"
+            ],
+            "decl:74:storage_offset": [
+              "fssa:decl:74:storage_offset:v26"
+            ],
+            "decl:80:value": [
+              "fssa:decl:80:value:v27"
+            ],
+            "decl:80:storage_slot": [
+              "fssa:decl:80:storage_slot:v28"
+            ],
+            "decl:80:storage_offset": [
+              "fssa:decl:80:storage_offset:v29"
+            ],
+            "decl:80:value:storage_location:allowance[msg.sender][spender]": [
+              "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v36"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v32"
+            ],
+            "symbol:REF:value": [
+              "fssa:symbol:REF:value:v35"
+            ]
+          }
+        },
+        "reaching_definitions_out": {
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1": {
+            "decl:198:value": [
+              "fssa:decl:198:value:v1"
+            ],
+            "decl:200:value": [
+              "fssa:decl:200:value:v2"
+            ],
+            "decl:55:value": [
+              "fssa:decl:55:value:v3"
+            ],
+            "decl:55:storage_slot": [
+              "fssa:decl:55:storage_slot:v4"
+            ],
+            "decl:55:storage_offset": [
+              "fssa:decl:55:storage_offset:v5"
+            ],
+            "decl:57:value": [
+              "fssa:decl:57:value:v6"
+            ],
+            "decl:57:storage_slot": [
+              "fssa:decl:57:storage_slot:v7"
+            ],
+            "decl:57:storage_offset": [
+              "fssa:decl:57:storage_offset:v8"
+            ],
+            "decl:62:value": [
+              "fssa:decl:62:value:v9"
+            ],
+            "decl:62:storage_slot": [
+              "fssa:decl:62:storage_slot:v10"
+            ],
+            "decl:62:storage_offset": [
+              "fssa:decl:62:storage_offset:v11"
+            ],
+            "decl:64:value": [
+              "fssa:decl:64:value:v12"
+            ],
+            "decl:64:storage_slot": [
+              "fssa:decl:64:storage_slot:v13"
+            ],
+            "decl:64:storage_offset": [
+              "fssa:decl:64:storage_offset:v14"
+            ],
+            "decl:66:value": [
+              "fssa:decl:66:value:v15"
+            ],
+            "decl:66:storage_slot": [
+              "fssa:decl:66:storage_slot:v16"
+            ],
+            "decl:66:storage_offset": [
+              "fssa:decl:66:storage_offset:v17"
+            ],
+            "decl:68:value": [
+              "fssa:decl:68:value:v18"
+            ],
+            "decl:68:storage_slot": [
+              "fssa:decl:68:storage_slot:v19"
+            ],
+            "decl:68:storage_offset": [
+              "fssa:decl:68:storage_offset:v20"
+            ],
+            "decl:70:value": [
+              "fssa:decl:70:value:v21"
+            ],
+            "decl:70:storage_slot": [
+              "fssa:decl:70:storage_slot:v22"
+            ],
+            "decl:70:storage_offset": [
+              "fssa:decl:70:storage_offset:v23"
+            ],
+            "decl:74:value": [
+              "fssa:decl:74:value:v24"
+            ],
+            "decl:74:storage_slot": [
+              "fssa:decl:74:storage_slot:v25"
+            ],
+            "decl:74:storage_offset": [
+              "fssa:decl:74:storage_offset:v26"
+            ],
+            "decl:80:value": [
+              "fssa:decl:80:value:v27"
+            ],
+            "decl:80:storage_slot": [
+              "fssa:decl:80:storage_slot:v28"
+            ],
+            "decl:80:storage_offset": [
+              "fssa:decl:80:storage_offset:v29"
+            ],
+            "decl:80:value:storage_location:allowance[msg.sender][spender]": [
+              "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v30"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v32"
+            ]
+          },
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2": {
+            "decl:198:value": [
+              "fssa:decl:198:value:v1"
+            ],
+            "decl:200:value": [
+              "fssa:decl:200:value:v2"
+            ],
+            "decl:55:value": [
+              "fssa:decl:55:value:v3"
+            ],
+            "decl:55:storage_slot": [
+              "fssa:decl:55:storage_slot:v4"
+            ],
+            "decl:55:storage_offset": [
+              "fssa:decl:55:storage_offset:v5"
+            ],
+            "decl:57:value": [
+              "fssa:decl:57:value:v6"
+            ],
+            "decl:57:storage_slot": [
+              "fssa:decl:57:storage_slot:v7"
+            ],
+            "decl:57:storage_offset": [
+              "fssa:decl:57:storage_offset:v8"
+            ],
+            "decl:62:value": [
+              "fssa:decl:62:value:v9"
+            ],
+            "decl:62:storage_slot": [
+              "fssa:decl:62:storage_slot:v10"
+            ],
+            "decl:62:storage_offset": [
+              "fssa:decl:62:storage_offset:v11"
+            ],
+            "decl:64:value": [
+              "fssa:decl:64:value:v12"
+            ],
+            "decl:64:storage_slot": [
+              "fssa:decl:64:storage_slot:v13"
+            ],
+            "decl:64:storage_offset": [
+              "fssa:decl:64:storage_offset:v14"
+            ],
+            "decl:66:value": [
+              "fssa:decl:66:value:v15"
+            ],
+            "decl:66:storage_slot": [
+              "fssa:decl:66:storage_slot:v16"
+            ],
+            "decl:66:storage_offset": [
+              "fssa:decl:66:storage_offset:v17"
+            ],
+            "decl:68:value": [
+              "fssa:decl:68:value:v18"
+            ],
+            "decl:68:storage_slot": [
+              "fssa:decl:68:storage_slot:v19"
+            ],
+            "decl:68:storage_offset": [
+              "fssa:decl:68:storage_offset:v20"
+            ],
+            "decl:70:value": [
+              "fssa:decl:70:value:v21"
+            ],
+            "decl:70:storage_slot": [
+              "fssa:decl:70:storage_slot:v22"
+            ],
+            "decl:70:storage_offset": [
+              "fssa:decl:70:storage_offset:v23"
+            ],
+            "decl:74:value": [
+              "fssa:decl:74:value:v24"
+            ],
+            "decl:74:storage_slot": [
+              "fssa:decl:74:storage_slot:v25"
+            ],
+            "decl:74:storage_offset": [
+              "fssa:decl:74:storage_offset:v26"
+            ],
+            "decl:80:value": [
+              "fssa:decl:80:value:v27"
+            ],
+            "decl:80:storage_slot": [
+              "fssa:decl:80:storage_slot:v28"
+            ],
+            "decl:80:storage_offset": [
+              "fssa:decl:80:storage_offset:v29"
+            ],
+            "decl:80:value:storage_location:allowance[msg.sender][spender]": [
+              "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v30"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v33"
+            ]
+          },
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n3": {
+            "decl:198:value": [
+              "fssa:decl:198:value:v1"
+            ],
+            "decl:200:value": [
+              "fssa:decl:200:value:v2"
+            ],
+            "decl:55:value": [
+              "fssa:decl:55:value:v3"
+            ],
+            "decl:55:storage_slot": [
+              "fssa:decl:55:storage_slot:v4"
+            ],
+            "decl:55:storage_offset": [
+              "fssa:decl:55:storage_offset:v5"
+            ],
+            "decl:57:value": [
+              "fssa:decl:57:value:v6"
+            ],
+            "decl:57:storage_slot": [
+              "fssa:decl:57:storage_slot:v7"
+            ],
+            "decl:57:storage_offset": [
+              "fssa:decl:57:storage_offset:v8"
+            ],
+            "decl:62:value": [
+              "fssa:decl:62:value:v9"
+            ],
+            "decl:62:storage_slot": [
+              "fssa:decl:62:storage_slot:v10"
+            ],
+            "decl:62:storage_offset": [
+              "fssa:decl:62:storage_offset:v11"
+            ],
+            "decl:64:value": [
+              "fssa:decl:64:value:v12"
+            ],
+            "decl:64:storage_slot": [
+              "fssa:decl:64:storage_slot:v13"
+            ],
+            "decl:64:storage_offset": [
+              "fssa:decl:64:storage_offset:v14"
+            ],
+            "decl:66:value": [
+              "fssa:decl:66:value:v15"
+            ],
+            "decl:66:storage_slot": [
+              "fssa:decl:66:storage_slot:v16"
+            ],
+            "decl:66:storage_offset": [
+              "fssa:decl:66:storage_offset:v17"
+            ],
+            "decl:68:value": [
+              "fssa:decl:68:value:v18"
+            ],
+            "decl:68:storage_slot": [
+              "fssa:decl:68:storage_slot:v19"
+            ],
+            "decl:68:storage_offset": [
+              "fssa:decl:68:storage_offset:v20"
+            ],
+            "decl:70:value": [
+              "fssa:decl:70:value:v21"
+            ],
+            "decl:70:storage_slot": [
+              "fssa:decl:70:storage_slot:v22"
+            ],
+            "decl:70:storage_offset": [
+              "fssa:decl:70:storage_offset:v23"
+            ],
+            "decl:74:value": [
+              "fssa:decl:74:value:v24"
+            ],
+            "decl:74:storage_slot": [
+              "fssa:decl:74:storage_slot:v25"
+            ],
+            "decl:74:storage_offset": [
+              "fssa:decl:74:storage_offset:v26"
+            ],
+            "decl:80:value": [
+              "fssa:decl:80:value:v27"
+            ],
+            "decl:80:storage_slot": [
+              "fssa:decl:80:storage_slot:v28"
+            ],
+            "decl:80:storage_offset": [
+              "fssa:decl:80:storage_offset:v29"
+            ],
+            "decl:80:value:storage_location:allowance[msg.sender][spender]": [
+              "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v30"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v32"
+            ]
+          },
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4": {
+            "decl:198:value": [
+              "fssa:decl:198:value:v1"
+            ],
+            "decl:200:value": [
+              "fssa:decl:200:value:v2"
+            ],
+            "decl:55:value": [
+              "fssa:decl:55:value:v3"
+            ],
+            "decl:55:storage_slot": [
+              "fssa:decl:55:storage_slot:v4"
+            ],
+            "decl:55:storage_offset": [
+              "fssa:decl:55:storage_offset:v5"
+            ],
+            "decl:57:value": [
+              "fssa:decl:57:value:v6"
+            ],
+            "decl:57:storage_slot": [
+              "fssa:decl:57:storage_slot:v7"
+            ],
+            "decl:57:storage_offset": [
+              "fssa:decl:57:storage_offset:v8"
+            ],
+            "decl:62:value": [
+              "fssa:decl:62:value:v9"
+            ],
+            "decl:62:storage_slot": [
+              "fssa:decl:62:storage_slot:v10"
+            ],
+            "decl:62:storage_offset": [
+              "fssa:decl:62:storage_offset:v11"
+            ],
+            "decl:64:value": [
+              "fssa:decl:64:value:v12"
+            ],
+            "decl:64:storage_slot": [
+              "fssa:decl:64:storage_slot:v13"
+            ],
+            "decl:64:storage_offset": [
+              "fssa:decl:64:storage_offset:v14"
+            ],
+            "decl:66:value": [
+              "fssa:decl:66:value:v15"
+            ],
+            "decl:66:storage_slot": [
+              "fssa:decl:66:storage_slot:v16"
+            ],
+            "decl:66:storage_offset": [
+              "fssa:decl:66:storage_offset:v17"
+            ],
+            "decl:68:value": [
+              "fssa:decl:68:value:v18"
+            ],
+            "decl:68:storage_slot": [
+              "fssa:decl:68:storage_slot:v19"
+            ],
+            "decl:68:storage_offset": [
+              "fssa:decl:68:storage_offset:v20"
+            ],
+            "decl:70:value": [
+              "fssa:decl:70:value:v21"
+            ],
+            "decl:70:storage_slot": [
+              "fssa:decl:70:storage_slot:v22"
+            ],
+            "decl:70:storage_offset": [
+              "fssa:decl:70:storage_offset:v23"
+            ],
+            "decl:74:value": [
+              "fssa:decl:74:value:v24"
+            ],
+            "decl:74:storage_slot": [
+              "fssa:decl:74:storage_slot:v25"
+            ],
+            "decl:74:storage_offset": [
+              "fssa:decl:74:storage_offset:v26"
+            ],
+            "decl:80:value": [
+              "fssa:decl:80:value:v27"
+            ],
+            "decl:80:storage_slot": [
+              "fssa:decl:80:storage_slot:v28"
+            ],
+            "decl:80:storage_offset": [
+              "fssa:decl:80:storage_offset:v29"
+            ],
+            "decl:80:value:storage_location:allowance[msg.sender][spender]": [
+              "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v36"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v32"
+            ],
+            "symbol:REF:value": [
+              "fssa:symbol:REF:value:v35"
+            ]
+          },
+          "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6": {
+            "decl:198:value": [
+              "fssa:decl:198:value:v1"
+            ],
+            "decl:200:value": [
+              "fssa:decl:200:value:v2"
+            ],
+            "decl:55:value": [
+              "fssa:decl:55:value:v3"
+            ],
+            "decl:55:storage_slot": [
+              "fssa:decl:55:storage_slot:v4"
+            ],
+            "decl:55:storage_offset": [
+              "fssa:decl:55:storage_offset:v5"
+            ],
+            "decl:57:value": [
+              "fssa:decl:57:value:v6"
+            ],
+            "decl:57:storage_slot": [
+              "fssa:decl:57:storage_slot:v7"
+            ],
+            "decl:57:storage_offset": [
+              "fssa:decl:57:storage_offset:v8"
+            ],
+            "decl:62:value": [
+              "fssa:decl:62:value:v9"
+            ],
+            "decl:62:storage_slot": [
+              "fssa:decl:62:storage_slot:v10"
+            ],
+            "decl:62:storage_offset": [
+              "fssa:decl:62:storage_offset:v11"
+            ],
+            "decl:64:value": [
+              "fssa:decl:64:value:v12"
+            ],
+            "decl:64:storage_slot": [
+              "fssa:decl:64:storage_slot:v13"
+            ],
+            "decl:64:storage_offset": [
+              "fssa:decl:64:storage_offset:v14"
+            ],
+            "decl:66:value": [
+              "fssa:decl:66:value:v15"
+            ],
+            "decl:66:storage_slot": [
+              "fssa:decl:66:storage_slot:v16"
+            ],
+            "decl:66:storage_offset": [
+              "fssa:decl:66:storage_offset:v17"
+            ],
+            "decl:68:value": [
+              "fssa:decl:68:value:v18"
+            ],
+            "decl:68:storage_slot": [
+              "fssa:decl:68:storage_slot:v19"
+            ],
+            "decl:68:storage_offset": [
+              "fssa:decl:68:storage_offset:v20"
+            ],
+            "decl:70:value": [
+              "fssa:decl:70:value:v21"
+            ],
+            "decl:70:storage_slot": [
+              "fssa:decl:70:storage_slot:v22"
+            ],
+            "decl:70:storage_offset": [
+              "fssa:decl:70:storage_offset:v23"
+            ],
+            "decl:74:value": [
+              "fssa:decl:74:value:v24"
+            ],
+            "decl:74:storage_slot": [
+              "fssa:decl:74:storage_slot:v25"
+            ],
+            "decl:74:storage_offset": [
+              "fssa:decl:74:storage_offset:v26"
+            ],
+            "decl:80:value": [
+              "fssa:decl:80:value:v27"
+            ],
+            "decl:80:storage_slot": [
+              "fssa:decl:80:storage_slot:v28"
+            ],
+            "decl:80:storage_offset": [
+              "fssa:decl:80:storage_offset:v29"
+            ],
+            "decl:80:value:storage_location:allowance[msg.sender][spender]": [
+              "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v36"
+            ],
+            "symbol:TMP:value": [
+              "fssa:symbol:TMP:value:v32"
+            ],
+            "symbol:REF:value": [
+              "fssa:symbol:REF:value:v35"
+            ]
+          }
+        }
+      },
+      "semantic_nodes": [
+        {
+          "operation_id": "sol_atom_1",
+          "kind": "TypeConversion",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "support",
+          "function_id": "GuardedERC20.approve(address, uint256)",
+          "function": "approve",
+          "contract": "GuardedERC20",
+          "signature": "approve(address, uint256)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "lvalue": "TMP_10",
+          "rvalue": "address(0)",
+          "writes": [
+            "TMP_10"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 0,
+            "atomic_sequence": 1
+          },
+          "semantic": {
+            "operation": "type_conversion",
+            "atomic_operation": "TypeConversion",
+            "atomic_operation_count": 1,
+            "operator": "address",
+            "result_ssa": "TMP_10",
+            "resolved_operands": [
+              "0"
+            ],
+            "checked": true,
+            "runtime_operation": true
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_1",
+              "source_span": "2001:21:slither",
+              "source_expression": "address(0)",
+              "slithir_kind": "TypeConversion",
+              "slithir_text": "TMP_10 = CONVERT 0 to address",
+              "physical_reference": "TMP_10"
+            }
+          },
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_1",
+          "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_1",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": 0,
+            "evidence_blocks": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [],
+            "writes": [
+              {
+                "value": "TMP_10",
+                "binding_id": "symbol:TMP:value",
+                "version": "fssa:symbol:TMP:value:v31"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "sol_atom_2",
+          "kind": "ValueCompute",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "support",
+          "function_id": "GuardedERC20.approve(address, uint256)",
+          "function": "approve",
+          "contract": "GuardedERC20",
+          "signature": "approve(address, uint256)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "lvalue": "TMP_11",
+          "rvalue": "spender_1 == TMP_10",
+          "reads": [
+            "spender_1",
+            "TMP_10"
+          ],
+          "writes": [
+            "TMP_11"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 1,
+            "atomic_sequence": 2
+          },
+          "semantic": {
+            "operation": "value_compute",
+            "atomic_operation": "Binary",
+            "atomic_operation_count": 1,
+            "operator": "==",
+            "result_ssa": "TMP_11",
+            "operand_ssa": [
+              "spender_1",
+              "TMP_10"
+            ],
+            "resolved_operands": [
+              "spender",
+              "address(0)"
+            ],
+            "checked": true,
+            "runtime_operation": true
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_2",
+              "source_span": "2001:21:slither",
+              "source_expression": "spender == address(0)",
+              "slithir_kind": "Binary",
+              "slithir_text": "TMP_11(bool) = spender_1 == TMP_10",
+              "physical_reference": "TMP_11"
+            }
+          },
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_2",
+          "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_2",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": 1,
+            "evidence_blocks": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "spender_1",
+                "binding_id": "decl:198:value",
+                "version": "fssa:decl:198:value:v1"
+              },
+              {
+                "value": "TMP_10",
+                "binding_id": "symbol:TMP:value",
+                "version": "fssa:symbol:TMP:value:v31"
+              }
+            ],
+            "writes": [
+              {
+                "value": "TMP_11",
+                "binding_id": "symbol:TMP:value",
+                "version": "fssa:symbol:TMP:value:v32"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "sol_atom_3",
+          "kind": "BranchCondition",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "control",
+          "function_id": "GuardedERC20.approve(address, uint256)",
+          "function": "approve",
+          "contract": "GuardedERC20",
+          "signature": "approve(address, uint256)",
+          "stmt_refs": [
+            "sol_s_1"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n1"
+          ],
+          "rvalue": "TMP_11",
+          "reads": [
+            "TMP_11"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n0"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 1,
+            "operation_order": 2,
+            "atomic_sequence": 3
+          },
+          "semantic": {
+            "operation": "branch_condition",
+            "atomic_operation": "Condition",
+            "atomic_operation_count": 1,
+            "operand_ssa": [
+              "TMP_11"
+            ],
+            "resolved_operands": [
+              "(spender == address(0))"
+            ],
+            "checked": true,
+            "runtime_operation": false,
+            "predicate": "(spender == address(0))"
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_3",
+              "source_span": "2001:21:slither",
+              "source_expression": "spender == address(0)",
+              "slithir_kind": "Condition",
+              "slithir_text": "CONDITION TMP_11"
+            }
+          },
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_3",
+          "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_3",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1",
+            "operation_order": 2,
+            "evidence_blocks": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n1"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "TMP_11",
+                "binding_id": "symbol:TMP:value",
+                "version": "fssa:symbol:TMP:value:v32"
+              }
+            ],
+            "writes": []
+          }
+        },
+        {
+          "operation_id": "sol_atom_4",
+          "kind": "Revert",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "GuardedERC20.approve(address, uint256)",
+          "function": "approve",
+          "contract": "GuardedERC20",
+          "signature": "approve(address, uint256)",
+          "stmt_refs": [
+            "sol_s_2"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n2"
+          ],
+          "condition": "spender == address(0)",
+          "lvalue": "TMP_12",
+          "rvalue": "revert ERC20ZeroAddress()()",
+          "writes": [
+            "TMP_12"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n1"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 2,
+            "operation_order": 0,
+            "atomic_sequence": 4
+          },
+          "semantic": {
+            "operation": "revert",
+            "atomic_operation": "SolidityCall",
+            "atomic_operation_count": 1,
+            "result_ssa": "TMP_12",
+            "checked": true,
+            "runtime_operation": true,
+            "function": "revert ERC20ZeroAddress()",
+            "argument_count": 0,
+            "call_return_type": "error",
+            "function_signature": "revert ERC20ZeroAddress()"
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_4",
+              "source_span": "2024:25:slither",
+              "source_expression": "revert ERC20ZeroAddress()()",
+              "slithir_kind": "SolidityCall",
+              "slithir_text": "TMP_12(None) = SOLIDITY_CALL revert ERC20ZeroAddress()()",
+              "physical_reference": "TMP_12"
+            }
+          },
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_4",
+          "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_4",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2",
+            "operation_order": 0,
+            "evidence_blocks": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [],
+            "writes": [
+              {
+                "value": "TMP_12",
+                "binding_id": "symbol:TMP:value",
+                "version": "fssa:symbol:TMP:value:v33"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "sol_atom_5",
+          "kind": "StorageLocationResolve",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "support",
+          "function_id": "GuardedERC20.approve(address, uint256)",
+          "function": "approve",
+          "contract": "GuardedERC20",
+          "signature": "approve(address, uint256)",
+          "stmt_refs": [
+            "sol_s_3"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n4"
+          ],
+          "lvalue": "REF_2",
+          "rvalue": "allowance[msg.sender]",
+          "reads": [
+            "allowance_0",
+            "msg.sender"
+          ],
+          "writes": [
+            "REF_2"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 4,
+            "operation_order": 0,
+            "atomic_sequence": 5
+          },
+          "semantic": {
+            "operation": "storage_location_resolve",
+            "atomic_operation_count": 1,
+            "location": {
+              "kind": "mapping",
+              "access": "allowance[msg.sender]",
+              "state_variable": "allowance",
+              "keys": [
+                "msg.sender"
+              ]
+            }
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_5",
+              "source_span": "2059:38:slither",
+              "source_expression": "allowance[msg.sender]",
+              "slithir_kind": "Index",
+              "slithir_text": "REF_2(mapping(address => uint256)) -> allowance_0[msg.sender]",
+              "physical_reference": "REF_2"
+            }
+          },
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_5",
+          "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_5",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "operation_order": 0,
+            "evidence_blocks": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "allowance_0",
+                "binding_id": "decl:80:value",
+                "version": "fssa:decl:80:value:v27"
+              }
+            ],
+            "writes": [
+              {
+                "value": "REF_2",
+                "binding_id": "symbol:REF:value",
+                "version": "fssa:symbol:REF:value:v34"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "sol_atom_6",
+          "kind": "StorageLocationResolve",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "support",
+          "function_id": "GuardedERC20.approve(address, uint256)",
+          "function": "approve",
+          "contract": "GuardedERC20",
+          "signature": "approve(address, uint256)",
+          "stmt_refs": [
+            "sol_s_3"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n4"
+          ],
+          "lvalue": "REF_3",
+          "rvalue": "allowance[msg.sender][spender]",
+          "reads": [
+            "REF_2",
+            "spender_1"
+          ],
+          "writes": [
+            "REF_3"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 4,
+            "operation_order": 1,
+            "atomic_sequence": 6
+          },
+          "semantic": {
+            "operation": "storage_location_resolve",
+            "atomic_operation_count": 1,
+            "location": {
+              "kind": "mapping",
+              "access": "allowance[msg.sender][spender]",
+              "state_variable": "allowance",
+              "keys": [
+                "msg.sender",
+                "spender"
+              ]
+            }
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_6",
+              "source_span": "2059:38:slither",
+              "source_expression": "allowance[msg.sender][spender]",
+              "slithir_kind": "Index",
+              "slithir_text": "REF_3(uint256) -> REF_2[spender_1]",
+              "physical_reference": "REF_3"
+            }
+          },
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_6",
+          "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_6",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "operation_order": 1,
+            "evidence_blocks": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "REF_2",
+                "binding_id": "symbol:REF:value",
+                "version": "fssa:symbol:REF:value:v34"
+              },
+              {
+                "value": "spender_1",
+                "binding_id": "decl:198:value",
+                "version": "fssa:decl:198:value:v1"
+              }
+            ],
+            "writes": [
+              {
+                "value": "REF_3",
+                "binding_id": "symbol:REF:value",
+                "version": "fssa:symbol:REF:value:v35"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "sol_atom_8",
+          "kind": "StateWrite",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "GuardedERC20.approve(address, uint256)",
+          "function": "approve",
+          "contract": "GuardedERC20",
+          "signature": "approve(address, uint256)",
+          "stmt_refs": [
+            "sol_s_3"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n4"
+          ],
+          "lvalue": "allowance[msg.sender][spender]",
+          "rvalue": "value_1",
+          "reads": [
+            "value_1"
+          ],
+          "writes": [
+            "allowance[msg.sender][spender]"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n3"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 4,
+            "operation_order": 3,
+            "atomic_sequence": 8
+          },
+          "semantic": {
+            "operation": "state_write",
+            "atomic_operation_count": 1,
+            "access": "allowance[msg.sender][spender]",
+            "state_variable": "allowance",
+            "keys": [
+              "msg.sender",
+              "spender"
+            ],
+            "location": {
+              "kind": "mapping",
+              "access": "allowance[msg.sender][spender]",
+              "state_variable": "allowance",
+              "keys": [
+                "msg.sender",
+                "spender"
+              ]
+            },
+            "value": "value_1"
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_8",
+              "source_span": "2059:38:slither",
+              "source_expression": "allowance[msg.sender][spender] = value",
+              "slithir_kind": "Assignment",
+              "slithir_text": "REF_3(uint256) (->allowance_1) := value_1(uint256)",
+              "physical_reference": "REF_3"
+            }
+          },
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_8",
+          "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_8",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "operation_order": 3,
+            "evidence_blocks": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "value_1",
+                "binding_id": "decl:200:value",
+                "version": "fssa:decl:200:value:v2"
+              }
+            ],
+            "writes": [
+              {
+                "value": "allowance[msg.sender][spender]",
+                "binding_id": "decl:80:value:storage_location:allowance[msg.sender][spender]",
+                "version": "fssa:decl:80:value:storage_location:allowance[msg.sender][spender]:v36"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "sol_atom_9",
+          "kind": "EventEmit",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "GuardedERC20.approve(address, uint256)",
+          "function": "approve",
+          "contract": "GuardedERC20",
+          "signature": "approve(address, uint256)",
+          "stmt_refs": [
+            "sol_s_4"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n5"
+          ],
+          "rvalue": "Approval(msg.sender, spender_1, value_1)",
+          "reads": [
+            "msg.sender",
+            "spender_1",
+            "value_1"
+          ],
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n4"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 5,
+            "operation_order": 0,
+            "atomic_sequence": 9
+          },
+          "semantic": {
+            "operation": "event_emit",
+            "atomic_operation": "EventCall",
+            "atomic_operation_count": 1,
+            "operand_ssa": [
+              "msg.sender",
+              "spender_1",
+              "value_1"
+            ],
+            "resolved_operands": [
+              "msg.sender",
+              "spender",
+              "value"
+            ],
+            "checked": true,
+            "runtime_operation": true,
+            "event": "Approval",
+            "arguments": [
+              "msg.sender",
+              "spender_1",
+              "value_1"
+            ]
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_9",
+              "source_span": "2107:41:slither",
+              "source_expression": "Approval(msg.sender,spender,value)",
+              "slithir_kind": "EventCall",
+              "slithir_text": "Emit Approval(msg.sender,spender_1,value_1)"
+            }
+          },
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_9",
+          "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_9",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+            "operation_order": 0,
+            "evidence_blocks": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4"
+            ],
+            "fused_from_source_blocks": [
+              "bb_sol_slither_n5"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [
+              {
+                "value": "spender_1",
+                "binding_id": "decl:198:value",
+                "version": "fssa:decl:198:value:v1"
+              },
+              {
+                "value": "value_1",
+                "binding_id": "decl:200:value",
+                "version": "fssa:decl:200:value:v2"
+              }
+            ],
+            "writes": []
+          }
+        },
+        {
+          "operation_id": "sol_atom_10",
+          "kind": "Return",
+          "source_lang": "solidity",
+          "origin": "solidity_atomic_operation",
+          "fact_role": "effect",
+          "function_id": "GuardedERC20.approve(address, uint256)",
+          "function": "approve",
+          "contract": "GuardedERC20",
+          "signature": "approve(address, uint256)",
+          "stmt_refs": [
+            "sol_s_5"
+          ],
+          "cfg_nodes": [
+            "bb_sol_slither_n6"
+          ],
+          "rvalue": "true",
+          "cfg_predecessor_blocks": [
+            "bb_sol_slither_n5"
+          ],
+          "order": {
+            "kind": "cfg_partial_order",
+            "cfg_block_order": 6,
+            "operation_order": 0,
+            "atomic_sequence": 10
+          },
+          "semantic": {
+            "operation": "return",
+            "atomic_operation": "Return",
+            "atomic_operation_count": 1,
+            "resolved_operands": [
+              "True"
+            ],
+            "checked": true,
+            "runtime_operation": true,
+            "values": [
+              "true"
+            ]
+          },
+          "evidence": {
+            "atomic_operation": {
+              "atom_id": "sol_atom_10",
+              "source_span": "2158:11:slither",
+              "source_expression": "true",
+              "slithir_kind": "Return",
+              "slithir_text": "RETURN True"
+            }
+          },
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_10",
+          "origin_id": "solidity:GuardedERC20.approve(address, uint256):sol_atom_10",
+          "placement": {
+            "status": "anchored",
+            "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6",
+            "operation_order": 0,
+            "evidence_blocks": [
+              "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6"
+            ]
+          },
+          "fact_ssa": {
+            "reads": [],
+            "writes": []
+          }
+        }
+      ],
+      "semantic_edges": [
+        {
+          "from": "sfir:GuardedERC20.approve(address, uint256):sol_atom_1",
+          "to": "sfir:GuardedERC20.approve(address, uint256):sol_atom_2",
+          "kind": "data",
+          "value_ref": "fssa:symbol:TMP:value:v31"
+        },
+        {
+          "from": "sfir:GuardedERC20.approve(address, uint256):sol_atom_2",
+          "to": "sfir:GuardedERC20.approve(address, uint256):sol_atom_3",
+          "kind": "data",
+          "value_ref": "fssa:symbol:TMP:value:v32"
+        },
+        {
+          "from": "sfir:GuardedERC20.approve(address, uint256):sol_atom_5",
+          "to": "sfir:GuardedERC20.approve(address, uint256):sol_atom_6",
+          "kind": "data",
+          "value_ref": "fssa:symbol:REF:value:v34"
+        }
+      ],
+      "boundary_links": [],
+      "path_witnesses": [
+        {
+          "witness_id": "pw:sfir:GuardedERC20.approve(address, uint256):sol_atom_4",
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_4",
+          "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n2",
+          "guards": [
+            "spender == address(0)"
+          ],
+          "control_edge_ids": [
+            "e2"
+          ],
+          "status": "symbolic"
+        },
+        {
+          "witness_id": "pw:sfir:GuardedERC20.approve(address, uint256):sol_atom_5",
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_5",
+          "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+          "guards": [
+            "!(spender == address(0))"
+          ],
+          "control_edge_ids": [
+            "e3"
+          ],
+          "status": "symbolic"
+        },
+        {
+          "witness_id": "pw:sfir:GuardedERC20.approve(address, uint256):sol_atom_6",
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_6",
+          "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+          "guards": [
+            "!(spender == address(0))"
+          ],
+          "control_edge_ids": [
+            "e3"
+          ],
+          "status": "symbolic"
+        },
+        {
+          "witness_id": "pw:sfir:GuardedERC20.approve(address, uint256):sol_atom_8",
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_8",
+          "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+          "guards": [
+            "!(spender == address(0))"
+          ],
+          "control_edge_ids": [
+            "e3"
+          ],
+          "status": "symbolic"
+        },
+        {
+          "witness_id": "pw:sfir:GuardedERC20.approve(address, uint256):sol_atom_9",
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_9",
+          "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n4",
+          "guards": [
+            "!(spender == address(0))"
+          ],
+          "control_edge_ids": [
+            "e3"
+          ],
+          "status": "symbolic"
+        },
+        {
+          "witness_id": "pw:sfir:GuardedERC20.approve(address, uint256):sol_atom_10",
+          "semantic_id": "sfir:GuardedERC20.approve(address, uint256):sol_atom_10",
+          "anchor_block": "fcfg:GuardedERC20.approve(address, uint256):bb_sol_slither_n6",
+          "guards": [
+            "!(spender == address(0))"
+          ],
+          "control_edge_ids": [
+            "e3"
+          ],
+          "status": "symbolic"
+        }
+      ],
+      "diagnostics": []
+    }
+  ]
+}

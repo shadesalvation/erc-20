@@ -1,0 +1,49 @@
+usage: s_seir_batch_contracts.py [-h] [--glob GLOB] [--output-dir OUTPUT_DIR]
+                                 [--sseir-output SSEIR_OUTPUT]
+                                 [--assembly-output ASSEMBLY_OUTPUT]
+                                 [--write-aggregate] [--contract CONTRACT]
+                                 [--include-abstract]
+                                 [--keep-sources-without-assembly]
+                                 [--flat-glob-mode]
+                                 [--max-sources-per-sample MAX_SOURCES_PER_SAMPLE]
+                                 [--no-branch-preprocess]
+                                 [--solc-bin SOLC_BIN]
+                                 [--solc-cache-dir SOLC_CACHE_DIR]
+                                 [--deps-dir DEPS_DIR] [--no-install-deps]
+                                 [--slither-bin SLITHER_BIN]
+                                 [--workdir WORKDIR] [--fail-fast]
+                                 [input]
+
+Batch S-SEIR analysis for verified deployed contract samples, excluding
+libraries/interfaces.
+
+positional arguments:
+  input                 Solidity file or sample root directory.
+
+options:
+  -h, --help            show this help message and exit
+  --glob GLOB           Glob used when input is a directory. Default:
+                        */Token.sol
+  --output-dir OUTPUT_DIR
+  --sseir-output SSEIR_OUTPUT
+                        Deprecated. Use per-source result directories under
+                        --output-dir.
+  --assembly-output ASSEMBLY_OUTPUT
+                        Deprecated. Use per-source result directories under
+                        --output-dir.
+  --write-aggregate     Also write legacy aggregate JSON outputs.
+  --contract CONTRACT   Only include this deployed contract name. Can be
+                        repeated.
+  --include-abstract    Include abstract contractKind=contract definitions.
+  --keep-sources-without-assembly
+  --flat-glob-mode      Do not group 0x sample directories; use --glob
+                        directly.
+  --max-sources-per-sample MAX_SOURCES_PER_SAMPLE
+  --no-branch-preprocess
+  --solc-bin SOLC_BIN
+  --solc-cache-dir SOLC_CACHE_DIR
+  --deps-dir DEPS_DIR
+  --no-install-deps
+  --slither-bin SLITHER_BIN
+  --workdir WORKDIR
+  --fail-fast

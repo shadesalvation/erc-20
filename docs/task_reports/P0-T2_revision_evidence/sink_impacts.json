@@ -1,0 +1,3998 @@
+{
+  "checks": [
+    {
+      "sink_kind": "StateWrite",
+      "status": "PASS",
+      "observation": "load-to-operand data edge exists; alias-equivalent prior storage write has no edge to load",
+      "scope": "final-bridge edge characterization; no future dependency algorithm executed",
+      "input_facts": [
+        {
+          "operation_id": "alias_assign",
+          "origin": "solidity_atomic_operation",
+          "kind": "ValueAssign",
+          "reads": [
+            "owner"
+          ],
+          "writes": [
+            "alias"
+          ],
+          "order": {
+            "operation_order": 0
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "lvalue": "alias",
+          "rvalue": "owner"
+        },
+        {
+          "operation_id": "prior_write",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateWrite",
+          "reads": [
+            "owner",
+            "other"
+          ],
+          "writes": [
+            "balances[owner]"
+          ],
+          "order": {
+            "operation_order": 1
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            "value": "other"
+          },
+          "lvalue": "balances[owner]",
+          "rvalue": "other"
+        },
+        {
+          "operation_id": "state_read",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateRead",
+          "reads": [
+            "balances[alias]",
+            "alias"
+          ],
+          "writes": [
+            "loaded"
+          ],
+          "order": {
+            "operation_order": 2
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            }
+          },
+          "lvalue": "loaded",
+          "rvalue": "balances[alias]"
+        },
+        {
+          "operation_id": "sink",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateWrite",
+          "reads": [
+            "other",
+            "loaded"
+          ],
+          "writes": [
+            "balances[other]"
+          ],
+          "order": {
+            "operation_order": 3
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[other]",
+              "state_variable": "balances",
+              "keys": [
+                "other"
+              ]
+            },
+            "value": "loaded"
+          },
+          "lvalue": "balances[other]",
+          "rvalue": "loaded"
+        }
+      ],
+      "sfir": {
+        "function_id": "Token.transfer(address,uint256)",
+        "contract": "Token",
+        "function": "transfer",
+        "signature": "transfer(address,uint256)",
+        "fact_cfg": {
+          "blocks": [
+            {
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "kind": "solidity",
+              "origin": {
+                "engine": "slither",
+                "source_block_id": "b"
+              },
+              "stmt_refs": [],
+              "terminator": {},
+              "semantic_ids": [
+                "sfir:Token.transfer(address,uint256):alias_assign",
+                "sfir:Token.transfer(address,uint256):prior_write",
+                "sfir:Token.transfer(address,uint256):state_read",
+                "sfir:Token.transfer(address,uint256):sink"
+              ],
+              "predecessors": [],
+              "successors": [],
+              "_sequence": 0
+            }
+          ],
+          "edges": [],
+          "entry_blocks": [
+            "fcfg:Token.transfer(address,uint256):b"
+          ],
+          "reverse_postorder": {
+            "fcfg:Token.transfer(address,uint256):b": 0
+          },
+          "dominance": {
+            "fcfg:Token.transfer(address,uint256):b": [
+              "fcfg:Token.transfer(address,uint256):b"
+            ]
+          },
+          "control_dependencies": []
+        },
+        "fact_ssa": {
+          "bindings": [
+            {
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[other]",
+              "base_name": "balances[other]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[other]",
+              "state_variable": "balances",
+              "keys": [
+                "other"
+              ]
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            {
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 2,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 3,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 4,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 5,
+              "identity_status": "ast_declaration"
+            }
+          ],
+          "definitions": [
+            {
+              "version": "fssa:decl:1:value:v1",
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_slot:v2",
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_offset:v3",
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:2:value:v4",
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:3:value:v5",
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v6",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[alias]:v7",
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[other]:v8",
+              "binding_id": "decl:1:value:storage_location:balances[other]",
+              "base_name": "balances[other]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:4:value:v9",
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "alias_assign"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v10",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "prior_write"
+              }
+            },
+            {
+              "version": "fssa:decl:5:value:v11",
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "state_read"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[other]:v12",
+              "binding_id": "decl:1:value:storage_location:balances[other]",
+              "base_name": "balances[other]",
+              "facet": "storage_location",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 3,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):sink",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "sink"
+              }
+            }
+          ],
+          "phis": [],
+          "reaching_definitions_in": {
+            "fcfg:Token.transfer(address,uint256):b": {}
+          },
+          "reaching_definitions_out": {
+            "fcfg:Token.transfer(address,uint256):b": {
+              "decl:1:value": [
+                "fssa:decl:1:value:v1"
+              ],
+              "decl:1:storage_slot": [
+                "fssa:decl:1:storage_slot:v2"
+              ],
+              "decl:1:storage_offset": [
+                "fssa:decl:1:storage_offset:v3"
+              ],
+              "decl:2:value": [
+                "fssa:decl:2:value:v4"
+              ],
+              "decl:3:value": [
+                "fssa:decl:3:value:v5"
+              ],
+              "decl:1:value:storage_location:balances[owner]": [
+                "fssa:decl:1:value:storage_location:balances[owner]:v10"
+              ],
+              "decl:1:value:storage_location:balances[alias]": [
+                "fssa:decl:1:value:storage_location:balances[alias]:v7"
+              ],
+              "decl:1:value:storage_location:balances[other]": [
+                "fssa:decl:1:value:storage_location:balances[other]:v12"
+              ],
+              "decl:4:value": [
+                "fssa:decl:4:value:v9"
+              ],
+              "decl:5:value": [
+                "fssa:decl:5:value:v11"
+              ]
+            }
+          }
+        },
+        "semantic_nodes": [
+          {
+            "operation_id": "alias_assign",
+            "origin": "solidity_atomic_operation",
+            "kind": "ValueAssign",
+            "reads": [
+              "owner"
+            ],
+            "writes": [
+              "alias"
+            ],
+            "order": {
+              "operation_order": 0
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "lvalue": "alias",
+            "rvalue": "owner",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+            "origin_id": "alias_assign",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v9"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "prior_write",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateWrite",
+            "reads": [
+              "owner",
+              "other"
+            ],
+            "writes": [
+              "balances[owner]"
+            ],
+            "order": {
+              "operation_order": 1
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[owner]",
+                "state_variable": "balances",
+                "keys": [
+                  "owner"
+                ]
+              },
+              "value": "other"
+            },
+            "lvalue": "balances[owner]",
+            "rvalue": "other",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+            "origin_id": "prior_write",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                },
+                {
+                  "value": "other",
+                  "binding_id": "decl:3:value",
+                  "version": "fssa:decl:3:value:v5"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "balances[owner]",
+                  "binding_id": "decl:1:value:storage_location:balances[owner]",
+                  "version": "fssa:decl:1:value:storage_location:balances[owner]:v10"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "state_read",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateRead",
+            "reads": [
+              "balances[alias]",
+              "alias"
+            ],
+            "writes": [
+              "loaded"
+            ],
+            "order": {
+              "operation_order": 2
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[alias]",
+                "state_variable": "balances",
+                "keys": [
+                  "alias"
+                ]
+              }
+            },
+            "lvalue": "loaded",
+            "rvalue": "balances[alias]",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+            "origin_id": "state_read",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "balances[alias]",
+                  "binding_id": "decl:1:value:storage_location:balances[alias]",
+                  "version": "fssa:decl:1:value:storage_location:balances[alias]:v7"
+                },
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v9"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v11"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "sink",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateWrite",
+            "reads": [
+              "other",
+              "loaded"
+            ],
+            "writes": [
+              "balances[other]"
+            ],
+            "order": {
+              "operation_order": 3
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[other]",
+                "state_variable": "balances",
+                "keys": [
+                  "other"
+                ]
+              },
+              "value": "loaded"
+            },
+            "lvalue": "balances[other]",
+            "rvalue": "loaded",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):sink",
+            "origin_id": "sink",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 3,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "other",
+                  "binding_id": "decl:3:value",
+                  "version": "fssa:decl:3:value:v5"
+                },
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v11"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "balances[other]",
+                  "binding_id": "decl:1:value:storage_location:balances[other]",
+                  "version": "fssa:decl:1:value:storage_location:balances[other]:v12"
+                }
+              ]
+            }
+          }
+        ],
+        "semantic_edges": [
+          {
+            "from": "sfir:Token.transfer(address,uint256):alias_assign",
+            "to": "sfir:Token.transfer(address,uint256):state_read",
+            "kind": "data",
+            "value_ref": "fssa:decl:4:value:v9"
+          },
+          {
+            "from": "sfir:Token.transfer(address,uint256):state_read",
+            "to": "sfir:Token.transfer(address,uint256):sink",
+            "kind": "data",
+            "value_ref": "fssa:decl:5:value:v11"
+          }
+        ],
+        "boundary_links": [],
+        "path_witnesses": [],
+        "diagnostics": []
+      }
+    },
+    {
+      "sink_kind": "ExternalCall",
+      "status": "PASS",
+      "observation": "load-to-operand data edge exists; alias-equivalent prior storage write has no edge to load",
+      "scope": "final-bridge edge characterization; no future dependency algorithm executed",
+      "input_facts": [
+        {
+          "operation_id": "alias_assign",
+          "origin": "solidity_atomic_operation",
+          "kind": "ValueAssign",
+          "reads": [
+            "owner"
+          ],
+          "writes": [
+            "alias"
+          ],
+          "order": {
+            "operation_order": 0
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "lvalue": "alias",
+          "rvalue": "owner"
+        },
+        {
+          "operation_id": "prior_write",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateWrite",
+          "reads": [
+            "owner",
+            "other"
+          ],
+          "writes": [
+            "balances[owner]"
+          ],
+          "order": {
+            "operation_order": 1
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            "value": "other"
+          },
+          "lvalue": "balances[owner]",
+          "rvalue": "other"
+        },
+        {
+          "operation_id": "state_read",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateRead",
+          "reads": [
+            "balances[alias]",
+            "alias"
+          ],
+          "writes": [
+            "loaded"
+          ],
+          "order": {
+            "operation_order": 2
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            }
+          },
+          "lvalue": "loaded",
+          "rvalue": "balances[alias]"
+        },
+        {
+          "operation_id": "sink",
+          "origin": "solidity_atomic_operation",
+          "kind": "ExternalCall",
+          "reads": [
+            "loaded"
+          ],
+          "writes": [],
+          "order": {
+            "operation_order": 3
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "target": "other",
+            "function": "consume",
+            "arguments": [
+              "loaded"
+            ]
+          }
+        }
+      ],
+      "sfir": {
+        "function_id": "Token.transfer(address,uint256)",
+        "contract": "Token",
+        "function": "transfer",
+        "signature": "transfer(address,uint256)",
+        "fact_cfg": {
+          "blocks": [
+            {
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "kind": "solidity",
+              "origin": {
+                "engine": "slither",
+                "source_block_id": "b"
+              },
+              "stmt_refs": [],
+              "terminator": {},
+              "semantic_ids": [
+                "sfir:Token.transfer(address,uint256):alias_assign",
+                "sfir:Token.transfer(address,uint256):prior_write",
+                "sfir:Token.transfer(address,uint256):state_read",
+                "sfir:Token.transfer(address,uint256):sink"
+              ],
+              "predecessors": [],
+              "successors": [],
+              "_sequence": 0
+            }
+          ],
+          "edges": [],
+          "entry_blocks": [
+            "fcfg:Token.transfer(address,uint256):b"
+          ],
+          "reverse_postorder": {
+            "fcfg:Token.transfer(address,uint256):b": 0
+          },
+          "dominance": {
+            "fcfg:Token.transfer(address,uint256):b": [
+              "fcfg:Token.transfer(address,uint256):b"
+            ]
+          },
+          "control_dependencies": []
+        },
+        "fact_ssa": {
+          "bindings": [
+            {
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            {
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 2,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 3,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 4,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 5,
+              "identity_status": "ast_declaration"
+            }
+          ],
+          "definitions": [
+            {
+              "version": "fssa:decl:1:value:v1",
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_slot:v2",
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_offset:v3",
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:2:value:v4",
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:3:value:v5",
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v6",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[alias]:v7",
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:4:value:v8",
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "alias_assign"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v9",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "prior_write"
+              }
+            },
+            {
+              "version": "fssa:decl:5:value:v10",
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "state_read"
+              }
+            }
+          ],
+          "phis": [],
+          "reaching_definitions_in": {
+            "fcfg:Token.transfer(address,uint256):b": {}
+          },
+          "reaching_definitions_out": {
+            "fcfg:Token.transfer(address,uint256):b": {
+              "decl:1:value": [
+                "fssa:decl:1:value:v1"
+              ],
+              "decl:1:storage_slot": [
+                "fssa:decl:1:storage_slot:v2"
+              ],
+              "decl:1:storage_offset": [
+                "fssa:decl:1:storage_offset:v3"
+              ],
+              "decl:2:value": [
+                "fssa:decl:2:value:v4"
+              ],
+              "decl:3:value": [
+                "fssa:decl:3:value:v5"
+              ],
+              "decl:1:value:storage_location:balances[owner]": [
+                "fssa:decl:1:value:storage_location:balances[owner]:v9"
+              ],
+              "decl:1:value:storage_location:balances[alias]": [
+                "fssa:decl:1:value:storage_location:balances[alias]:v7"
+              ],
+              "decl:4:value": [
+                "fssa:decl:4:value:v8"
+              ],
+              "decl:5:value": [
+                "fssa:decl:5:value:v10"
+              ]
+            }
+          }
+        },
+        "semantic_nodes": [
+          {
+            "operation_id": "alias_assign",
+            "origin": "solidity_atomic_operation",
+            "kind": "ValueAssign",
+            "reads": [
+              "owner"
+            ],
+            "writes": [
+              "alias"
+            ],
+            "order": {
+              "operation_order": 0
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "lvalue": "alias",
+            "rvalue": "owner",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+            "origin_id": "alias_assign",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "prior_write",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateWrite",
+            "reads": [
+              "owner",
+              "other"
+            ],
+            "writes": [
+              "balances[owner]"
+            ],
+            "order": {
+              "operation_order": 1
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[owner]",
+                "state_variable": "balances",
+                "keys": [
+                  "owner"
+                ]
+              },
+              "value": "other"
+            },
+            "lvalue": "balances[owner]",
+            "rvalue": "other",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+            "origin_id": "prior_write",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                },
+                {
+                  "value": "other",
+                  "binding_id": "decl:3:value",
+                  "version": "fssa:decl:3:value:v5"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "balances[owner]",
+                  "binding_id": "decl:1:value:storage_location:balances[owner]",
+                  "version": "fssa:decl:1:value:storage_location:balances[owner]:v9"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "state_read",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateRead",
+            "reads": [
+              "balances[alias]",
+              "alias"
+            ],
+            "writes": [
+              "loaded"
+            ],
+            "order": {
+              "operation_order": 2
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[alias]",
+                "state_variable": "balances",
+                "keys": [
+                  "alias"
+                ]
+              }
+            },
+            "lvalue": "loaded",
+            "rvalue": "balances[alias]",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+            "origin_id": "state_read",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "balances[alias]",
+                  "binding_id": "decl:1:value:storage_location:balances[alias]",
+                  "version": "fssa:decl:1:value:storage_location:balances[alias]:v7"
+                },
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "sink",
+            "origin": "solidity_atomic_operation",
+            "kind": "ExternalCall",
+            "reads": [
+              "loaded"
+            ],
+            "writes": [],
+            "order": {
+              "operation_order": 3
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "target": "other",
+              "function": "consume",
+              "arguments": [
+                "loaded"
+              ]
+            },
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):sink",
+            "origin_id": "sink",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 3,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ],
+              "writes": []
+            }
+          }
+        ],
+        "semantic_edges": [
+          {
+            "from": "sfir:Token.transfer(address,uint256):alias_assign",
+            "to": "sfir:Token.transfer(address,uint256):state_read",
+            "kind": "data",
+            "value_ref": "fssa:decl:4:value:v8"
+          },
+          {
+            "from": "sfir:Token.transfer(address,uint256):state_read",
+            "to": "sfir:Token.transfer(address,uint256):sink",
+            "kind": "data",
+            "value_ref": "fssa:decl:5:value:v10"
+          }
+        ],
+        "boundary_links": [],
+        "path_witnesses": [],
+        "diagnostics": []
+      }
+    },
+    {
+      "sink_kind": "ValueTransferCall",
+      "status": "PASS",
+      "observation": "load-to-operand data edge exists; alias-equivalent prior storage write has no edge to load",
+      "scope": "final-bridge edge characterization; no future dependency algorithm executed",
+      "input_facts": [
+        {
+          "operation_id": "alias_assign",
+          "origin": "solidity_atomic_operation",
+          "kind": "ValueAssign",
+          "reads": [
+            "owner"
+          ],
+          "writes": [
+            "alias"
+          ],
+          "order": {
+            "operation_order": 0
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "lvalue": "alias",
+          "rvalue": "owner"
+        },
+        {
+          "operation_id": "prior_write",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateWrite",
+          "reads": [
+            "owner",
+            "other"
+          ],
+          "writes": [
+            "balances[owner]"
+          ],
+          "order": {
+            "operation_order": 1
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            "value": "other"
+          },
+          "lvalue": "balances[owner]",
+          "rvalue": "other"
+        },
+        {
+          "operation_id": "state_read",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateRead",
+          "reads": [
+            "balances[alias]",
+            "alias"
+          ],
+          "writes": [
+            "loaded"
+          ],
+          "order": {
+            "operation_order": 2
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            }
+          },
+          "lvalue": "loaded",
+          "rvalue": "balances[alias]"
+        },
+        {
+          "operation_id": "sink",
+          "origin": "solidity_atomic_operation",
+          "kind": "ValueTransferCall",
+          "reads": [
+            "loaded"
+          ],
+          "writes": [],
+          "order": {
+            "operation_order": 3
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "target": "other",
+            "value": "loaded",
+            "method": "send"
+          }
+        }
+      ],
+      "sfir": {
+        "function_id": "Token.transfer(address,uint256)",
+        "contract": "Token",
+        "function": "transfer",
+        "signature": "transfer(address,uint256)",
+        "fact_cfg": {
+          "blocks": [
+            {
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "kind": "solidity",
+              "origin": {
+                "engine": "slither",
+                "source_block_id": "b"
+              },
+              "stmt_refs": [],
+              "terminator": {},
+              "semantic_ids": [
+                "sfir:Token.transfer(address,uint256):alias_assign",
+                "sfir:Token.transfer(address,uint256):prior_write",
+                "sfir:Token.transfer(address,uint256):state_read",
+                "sfir:Token.transfer(address,uint256):sink"
+              ],
+              "predecessors": [],
+              "successors": [],
+              "_sequence": 0
+            }
+          ],
+          "edges": [],
+          "entry_blocks": [
+            "fcfg:Token.transfer(address,uint256):b"
+          ],
+          "reverse_postorder": {
+            "fcfg:Token.transfer(address,uint256):b": 0
+          },
+          "dominance": {
+            "fcfg:Token.transfer(address,uint256):b": [
+              "fcfg:Token.transfer(address,uint256):b"
+            ]
+          },
+          "control_dependencies": []
+        },
+        "fact_ssa": {
+          "bindings": [
+            {
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            {
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 2,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 3,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 4,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 5,
+              "identity_status": "ast_declaration"
+            }
+          ],
+          "definitions": [
+            {
+              "version": "fssa:decl:1:value:v1",
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_slot:v2",
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_offset:v3",
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:2:value:v4",
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:3:value:v5",
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v6",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[alias]:v7",
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:4:value:v8",
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "alias_assign"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v9",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "prior_write"
+              }
+            },
+            {
+              "version": "fssa:decl:5:value:v10",
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "state_read"
+              }
+            }
+          ],
+          "phis": [],
+          "reaching_definitions_in": {
+            "fcfg:Token.transfer(address,uint256):b": {}
+          },
+          "reaching_definitions_out": {
+            "fcfg:Token.transfer(address,uint256):b": {
+              "decl:1:value": [
+                "fssa:decl:1:value:v1"
+              ],
+              "decl:1:storage_slot": [
+                "fssa:decl:1:storage_slot:v2"
+              ],
+              "decl:1:storage_offset": [
+                "fssa:decl:1:storage_offset:v3"
+              ],
+              "decl:2:value": [
+                "fssa:decl:2:value:v4"
+              ],
+              "decl:3:value": [
+                "fssa:decl:3:value:v5"
+              ],
+              "decl:1:value:storage_location:balances[owner]": [
+                "fssa:decl:1:value:storage_location:balances[owner]:v9"
+              ],
+              "decl:1:value:storage_location:balances[alias]": [
+                "fssa:decl:1:value:storage_location:balances[alias]:v7"
+              ],
+              "decl:4:value": [
+                "fssa:decl:4:value:v8"
+              ],
+              "decl:5:value": [
+                "fssa:decl:5:value:v10"
+              ]
+            }
+          }
+        },
+        "semantic_nodes": [
+          {
+            "operation_id": "alias_assign",
+            "origin": "solidity_atomic_operation",
+            "kind": "ValueAssign",
+            "reads": [
+              "owner"
+            ],
+            "writes": [
+              "alias"
+            ],
+            "order": {
+              "operation_order": 0
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "lvalue": "alias",
+            "rvalue": "owner",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+            "origin_id": "alias_assign",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "prior_write",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateWrite",
+            "reads": [
+              "owner",
+              "other"
+            ],
+            "writes": [
+              "balances[owner]"
+            ],
+            "order": {
+              "operation_order": 1
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[owner]",
+                "state_variable": "balances",
+                "keys": [
+                  "owner"
+                ]
+              },
+              "value": "other"
+            },
+            "lvalue": "balances[owner]",
+            "rvalue": "other",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+            "origin_id": "prior_write",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                },
+                {
+                  "value": "other",
+                  "binding_id": "decl:3:value",
+                  "version": "fssa:decl:3:value:v5"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "balances[owner]",
+                  "binding_id": "decl:1:value:storage_location:balances[owner]",
+                  "version": "fssa:decl:1:value:storage_location:balances[owner]:v9"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "state_read",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateRead",
+            "reads": [
+              "balances[alias]",
+              "alias"
+            ],
+            "writes": [
+              "loaded"
+            ],
+            "order": {
+              "operation_order": 2
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[alias]",
+                "state_variable": "balances",
+                "keys": [
+                  "alias"
+                ]
+              }
+            },
+            "lvalue": "loaded",
+            "rvalue": "balances[alias]",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+            "origin_id": "state_read",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "balances[alias]",
+                  "binding_id": "decl:1:value:storage_location:balances[alias]",
+                  "version": "fssa:decl:1:value:storage_location:balances[alias]:v7"
+                },
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "sink",
+            "origin": "solidity_atomic_operation",
+            "kind": "ValueTransferCall",
+            "reads": [
+              "loaded"
+            ],
+            "writes": [],
+            "order": {
+              "operation_order": 3
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "target": "other",
+              "value": "loaded",
+              "method": "send"
+            },
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):sink",
+            "origin_id": "sink",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 3,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ],
+              "writes": []
+            }
+          }
+        ],
+        "semantic_edges": [
+          {
+            "from": "sfir:Token.transfer(address,uint256):alias_assign",
+            "to": "sfir:Token.transfer(address,uint256):state_read",
+            "kind": "data",
+            "value_ref": "fssa:decl:4:value:v8"
+          },
+          {
+            "from": "sfir:Token.transfer(address,uint256):state_read",
+            "to": "sfir:Token.transfer(address,uint256):sink",
+            "kind": "data",
+            "value_ref": "fssa:decl:5:value:v10"
+          }
+        ],
+        "boundary_links": [],
+        "path_witnesses": [],
+        "diagnostics": []
+      }
+    },
+    {
+      "sink_kind": "EventEmit",
+      "status": "PASS",
+      "observation": "load-to-operand data edge exists; alias-equivalent prior storage write has no edge to load",
+      "scope": "final-bridge edge characterization; no future dependency algorithm executed",
+      "input_facts": [
+        {
+          "operation_id": "alias_assign",
+          "origin": "solidity_atomic_operation",
+          "kind": "ValueAssign",
+          "reads": [
+            "owner"
+          ],
+          "writes": [
+            "alias"
+          ],
+          "order": {
+            "operation_order": 0
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "lvalue": "alias",
+          "rvalue": "owner"
+        },
+        {
+          "operation_id": "prior_write",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateWrite",
+          "reads": [
+            "owner",
+            "other"
+          ],
+          "writes": [
+            "balances[owner]"
+          ],
+          "order": {
+            "operation_order": 1
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            "value": "other"
+          },
+          "lvalue": "balances[owner]",
+          "rvalue": "other"
+        },
+        {
+          "operation_id": "state_read",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateRead",
+          "reads": [
+            "balances[alias]",
+            "alias"
+          ],
+          "writes": [
+            "loaded"
+          ],
+          "order": {
+            "operation_order": 2
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            }
+          },
+          "lvalue": "loaded",
+          "rvalue": "balances[alias]"
+        },
+        {
+          "operation_id": "sink",
+          "origin": "solidity_atomic_operation",
+          "kind": "EventEmit",
+          "reads": [
+            "loaded"
+          ],
+          "writes": [],
+          "order": {
+            "operation_order": 3
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "event": "Observed",
+            "arguments": [
+              "loaded"
+            ]
+          }
+        }
+      ],
+      "sfir": {
+        "function_id": "Token.transfer(address,uint256)",
+        "contract": "Token",
+        "function": "transfer",
+        "signature": "transfer(address,uint256)",
+        "fact_cfg": {
+          "blocks": [
+            {
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "kind": "solidity",
+              "origin": {
+                "engine": "slither",
+                "source_block_id": "b"
+              },
+              "stmt_refs": [],
+              "terminator": {},
+              "semantic_ids": [
+                "sfir:Token.transfer(address,uint256):alias_assign",
+                "sfir:Token.transfer(address,uint256):prior_write",
+                "sfir:Token.transfer(address,uint256):state_read",
+                "sfir:Token.transfer(address,uint256):sink"
+              ],
+              "predecessors": [],
+              "successors": [],
+              "_sequence": 0
+            }
+          ],
+          "edges": [],
+          "entry_blocks": [
+            "fcfg:Token.transfer(address,uint256):b"
+          ],
+          "reverse_postorder": {
+            "fcfg:Token.transfer(address,uint256):b": 0
+          },
+          "dominance": {
+            "fcfg:Token.transfer(address,uint256):b": [
+              "fcfg:Token.transfer(address,uint256):b"
+            ]
+          },
+          "control_dependencies": []
+        },
+        "fact_ssa": {
+          "bindings": [
+            {
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            {
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 2,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 3,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 4,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 5,
+              "identity_status": "ast_declaration"
+            }
+          ],
+          "definitions": [
+            {
+              "version": "fssa:decl:1:value:v1",
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_slot:v2",
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_offset:v3",
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:2:value:v4",
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:3:value:v5",
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v6",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[alias]:v7",
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:4:value:v8",
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "alias_assign"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v9",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "prior_write"
+              }
+            },
+            {
+              "version": "fssa:decl:5:value:v10",
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "state_read"
+              }
+            }
+          ],
+          "phis": [],
+          "reaching_definitions_in": {
+            "fcfg:Token.transfer(address,uint256):b": {}
+          },
+          "reaching_definitions_out": {
+            "fcfg:Token.transfer(address,uint256):b": {
+              "decl:1:value": [
+                "fssa:decl:1:value:v1"
+              ],
+              "decl:1:storage_slot": [
+                "fssa:decl:1:storage_slot:v2"
+              ],
+              "decl:1:storage_offset": [
+                "fssa:decl:1:storage_offset:v3"
+              ],
+              "decl:2:value": [
+                "fssa:decl:2:value:v4"
+              ],
+              "decl:3:value": [
+                "fssa:decl:3:value:v5"
+              ],
+              "decl:1:value:storage_location:balances[owner]": [
+                "fssa:decl:1:value:storage_location:balances[owner]:v9"
+              ],
+              "decl:1:value:storage_location:balances[alias]": [
+                "fssa:decl:1:value:storage_location:balances[alias]:v7"
+              ],
+              "decl:4:value": [
+                "fssa:decl:4:value:v8"
+              ],
+              "decl:5:value": [
+                "fssa:decl:5:value:v10"
+              ]
+            }
+          }
+        },
+        "semantic_nodes": [
+          {
+            "operation_id": "alias_assign",
+            "origin": "solidity_atomic_operation",
+            "kind": "ValueAssign",
+            "reads": [
+              "owner"
+            ],
+            "writes": [
+              "alias"
+            ],
+            "order": {
+              "operation_order": 0
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "lvalue": "alias",
+            "rvalue": "owner",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+            "origin_id": "alias_assign",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "prior_write",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateWrite",
+            "reads": [
+              "owner",
+              "other"
+            ],
+            "writes": [
+              "balances[owner]"
+            ],
+            "order": {
+              "operation_order": 1
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[owner]",
+                "state_variable": "balances",
+                "keys": [
+                  "owner"
+                ]
+              },
+              "value": "other"
+            },
+            "lvalue": "balances[owner]",
+            "rvalue": "other",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+            "origin_id": "prior_write",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                },
+                {
+                  "value": "other",
+                  "binding_id": "decl:3:value",
+                  "version": "fssa:decl:3:value:v5"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "balances[owner]",
+                  "binding_id": "decl:1:value:storage_location:balances[owner]",
+                  "version": "fssa:decl:1:value:storage_location:balances[owner]:v9"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "state_read",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateRead",
+            "reads": [
+              "balances[alias]",
+              "alias"
+            ],
+            "writes": [
+              "loaded"
+            ],
+            "order": {
+              "operation_order": 2
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[alias]",
+                "state_variable": "balances",
+                "keys": [
+                  "alias"
+                ]
+              }
+            },
+            "lvalue": "loaded",
+            "rvalue": "balances[alias]",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+            "origin_id": "state_read",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "balances[alias]",
+                  "binding_id": "decl:1:value:storage_location:balances[alias]",
+                  "version": "fssa:decl:1:value:storage_location:balances[alias]:v7"
+                },
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "sink",
+            "origin": "solidity_atomic_operation",
+            "kind": "EventEmit",
+            "reads": [
+              "loaded"
+            ],
+            "writes": [],
+            "order": {
+              "operation_order": 3
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "event": "Observed",
+              "arguments": [
+                "loaded"
+              ]
+            },
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):sink",
+            "origin_id": "sink",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 3,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ],
+              "writes": []
+            }
+          }
+        ],
+        "semantic_edges": [
+          {
+            "from": "sfir:Token.transfer(address,uint256):alias_assign",
+            "to": "sfir:Token.transfer(address,uint256):state_read",
+            "kind": "data",
+            "value_ref": "fssa:decl:4:value:v8"
+          },
+          {
+            "from": "sfir:Token.transfer(address,uint256):state_read",
+            "to": "sfir:Token.transfer(address,uint256):sink",
+            "kind": "data",
+            "value_ref": "fssa:decl:5:value:v10"
+          }
+        ],
+        "boundary_links": [],
+        "path_witnesses": [],
+        "diagnostics": []
+      }
+    },
+    {
+      "sink_kind": "Return",
+      "status": "PASS",
+      "observation": "load-to-operand data edge exists; alias-equivalent prior storage write has no edge to load",
+      "scope": "final-bridge edge characterization; no future dependency algorithm executed",
+      "input_facts": [
+        {
+          "operation_id": "alias_assign",
+          "origin": "solidity_atomic_operation",
+          "kind": "ValueAssign",
+          "reads": [
+            "owner"
+          ],
+          "writes": [
+            "alias"
+          ],
+          "order": {
+            "operation_order": 0
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "lvalue": "alias",
+          "rvalue": "owner"
+        },
+        {
+          "operation_id": "prior_write",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateWrite",
+          "reads": [
+            "owner",
+            "other"
+          ],
+          "writes": [
+            "balances[owner]"
+          ],
+          "order": {
+            "operation_order": 1
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            "value": "other"
+          },
+          "lvalue": "balances[owner]",
+          "rvalue": "other"
+        },
+        {
+          "operation_id": "state_read",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateRead",
+          "reads": [
+            "balances[alias]",
+            "alias"
+          ],
+          "writes": [
+            "loaded"
+          ],
+          "order": {
+            "operation_order": 2
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            }
+          },
+          "lvalue": "loaded",
+          "rvalue": "balances[alias]"
+        },
+        {
+          "operation_id": "sink",
+          "origin": "solidity_atomic_operation",
+          "kind": "Return",
+          "reads": [
+            "loaded"
+          ],
+          "writes": [],
+          "order": {
+            "operation_order": 3
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "values": [
+              "loaded"
+            ]
+          }
+        }
+      ],
+      "sfir": {
+        "function_id": "Token.transfer(address,uint256)",
+        "contract": "Token",
+        "function": "transfer",
+        "signature": "transfer(address,uint256)",
+        "fact_cfg": {
+          "blocks": [
+            {
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "kind": "solidity",
+              "origin": {
+                "engine": "slither",
+                "source_block_id": "b"
+              },
+              "stmt_refs": [],
+              "terminator": {},
+              "semantic_ids": [
+                "sfir:Token.transfer(address,uint256):alias_assign",
+                "sfir:Token.transfer(address,uint256):prior_write",
+                "sfir:Token.transfer(address,uint256):state_read",
+                "sfir:Token.transfer(address,uint256):sink"
+              ],
+              "predecessors": [],
+              "successors": [],
+              "_sequence": 0
+            }
+          ],
+          "edges": [],
+          "entry_blocks": [
+            "fcfg:Token.transfer(address,uint256):b"
+          ],
+          "reverse_postorder": {
+            "fcfg:Token.transfer(address,uint256):b": 0
+          },
+          "dominance": {
+            "fcfg:Token.transfer(address,uint256):b": [
+              "fcfg:Token.transfer(address,uint256):b"
+            ]
+          },
+          "control_dependencies": []
+        },
+        "fact_ssa": {
+          "bindings": [
+            {
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            {
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 2,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 3,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 4,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 5,
+              "identity_status": "ast_declaration"
+            }
+          ],
+          "definitions": [
+            {
+              "version": "fssa:decl:1:value:v1",
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_slot:v2",
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_offset:v3",
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:2:value:v4",
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:3:value:v5",
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v6",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[alias]:v7",
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:4:value:v8",
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "alias_assign"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v9",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "prior_write"
+              }
+            },
+            {
+              "version": "fssa:decl:5:value:v10",
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "state_read"
+              }
+            }
+          ],
+          "phis": [],
+          "reaching_definitions_in": {
+            "fcfg:Token.transfer(address,uint256):b": {}
+          },
+          "reaching_definitions_out": {
+            "fcfg:Token.transfer(address,uint256):b": {
+              "decl:1:value": [
+                "fssa:decl:1:value:v1"
+              ],
+              "decl:1:storage_slot": [
+                "fssa:decl:1:storage_slot:v2"
+              ],
+              "decl:1:storage_offset": [
+                "fssa:decl:1:storage_offset:v3"
+              ],
+              "decl:2:value": [
+                "fssa:decl:2:value:v4"
+              ],
+              "decl:3:value": [
+                "fssa:decl:3:value:v5"
+              ],
+              "decl:1:value:storage_location:balances[owner]": [
+                "fssa:decl:1:value:storage_location:balances[owner]:v9"
+              ],
+              "decl:1:value:storage_location:balances[alias]": [
+                "fssa:decl:1:value:storage_location:balances[alias]:v7"
+              ],
+              "decl:4:value": [
+                "fssa:decl:4:value:v8"
+              ],
+              "decl:5:value": [
+                "fssa:decl:5:value:v10"
+              ]
+            }
+          }
+        },
+        "semantic_nodes": [
+          {
+            "operation_id": "alias_assign",
+            "origin": "solidity_atomic_operation",
+            "kind": "ValueAssign",
+            "reads": [
+              "owner"
+            ],
+            "writes": [
+              "alias"
+            ],
+            "order": {
+              "operation_order": 0
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "lvalue": "alias",
+            "rvalue": "owner",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+            "origin_id": "alias_assign",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "prior_write",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateWrite",
+            "reads": [
+              "owner",
+              "other"
+            ],
+            "writes": [
+              "balances[owner]"
+            ],
+            "order": {
+              "operation_order": 1
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[owner]",
+                "state_variable": "balances",
+                "keys": [
+                  "owner"
+                ]
+              },
+              "value": "other"
+            },
+            "lvalue": "balances[owner]",
+            "rvalue": "other",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+            "origin_id": "prior_write",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                },
+                {
+                  "value": "other",
+                  "binding_id": "decl:3:value",
+                  "version": "fssa:decl:3:value:v5"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "balances[owner]",
+                  "binding_id": "decl:1:value:storage_location:balances[owner]",
+                  "version": "fssa:decl:1:value:storage_location:balances[owner]:v9"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "state_read",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateRead",
+            "reads": [
+              "balances[alias]",
+              "alias"
+            ],
+            "writes": [
+              "loaded"
+            ],
+            "order": {
+              "operation_order": 2
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[alias]",
+                "state_variable": "balances",
+                "keys": [
+                  "alias"
+                ]
+              }
+            },
+            "lvalue": "loaded",
+            "rvalue": "balances[alias]",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+            "origin_id": "state_read",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "balances[alias]",
+                  "binding_id": "decl:1:value:storage_location:balances[alias]",
+                  "version": "fssa:decl:1:value:storage_location:balances[alias]:v7"
+                },
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "sink",
+            "origin": "solidity_atomic_operation",
+            "kind": "Return",
+            "reads": [
+              "loaded"
+            ],
+            "writes": [],
+            "order": {
+              "operation_order": 3
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "values": [
+                "loaded"
+              ]
+            },
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):sink",
+            "origin_id": "sink",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 3,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ],
+              "writes": []
+            }
+          }
+        ],
+        "semantic_edges": [
+          {
+            "from": "sfir:Token.transfer(address,uint256):alias_assign",
+            "to": "sfir:Token.transfer(address,uint256):state_read",
+            "kind": "data",
+            "value_ref": "fssa:decl:4:value:v8"
+          },
+          {
+            "from": "sfir:Token.transfer(address,uint256):state_read",
+            "to": "sfir:Token.transfer(address,uint256):sink",
+            "kind": "data",
+            "value_ref": "fssa:decl:5:value:v10"
+          }
+        ],
+        "boundary_links": [],
+        "path_witnesses": [],
+        "diagnostics": []
+      }
+    },
+    {
+      "sink_kind": "Revert",
+      "status": "PASS",
+      "observation": "load-to-operand data edge exists; alias-equivalent prior storage write has no edge to load",
+      "scope": "final-bridge edge characterization; no future dependency algorithm executed",
+      "input_facts": [
+        {
+          "operation_id": "alias_assign",
+          "origin": "solidity_atomic_operation",
+          "kind": "ValueAssign",
+          "reads": [
+            "owner"
+          ],
+          "writes": [
+            "alias"
+          ],
+          "order": {
+            "operation_order": 0
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "lvalue": "alias",
+          "rvalue": "owner"
+        },
+        {
+          "operation_id": "prior_write",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateWrite",
+          "reads": [
+            "owner",
+            "other"
+          ],
+          "writes": [
+            "balances[owner]"
+          ],
+          "order": {
+            "operation_order": 1
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            "value": "other"
+          },
+          "lvalue": "balances[owner]",
+          "rvalue": "other"
+        },
+        {
+          "operation_id": "state_read",
+          "origin": "solidity_atomic_operation",
+          "kind": "StateRead",
+          "reads": [
+            "balances[alias]",
+            "alias"
+          ],
+          "writes": [
+            "loaded"
+          ],
+          "order": {
+            "operation_order": 2
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "location": {
+              "kind": "mapping",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            }
+          },
+          "lvalue": "loaded",
+          "rvalue": "balances[alias]"
+        },
+        {
+          "operation_id": "sink",
+          "origin": "solidity_atomic_operation",
+          "kind": "Revert",
+          "reads": [
+            "loaded"
+          ],
+          "writes": [],
+          "order": {
+            "operation_order": 3
+          },
+          "semantic_provenance": {
+            "anchor_cfg_node": "b",
+            "evidence_cfg_nodes": [
+              "b"
+            ]
+          },
+          "semantic": {
+            "function": "Failure",
+            "arguments": [
+              "loaded"
+            ]
+          }
+        }
+      ],
+      "sfir": {
+        "function_id": "Token.transfer(address,uint256)",
+        "contract": "Token",
+        "function": "transfer",
+        "signature": "transfer(address,uint256)",
+        "fact_cfg": {
+          "blocks": [
+            {
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "kind": "solidity",
+              "origin": {
+                "engine": "slither",
+                "source_block_id": "b"
+              },
+              "stmt_refs": [],
+              "terminator": {},
+              "semantic_ids": [
+                "sfir:Token.transfer(address,uint256):alias_assign",
+                "sfir:Token.transfer(address,uint256):prior_write",
+                "sfir:Token.transfer(address,uint256):state_read",
+                "sfir:Token.transfer(address,uint256):sink"
+              ],
+              "predecessors": [],
+              "successors": [],
+              "_sequence": 0
+            }
+          ],
+          "edges": [],
+          "entry_blocks": [
+            "fcfg:Token.transfer(address,uint256):b"
+          ],
+          "reverse_postorder": {
+            "fcfg:Token.transfer(address,uint256):b": 0
+          },
+          "dominance": {
+            "fcfg:Token.transfer(address,uint256):b": [
+              "fcfg:Token.transfer(address,uint256):b"
+            ]
+          },
+          "control_dependencies": []
+        },
+        "fact_ssa": {
+          "bindings": [
+            {
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "kind": "state",
+              "declaration_id": 1,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[alias]",
+              "state_variable": "balances",
+              "keys": [
+                "alias"
+              ]
+            },
+            {
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "kind": "storage_location",
+              "identity_status": "semantic_storage_location",
+              "access": "balances[owner]",
+              "state_variable": "balances",
+              "keys": [
+                "owner"
+              ]
+            },
+            {
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 2,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "kind": "parameter",
+              "declaration_id": 3,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 4,
+              "identity_status": "ast_declaration"
+            },
+            {
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "kind": "local",
+              "declaration_id": 5,
+              "identity_status": "ast_declaration"
+            }
+          ],
+          "definitions": [
+            {
+              "version": "fssa:decl:1:value:v1",
+              "binding_id": "decl:1:value",
+              "base_name": "balances",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_slot:v2",
+              "binding_id": "decl:1:storage_slot",
+              "base_name": "balances",
+              "facet": "storage_slot",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:storage_offset:v3",
+              "binding_id": "decl:1:storage_offset",
+              "base_name": "balances",
+              "facet": "storage_offset",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:2:value:v4",
+              "binding_id": "decl:2:value",
+              "base_name": "owner",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:3:value:v5",
+              "binding_id": "decl:3:value",
+              "base_name": "other",
+              "facet": "value",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v6",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[alias]:v7",
+              "binding_id": "decl:1:value:storage_location:balances[alias]",
+              "base_name": "balances[alias]",
+              "facet": "storage_location",
+              "definition_kind": "entry",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": -1,
+              "origin": {
+                "engine": "source_declaration"
+              }
+            },
+            {
+              "version": "fssa:decl:4:value:v8",
+              "binding_id": "decl:4:value",
+              "base_name": "alias",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "alias_assign"
+              }
+            },
+            {
+              "version": "fssa:decl:1:value:storage_location:balances[owner]:v9",
+              "binding_id": "decl:1:value:storage_location:balances[owner]",
+              "base_name": "balances[owner]",
+              "facet": "storage_location",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "prior_write"
+              }
+            },
+            {
+              "version": "fssa:decl:5:value:v10",
+              "binding_id": "decl:5:value",
+              "base_name": "loaded",
+              "facet": "value",
+              "definition_kind": "semantic_definition",
+              "block_id": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "owner_semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+              "origin": {
+                "engine": "solidity_atomic_operation",
+                "origin_id": "state_read"
+              }
+            }
+          ],
+          "phis": [],
+          "reaching_definitions_in": {
+            "fcfg:Token.transfer(address,uint256):b": {}
+          },
+          "reaching_definitions_out": {
+            "fcfg:Token.transfer(address,uint256):b": {
+              "decl:1:value": [
+                "fssa:decl:1:value:v1"
+              ],
+              "decl:1:storage_slot": [
+                "fssa:decl:1:storage_slot:v2"
+              ],
+              "decl:1:storage_offset": [
+                "fssa:decl:1:storage_offset:v3"
+              ],
+              "decl:2:value": [
+                "fssa:decl:2:value:v4"
+              ],
+              "decl:3:value": [
+                "fssa:decl:3:value:v5"
+              ],
+              "decl:1:value:storage_location:balances[owner]": [
+                "fssa:decl:1:value:storage_location:balances[owner]:v9"
+              ],
+              "decl:1:value:storage_location:balances[alias]": [
+                "fssa:decl:1:value:storage_location:balances[alias]:v7"
+              ],
+              "decl:4:value": [
+                "fssa:decl:4:value:v8"
+              ],
+              "decl:5:value": [
+                "fssa:decl:5:value:v10"
+              ]
+            }
+          }
+        },
+        "semantic_nodes": [
+          {
+            "operation_id": "alias_assign",
+            "origin": "solidity_atomic_operation",
+            "kind": "ValueAssign",
+            "reads": [
+              "owner"
+            ],
+            "writes": [
+              "alias"
+            ],
+            "order": {
+              "operation_order": 0
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "lvalue": "alias",
+            "rvalue": "owner",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):alias_assign",
+            "origin_id": "alias_assign",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 0,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "prior_write",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateWrite",
+            "reads": [
+              "owner",
+              "other"
+            ],
+            "writes": [
+              "balances[owner]"
+            ],
+            "order": {
+              "operation_order": 1
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[owner]",
+                "state_variable": "balances",
+                "keys": [
+                  "owner"
+                ]
+              },
+              "value": "other"
+            },
+            "lvalue": "balances[owner]",
+            "rvalue": "other",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):prior_write",
+            "origin_id": "prior_write",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 1,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "owner",
+                  "binding_id": "decl:2:value",
+                  "version": "fssa:decl:2:value:v4"
+                },
+                {
+                  "value": "other",
+                  "binding_id": "decl:3:value",
+                  "version": "fssa:decl:3:value:v5"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "balances[owner]",
+                  "binding_id": "decl:1:value:storage_location:balances[owner]",
+                  "version": "fssa:decl:1:value:storage_location:balances[owner]:v9"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "state_read",
+            "origin": "solidity_atomic_operation",
+            "kind": "StateRead",
+            "reads": [
+              "balances[alias]",
+              "alias"
+            ],
+            "writes": [
+              "loaded"
+            ],
+            "order": {
+              "operation_order": 2
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "location": {
+                "kind": "mapping",
+                "access": "balances[alias]",
+                "state_variable": "balances",
+                "keys": [
+                  "alias"
+                ]
+              }
+            },
+            "lvalue": "loaded",
+            "rvalue": "balances[alias]",
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):state_read",
+            "origin_id": "state_read",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 2,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "balances[alias]",
+                  "binding_id": "decl:1:value:storage_location:balances[alias]",
+                  "version": "fssa:decl:1:value:storage_location:balances[alias]:v7"
+                },
+                {
+                  "value": "alias",
+                  "binding_id": "decl:4:value",
+                  "version": "fssa:decl:4:value:v8"
+                }
+              ],
+              "writes": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ]
+            }
+          },
+          {
+            "operation_id": "sink",
+            "origin": "solidity_atomic_operation",
+            "kind": "Revert",
+            "reads": [
+              "loaded"
+            ],
+            "writes": [],
+            "order": {
+              "operation_order": 3
+            },
+            "semantic_provenance": {
+              "anchor_cfg_node": "b",
+              "evidence_cfg_nodes": [
+                "b"
+              ]
+            },
+            "semantic": {
+              "function": "Failure",
+              "arguments": [
+                "loaded"
+              ]
+            },
+            "source_lang": "solidity",
+            "semantic_id": "sfir:Token.transfer(address,uint256):sink",
+            "origin_id": "sink",
+            "placement": {
+              "status": "anchored",
+              "anchor_block": "fcfg:Token.transfer(address,uint256):b",
+              "operation_order": 3,
+              "evidence_blocks": [
+                "fcfg:Token.transfer(address,uint256):b"
+              ]
+            },
+            "fact_ssa": {
+              "reads": [
+                {
+                  "value": "loaded",
+                  "binding_id": "decl:5:value",
+                  "version": "fssa:decl:5:value:v10"
+                }
+              ],
+              "writes": []
+            }
+          }
+        ],
+        "semantic_edges": [
+          {
+            "from": "sfir:Token.transfer(address,uint256):alias_assign",
+            "to": "sfir:Token.transfer(address,uint256):state_read",
+            "kind": "data",
+            "value_ref": "fssa:decl:4:value:v8"
+          },
+          {
+            "from": "sfir:Token.transfer(address,uint256):state_read",
+            "to": "sfir:Token.transfer(address,uint256):sink",
+            "kind": "data",
+            "value_ref": "fssa:decl:5:value:v10"
+          }
+        ],
+        "boundary_links": [],
+        "path_witnesses": [],
+        "diagnostics": []
+      }
+    }
+  ]
+}

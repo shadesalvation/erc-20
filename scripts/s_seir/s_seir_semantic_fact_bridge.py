@@ -88,7 +88,11 @@ class SemanticFactBridge:
         )
         for fact in facts:
             fact["function_id"] = semantic_input.function_id
-            anchor = self._sink_cfg_node(fact, effect_by_id, effect_cfg_nodes)
+            # Completed lifters now carry the endpoint in semantic provenance
+            # and deliberately strip effect transport. Use that proved anchor
+            # before the legacy effect lookup; cfg_nodes is only evidence.
+            anchor = str((fact.get("semantic_provenance") or {}).get("anchor_cfg_node") or "")
+            anchor = anchor or self._sink_cfg_node(fact, effect_by_id, effect_cfg_nodes)
             if anchor:
                 fact["anchor_cfg_node"] = anchor
             cfg_node = self._primary_cfg_node(fact)

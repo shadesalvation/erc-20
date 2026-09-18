@@ -1,0 +1,99 @@
+# P0-T2 — SFIR Capability Map
+
+## 目标与最终状态
+
+只分析现有 SFIR 的能力，创建支持/缺失矩阵、alias/storage address equivalence 结论及三个研究 Module 所需能力映射。不实现缺失功能，不提前进入下一 Task。
+
+**最终状态：PARTIAL。** 源码盘点、文档、baseline 与关键回归均完成；缺少用户指定 P2-T2/P2-T4/P2-T6/P2-T8 的职责定义，无法准确完成编号级 alias 影响验收。已请求补充，未自行编造编号分工。此状态不是因为 IMPLEMENTATION_PLAN.md 缺失；该文件本来就由 P0-T3 创建。
+
+## 前置检查
+
+读取 AGENTS.md、PROJECT_STATUS.md、P0-T1.md（包括授权补充）、repository_overview.md、P0-T1 ADR、baseline runner、当前 SFIR/前端/恢复层与相关测试。上游正式产物均存在；入口、主线 25 脚本及归档模块与实际仓库一致，无须修正 overview。P0-T1 历史 24/2 不是最新 baseline，授权补充后 26/0 已复现。
+
+P0-T1 existing modules/tests/unsupported/known issues 逐项检查见 capability map 末表。当前 framework 仅为模板，未当作已冻结接口。仓库 Markdown/text 未找到四项 P2 Task 定义；该交接缺项明确保留，未以猜测完成专项验收。
+
+起始已有大量删除/迁移、6 个主线文件修改及未跟踪 docs；全部保留。before Git 状态/diff 位于 `P0-T2_evidence/`。未使用旧聊天、未恢复旧源码、未启动子代理。
+
+## Baseline 与测试
+
+从仓库根执行：
+
+```bash
+.venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py docs/task_reports/P0-T2_evidence/baseline
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T2_evidence/probe_capabilities.py
+.venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py docs/task_reports/P0-T2_evidence/final
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T2_evidence/probe_capabilities.py /tmp/p0-t2-final-probes.json
+git diff --check
+```
+
+修改前和收尾均 **26 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**。25 主线入口覆盖当前 Phase 已完成 P0-T1 及直接依赖的 CFG、MemorySSA/SinkResolver、Solidity/Yul、storage/call/event/revert、SFIR/FactSSA/渲染；归档模块 1 入口（5 unittest）保持原回归范围，但不作为现行能力依据。
+
+新增只读 characterization 探针 6/6 PASS：同一 storage path 的写读版本、不同 key 拼写不统一、key 重定义后同文本仍合并、环境操作数无 FactSSA refs、caller/callvalue 规范化、未恢复 slot 不建立精确 storage binding。保存完整合成输入及最终 SFIR。探针通过仅确认现状，不将缺失能力冻结为正确语义，不构造端到端覆盖或等价率承诺。脚本异常/断言会直接非零退出，没有吞异常。无生产算法变动，无新 benchmark/evaluator/oracle。
+
+## 修改文件与内容
+
+- 新增 `docs/architecture/sfir_capability_map.md`：20 项表示、7 项基础分析、alias 表、三个 Module 需求表、P0-T1 模块/测试/限制回收；各“已有”结论定位实际代码符号。
+- 更新 `PROJECT_STATUS.md`：当前状态、测试摘要、稳定产物、能力限制、交接缺项、Next Allowed Task。
+- 新增本报告。
+- 新增 `docs/task_reports/P0-T2_evidence/`：baseline/final 原始日志与 results.json、只读探针及输出、源码哈希、Git 快照、检查与验收 JSON。
+
+未修改 scripts/、tests/、fixtures、原 P0-T1 证据、oracle、AGENTS、overview 或冻结规则。起始源码修改均属于原工作树，不归本 Task。
+
+## 能力结论
+
+SFIR 基础可复用：函数 Fact CFG、真假边/Guard、dominance/control_dependencies、FactSSA、到达定义、已恢复的 StateRead/StateWrite/location、调用/事件/返回/失败表达均已存在。
+
+storage alias 为部分能力：Solidity 精确引用、Yul slot/hash/byte/path 模式和相同恢复路径的身份已支持；最终 binding 依 access 文本，不提供统一 must/may/no-alias，不能保证 key SSA 身份、同址参数、unknown writes/call effects 下的 state dependency。memory 指针 alias 不能冒充 storage equivalence。
+
+其他缺口包括环境来源 refs、可求解表达式/局部 SMT、feasible control、sink-guided slicing、事务更新/回滚和 canonical transition 比较。现有顺序基础有 CFG 证明，但 Yul 块内语句位置与 semantic_id tie fallback 不满足完整顺序证据要求。这些只记录，不在本 Task 修复。
+
+## 机器可读产物
+
+`P0-T2_evidence/` 下：
+
+- `baseline/results.json`、`final/results.json` 及日志：逐入口命令、状态、退出码、耗时；runner 仍使用原 P0-T1 版本和 300 秒限时。
+- `probe_capabilities.py`、`capability_probes.json`：可复现的 6 项观察及完整最终 SFIR。
+- `source_hashes_before.json`、`verification.json`：源码/测试内容不变、链接/矩阵范围、前后结果与 Git 范围核对。
+- `git_status_before.txt`、`git_diff_before.txt`、`git_status_after.txt`、`git_diff_after.txt`：保留工作树现场。
+- `acceptance.json`：逐条专项验收与 PARTIAL 原因。
+
+没有开展 benchmark/evaluator/全 TOKENS 实验；不只在聊天中报测试数字。
+
+## 专项验收
+
+| 条目 | 结果 | 证据 |
+| --- | --- | --- |
+| 三个 Module 所需能力均逐项映射 | PASS | capability map 三个 Module 表、20 项语义与7项分析矩阵 |
+| 每个已支持结论能定位实际代码 | PASS | capability map 代码索引及每行函数；现行全量回归和 probes |
+| 每个缺失项有明确描述 | PASS | 矩阵缺口列、Alias 表；未将未测能力判支持 |
+| Alias/Storage Address Equivalence 对 ERC-20 是否足够有明确结论 | PASS | 明确不足；IR `_storage_location_binding/_build_fact_ssa`、ATOM、OVER、MEM 与探针 |
+| alias 不足对 P2-T2/P2-T4/P2-T6/P2-T8 的具体影响 | FAIL | Repository 缺四项职责定义；只记录条件化风险，不能伪造编号映射 |
+| 不因“可能有”判支持 | PASS | 分层表示、有限模式与完整分析区分；环境/alias/排序的代码和反例证据 |
+| 必要回归通过、无未解释 regression | PASS | baseline/final 均26/26；6/6 probes |
+| 工作树范围受控、交接写回 | PASS | source hashes、Git diff/status、verification.json；PROJECT_STATUS 和本报告 |
+| 冻结接口变更/ADR | N/A | 未变更接口、语义、实验规则 |
+| benchmark/evaluator/SMT UNKNOWN/TIMEOUT 实验 | N/A | 未开展；缺 solver，不伪称测试通过 |
+
+## 偏差、unsupported 与限制
+
+无实现范围偏差、无 ADR。唯一未满足的验收是编号级任务影响；原始要求没有给职责、上游仓库也没有，不将其伪装为已完成。
+
+独立 Yul 不支持、未知 storage/memory、有限 opaque 规则、Slither fallback/timeout、MemorySSA truncation/widening、最终诊断传播不完备、未锁环境/无统一 CI 与未冻结实验规则均显式保留。此次未改变任何 unsupported/unknown 判定或吞掉异常。
+
+## 稳定交接与下一步注意事项
+
+以 capability map、上述代码定位和机器证据为 P0-T3 的能力输入。先由用户补充 P2 四项职责，再完成 P0-T2 alias 编号影响表及专项验收；不得直接把 PARTIAL 当 COMPLETE。后续缺口安排和框架/实施计划冻结由 P0-T3 负责，不在本 Task 设计完整方案。
+
+必须复用现行 SFIR、MemorySSA 与 SinkResolver；不能因 alias 不足就另建整套 IR，也不能依 source order/节点编号推断执行顺序或把替代前的 effect 再次计为语义行为。
+
+**Next Allowed Task：补齐 P0-T2 编号级交接与验收；不自动进入 P0-T3。**
+
+## 独立问题审查：STORAGE-ADDR-EQ-001
+
+本次仅按用户指定审查 Storage Address Equivalence，未重跑完整 capability review、未修改生产逻辑。
+
+[STORAGE-ADDR-EQ-001_review.md](STORAGE-ADDR-EQ-001_review.md)：**Review Status: PARTIAL**。指定 `scripts/semantic_ir/` 源文件当前已删除，仅有缓存；未定位到 LocationNode、ExpressionArena、ValueRecord、_location()、build_with_bindings()、value_aliases。归档 SemanticFunction 与现行字典式 FactSSA 均不能替代指定模型。
+
+目标测试导入失败（ModuleNotFoundError，退出 1）；直接相关现行 SFIR 测试入口 27/27 PASS，但不代表目标审查通过。[机器证据](STORAGE-ADDR-EQ-001_evidence/results.json) 保存完整目录清单、命令、错误与日志。报告逐项列出 A–H、access-point/context/state-derived key 等未确认项；没有将 direct copy/copy chain 或 LocationNode equality 预判为失败。
+
+需要正确版本源码/路径及对应测试才能继续该问题。此独立 review 不重裁前文 P0-T2 历史专项验收，不进入后续 Task。

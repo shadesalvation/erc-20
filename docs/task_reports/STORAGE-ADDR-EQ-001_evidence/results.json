@@ -1,0 +1,73 @@
+{
+  "problem_id": "STORAGE-ADDR-EQ-001",
+  "review_status": "PARTIAL",
+  "target_directory_files": [
+    {
+      "path": "scripts/semantic_ir/__pycache__/__init__.cpython-312.pyc",
+      "bytes": 445
+    },
+    {
+      "path": "scripts/semantic_ir/__pycache__/builder.cpython-312.pyc",
+      "bytes": 13497
+    },
+    {
+      "path": "scripts/semantic_ir/__pycache__/exporter.cpython-312.pyc",
+      "bytes": 7323
+    },
+    {
+      "path": "scripts/semantic_ir/__pycache__/expressions.cpython-312.pyc",
+      "bytes": 8436
+    },
+    {
+      "path": "scripts/semantic_ir/__pycache__/model.cpython-312.pyc",
+      "bytes": 19781
+    },
+    {
+      "path": "scripts/semantic_ir/__pycache__/tests.cpython-312.pyc",
+      "bytes": 8361
+    }
+  ],
+  "checks": [
+    {
+      "id": "target_tests",
+      "command": [
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.semantic_ir.tests"
+      ],
+      "returncode": 1,
+      "status": "FAIL",
+      "log": "target_tests.log"
+    },
+    {
+      "id": "related_current_sfir_tests",
+      "command": [
+        ".venv/bin/python",
+        "-B",
+        "scripts/s_seir/s_seir_semantic_fact_ir_tests.py"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "log": "related_current_sfir_tests.log"
+    },
+    {
+      "id": "target_symbol_search",
+      "command": [
+        "rg",
+        "-n",
+        "class (LocationNode|ExpressionArena|ValueRecord|SemanticFunction)|def (_location|build_with_bindings)\\b|value_aliases",
+        "scripts",
+        "--glob",
+        "*.py"
+      ],
+      "returncode": 0,
+      "status": "MATCHES_RECORDED",
+      "log": "target_symbol_search.log",
+      "interpretation": "Only archived SemanticFunction found; requested target classes/methods not found in source."
+    }
+  ],
+  "note": "Missing target source is not an unsupported-capability finding. Current SFIR test success is not target implementation coverage."
+}

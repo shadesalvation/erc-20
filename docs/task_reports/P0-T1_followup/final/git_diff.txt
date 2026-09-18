@@ -1,0 +1,301 @@
+diff --git a/scripts/s_seir/s_seir_control_builder.py b/scripts/s_seir/s_seir_control_builder.py
+index eedfb2e..81cfe72 100644
+--- a/scripts/s_seir/s_seir_control_builder.py
++++ b/scripts/s_seir/s_seir_control_builder.py
+@@ -799,17 +799,31 @@ class ControlBuilder:
+         base_name = str(non_ssa) if non_ssa is not None else str(getattr(value, "name", value))
+         text = str(value)
+         value_type = getattr(value, "type", None)
++        # Slither keeps declared constants as StateIRVariable SSA wrappers.
++        # The declaration flag, not the wrapper's class, determines whether
++        # consuming the operand is a persistent-state read.
++        declared_constant = kind in {"StateIRVariable", "StateVariable"} and bool(
++            getattr(value, "is_constant", False)
++        )
+         item = {
+             "kind": kind,
+             "text": text,
+             "name": str(getattr(value, "name", text)),
+             "base_name": base_name,
+             "type": str(value_type) if value_type is not None else None,
+-            "is_state": kind in {"StateIRVariable", "StateVariable"},
++            "is_state": kind in {"StateIRVariable", "StateVariable"} and not declared_constant,
+             "is_reference": "ReferenceVariable" in kind,
+-            "is_constant": kind == "Constant",
++            "is_constant": kind == "Constant" or declared_constant,
+             "is_solidity_builtin": kind in {"SolidityVariable", "SolidityVariableComposed"},
+         }
++        if declared_constant:
++            initializer = getattr(value, "expression", None)
++            item["constant_declaration"] = {
++                "name": base_name,
++                "canonical_name": str(getattr(value, "canonical_name", base_name)),
++                "type": item["type"],
++                "initializer": str(initializer) if initializer is not None else None,
++            }
+         # A function value used by an InternalDynamicCall is not an ordinary
+         # identifier: Slither exposes its resolved declaration on the value
+         # itself. Preserve that proof so the final program linker need not
+diff --git a/scripts/s_seir/s_seir_semantic_fact_bridge.py b/scripts/s_seir/s_seir_semantic_fact_bridge.py
+index e21b651..6f72e03 100644
+--- a/scripts/s_seir/s_seir_semantic_fact_bridge.py
++++ b/scripts/s_seir/s_seir_semantic_fact_bridge.py
+@@ -88,7 +88,11 @@ class SemanticFactBridge:
+         )
+         for fact in facts:
+             fact["function_id"] = semantic_input.function_id
+-            anchor = self._sink_cfg_node(fact, effect_by_id, effect_cfg_nodes)
++            # Completed lifters now carry the endpoint in semantic provenance
++            # and deliberately strip effect transport. Use that proved anchor
++            # before the legacy effect lookup; cfg_nodes is only evidence.
++            anchor = str((fact.get("semantic_provenance") or {}).get("anchor_cfg_node") or "")
++            anchor = anchor or self._sink_cfg_node(fact, effect_by_id, effect_cfg_nodes)
+             if anchor:
+                 fact["anchor_cfg_node"] = anchor
+             cfg_node = self._primary_cfg_node(fact)
+diff --git a/scripts/s_seir/s_seir_semantic_fact_bridge_tests.py b/scripts/s_seir/s_seir_semantic_fact_bridge_tests.py
+index ecf8626..8802ef3 100644
+--- a/scripts/s_seir/s_seir_semantic_fact_bridge_tests.py
++++ b/scripts/s_seir/s_seir_semantic_fact_bridge_tests.py
+@@ -123,8 +123,37 @@ def test_require_keeps_lifted_guard_separate_from_revert_path() -> None:
+     assert {item["path_condition"] for item in result} == {MAX_PATH, ORDINARY_PATH}
+ 
+ 
++def test_semantic_provenance_anchors_without_effect_transport() -> None:
++    control = {
++        "blocks": [block("slot", 90), block("read", 50), block("write", 10), block("event", 2)],
++        "edges": [
++            {"from": "slot", "to": "read", "kind": "next"},
++            {"from": "read", "to": "write", "kind": "next"},
++            {"from": "write", "to": "event", "kind": "next"},
++        ],
++    }
++    facts = []
++    for endpoint, kind in (("event", "EventEmit"), ("write", "StateWrite"), ("read", "StateRead")):
++        facts.append({
++            "fact_id": endpoint, "kind": kind, "source_lang": "yul",
++            "cfg_nodes": ["slot", endpoint],
++            "semantic_provenance": {"anchor_cfg_node": endpoint},
++            "order": {"operation_order": 0},
++        })
++    result = SemanticFactBridge().merge_function_facts(FunctionSemanticInput("Token.f()", control), [], facts)
++    assert [item["fact_id"] for item in result] == ["read", "write", "event"]
++    assert [item["anchor_cfg_node"] for item in result] == ["read", "write", "event"]
++    assert [item["cfg_predecessor_blocks"] for item in result] == [["slot"], ["read"], ["write"]]
++    assert result[1]["control_predecessors"] == ["read"]
++    assert result[2]["control_predecessors"] == ["write"]
++    assert all(item["cfg_nodes"][0] == "slot" for item in result)
++    assert all("effects" not in item.get("evidence", {}) for item in result)
++
++
+ if __name__ == "__main__":
+     test_path_instances_remain_siblings_and_successor_is_split()
+     print("PASS test_path_instances_remain_siblings_and_successor_is_split")
+     test_require_keeps_lifted_guard_separate_from_revert_path()
+     print("PASS test_require_keeps_lifted_guard_separate_from_revert_path")
++    test_semantic_provenance_anchors_without_effect_transport()
++    print("PASS test_semantic_provenance_anchors_without_effect_transport")
+diff --git a/scripts/s_seir/s_seir_solidity_atomic_ops_tests.py b/scripts/s_seir/s_seir_solidity_atomic_ops_tests.py
+index 8a007a8..324607d 100644
+--- a/scripts/s_seir/s_seir_solidity_atomic_ops_tests.py
++++ b/scripts/s_seir/s_seir_solidity_atomic_ops_tests.py
+@@ -14,7 +14,10 @@ for candidate in (SCRIPT_ROOT / "legacy_yul", SCRIPT_ROOT / "s_seir"):
+ 
+ from assembly_ast_cfg import discover_solc
+ from s_seir_pipeline import build_sseir
+-from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload
++from s_seir_semantic_fact_adapter import (
++    build_function_level_semantic_fact_payload,
++    build_function_level_semantic_fact_ir_payload,
++)
+ 
+ 
+ SAMPLES = {
+@@ -94,7 +97,19 @@ def run() -> None:
+     assert allowance_write["semantic"]["location"] == allowance_location["semantic"]["location"]
+     assert allowance_location["fact_role"] == "support"
+     assert allowance_write["fact_role"] == "effect"
+-    assert allowance_write["semantic"]["value"] == "value"
++    # ADR P0-T1-001: StateWrite consumes the already evaluated SSA value.
++    assert allowance_write["semantic"]["value"] == allowance_write["rvalue"] == "value_1"
++    approve_ir = build_function_level_semantic_fact_ir_payload([approve])["functions"][0]
++    final_writes = [node for node in approve_ir["semantic_nodes"] if node["kind"] == "StateWrite"]
++    assert len(final_writes) == 1
++    final_write = final_writes[0]
++    assert final_write["semantic"]["value"] == final_write["rvalue"] == "value_1"
++    assert final_write["semantic"]["location"] == allowance_location["semantic"]["location"]
++    value_read = next(read for read in final_write["fact_ssa"]["reads"] if read["value"] == "value_1")
++    value_definition = next(definition for definition in approve_ir["fact_ssa"]["definitions"]
++                            if definition["version"] == value_read["version"])
++    assert value_definition["definition_kind"] == "entry"
++    assert value_definition["base_name"] == "value"
+     print("PASS storage location: Solidity mapping writes use a canonical location fact")
+ 
+     transfer_from_facts = [fact for fact in facts if fact.get("function") == "transferFrom"]
+diff --git a/scripts/s_seir/s_seir_solidity_semantic_lifter.py b/scripts/s_seir/s_seir_solidity_semantic_lifter.py
+index f0d033f..6b59373 100644
+--- a/scripts/s_seir/s_seir_solidity_semantic_lifter.py
++++ b/scripts/s_seir/s_seir_solidity_semantic_lifter.py
+@@ -565,6 +565,16 @@ class SoliditySemanticLifter:
+                 "unmodeled_reason": "unknown_slithir_operation_kind",
+                 "slithir_kind": atom.get("kind"),
+             })
++        # Named compile-time operands have declarations, not runtime SSA
++        # definitions. Retain their initializer as evidence without evaluating
++        # it or treating the declaration as a persistent-state dependency.
++        constant_operands = []
++        for value in atom.get("read") or []:
++            declaration = value.get("constant_declaration") if isinstance(value, dict) else None
++            if declaration and declaration not in constant_operands:
++                constant_operands.append(dict(declaration))
++        if constant_operands:
++            semantic["constant_operands"] = constant_operands
+         return _clean(semantic)
+ 
+     @staticmethod
+@@ -606,6 +616,8 @@ class SoliditySemanticLifter:
+             return ""
+         if not isinstance(value, dict):
+             return str(value)
++        if value.get("constant_declaration"):
++            return str(value["constant_declaration"]["name"])
+         text = str(value.get("text") or value.get("name") or value.get("base_name") or "")
+         if value.get("is_constant") and text in {"True", "False"}:
+             return text.lower()
+diff --git a/scripts/s_seir/s_seir_solidity_slithir_tests.py b/scripts/s_seir/s_seir_solidity_slithir_tests.py
+index a65dd0b..346158c 100644
+--- a/scripts/s_seir/s_seir_solidity_slithir_tests.py
++++ b/scripts/s_seir/s_seir_solidity_slithir_tests.py
+@@ -12,7 +12,10 @@ for candidate in (ROOT / "legacy_yul", ROOT / "s_seir"):
+ 
+ from assembly_ast_cfg import discover_solc
+ from s_seir_pipeline import build_sseir
+-from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload
++from s_seir_semantic_fact_adapter import (
++    build_function_level_semantic_fact_payload,
++    build_function_level_semantic_fact_ir_payload,
++)
+ 
+ 
+ SOURCE = """pragma solidity ^0.8.26;
+@@ -70,6 +73,11 @@ contract MixedYulCase {
+ 
+ contract ConstantContextCase {
+     address internal constant FIXED = address(0x1234);
++    string internal constant LABEL = "fixed";
++
++    function label() external pure returns (string memory) {
++        return LABEL;
++    }
+ 
+     function guarded(address target) external pure returns (bool result) {
+         if (target == FIXED) {
+@@ -78,6 +86,16 @@ contract ConstantContextCase {
+     }
+ }
+ 
++contract StateContextCase {
++    address internal FIXED;
++
++    function guarded(address target) external view returns (bool result) {
++        if (target == FIXED) {
++            assembly { result := 1 }
++        }
++    }
++}
++
+ contract BoundaryCase {
+     uint256 private stored;
+ 
+@@ -167,6 +185,53 @@ def semantic_facts(facts, contract: str, function: str, kind: str | None = None)
+     ]
+ 
+ 
++def assert_guarded_yul_paths(function) -> dict:
++    """Check the guard at the final CFG boundary, including its negative path."""
++    final = build_function_level_semantic_fact_ir_payload([function])["functions"][0]
++    nodes = final["semantic_nodes"]
++    predicates = [node for node in nodes if node["kind"] == "BranchCondition"]
++    assert len(predicates) == 1
++    predicate = predicates[0]
++    assert predicate["semantic"]["predicate"] == "(target == FIXED)"
++    assignments = [node for node in nodes if node["source_lang"] == "yul" and node.get("lvalue") == "result"]
++    assert len(assignments) == 1
++    assignment = assignments[0]
++    assert assignment["rvalue"] == "1"
++    branch_block = predicate["placement"]["anchor_block"]
++    assignment_block = assignment["placement"]["anchor_block"]
++    edges = final["fact_cfg"]["edges"]
++    branch_edges = [edge for edge in edges if edge["from"] == branch_block]
++    assert len(branch_edges) == 2
++    true_edge = next(edge for edge in branch_edges if edge["kind"] == "true")
++    false_edge = next(edge for edge in branch_edges if edge["kind"] == "false")
++    assert true_edge["guard"] == "target == FIXED"
++    assert false_edge["guard"] == "!(target == FIXED)"
++
++    def reachable(start: str, target: str) -> bool:
++        pending, seen = [start], set()
++        while pending:
++            block = pending.pop()
++            if block == target:
++                return True
++            if block not in seen:
++                seen.add(block)
++                pending.extend(edge["to"] for edge in edges if edge["from"] == block)
++        return False
++
++    assert reachable(true_edge["to"], assignment_block)
++    assert not reachable(false_edge["to"], assignment_block)
++    returned = next(node for node in nodes if node["kind"] == "Return")
++    assert reachable(assignment_block, returned["placement"]["anchor_block"])
++    assert reachable(false_edge["to"], returned["placement"]["anchor_block"])
++    witness = next(item for item in final["path_witnesses"] if item["semantic_id"] == assignment["semantic_id"])
++    assert witness["guards"] == ["target == FIXED"]
++    assert true_edge["edge_id"] in witness["control_edge_ids"]
++    comparison = next(node for node in nodes if node.get("lvalue") == predicate["rvalue"])
++    assert any(edge["kind"] == "data" and edge["from"] == comparison["semantic_id"]
++               and edge["to"] == predicate["semantic_id"] for edge in final["semantic_edges"])
++    return final
++
++
+ def run() -> None:
+     solc = discover_solc(None)
+     assert solc, "solc is required"
+@@ -203,7 +268,36 @@ def run() -> None:
+     constant_context = next(fn for fn in functions if fn.contract == "ConstantContextCase" and fn.function == "guarded")
+     assert all(item.attrs.get("language") != "solidity" for item in constant_context.effects)
+     assert not any(item.attrs.get("state_variable") == "FIXED" for item in constant_context.effects)
+-    assert any("FIXED" in str(item.get("condition")) for item in semantic_facts(facts, "ConstantContextCase", "guarded"))
++    # ADR P0-T1-001: a guard need not be copied onto every compatibility fact.
++    constant_ir = assert_guarded_yul_paths(constant_context)
++    assert not any(node["kind"] == "StateRead" for node in constant_ir["semantic_nodes"])
++    constant_comparison = next(node for node in constant_ir["semantic_nodes"]
++                               if node.get("semantic", {}).get("operator") == "==")
++    assert constant_comparison["rvalue"] == "target_1 == FIXED"
++    assert constant_comparison["reads"] == ["target_1"]
++    assert [read["value"] for read in constant_comparison["fact_ssa"]["reads"]] == ["target_1"]
++    assert constant_comparison["semantic"]["constant_operands"] == [{
++        "name": "FIXED", "canonical_name": "ConstantContextCase.FIXED",
++        "type": "address", "initializer": "address(0x1234)",
++    }]
++    label = next(fn for fn in functions if fn.contract == "ConstantContextCase" and fn.function == "label")
++    label_ir = build_function_level_semantic_fact_ir_payload([label])["functions"][0]
++    assert not any(node["kind"] == "StateRead" for node in label_ir["semantic_nodes"])
++    label_return = next(node for node in label_ir["semantic_nodes"] if node["kind"] == "Return")
++    assert label_return["rvalue"] == "LABEL"  # A declaration reference, not the literal string "LABEL".
++    assert label_return["fact_ssa"]["reads"] == []
++    assert label_return["semantic"]["constant_operands"][0]["canonical_name"] == "ConstantContextCase.LABEL"
++
++    # The same spelling on a mutable declaration must still read storage.
++    state_context = next(fn for fn in functions if fn.contract == "StateContextCase" and fn.function == "guarded")
++    state_ir = assert_guarded_yul_paths(state_context)
++    state_reads = [node for node in state_ir["semantic_nodes"] if node["kind"] == "StateRead"]
++    assert len(state_reads) == 1 and state_reads[0]["rvalue"] == "FIXED"
++    state_comparison = next(node for node in state_ir["semantic_nodes"]
++                            if node.get("semantic", {}).get("operator") == "==")
++    assert "FIXED_1" in state_comparison["reads"]
++    assert any(edge["kind"] == "data" and edge["from"] == state_reads[0]["semantic_id"]
++               and edge["to"] == state_comparison["semantic_id"] for edge in state_ir["semantic_edges"])
+ 
+     guarded = next(fn for fn in functions if fn.contract == "BoundaryCase" and fn.function == "guarded")
+     boundary = next(iter(guarded.control["assembly_boundaries"].values()))

@@ -123,8 +123,37 @@ def test_require_keeps_lifted_guard_separate_from_revert_path() -> None:
     assert {item["path_condition"] for item in result} == {MAX_PATH, ORDINARY_PATH}
 
 
+def test_semantic_provenance_anchors_without_effect_transport() -> None:
+    control = {
+        "blocks": [block("slot", 90), block("read", 50), block("write", 10), block("event", 2)],
+        "edges": [
+            {"from": "slot", "to": "read", "kind": "next"},
+            {"from": "read", "to": "write", "kind": "next"},
+            {"from": "write", "to": "event", "kind": "next"},
+        ],
+    }
+    facts = []
+    for endpoint, kind in (("event", "EventEmit"), ("write", "StateWrite"), ("read", "StateRead")):
+        facts.append({
+            "fact_id": endpoint, "kind": kind, "source_lang": "yul",
+            "cfg_nodes": ["slot", endpoint],
+            "semantic_provenance": {"anchor_cfg_node": endpoint},
+            "order": {"operation_order": 0},
+        })
+    result = SemanticFactBridge().merge_function_facts(FunctionSemanticInput("Token.f()", control), [], facts)
+    assert [item["fact_id"] for item in result] == ["read", "write", "event"]
+    assert [item["anchor_cfg_node"] for item in result] == ["read", "write", "event"]
+    assert [item["cfg_predecessor_blocks"] for item in result] == [["slot"], ["read"], ["write"]]
+    assert result[1]["control_predecessors"] == ["read"]
+    assert result[2]["control_predecessors"] == ["write"]
+    assert all(item["cfg_nodes"][0] == "slot" for item in result)
+    assert all("effects" not in item.get("evidence", {}) for item in result)
+
+
 if __name__ == "__main__":
     test_path_instances_remain_siblings_and_successor_is_split()
     print("PASS test_path_instances_remain_siblings_and_successor_is_split")
     test_require_keeps_lifted_guard_separate_from_revert_path()
     print("PASS test_require_keeps_lifted_guard_separate_from_revert_path")
+    test_semantic_provenance_anchors_without_effect_transport()
+    print("PASS test_semantic_provenance_anchors_without_effect_transport")

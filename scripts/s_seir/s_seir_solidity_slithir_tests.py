@@ -12,7 +12,10 @@ for candidate in (ROOT / "legacy_yul", ROOT / "s_seir"):
 
 from assembly_ast_cfg import discover_solc
 from s_seir_pipeline import build_sseir
-from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload
+from s_seir_semantic_fact_adapter import (
+    build_function_level_semantic_fact_payload,
+    build_function_level_semantic_fact_ir_payload,
+)
 
 
 SOURCE = """pragma solidity ^0.8.26;
@@ -70,8 +73,23 @@ contract MixedYulCase {
 
 contract ConstantContextCase {
     address internal constant FIXED = address(0x1234);
+    string internal constant LABEL = "fixed";
+
+    function label() external pure returns (string memory) {
+        return LABEL;
+    }
 
     function guarded(address target) external pure returns (bool result) {
+        if (target == FIXED) {
+            assembly { result := 1 }
+        }
+    }
+}
+
+contract StateContextCase {
+    address internal FIXED;
+
+    function guarded(address target) external view returns (bool result) {
         if (target == FIXED) {
             assembly { result := 1 }
         }
@@ -167,6 +185,53 @@ def semantic_facts(facts, contract: str, function: str, kind: str | None = None)
     ]
 
 
+def assert_guarded_yul_paths(function) -> dict:
+    """Check the guard at the final CFG boundary, including its negative path."""
+    final = build_function_level_semantic_fact_ir_payload([function])["functions"][0]
+    nodes = final["semantic_nodes"]
+    predicates = [node for node in nodes if node["kind"] == "BranchCondition"]
+    assert len(predicates) == 1
+    predicate = predicates[0]
+    assert predicate["semantic"]["predicate"] == "(target == FIXED)"
+    assignments = [node for node in nodes if node["source_lang"] == "yul" and node.get("lvalue") == "result"]
+    assert len(assignments) == 1
+    assignment = assignments[0]
+    assert assignment["rvalue"] == "1"
+    branch_block = predicate["placement"]["anchor_block"]
+    assignment_block = assignment["placement"]["anchor_block"]
+    edges = final["fact_cfg"]["edges"]
+    branch_edges = [edge for edge in edges if edge["from"] == branch_block]
+    assert len(branch_edges) == 2
+    true_edge = next(edge for edge in branch_edges if edge["kind"] == "true")
+    false_edge = next(edge for edge in branch_edges if edge["kind"] == "false")
+    assert true_edge["guard"] == "target == FIXED"
+    assert false_edge["guard"] == "!(target == FIXED)"
+
+    def reachable(start: str, target: str) -> bool:
+        pending, seen = [start], set()
+        while pending:
+            block = pending.pop()
+            if block == target:
+                return True
+            if block not in seen:
+                seen.add(block)
+                pending.extend(edge["to"] for edge in edges if edge["from"] == block)
+        return False
+
+    assert reachable(true_edge["to"], assignment_block)
+    assert not reachable(false_edge["to"], assignment_block)
+    returned = next(node for node in nodes if node["kind"] == "Return")
+    assert reachable(assignment_block, returned["placement"]["anchor_block"])
+    assert reachable(false_edge["to"], returned["placement"]["anchor_block"])
+    witness = next(item for item in final["path_witnesses"] if item["semantic_id"] == assignment["semantic_id"])
+    assert witness["guards"] == ["target == FIXED"]
+    assert true_edge["edge_id"] in witness["control_edge_ids"]
+    comparison = next(node for node in nodes if node.get("lvalue") == predicate["rvalue"])
+    assert any(edge["kind"] == "data" and edge["from"] == comparison["semantic_id"]
+               and edge["to"] == predicate["semantic_id"] for edge in final["semantic_edges"])
+    return final
+
+
 def run() -> None:
     solc = discover_solc(None)
     assert solc, "solc is required"
@@ -203,7 +268,36 @@ def run() -> None:
     constant_context = next(fn for fn in functions if fn.contract == "ConstantContextCase" and fn.function == "guarded")
     assert all(item.attrs.get("language") != "solidity" for item in constant_context.effects)
     assert not any(item.attrs.get("state_variable") == "FIXED" for item in constant_context.effects)
-    assert any("FIXED" in str(item.get("condition")) for item in semantic_facts(facts, "ConstantContextCase", "guarded"))
+    # ADR P0-T1-001: a guard need not be copied onto every compatibility fact.
+    constant_ir = assert_guarded_yul_paths(constant_context)
+    assert not any(node["kind"] == "StateRead" for node in constant_ir["semantic_nodes"])
+    constant_comparison = next(node for node in constant_ir["semantic_nodes"]
+                               if node.get("semantic", {}).get("operator") == "==")
+    assert constant_comparison["rvalue"] == "target_1 == FIXED"
+    assert constant_comparison["reads"] == ["target_1"]
+    assert [read["value"] for read in constant_comparison["fact_ssa"]["reads"]] == ["target_1"]
+    assert constant_comparison["semantic"]["constant_operands"] == [{
+        "name": "FIXED", "canonical_name": "ConstantContextCase.FIXED",
+        "type": "address", "initializer": "address(0x1234)",
+    }]
+    label = next(fn for fn in functions if fn.contract == "ConstantContextCase" and fn.function == "label")
+    label_ir = build_function_level_semantic_fact_ir_payload([label])["functions"][0]
+    assert not any(node["kind"] == "StateRead" for node in label_ir["semantic_nodes"])
+    label_return = next(node for node in label_ir["semantic_nodes"] if node["kind"] == "Return")
+    assert label_return["rvalue"] == "LABEL"  # A declaration reference, not the literal string "LABEL".
+    assert label_return["fact_ssa"]["reads"] == []
+    assert label_return["semantic"]["constant_operands"][0]["canonical_name"] == "ConstantContextCase.LABEL"
+
+    # The same spelling on a mutable declaration must still read storage.
+    state_context = next(fn for fn in functions if fn.contract == "StateContextCase" and fn.function == "guarded")
+    state_ir = assert_guarded_yul_paths(state_context)
+    state_reads = [node for node in state_ir["semantic_nodes"] if node["kind"] == "StateRead"]
+    assert len(state_reads) == 1 and state_reads[0]["rvalue"] == "FIXED"
+    state_comparison = next(node for node in state_ir["semantic_nodes"]
+                            if node.get("semantic", {}).get("operator") == "==")
+    assert "FIXED_1" in state_comparison["reads"]
+    assert any(edge["kind"] == "data" and edge["from"] == state_reads[0]["semantic_id"]
+               and edge["to"] == state_comparison["semantic_id"] for edge in state_ir["semantic_edges"])
 
     guarded = next(fn for fn in functions if fn.contract == "BoundaryCase" and fn.function == "guarded")
     boundary = next(iter(guarded.control["assembly_boundaries"].values()))

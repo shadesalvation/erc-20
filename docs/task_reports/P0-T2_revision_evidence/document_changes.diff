@@ -1,0 +1,385 @@
+--- PROJECT_STATUS.md (before revision)
++++ PROJECT_STATUS.md
+@@ -2,67 +2,56 @@
+ 
+ ## Current Task
+ 
+-**STORAGE-ADDR-EQ-001 — 独立修复：PARTIAL（2026-09-18）**。
++**P0-T2 — SFIR Capability Map：COMPLETE（修订要求增量收尾，2026-09-18）**。
+ 
+-本次唯一任务为 Storage Address Equivalence 修复。[修复报告](docs/task_reports/STORAGE-ADDR-EQ-001.md) 记录最小核对与阻塞：输入 review 实为 PARTIAL，确认的是目标源码缺失，未确认算法 failure；当前 `scripts/semantic_ir/` 仍仅有缓存。目标 baseline 为已有 ModuleNotFoundError，现行 SFIR 相关回归 27/27 PASS；[原始输出](docs/task_reports/STORAGE-ADDR-EQ-001_repair_evidence/baseline.json)。未实现 relation 或新增替代模型，未恢复已有删除，生产与测试代码未变。已请求正确源码路径/版本；取得前停止，不执行其他任务。
++保留原 20 项语义表示、7 项基础分析与三个 Module 的代码/测试盘点，补齐 **Feasible Control / Guard、Definition Flow、Value Flow、Sink Dependency、Transition Reconstruction** 五类能力，以及 alias 对四类状态依赖分析的具体影响和 G1–G8 最小补足边界。未实现缺失功能，未改变现行接口、实验契约或 oracle。
+ 
+-以下 P0-T2 与 scoped review 内容为历史记录，不是本次待执行任务。
++按用户修订要求，盘点不再依赖未来 Task 编号；能力不足本身是有效结论，不是盘点失败。专项验收全部 PASS（不适用项 N/A），必要测试通过，无未解释 regression，交接已落盘。P0-T1 仍为 COMPLETE。
+ 
+-**P0-T2 — SFIR Capability Map：PARTIAL（2026-09-18）**。
+-
+-已完成当前 SFIR 的 20 项语义表示、7 项基础分析、三个研究 Module 输入需求和 Alias / Storage Address Equivalence 能力盘点。只新增文档与只读能力探针，没有修改生产代码、既有测试或 oracle。
+-
+-尚缺专项验收所指定 **P2-T2 / P2-T4 / P2-T6 / P2-T8 的名称/职责**：Repository 未提供定义，已向用户请求，不能自行假设编号对应分析。因此编号级 alias 影响验收为 FAIL，不能标 COMPLETE。IMPLEMENTATION_PLAN.md 在 P0-T3 创建；其缺失本身不作为阻塞理由。
+-
+-P0-T1 仍为 COMPLETE（含授权 baseline 修复），历史报告和证据保持。Repository 工作树是唯一正式状态；任务开始前已有删除、迁移、源码/测试修改及未跟踪文件全部保留。
+-
+-## Current Scoped Review — STORAGE-ADDR-EQ-001
+-
+-用户最新指定仅做 Storage Address Equivalence 独立 review；[报告](docs/task_reports/STORAGE-ADDR-EQ-001_review.md) 状态 **PARTIAL**。`scripts/semantic_ir/` 当前仅剩缓存，指定 LocationNode/ExpressionArena/ValueRecord/build_with_bindings 实现未找到，必查行为证据不足。未将现行 FactSSA 或归档旧模型替代为目标，也未实现修复。
+-
+-目标测试模块导入失败；直接相关现行 SFIR 回归 27/27 PASS。[本次证据](docs/task_reports/STORAGE-ADDR-EQ-001_evidence/results.json)。继续此问题需正确源码版本/路径与测试；当前停止，不开始其他问题或下一 Task。下文全量 baseline 与原交接事项为先前 P0-T2 记录，本次未重新裁定。
++仓库主线源码与先前 P0-T2 快照一致，Repository overview 已补记后增的 Task Map、本地 skills 与独立 review/修复记录。既有工作树删除、迁移、源码/测试修改及其他未跟踪文件均保留。
+ 
+ ## Test Baseline
+ 
+-P0-T2 修改前与收尾均 **26 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**：25 个当前主线脚本 + 1 个归档 unittest 模块（内部 5/5），计数单位是入口，不是断言。
++本轮修改前及收尾均 **26 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**：25 个当前主线脚本 + 1 个归档模块（内部 5 个 unittest），计数单位为入口。
+ 
+-新增只读能力探针 **6/6 PASS**，记录实际能力及缺口，不表示缺口已修复，不作为未来实现 oracle。
++只读能力探针 **12/12 PASS**：原 6 项能力观察 + 新增 6 种 sink 的边关系观察；收尾重跑输出一致。PASS 表示缺口被复现，不表示缺失分析已实现或语义等价验证通过。
+ 
+-- [修改前结果](docs/task_reports/P0-T2_evidence/baseline/results.json)
+-- [收尾结果](docs/task_reports/P0-T2_evidence/final/results.json)
+-- [探针输入/完整输出](docs/task_reports/P0-T2_evidence/capability_probes.json)
+-- [验收](docs/task_reports/P0-T2_evidence/acceptance.json)、[范围核对](docs/task_reports/P0-T2_evidence/verification.json)
++- [baseline](docs/task_reports/P0-T2_revision_evidence/baseline/results.json)、[final](docs/task_reports/P0-T2_revision_evidence/final/results.json)
++- [基础能力探针](docs/task_reports/P0-T2_revision_evidence/capability_probes.json)、[sink 影响探针](docs/task_reports/P0-T2_revision_evidence/sink_impacts.json)
++- [专项验收](docs/task_reports/P0-T2_revision_evidence/acceptance.json)、[范围及文档核对](docs/task_reports/P0-T2_revision_evidence/verification.json)
+ 
+ 复现（仓库根）：
+ 
+ ```bash
+ .venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py /tmp/p0-t2-rerun
+-PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T2_evidence/probe_capabilities.py /tmp/p0-t2-capability-probes.json
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T2_revision_evidence/probe_sink_impacts.py /tmp/p0-t2-probes
+ ```
++
++旧 `P0-T2_evidence/` 的 PARTIAL 验收为原请求的历史结果；本轮验收见 `P0-T2_revision_evidence/`，旧结果未覆盖。
+ 
+ ## Stable Artifacts / Existing Interfaces
+ 
+-- [SFIR capability map](docs/architecture/sfir_capability_map.md)：支持/缺失矩阵、实际代码符号、测试依据、alias 结论和三个 Module 缺口；编号级影响待职责补充。
++- [SFIR capability map](docs/architecture/sfir_capability_map.md)：20 项语义、7 项分析、五类后续能力、alias 四类影响及 G1–G8 最小补足边界。
+ - [P0-T2 报告](docs/task_reports/P0-T2.md)、[repository overview](docs/architecture/repository_overview.md)、[P0-T1 报告](docs/task_reports/P0-T1.md)、[AGENTS](AGENTS.md)。
+-- 入口 `scripts/s_seir/s_seir_pipeline.py:build_sseir`、`SemanticFactIRBridge`、schema=`s-seir-semantic-fact-ir/v1` 不变。本次没有新增冻结接口，也没有创建实施计划。
+-- 现有 Fact CFG、FactSSA、reaching definitions、StateRead/StateWrite 与 location 可复用；MemorySSA/SinkResolver 保持恢复层职责。
+-- P0-T1 SSA StateWrite、constant_operands 元数据及 CFG anchor 修复仍在当前工作树，通过回归；[原 ADR](docs/decisions/P0-T1-001-baseline-semantic-contracts.md) 不变。
++- `scripts/s_seir/s_seir_pipeline.py:build_sseir`、`SemanticFactIRBridge`、schema=`s-seir-semantic-fact-ir/v1` 不变；没有新增冻结承诺。Fact CFG、FactSSA、RD、StateRead/StateWrite/location 继续复用。
++- MemorySSA/SinkResolver 保持恢复层职责；P0-T1 SSA StateWrite、constant_operands 及 CFG anchor 修复仍通过回归。
++- P0-T3 尚未冻结新接口/实验契约；`docs/research/TASK_MAP.md` 为导航，不作为本次编号验收或实现授权。
+ 
+ ## Known Limitations
+ 
+-- Final storage identity 主要按恢复出的 access 文本建立；无通用 must/may/no-alias，key-version、不同 key 可能同址、unknown write/call clobber 均不足。**不足以直接宣称完整 ERC-20 状态依赖恢复**。
+-- 环境值 msg.sender/msg.value 有语义表达式，但无专门 FactSSA 环境 read refs；不能当作无输入依赖。
+-- 有符号条件/结构控制与有限 opaque pattern；没有 k-switch AI、局部 SMT refinement、完整 sink slicing 或 Canonical STIR/evaluator。SMT UNKNOWN/TIMEOUT 测试 N/A。
+-- 跨块线性融合有 CFG 依据；Yul 块内 operation_order 使用语句位置，tie 可依 semantic_id，不能将此回退视为已证明执行顺序。无出口 CFG 的 postdom fallback 等复杂控制边界未完整证明。
+-- unknown/opaque、MemorySSA 截断/widening、Slither fallback 存在；最终 diagnostics 并非全部恢复诊断的统一出口。
+-- 独立 Yul object → SFIR 入口缺失；Solidity + inline Yul 路径可用。依赖锁/统一构建/CI 缺失；沿用 P0-T1 环境（Python 3.12.3、solc 0.8.28、Slither 0.11.5、crytic-compile 0.3.11）。
+-- 常量 initializer 元数据未通用求值；恢复层已有有限 slot 常量运算，不等于统一 symbolic expression engine。
+-- 既有样本/输出不是冻结 benchmark；未运行全 TOKENS 实验，不宣称语义等价率。
++- Storage Address Equivalence **不足以完整支撑 ERC-20 状态依赖**。final storage identity 主要按 access 文本；key copy、key 重定义、同址参数、unknown slot/write 与 call clobber 边界仍有缺口。
++- 影响已明确映射到 persistent Reaching Definitions、Storage Load/Store Value Flow Graph、StorageWrite backward slicing、Multi-Sink persistent-state dependency；没有因这些缺口修改算法。
++- msg.sender/msg.value 有语义表达式但无专门 FactSSA 环境 read refs；空 refs 不等于无依赖。
++- 有结构控制、符号条件及有限 opaque normalization；没有完整 feasible-control/局部 SMT、sink-guided slicing 或 Canonical STIR/evaluator。solver UNKNOWN/TIMEOUT 测试 N/A，不能宣称通过。
++- 跨块融合有 CFG 依据；Yul 块内 source-position/semantic_id tie 回退不构成完整顺序证明。无出口 CFG/postdom 及 unknown/opaque/truncation/fallback 的最终诊断传播仍有边界。
++- 独立 Yul object→SFIR 入口缺失；依赖锁/统一构建/CI 缺失。常量元数据不作通用求值；恢复层有限 slot 常量运算不等于 symbolic engine。没有新冻结 benchmark，未运行全 TOKENS 或宣称等价率。
+ 
+ ## Blocked Issues
+ 
+-编号级验收交接缺项：缺少 P2-T2/P2-T4/P2-T6/P2-T8 的正式职责，无法确认 alias 不足具体影响其中哪些分析。其余源码盘点和必要测试已完成，无未解释 regression。
++**P0-T2 无当前阻塞。** 原编号级验收要求已被本次用户修订替代；缺口及最低证据要求已完整记录，补足方案交 P0-T3。
++
++其他历史事项 **STORAGE-ADDR-EQ-001** 的 [独立 review](docs/task_reports/STORAGE-ADDR-EQ-001_review.md) 与 [修复准备](docs/task_reports/STORAGE-ADDR-EQ-001.md) 仍为 PARTIAL：其指定 LocationNode/ExpressionArena/ValueRecord 模型源码缺失，历史目标测试 ModuleNotFoundError 仍未解决。它不是当前 SFIR 入口，不在本轮重新执行或豁免为 PASS，也不据现行 FactSSA 探针裁定该缺失模型的能力。相关报告原样保留；继续该独立问题需要单独授权和正确源码。
+ 
+ ## Next Allowed Task
+ 
+-仅在取得目标 Semantic IR 正确源码后继续 **STORAGE-ADDR-EQ-001**，重新运行该版本相关 baseline 并实现、测试 relation；不自动开展其他 Task。P0-T2 四项职责及 P0-T3 均为历史交接事项，不在本次授权范围。
++**等待用户授权 P0-T3，消费本次能力图与缺口边界后冻结安排。** P0-T2 已完成；本次不自动开始 P0-T3，不顺手实现 alias 或其他缺失能力。
+--- docs/architecture/sfir_capability_map.md (before revision)
++++ docs/architecture/sfir_capability_map.md
+@@ -1,12 +1,12 @@
+ # SFIR Capability Map — P0-T2
+ 
+-日期：2026-09-18。范围：当前工作树的 Solidity / inline Yul → SFIR，服务 ERC-20 核心持久状态语义；不实现缺失功能，不冻结 P0-T3 计划。
++日期：2026-09-18（按修订任务要求增量完善）。范围：当前工作树的 Solidity / inline Yul → SFIR，服务 ERC-20 核心持久状态语义；不实现缺失功能，不冻结 P0-T3 计划。
+ 
+ 结论：现有 SFIR 可复用，已有函数级 Fact CFG、FactSSA、到达定义、语义节点与数据/控制关系。**统一节点类型不等于统一地址等价分析**：标准 mapping 和部分 storage alias 已能恢复，但当前 storage identity 不足以无条件支撑 ERC-20 状态依赖，尤其是两个地址参数可能相等、key 重定义、未知 slot 和调用后的状态影响。无需据此重设计整套 IR。
+ 
+ ## 依据、层次与判定口径
+ 
+-上游已核对：[AGENTS](../../AGENTS.md)、[PROJECT_STATUS](../../PROJECT_STATUS.md)、[P0-T1 报告及授权补充](../task_reports/P0-T1.md)、[repository overview](repository_overview.md)、[P0-T1 ADR](../decisions/P0-T1-001-baseline-semantic-contracts.md)。入口、目录和测试清单与实际代码一致，无须改写 overview。P0-T1 首次失败记录是历史，最新交接为 26/26 PASS；本次 baseline 也为 26/26 PASS，见 [baseline/results.json](../task_reports/P0-T2_evidence/baseline/results.json)。
++上游已核对：[AGENTS](../../AGENTS.md)、[PROJECT_STATUS](../../PROJECT_STATUS.md)、[P0-T1 报告及授权补充](../task_reports/P0-T1.md)、[repository overview](repository_overview.md)、[P0-T1 ADR](../decisions/P0-T1-001-baseline-semantic-contracts.md)。主线入口和测试清单仍与实际代码一致；本轮补记 overview 中后增的 Task Map、本地 skills 与独立 review/修复记录，未改变主线结构。P0-T1 首次失败记录是历史，最新交接为 26/26 PASS；原 P0-T2 baseline 为 26/26 PASS；本轮增量 baseline 仍为 26/26 PASS，见 [revision baseline/results.json](../task_reports/P0-T2_revision_evidence/baseline/results.json)。旧结果保留为历史。
+ 
+ 主入口仍是 `scripts/s_seir/s_seir_pipeline.py:build_sseir`；最终入口为 `s_seir_semantic_fact_adapter.py:build_function_level_semantic_fact_ir_payload` → `SemanticFactIRBridge`，schema=`s-seir-semantic-fact-ir/v1`。`scripts/legacy_yul/` 是运行依赖；归档 `scripts/废弃_sfir_pipeline未使用/` 不是本表实现依据。
+ 
+@@ -55,7 +55,7 @@
+ | msg.sender | 部分：SlithIR 操作数/路径文本；caller() → msg.sender | SOL `atomic_ssa_reads/atomic_semantic`；EXPR；`assembly_arithmetic_compare_ir.py:41` | 无专门环境 entry binding，最终 `_IDENTIFIER` 不接纳该成员名；FactSSA 不产生环境 read ref | Module 2 输入来源需补或显式消费语义操作数 |
+ | msg.value | 部分：SlithIR 操作数、call value；callvalue() → msg.value | 同上；`assembly_arithmetic_compare_ir.py:42` | 同 msg.sender；不可将缺 SSA 引用当无依赖 | 同上 |
+ 
+-上述已有表示分别由当前测试的 atomic/slithir/integration、adapter、IR、storage/revert、endpoint、memory 等回归覆盖；具体测试起点见末表。六项隔离探针进一步验证 exact storage binding、alias/key-version 缺口与环境值边界，完整输入/输出在 [capability_probes.json](../task_reports/P0-T2_evidence/capability_probes.json)。探针通过表示观察可复现，不表示缺口已经修复，也不替代端到端 Solidity/Yul 覆盖。
++上述已有表示分别由当前测试的 atomic/slithir/integration、adapter、IR、storage/revert、endpoint、memory 等回归覆盖；具体测试起点见末表。六项隔离探针进一步验证 exact storage binding、alias/key-version 缺口与环境值边界，完整输入/输出在本轮重跑的 [capability_probes.json](../task_reports/P0-T2_revision_evidence/capability_probes.json)。探针通过表示观察可复现，不表示缺口已经修复，也不替代端到端 Solidity/Yul 覆盖。
+ 
+ ## 七项基础分析核对
+ 
+@@ -88,18 +88,52 @@
+ 
+ P0-T1 所称“常量 initializer 不求值”指 SOL 新增的 `constant_operands` 声明元数据；恢复层 OVER 早已有有限 `eval_uint256_constant_expr` 用于 slot。两者层次不同，不构成交接冲突，也不能合并宣称具备通用常量求值。
+ 
+-### P2-T2 / P2-T4 / P2-T6 / P2-T8 编号级影响边界
++## 五类后续分析能力：支持/缺失矩阵
+ 
+-当前 Repository 的 AGENTS、状态、P0-T1 报告、overview 和待冻结 framework 模板均没有这四项的名称/职责；仓库 Markdown/text 搜索也没有定义。`IMPLEMENTATION_PLAN.md` 按上游约定在 P0-T3 创建，其缺失本身不阻塞本次源码盘点。**不自行将编号绑定到某种算法。** 已向用户请求四项职责，未获定义时编号级专项验收不能标 PASS。
++以下按分析能力命名，不依赖未来 Task 编号。这里的“最小补足”仅列现有证据尚不能满足的要求；不定义新 schema/API、算法方案、排期或必须新增的模块。
+ 
+-| 指定 Task | 当前能确认的影响 | 未确认项 |
+-| --- | --- | --- |
+-| P2-T2 | storage identity、key 依赖、reaching definitions、slicing、裁剪/覆盖判断和等价验收均可能受影响 | 职责未提供，不能确认该编号包含其中哪些分析 |
+-| P2-T4 | 同上：不得以不同路径文本推断 no-alias，也不得以相同 key 文本推断同址 | 职责未提供，不能确认具体影响 |
+-| P2-T6 | 同上：漏掉 may-alias 会漏保真实依赖；key 重定义可能引入假依赖 | 职责未提供，不能确认具体影响 |
+-| P2-T8 | 同上：需关注同址参数、key 重定义、Mixed storage 与 unknown 边界 | 职责未提供，不能确认具体影响 |
++| 后续需求 | 当前支持程度 | 对应代码 | 缺口 | 是否需要新增 |
++| --- | --- | --- | --- | --- |
++| Feasible Control / Guard | 部分：branch/loop/join/switch、真假/case/default Guard、dominance/control_dependencies、symbolic path_witnesses 已有；并有有限 predicate/opaque normalization | IR `_build_fact_cfg/_normalize_branch_conditions/_switch_edge_replacements/_graph_analysis/_path_witnesses`；CTRL；EXPR；`s_seir_opaque_preprocess.py:fold_opaque_condition` | 结构边/符号 witness 不等于 feasible control；没有 k-switch AI 或局部 symbolic execution + SMT；复杂循环/postdom 与规范化表达式的位宽语义有边界 | 需补 G1；复用已有 CFG/Guard，不能推定已具备可满足性证明 |
++| Definition Flow | 部分：声明/name-scoped binding、entry/semantic definition/Phi、FactSSA reads/writes、reaching_in/out 和跨语言 def-use 边 | IR `_bindings/_binding_for_value/_build_fact_ssa`；ATOM storage reference propagation | 非标识符/环境值可能无 ref；Phi 的输入版本集合不等于逐 feasible predecessor 的完整配对；persistent RD 无 key alias/访问时点/未知写失效关系 | 需补 G2/G3；不重建已有普通值 RD |
++| Value Flow | 部分：SSA/value identity、data/data_phi/bridge_input/bridge_output、call_output、StateRead/StateWrite 与 storage path/keys 可作为图的原料 | IR `_build_fact_ssa/_add_call_output_relations/_storage_location_binding`；SOL `storage_location`；OVER `mapping_slot_expr_from_key_base` | 存在 semantic edge 图，但没有覆盖全部 state/input/source/alias/Guard 的统一可切片 Value Flow Graph；location 的文本 identity 不等于动态状态位置关系 | 需补 G2/G3/G4；不能把图字段存在判为 VFG 完整 |
++| Sink Dependency | 部分：StorageWrite value/path/key，ExternalCall target/arguments/value、EtherTransfer target/value、Event arguments、Return values、Revert operands/Guard 已有表示；可解析已恢复 memory payload | SOL `atomic_semantic`；ADAPT `call_fact/overlay_fact`；IR `_build_fact_ssa/_graph_analysis`；SINK `MEMORY_RANGE_BY_KIND/resolve_effect` | 未有以 StorageWrite 为主、同时沿数据和控制依赖的完整 backward slicing；多 sink 的 persistent state 来源也未闭合；SinkResolver 是 memory 参数解析，不是该 slicer | 需补 G3/G4/G5；unknown operand/state 来源不能直接丢弃 |
++| Transition Reconstruction | 部分：StateRead/Write、call/event/return/revert、终止边、CFG partial order、块内语义顺序、canonical replacement 已有 | IR `build_function/_fuse_linear_semantic_blocks/_normalize_require_guards`；YUL `_select_canonical_high_semantics/_local_order`；SOL/ADAPT | 没有完整 Guard+初始状态+更新+外部效果+失败/回滚的 transition summary；块内 source-position/ID tie 回退不是执行顺序证明；没有 Canonical STIR/冻结比较规则 | 需补 G3/G5/G6/G7；不能将原始 effect 与替代语义重复计入 |
+ 
+-以上条件句仅列风险，**不是四项 Task 的职责定义或计划草案**。P0-T3/用户提供定义后需完成编号映射；此前本任务状态为 PARTIAL。
++### Alias 缺口影响哪些分析
++
++四类分析**均受影响**。下表明确区分已观察的 SFIR 行为与对尚未实现的下游分析的影响推论。没有把未来 VFG/slicer 未运行说成已有测试失败。
++
++| 受影响分析能力 | 已观察的代码/最小输入证据 | 对分析的影响 | 最小补足边界 |
++| --- | --- | --- | --- |
++| Reaching Definitions 中同一持久位置的 definition/use 传播 | IR `_storage_location_binding` 按 `@storage:{access}` 建 binding，`_build_fact_ssa` 只传播/覆盖同 binding。E1 中 copy-equivalent 两个 access 不共享写版本；E2 中 key 重定义后同文本仍共享 | 相同地址不同文本可能漏传播；相同文本不同访问时点可能误传播/错误覆盖。现有普通变量 fixed point 不能独自解决 persistent address 关系 | G3：在访问时点区分 key 定义与路径证据；不确定同址关系不能按异址删边，也不能无证明强覆盖；复用现有 RD，不在盘点中实现 StateSSA |
++| Value Flow Graph 中 Storage Load/Store 的位置关联 | E1 的 state read 没有先前同址 write 的 `data` 边；IR `_build_fact_ssa` 依 storage binding 生成边，而 `_add_call_output_relations` 只补调用输出等语义关系 | 直接使用现有 semantic_edges 会缺少该状态值来源；text identity 合并也可能产生假状态边；无法承诺完整 state/input/source flow | G2/G3/G4：区分读取出的 value identity 与位置 identity，保留 load/store 地址关系依据及未知来源，不能仅按 access 字符串连边 |
++| StorageWrite backward slicing 中 path/key/state dependency | E3 StorageWrite：`alias=owner; balances[owner]=other; loaded=balances[alias]; balances[other]=loaded`；当前有 read→sink 数据边但无 prior_write→read 边 | 沿现有数据边回溯可保留 loaded 和 key copy，却漏掉贡献持久状态值的前序写；对 path/key 的追踪与值的追踪不能互相替代 | G3/G4：第一版只需 StorageWrite 主路径的 value、storage path、mapping key、state source 与 feasible control/Guard 来源；不扩展为全程序切片器 |
++| Multi-Sink persistent-state dependency recovery | E3 ExternalCall/ValueTransferCall/EventEmit/Return/Revert 五种消费 loaded 的合成输入均重现上述断点；SOL `atomic_semantic` 保留相应操作数，SINK 未提供 persistent RD | 五种 sink 的普通 operand 边存在，并不意味着其 persistent state 来源恢复完整；调用目标/金额/事件参数/返回值/失败参数若来自该 load，都可能受同一缺口影响 | G3/G4/G5：沿用同一 persistent state 关系和依赖证据，至少保留已恢复 operand 与 Guard 来源；外部调用效果不明要显式保留，不开展通用 callee/重入/代理合约分析 |
++
++最小证据（均为**现行 `SemanticFactIRBridge` 的隔离输入**，不是未知 `LocationNode` 模型，也不声称每个前端都会生成完全相同输入）：
++
++- E0：`balances[owner]` 写后读，相同恢复路径共享 FactSSA storage version，证明有限 exact-path 支持。
++- E1：`alias = owner; balances[owner] = other; loaded = balances[alias]`。两个 access binding 不同，read 使用 entry storage version，没有 prior write→read 边。证明 final bridge 不消除这类 key copy；**不推断上游 direct copy/copy chain 一律失败**，ATOM 某些引用/表达式已能展开。
++- E2：`balances[owner] = …; owner = other; loaded = balances[owner]`。key 的值定义改变，但相同 access 文本仍引用旧 storage write version。若初始 owner 与 other 不等，则不能据文本证明同址；这展示表示缺口，不声称现有四态 relation 返回了错误结果（当前无该查询接口）。
++- E3：在 E1 的 loaded 后接六种 sink（StorageWrite + 五种其它 sink），实际均有 read→sink 边，均缺 prior write→read 边。只检查现有输出边，不新增生产 VFG、slicer 或 oracle。
++
++[E0/E1/E2 完整结果](../task_reports/P0-T2_revision_evidence/capability_probes.json) 复用原六项探针；[E3 输入、SFIR 与观察结果](../task_reports/P0-T2_revision_evidence/sink_impacts.json) 由 [probe_sink_impacts.py](../task_reports/P0-T2_revision_evidence/probe_sink_impacts.py) 生成。PASS 指“缺口观察被成功复现”，不是目标依赖恢复能力通过。
++
++### 最小补足边界与受影响实现（交 P0-T3 决策）
++
++| 缺口 | 受影响分析能力 / 现行实现 | 在 ERC-20 研究范围内至少需要补足的证据 | 本次边界 |
++| --- | --- | --- | --- |
++| G1：结构控制不等于 feasible control | Feasible Control / Guard；CTRL、IR graph/Guard、EXPR | 对核心行为的候选 branch/loop/join/switch 边能说明可行性和 Guard 来源；参与局部判断的表达式需有类型/位宽语义与明确未解决状态 | 不冻结 solver/API、不实现 k-switch 或全程序 symbolic execution；补足路径由 P0-T3 定 |
++| G2：Definition/use 与输入来源不完整 | Definition Flow、Value Flow；IR bindings/FactSSA、SOL/YUL operand 投影 | 保留声明/值定义/使用点及 Phi 来源；msg.sender/msg.value、复合操作数和不可绑定值要有来源或明确 unknown，不能因 refs 为空当作无依赖 | 不强制所有环境输入成为某种新 SSA 节点；具体接入方案未冻结 |
++| G3：persistent address relation 不完整 | Definition Flow、Value Flow、Sink Dependency、Transition Reconstruction；IR storage binding、ATOM、OVER、LAYOUT | ERC-20 的具名状态、balances 单层/allowance 嵌套 mapping 及现有 Mixed 恢复路径，应能依据 root/path/layout、访问时点的 key 定义、已有相关 Guard 判断或保守保留地址关系；相同 representation 不是跨时点同址充分条件，文本不同也不是异址证明；未知 slot/缺 provenance/多候选不得静默当异址 | 最低语义区分“可证同址、可证异址、可能重叠、证据不足”及依据；这里只是需求边界，**不冻结枚举/API**。不解任意 keccak/slot 算术，不改 Location interning，不实现通用 alias analyzer/另一套 IR |
++| G4：semantic edges 尚未形成完整可切片依赖 | Value Flow、Sink Dependency；IR edges/reaching/phis/control deps、SINK | 首先能保留 StorageWrite 的 value/path/key/state + 输入来源，并复用 feasible control/Guard；多 sink 共用这些依赖依据；Phi/unknown 不能任选定义，memory range query 不能替代状态切片 | 不实现 VFG/slicer，不把此处必要证据冻结为接口；复用现有 RD/SSA/MEM/SINK |
++| G5：外部效果及未知状态影响边界 | Sink Dependency、Transition Reconstruction；SOL/ADAPT call/event/return/revert、IR call links | 已有 call kind、目标/参数/转账值、事件/返回/失败 operand 及状态来源应保留；无法证明外部调用/未知写不影响状态时，不得声称相关位置的依赖完备；Yul gas 未投影等字段损失须显式限定 | 不要求通用跨合约执行、代理/重入求解；未知影响可作为显式限制，是否纳入后续实验由 P0-T3 决策 |
++| G6：部分顺序只有回退依据 | Transition Reconstruction；IR `_node_order/_fuse_linear_semantic_blocks`、YUL `_local_order` | 关键读写/调用/失败之间的顺序应来自 CFG、SSA、支配/依赖关系；无证据时保留未确定偏序，不用 source position/semantic_id 补成 total order | 不修改本次已有排序，不要求恢复 source-identical CFG |
++| G7：没有完整状态转移/提交语义 | Transition Reconstruction；IR 终止边、SOL/ADAPT 效果、YUL canonical replacement | 将 StateRead/Write、External Effect、Failure、Guard 和可证 partial order 汇总，区分成功提交与 revert rollback；clean/obfuscated 使用同一 canonical representation 比较，替代表示不重复计效 | 不在此创建 STIR/schema/evaluator/benchmark，也不以源码相似度替代语义 |
++| G8：unknown/unsupported 诊断分散 | 五类分析能力；IR `_binding_for_value/_validate`、CTRL notes、MEM 截断/widening、YUL sanitize | 下游需要辨认事实/来源是否完整，保留 unknown/opaque/truncated/fallback 的理由；若以后使用 solver，要显式记录 UNKNOWN/TIMEOUT，不能解释为成功或不可达 | 当前无 solver 测试；盘点只记录已有状态传播限制，不顺手统一诊断接口 |
++
++这些是能力盘点的正确缺口结论，**不阻止 P0-T2 完成**；完成意味着证据、影响和边界已清楚，而不是上述能力已实现。当前 SFIR 与独立 `STORAGE-ADDR-EQ-001` 所指定缺源码模型的边界保持：本表不对缺失的 LocationNode/ValueRecord 实现作正反能力断言。
+ 
+ ## 三个研究 Module 的输入能力逐项映射
+ 
+@@ -118,7 +152,7 @@
+ 
+ ## P0-T1 检查起点、回归与限制逐项回收
+ 
+-全部脚本位于 `scripts/s_seir/`；每一入口的完整命令/退出码/日志见 baseline 和 final 的 results.json。分组只用于说明能力证据，不改变原 25 个主线 + 1 个归档入口的 baseline 范围。
++全部主线脚本位于 `scripts/s_seir/`；每一入口的完整命令/退出码/日志见 `P0-T2_revision_evidence/baseline` 和 `final` 的 results.json。分组只用于说明能力证据，不改变原 25 个主线 + 1 个归档入口的 baseline 范围。
+ 
+ | P0-T1 existing module / tests 起点 | 本次核对结果及边界 |
+ | --- | --- |
+@@ -137,3 +171,5 @@
+ 源码检查另有边界：MemorySSA `MAX_PATH_STATES=256`、`MAX_LOOP_JOIN_STATES=8`，有 unknown(loop-path-join/loop-carried-memory)；ControlBuilder 有 Slither timeout/fallback notes。最终 IR 不原样导出全部 control notes，且 `_binding_for_value` 对不可绑定值可返回 None，不能宣称所有异常/缺失均进入 final diagnostics。当前没有 SMT；本次没有新吞异常逻辑，也没有虚构 UNKNOWN/TIMEOUT 测试。完整错误传播一致性尚未被证明。
+ 
+ 无冻结接口/语义/实验规则修改，无 ADR；无 benchmark/evaluator 实验。当前结果支持局部扩展现有基础设施，缺口安排与接口冻结留给 P0-T3。
++
++当前盘点按五类能力和上述 G1–G8 边界交接。`docs/research/TASK_MAP.md` 现已存在，但导航中的未来任务安排不是本次验收依据；P0-T3 尚未冻结的新接口/实验契约不在本 Task 修改。稳定 SFIR v1 的表示限制（例如 access binding、块内 order 回退）已记录代码证据，交 P0-T3 决策。本次不要求先修补这些限制才完成盘点。
+--- docs/architecture/repository_overview.md (before revision)
++++ docs/architecture/repository_overview.md
+@@ -3,6 +3,10 @@
+ 本记录依据当前工作树与实际测试，非历史聊天。基线日期、Git HEAD、初始脏工作树及完整目录清单见 [baseline](../task_reports/P0-T1_baseline/)。本 Task 不定义三个研究模块的算法接口。
+ 
+ 2026-09-18 授权补充已完成：最新 **26/26 测试入口通过**，状态 COMPLETE。下文 baseline 数字保留首次扫描事实；最新结果见 [followup/final/results.json](../task_reports/P0-T1_followup/final/results.json)。语义契约及局部修复依据见 [ADR P0-T1-001](../decisions/P0-T1-001-baseline-semantic-contracts.md)。
++
++## P0-T2 增量核对（2026-09-18）
++
++当前主线源码/测试与首次 P0-T2 快照一致，入口与 25 个主线脚本 + 1 个归档模块的清单不变。新增仓库文档包括 `docs/research/TASK_MAP.md`（导航层，非已冻结接口）、`skills/SKILL.md`（本地工作流说明），以及 `STORAGE-ADDR-EQ-001` 独立 review/修复报告。它们不表示相关能力已经实现；指定 `scripts/semantic_ir/` 源码仍缺失，该独立事项保持 PARTIAL。本次只继续 P0-T2，按分析能力名称记录缺口，不依赖未来任务编号；接口与补足安排由 P0-T3 决策。
+ 
+ ## 仓库目录
+ 
+--- docs/task_reports/P0-T2.md (before revision)
++++ docs/task_reports/P0-T2.md
+@@ -2,91 +2,113 @@
+ 
+ ## 目标与最终状态
+ 
+-只分析现有 SFIR 的能力，创建支持/缺失矩阵、alias/storage address equivalence 结论及三个研究 Module 所需能力映射。不实现缺失功能，不提前进入下一 Task。
++**COMPLETE（按修订要求增量完成，2026-09-18）**。
+ 
+-**最终状态：PARTIAL。** 源码盘点、文档、baseline 与关键回归均完成；缺少用户指定 P2-T2/P2-T4/P2-T6/P2-T8 的职责定义，无法准确完成编号级 alias 影响验收。已请求补充，未自行编造编号分工。此状态不是因为 IMPLEMENTATION_PLAN.md 缺失；该文件本来就由 P0-T3 创建。
++只盘点现行 SFIR，保留原 20 项语义表示、7 项基础分析和三个 Module 映射；补齐五类分析能力、Alias / Storage Address Equivalence 的四类影响、代码/最小输入证据和 G1–G8 最小补足边界。没有实现缺失能力、创建另一套 IR 或进入下一 Task。
+ 
+-## 前置检查
++用户修订明确：不依赖尚未执行的未来 Task 编号；能力不足可以是正确盘点结果。原 PARTIAL 的编号级条件因此不再是验收要求，并非放宽语义测试。当前源码/test oracle 均未改，缺口结论未被删除。旧报告完整快照位于 [P0-T2.md.before](P0-T2_revision_evidence/P0-T2.md.before)，原 `P0-T2_evidence/` 全部保留。当前验收以本报告和 revision evidence 为准。
+ 
+-读取 AGENTS.md、PROJECT_STATUS.md、P0-T1.md（包括授权补充）、repository_overview.md、P0-T1 ADR、baseline runner、当前 SFIR/前端/恢复层与相关测试。上游正式产物均存在；入口、主线 25 脚本及归档模块与实际仓库一致，无须修正 overview。P0-T1 历史 24/2 不是最新 baseline，授权补充后 26/0 已复现。
++## 前置检查与仓库事实
+ 
+-P0-T1 existing modules/tests/unsupported/known issues 逐项检查见 capability map 末表。当前 framework 仅为模板，未当作已冻结接口。仓库 Markdown/text 未找到四项 P2 Task 定义；该交接缺项明确保留，未以猜测完成专项验收。
++重新读取 AGENTS.md、PROJECT_STATUS.md、P0-T1.md（含授权修复）、repository_overview.md、现有 capability map/探针，以及当前 SFIR、ATOM、SOL、OVER、MEM、SINK 和相关测试。123 个源码/测试文件与原 P0-T2 哈希快照一致，复用已有盘点而非从头重做。
+ 
+-起始已有大量删除/迁移、6 个主线文件修改及未跟踪 docs；全部保留。before Git 状态/diff 位于 `P0-T2_evidence/`。未使用旧聊天、未恢复旧源码、未启动子代理。
++主线入口仍为 `scripts/s_seir/s_seir_pipeline.py:build_sseir`，最终 `SemanticFactIRBridge`，25 主线脚本 + 1 归档测试模块的清单不变。上游产物完整，没有影响现行主线安全盘点的交接冲突。
+ 
+-## Baseline 与测试
++仓库后来新增了 `docs/research/TASK_MAP.md`、`skills/SKILL.md` 和 STORAGE-ADDR-EQ-001 独立报告；先在 overview 补记导航事实、在 PROJECT_STATUS 切换本次任务后继续增量盘点。Task Map 是导航，未据其 REQUIRED 或未来编号冻结新任务/接口；P0-T3 尚未正式冻结，IMPLEMENTATION_PLAN.md 的缺失不阻塞。
+ 
+-从仓库根执行：
++起始 PROJECT_STATUS 指向 STORAGE-ADDR-EQ-001 的独立修复 PARTIAL。本次用户明确指定 P0-T2，故切回该任务；独立 review/修复记录原样保留。它们的目标是缺源码的另一套 Semantic IR，不是现行 SFIR。历史目标测试导入错误不作为本轮 baseline，也不冒充已修复；现行 27 个 SFIR unittest 用例不应误读成 27 个测试入口。此边界在状态文档明确说明。
++
++工作树原有删除、迁移、6 个主线文件修改及未跟踪文档全部保留。`hashes_before.json`、Git 快照与四份 `.before` 文档保存本轮现场；没有依赖聊天重建项目事实。
++
++## Baseline、修改与实现内容
++
++修改前完整 baseline **26 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**，与 P0-T1 最新及原 P0-T2 结果一致。
++
++本轮实际增量：
++
++- `docs/architecture/sfir_capability_map.md`：替换原编号级条件段为五类能力支持/缺失矩阵、alias 四类影响及最小 E0–E3 证据；新增 G1–G8 最低证据要求和受影响实现。保留已有 20/7 项矩阵和 P0-T1 模块/tests/unsupported/known issues 逐项检查起点。
++- `docs/architecture/repository_overview.md`：仅补记后增导航文件和独立事项的状态/实现边界。
++- `PROJECT_STATUS.md`：当前 COMPLETE、测试、产物、限制、独立未解决事项与 Next Allowed Task。
++- 本报告：按新验收收尾，保留独立 review 历史段。
++- `docs/task_reports/P0-T2_revision_evidence/`：baseline/final、复用探针重跑、新增 `probe_sink_impacts.py`、机器验收/核对脚本及结果、Git/哈希/文档快照。
++
++未改 scripts/、tests/、fixtures、旧证据/oracle、AGENTS、Task Map 或独立问题报告；未改现有稳定接口。源码中的 access identity、排序回退等能力边界与后续需求的差距已列证据，交 P0-T3 决策；无 ADR，无 schema/实验契约变更。
++
++## 五类能力与 alias 结论
++
++五类均为“已有可复用基础，但尚有明确缺口”：Feasible Control / Guard、Definition Flow、Value Flow、Sink Dependency、Transition Reconstruction。结构 CFG/Guard、FactSSA/RD、位置/操作数和语义边存在，不等于完整可行性证明、VFG、切片或状态转移重建。
++
++**Alias / Storage Address Equivalence 不足以完整支撑 ERC-20 状态依赖。** 现有恢复层支持精确 storage local、有限 Yul slot/hash/byte/path 模式；final binding 按恢复 access 文本，不提供访问时点 key 等价的完整关系。
++
++四项分析均受影响：
++
++1. persistent Reaching Definitions：同址不同文本可能漏传播，同文本 key 重定义可能误传播。
++2. Load/Store Value Flow Graph：缺失或错误的位置关联会破坏状态值来源边。
++3. StorageWrite backward slicing：仅回溯已存在的数据边可能遗漏前序同址状态写；path/key/value/control 来源必须分别保留。
++4. Multi-Sink persistent-state dependency：普通 operand 边可用，但其状态来源沿用同一断点；影响调用/金额/事件/返回/失败依赖。
++
++最小边界只要求 ERC-20 具名状态、单层/嵌套 mapping 和已恢复 Mixed 路径的 root/path/key-use-site/相关 Guard 证据，以及“可证同址、可证异址、可能重叠、证据不足”的区分；不冻结枚举/API、不求解任意地址算术、不重设计 IR。G1–G8 还覆盖控制、definition/input 来源、切片、外部效果、顺序、提交/回滚与未知状态传播；具体补足方式留给 P0-T3。
++
++## 测试命令与结果
++
++仓库根执行：
+ 
+ ```bash
+-.venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py docs/task_reports/P0-T2_evidence/baseline
+-PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T2_evidence/probe_capabilities.py
+-.venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py docs/task_reports/P0-T2_evidence/final
+-PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T2_evidence/probe_capabilities.py /tmp/p0-t2-final-probes.json
++.venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py docs/task_reports/P0-T2_revision_evidence/baseline
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T2_revision_evidence/probe_sink_impacts.py
++.venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py docs/task_reports/P0-T2_revision_evidence/final
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T2_revision_evidence/probe_sink_impacts.py docs/task_reports/P0-T2_revision_evidence/final_probes
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T2_revision_evidence/verify_handoff.py
+ git diff --check
+ ```
+ 
+-修改前和收尾均 **26 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**。25 主线入口覆盖当前 Phase 已完成 P0-T1 及直接依赖的 CFG、MemorySSA/SinkResolver、Solidity/Yul、storage/call/event/revert、SFIR/FactSSA/渲染；归档模块 1 入口（5 unittest）保持原回归范围，但不作为现行能力依据。
++baseline 与 final 均 **26/26 入口 PASS**：25 主线 + 1 归档模块（内部 5 unittest），0 FAIL/SKIP/TIMEOUT。覆盖当前 Phase 已完成部分及直接依赖的 CFG、MemorySSA/SinkResolver、前端、storage/call/event/revert、SFIR/FactSSA/渲染；未删除或跳过旧失败样例，没有新测试失败或豁免。
+ 
+-新增只读 characterization 探针 6/6 PASS：同一 storage path 的写读版本、不同 key 拼写不统一、key 重定义后同文本仍合并、环境操作数无 FactSSA refs、caller/callvalue 规范化、未恢复 slot 不建立精确 storage binding。保存完整合成输入及最终 SFIR。探针通过仅确认现状，不将缺失能力冻结为正确语义，不构造端到端覆盖或等价率承诺。脚本异常/断言会直接非零退出，没有吞异常。无生产算法变动，无新 benchmark/evaluator/oracle。
++只读探针 **12/12 PASS**：复用原 6 项能力探针，新增六种 sink 的 edge characterization。E3 输入为现有 final bridge 的合成事实：key copy、前序 storage write、alias-key load，再由 StorageWrite/ExternalCall/ValueTransferCall/EventEmit/Return/Revert 消费。六种都有 load→sink 数据边，均无 prior write→load 边。验证的是现有输出的能力边界，没有实现 alias/VFG/slicer，不能把探针 PASS 当依赖恢复完备；也未宣称所有前端都会输出同样输入。两轮完整 JSON 结果一致。
+ 
+-## 修改文件与内容
+-
+-- 新增 `docs/architecture/sfir_capability_map.md`：20 项表示、7 项基础分析、alias 表、三个 Module 需求表、P0-T1 模块/测试/限制回收；各“已有”结论定位实际代码符号。
+-- 更新 `PROJECT_STATUS.md`：当前状态、测试摘要、稳定产物、能力限制、交接缺项、Next Allowed Task。
+-- 新增本报告。
+-- 新增 `docs/task_reports/P0-T2_evidence/`：baseline/final 原始日志与 results.json、只读探针及输出、源码哈希、Git 快照、检查与验收 JSON。
+-
+-未修改 scripts/、tests/、fixtures、原 P0-T1 证据、oracle、AGENTS、overview 或冻结规则。起始源码修改均属于原工作树，不归本 Task。
+-
+-## 能力结论
+-
+-SFIR 基础可复用：函数 Fact CFG、真假边/Guard、dominance/control_dependencies、FactSSA、到达定义、已恢复的 StateRead/StateWrite/location、调用/事件/返回/失败表达均已存在。
+-
+-storage alias 为部分能力：Solidity 精确引用、Yul slot/hash/byte/path 模式和相同恢复路径的身份已支持；最终 binding 依 access 文本，不提供统一 must/may/no-alias，不能保证 key SSA 身份、同址参数、unknown writes/call effects 下的 state dependency。memory 指针 alias 不能冒充 storage equivalence。
+-
+-其他缺口包括环境来源 refs、可求解表达式/局部 SMT、feasible control、sink-guided slicing、事务更新/回滚和 canonical transition 比较。现有顺序基础有 CFG 证明，但 Yul 块内语句位置与 semantic_id tie fallback 不满足完整顺序证据要求。这些只记录，不在本 Task 修复。
++脚本断言/异常直接非零退出。`verify_handoff.py` 核对文档链接、20/7 项及五类/四类/最小边界覆盖、机器结果、源码/既有测试和其他任务文件未改、Git diff/status。无 benchmark/evaluator/全 TOKENS/solver 实验，未用其 N/A 掩饰失败。
+ 
+ ## 机器可读产物
+ 
+-`P0-T2_evidence/` 下：
++全部本轮产物在 `P0-T2_revision_evidence/`：
+ 
+-- `baseline/results.json`、`final/results.json` 及日志：逐入口命令、状态、退出码、耗时；runner 仍使用原 P0-T1 版本和 300 秒限时。
+-- `probe_capabilities.py`、`capability_probes.json`：可复现的 6 项观察及完整最终 SFIR。
+-- `source_hashes_before.json`、`verification.json`：源码/测试内容不变、链接/矩阵范围、前后结果与 Git 范围核对。
+-- `git_status_before.txt`、`git_diff_before.txt`、`git_status_after.txt`、`git_diff_after.txt`：保留工作树现场。
+-- `acceptance.json`：逐条专项验收与 PARTIAL 原因。
+-
+-没有开展 benchmark/evaluator/全 TOKENS 实验；不只在聊天中报测试数字。
++| 产物 | 内容 |
++| --- | --- |
++| `baseline/results.json`、`final/results.json` 与逐入口日志 | 原 runner 命令/返回码/耗时、26 入口结果，300 秒 timeout 保持 |
++| `capability_probes.json`、`sink_impacts.json` | 6+6 项实际观察、合成输入和完整 final SFIR |
++| `final_probes/` | 相同探针收尾重跑，JSON 对比一致 |
++| `probe_sink_impacts.py` | 只读复用旧探针并检查六种 sink 的现有边 |
++| `verify_handoff.py`、`verification.json`、`acceptance.json` | 可复现范围核对与当前专项验收；人工代码判断和自动文件检查区分记录 |
++| `hashes_before.json`、`*.before` | 修改前源码/测试/文档等哈希及四份文档完整快照 |
++| `git_status_before/after.txt`、`git_diff_before/after.txt`、`document_changes.diff` | 前后工作树及本轮文档增量；不将原修改归本 Task |
+ 
+ ## 专项验收
+ 
+-| 条目 | 结果 | 证据 |
++| 条目（修订要求） | 结果 | 证据 |
+ | --- | --- | --- |
+-| 三个 Module 所需能力均逐项映射 | PASS | capability map 三个 Module 表、20 项语义与7项分析矩阵 |
+-| 每个已支持结论能定位实际代码 | PASS | capability map 代码索引及每行函数；现行全量回归和 probes |
+-| 每个缺失项有明确描述 | PASS | 矩阵缺口列、Alias 表；未将未测能力判支持 |
+-| Alias/Storage Address Equivalence 对 ERC-20 是否足够有明确结论 | PASS | 明确不足；IR `_storage_location_binding/_build_fact_ssa`、ATOM、OVER、MEM 与探针 |
+-| alias 不足对 P2-T2/P2-T4/P2-T6/P2-T8 的具体影响 | FAIL | Repository 缺四项职责定义；只记录条件化风险，不能伪造编号映射 |
+-| 不因“可能有”判支持 | PASS | 分层表示、有限模式与完整分析区分；环境/alias/排序的代码和反例证据 |
+-| 必要回归通过、无未解释 regression | PASS | baseline/final 均26/26；6/6 probes |
+-| 工作树范围受控、交接写回 | PASS | source hashes、Git diff/status、verification.json；PROJECT_STATUS 和本报告 |
+-| 冻结接口变更/ADR | N/A | 未变更接口、语义、实验规则 |
+-| benchmark/evaluator/SMT UNKNOWN/TIMEOUT 实验 | N/A | 未开展；缺 solver，不伪称测试通过 |
++| 五类分析能力逐项映射 | PASS | capability map 五类表、20/7 项矩阵及三个 Module 表 |
++| 每个已支持结论定位实际代码 | PASS | map 代码索引和每行符号；verification 的源码符号/文件核对；现行回归 |
++| 每个缺失项描述明确 | PASS | gap 列、Alias 表、G1–G8 边界 |
++| Alias 对 ERC-20 是否足够有明确结论和代码依据 | PASS | 明确不足；IR storage binding/RD、ATOM/OVER/MEM；E0–E3 |
++| 不因不足顺手实现补丁、不因不足判盘点失败 | PASS | 哈希验证源码/既有测试未变；完整记录影响和最低要求 |
++| 明确影响 RD/VFG/StorageWrite slicing/Multi-Sink 四类分析 | PASS | 四行影响表；capability_probes/sink_impacts 完整输出及现行代码 |
++| 不因“看起来可能有”判支持 | PASS | 区分恢复层/final SFIR、有限表示/完整分析、已观察行为/下游影响推论 |
++| 必要回归和新增探针通过，无未解释 regression | PASS | 两轮26/26入口；两轮12/12观察，一致性检查 |
++| diff/status 范围受控、交接完成 | PASS | verification、document_changes.diff、PROJECT_STATUS 与本报告 |
++| 冻结接口变更/ADR | N/A | 未变更；差距仅作为 P0-T3 决策输入 |
++| benchmark/evaluator/SMT UNKNOWN/TIMEOUT | N/A | 未执行此类实验，当前无 solver backend；不计作 PASS |
+ 
+-## 偏差、unsupported 与限制
++## Unsupported、限制与稳定交接
+ 
+-无实现范围偏差、无 ADR。唯一未满足的验收是编号级任务影响；原始要求没有给职责、上游仓库也没有，不将其伪装为已完成。
++现有独立 Yul 缺入口、未知 storage/memory、Slither fallback/timeout、MemorySSA truncation/widening、最终 diagnostics 不完全、环境值 refs、排序回退、依赖锁/CI 和未冻结 evaluator 的边界全部保留。能力不足已被记录，没有将 unknown/unsupported/timeout 转成成功。
+ 
+-独立 Yul 不支持、未知 storage/memory、有限 opaque 规则、Slither fallback/timeout、MemorySSA truncation/widening、最终诊断传播不完备、未锁环境/无统一 CI 与未冻结实验规则均显式保留。此次未改变任何 unsupported/unknown 判定或吞掉异常。
++独立 STORAGE-ADDR-EQ-001 的历史目标源码缺失/ModuleNotFoundError 仍在原报告中，本轮不裁定那套模型的算法能力，也不豁免为已通过。原 P0-T2 编号级阻塞已被新用户要求替代，后增 Task Map 不成为此盘点前置依赖。
+ 
+-## 稳定交接与下一步注意事项
++交接产物是 capability map（20/7/五类/四类/G1–G8）、代码与机器证据、overview 和 PROJECT_STATUS；稳定 SFIR v1 接口不变，MemorySSA/SinkResolver 职责不变。
+ 
+-以 capability map、上述代码定位和机器证据为 P0-T3 的能力输入。先由用户补充 P2 四项职责，再完成 P0-T2 alias 编号影响表及专项验收；不得直接把 PARTIAL 当 COMPLETE。后续缺口安排和框架/实施计划冻结由 P0-T3 负责，不在本 Task 设计完整方案。
++**Next Allowed Task：等待用户授权 P0-T3，由其消费能力与最小边界并冻结补足安排。本次完成后停止，不自动进入下一 Task。**
+ 
+-必须复用现行 SFIR、MemorySSA 与 SinkResolver；不能因 alias 不足就另建整套 IR，也不能依 source order/节点编号推断执行顺序或把替代前的 effect 再次计为语义行为。
+-
+-**Next Allowed Task：补齐 P0-T2 编号级交接与验收；不自动进入 P0-T3。**
++以下独立 review 段是此前记录，保留其状态；不改变上述 P0-T2 COMPLETE 判定。
+ 
+ ## 独立问题审查：STORAGE-ADDR-EQ-001
+ 

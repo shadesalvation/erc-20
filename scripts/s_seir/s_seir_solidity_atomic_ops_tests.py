@@ -14,7 +14,10 @@ for candidate in (SCRIPT_ROOT / "legacy_yul", SCRIPT_ROOT / "s_seir"):
 
 from assembly_ast_cfg import discover_solc
 from s_seir_pipeline import build_sseir
-from s_seir_semantic_fact_adapter import build_function_level_semantic_fact_payload
+from s_seir_semantic_fact_adapter import (
+    build_function_level_semantic_fact_payload,
+    build_function_level_semantic_fact_ir_payload,
+)
 
 
 SAMPLES = {
@@ -94,7 +97,19 @@ def run() -> None:
     assert allowance_write["semantic"]["location"] == allowance_location["semantic"]["location"]
     assert allowance_location["fact_role"] == "support"
     assert allowance_write["fact_role"] == "effect"
-    assert allowance_write["semantic"]["value"] == "value"
+    # ADR P0-T1-001: StateWrite consumes the already evaluated SSA value.
+    assert allowance_write["semantic"]["value"] == allowance_write["rvalue"] == "value_1"
+    approve_ir = build_function_level_semantic_fact_ir_payload([approve])["functions"][0]
+    final_writes = [node for node in approve_ir["semantic_nodes"] if node["kind"] == "StateWrite"]
+    assert len(final_writes) == 1
+    final_write = final_writes[0]
+    assert final_write["semantic"]["value"] == final_write["rvalue"] == "value_1"
+    assert final_write["semantic"]["location"] == allowance_location["semantic"]["location"]
+    value_read = next(read for read in final_write["fact_ssa"]["reads"] if read["value"] == "value_1")
+    value_definition = next(definition for definition in approve_ir["fact_ssa"]["definitions"]
+                            if definition["version"] == value_read["version"])
+    assert value_definition["definition_kind"] == "entry"
+    assert value_definition["base_name"] == "value"
     print("PASS storage location: Solidity mapping writes use a canonical location fact")
 
     transfer_from_facts = [fact for fact in facts if fact.get("function") == "transferFrom"]
