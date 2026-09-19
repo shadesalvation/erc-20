@@ -771,8 +771,28 @@ def test_function_level_payload_preserves_distinct_yul_operations() -> None:
     ]
 
 
+def test_state_read_type_and_predicate_structure_are_additive() -> None:
+    from s_seir_predicate_lifter import PredicateLifter
+    from s_seir_model import EffectNode
+    from s_seir_yul_eval_order import YulEvaluationOrder
+    ast_node = {"nodeType": "YulFunctionCall", "functionName": {"nodeType": "YulIdentifier", "name": "iszero"},
+                "arguments": [{"nodeType": "YulIdentifier", "name": "amount"}]}
+    branch = EffectNode("branch", "Branch", ["asm_s_1"], {"condition_evaluation": YulEvaluationOrder("asm_s_1").materialize(ast_node)})
+    typed = PredicateLifter._typed_evaluation(branch, "pred")
+    overlays = [overlay("MappingRead", {"state_variable": "balances", "access": "balances[to]", "keys": ["to"], "target": "read", "result_type": "uint256"}),
+                overlay("Predicate", {"predicate_id": "pred", "expression": "(amount == 0)", "status": "resolved", "context": "condition", "typed_predicate": typed}, "pred")]
+    facts = [x.to_dict() for x in SSeirFactAdapter().function_facts(function(overlays))]
+    assert facts[0]["semantic"]["result_type"] == "uint256"
+    assert facts[0]["semantic"]["resolution_status"] == "resolved"
+    assert facts[1]["semantic"]["typed_predicate"] == typed
+    overlays[0]["attrs"].pop("result_type")
+    missing = SSeirFactAdapter().function_facts(function(overlays))[0].to_dict()
+    assert "result_type" not in missing["semantic"]
+
+
 if __name__ == "__main__":
     tests = [
+        test_state_read_type_and_predicate_structure_are_additive,
         test_sseir_mapping_write_becomes_state_write_fact,
         test_resolved_mapping_slot_projects_only_high_storage_location,
         test_unresolved_mapping_slot_becomes_opaque_storage_location,

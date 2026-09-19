@@ -79,6 +79,7 @@ class PredicateLifter:
                     "semantic_model": "cfg_reaching_definition_predicate",
                     "evaluation_model": "yul_ast_right_to_left_function_call_arguments",
                     "dependencies": self._rough_reads(expression),
+                    "typed_predicate": self._typed_evaluation(branch, predicate_id),
                 },
             ))
 
@@ -161,6 +162,60 @@ class PredicateLifter:
             completed.append(overlay)
         completed.extend(predicates)
         return completed
+
+    @staticmethod
+    def _typed_evaluation(branch: EffectNode, predicate_id: str) -> Json:
+        """Project the existing AST evaluation DAG; never parse expression text.
+
+        This small evidence subset is deliberately separate from rendering.
+        Each identifier stays an AST operand locator until SFIR FactSSA supplies
+        its exact definition. Unsupported calls keep an explicit failure record.
+        """
+        evaluation = branch.attrs.get("condition_evaluation") or {}
+        model = "yul_ast_right_to_left_function_call_arguments"
+        evidence = {"format": "yul-typed-predicate/v1", "predicate_ref": predicate_id,
+                    "evaluation_model": evaluation.get("evaluation_model")}
+        if evaluation.get("evaluation_model") != model:
+            return {**evidence, "resolution_status": "unsupported", "reason": "missing AST evaluation evidence"}
+        values = {}
+        try:
+            for step in evaluation.get("steps") or []:
+                args, operands = step.get("argument_nodes"), []
+                if not isinstance(args, list) or len(args) != len(step.get("evaluated_args") or []):
+                    raise ValueError("missing AST argument identities")
+                for index, arg in enumerate(args):
+                    identity = {"predicate_ref": predicate_id, "step_temp": step.get("temp"),
+                                "argument_index": index, "ast_node": arg}
+                    if arg.get("node_type") == "YulIdentifier" and arg.get("name"):
+                        operands.append({"op": "read", "type": "uint256", "identity": identity})
+                    elif arg.get("node_type") == "YulLiteral" and arg.get("literal_kind") == "number":
+                        raw = str(arg.get("value"))
+                        number = int(raw, 16) if raw.startswith("0x") else int(raw)
+                        if not 0 <= number < 2**256:
+                            raise ValueError("invalid Yul word literal")
+                        operands.append({"op": "literal", "type": "uint256", "literal": str(number), "identity": identity})
+                    elif arg.get("node_type") == "YulFunctionCall" and arg.get("result_temp") in values:
+                        operands.append(values[arg["result_temp"]])
+                    else:
+                        raise ValueError("unresolved AST operand")
+                call = step.get("call")
+                if call in {"eq", "lt", "gt", "slt", "sgt"} and len(operands) == 2 and all(x["type"] == "uint256" for x in operands):
+                    value = {"op": call, "type": "bool", "operands": operands}
+                elif call == "iszero" and len(operands) == 1:
+                    value = {"op": call, "type": "bool", "operands": operands}
+                elif call in {"and", "or"} and len(operands) == 2 and all(x["type"] == "bool" for x in operands):
+                    value = {"op": call, "type": "bool", "operands": operands}
+                else:
+                    raise ValueError("unsupported AST predicate call: " + str(call))
+                if not step.get("temp") or step["temp"] in values:
+                    raise ValueError("duplicate/missing evaluation temporary")
+                values[step["temp"]] = {**value, "evaluation_ref": {"predicate_ref": predicate_id, "step_temp": step["temp"]}}
+            expression = values.get(evaluation.get("final"))
+            if not expression or expression["type"] != "bool":
+                raise ValueError("no supported final typed Bool evaluation")
+            return {**evidence, "resolution_status": "resolved", "expression": expression}
+        except (ValueError, TypeError) as exc:
+            return {**evidence, "resolution_status": "unsupported", "reason": str(exc)}
 
     def _predicate_expression(
         self,

@@ -360,6 +360,7 @@ class SSeirFactAdapter:
                                  "status": attrs.get("status"),
                                  "semantic_model": attrs.get("semantic_model"),
                                  "switch_edges": attrs.get("switch_edges"),
+                                 "typed_predicate": attrs.get("typed_predicate"),
                              })
         if kind in {"CustomErrorRevert", "RawRevertBytes", "RevertOverlay"}:
             condition = attrs.get("guard") or attrs.get("condition") or attrs.get("nearest_condition")
@@ -1055,6 +1056,9 @@ class SSeirFactAdapter:
             "keys": attrs.get("keys") or bracket_keys(str(access or "")),
             "location": SSeirFactAdapter.storage_location(attrs),
             "candidate_status": attrs.get("status"),
+            "result_type": attrs.get("result_type") if operation == "state_read" else None,
+            "resolution_status": ("resolved" if SSeirFactAdapter.is_resolved_storage_location(SSeirFactAdapter.storage_location(attrs))
+                                  and not attrs.get("unresolved_reason") and attrs.get("status") in {None, "resolved"} else "unresolved") if operation == "state_read" else None,
         })
 
     @staticmethod

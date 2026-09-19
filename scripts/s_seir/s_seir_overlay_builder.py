@@ -968,6 +968,7 @@ class SemanticOverlayBuilder:
                 kind = 'StateVariableRead' if e.kind == 'StorageRead' else 'StateVariableWrite'
                 attrs = {
                     'access': direct_state.name,
+                    'result_type': getattr(direct_state, 'type_string', None) if e.kind == 'StorageRead' else None,
                     'target': value if e.kind == 'StorageRead' else None,
                     'value': value_normalized if e.kind == 'StorageWrite' else None,
                     'value_yul': value if e.kind == 'StorageWrite' else None,

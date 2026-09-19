@@ -567,11 +567,32 @@ class SemanticFactIRBridge:
                 continue
             if not SemanticFactIRBridge._is_terminal_terminator((by_id.get(failure_block) or {}).get("terminator") or {}):
                 continue
+            # Preserve the original CFG polarity before the Require projection
+            # flips the failure branch. This is structural evidence, not a
+            # comparison/parser of rendered condition expressions.
+            predicates = [p for p in nodes if p.get("kind") == "BranchCondition"
+                          and (p.get("placement") or {}).get("anchor_block") == guard_block]
+            predicate_binding = None
+            original_failure_kind = SemanticFactIRBridge._canonical_branch_edge_kind(str(failing[0].get("kind") or ""))
+            original_continuation_kind = SemanticFactIRBridge._canonical_branch_edge_kind(str(continuing[0].get("kind") or ""))
+            if (len(predicates) == 1 and {original_failure_kind, original_continuation_kind} == {"true", "false"}
+                    and (by_id[guard_block].get("terminator") or {}).get("kind") == "Branch"):
+                predicate_binding = {
+                    "rule": "require-continuation-from-original-cfg-polarity/v1",
+                    "semantic_id": predicates[0]["semantic_id"],
+                    "condition_polarity": original_continuation_kind == "true",
+                    "failure_block": failure_block,
+                    "failure_edge_id": failing[0]["edge_id"],
+                    "continuation_edge_id": continuing[0]["edge_id"],
+                    "original_failure_kind": original_failure_kind,
+                    "original_continuation_kind": original_continuation_kind,
+                }
             by_id[guard_block]["terminator"] = {
                 "kind": "Require",
                 "condition": condition,
                 "on_fail": "revert",
                 "failure_predicates": (node.get("semantic") or {}).get("failure_predicates") or [],
+                **({"predicate_binding": predicate_binding} if predicate_binding else {}),
             }
             continuing[0]["kind"] = "true"
             continuing[0]["guard"] = condition

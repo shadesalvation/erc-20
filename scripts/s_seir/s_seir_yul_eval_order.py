@@ -19,6 +19,7 @@ class EvaluationStep:
     call: str | None
     raw_args: list[str]
     evaluated_args: list[str]
+    argument_nodes: list[dict[str, Any]]
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -29,6 +30,7 @@ class EvaluationStep:
             "call": self.call,
             "raw_args": self.raw_args,
             "evaluated_args": self.evaluated_args,
+            "argument_nodes": self.argument_nodes,
         }
 
 
@@ -76,6 +78,14 @@ class YulEvaluationOrder:
             call=call,
             raw_args=raw_args,
             evaluated_args=evaluated_args,
+            # Preserve AST leaf kind/identity instead of requiring consumers
+            # to reverse-parse raw_args or normalized expression strings.
+            argument_nodes=[{
+                "node_type": arg.get("nodeType"),
+                **({"name": arg.get("name")} if arg.get("nodeType") == "YulIdentifier" else {}),
+                **({"value": arg.get("value"), "literal_kind": arg.get("kind")} if arg.get("nodeType") == "YulLiteral" else {}),
+                **({"result_temp": evaluated_args[index]} if arg.get("nodeType") == "YulFunctionCall" else {}),
+            } for index, arg in enumerate(arguments)],
         ))
         return temp
 

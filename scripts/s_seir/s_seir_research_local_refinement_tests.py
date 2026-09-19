@@ -426,5 +426,191 @@ class UpstreamBoundaryTests(unittest.TestCase):
         self.assertNotIn("eval(", source)
 
 
+def yul_branch_fixture(*, address=False, state=False):
+    """AST producer -> additive SFIR evidence -> exact existing SSA fixture."""
+    from s_seir_yul_eval_order import YulEvaluationOrder
+    from s_seir_predicate_lifter import PredicateLifter
+    from s_seir_model import EffectNode
+    from s_seir_semantic_fact_adapter import SSeirFactAdapter
+    from s_seir_semantic_fact_adapter_tests import function, overlay
+    name = "x"
+    if address:
+        attrs = {"variable": name, "variable_type": "address", "check": "is_zero",
+                 "projection": "identity", "projection_expression": name,
+                 "condition": "x == address(0)", "status": "resolved"}
+        source = overlay("AddressZeroCheck", attrs)
+        condition = attrs["condition"]
+    else:
+        ast_node = {"nodeType": "YulFunctionCall", "functionName": {"nodeType": "YulIdentifier", "name": "lt"}, "arguments": [
+            {"nodeType": "YulIdentifier", "name": name}, {"nodeType": "YulLiteral", "kind": "number", "value": "8"}]}
+        evaluation = YulEvaluationOrder("branch").materialize(ast_node)
+        branch = EffectNode("branch", "Branch", ["stmt"], {"condition_evaluation": evaluation})
+        condition = "(x < 8)"
+        source = overlay("Predicate", {"predicate_id": "pred_ast", "expression": condition,
+                         "context": "condition", "status": "resolved",
+                         "typed_predicate": PredicateLifter._typed_evaluation(branch, "pred_ast")})
+    adapted = SSeirFactAdapter().function_facts(function([source]))[0].to_dict()
+    sfir = typed_branch_fixture([], condition=condition, parameter_type="address" if address else "uint256")
+    f = sfir["functions"][0]
+    pred = f["semantic_nodes"][0]
+    pred.update({k: adapted[k] for k in ("kind", "semantic", "evidence", "reads", "writes", "rvalue", "fact_role") if k in adapted})
+    pred["fact_ssa"]["reads"] = [{"value": "x", "binding_id": "decl:x:value", "version": "fssa:x:entry"}]
+    if state:
+        read = node("read", "entry", kind="StateRead")
+        read.update(fact_role="value", lvalue="x", writes=["x"], reads=["balances[key]"], semantic={
+            "operation": "state_read", "result_type": "uint256", "resolution_status": "resolved",
+            "location": {"kind": "mapping", "state_variable": "balances", "access": "balances[key]", "keys": ["key"]}})
+        read["fact_ssa"] = {"reads": [{"value": "balances[key]", "binding_id": "location", "version": "storage:entry"}],
+                            "writes": [{"value": "x", "binding_id": "read:value", "version": "read:result"}]}
+        f["semantic_nodes"].insert(0, read)
+        f["fact_cfg"]["blocks"][0]["semantic_ids"].insert(0, "read")
+        f["fact_ssa"]["bindings"] += [{"binding_id": "location", "facet": "storage_location", "identity_status": "semantic_storage_location",
+            "state_variable": "balances", "access": "balances[key]", "keys": ["key"]}, {"binding_id": "read:value", "type": "uint256"}]
+        f["fact_ssa"]["definitions"] += [{"version": "storage:entry", "binding_id": "location", "definition_kind": "entry", "owner_semantic_id": None},
+            {"version": "read:result", "binding_id": "read:value", "definition_kind": "semantic_definition", "block_id": "entry", "owner_semantic_id": "read"}]
+        pred["fact_ssa"]["reads"] = [{"value": "x", "binding_id": "read:value", "version": "read:result"}]
+    return sfir
+
+
+class PosteriorCorrectionTests(unittest.TestCase):
+    def test_address_zero_without_slither_uses_exact_ssa(self):
+        sfir = yul_branch_fixture(address=True)
+        self.assertNotIn("slither", sfir["functions"][0]["semantic_nodes"][0]["evidence"])
+        rows = entry_rows(execute(sfir)[2])
+        self.assertEqual(2, len(rows))
+        self.assertTrue(all(x["edge"]["payload"]["feasibility"] == "FEASIBLE" for x in rows))
+        self.assertTrue(all(x["scope"]["predicates"][0]["expression"]["type"] == r.BOOL for x in rows))
+        sfir["functions"][0]["semantic_nodes"][0]["fact_ssa"]["reads"] = []
+        self.assertTrue(all(x["edge"]["status"]["solver"] == "UNSUPPORTED" for x in entry_rows(execute(sfir)[2])))
+
+    def test_structured_yul_ast_required_no_string_fallback(self):
+        sfir = yul_branch_fixture()
+        self.assertTrue(all(x["edge"]["payload"]["feasibility"] == "FEASIBLE" for x in entry_rows(execute(sfir)[2])))
+        for field in ("op", "type", "identity"):
+            broken = deepcopy(sfir)
+            tree = broken["functions"][0]["semantic_nodes"][0]["semantic"]["typed_predicate"]["expression"]
+            (tree["operands"][0] if field == "identity" else tree).pop(field)
+            rows = entry_rows(execute(broken)[2])
+            self.assertTrue(all(x["edge"]["status"]["solver"] == "UNSUPPORTED" for x in rows), field)
+            self.assertTrue(all(x["scope"]["scope_completeness"] == "PARTIAL" for x in rows))
+
+    def test_exact_state_leaf_and_p1_t7_consumption(self):
+        from s_seir_research_guards import build_module1_result, validate_module1_result
+        sfir = yul_branch_fixture(state=True)
+        before = deepcopy(sfir)
+        upstream, _, result = execute(sfir)
+        rows = entry_rows(result)
+        self.assertTrue(all(x["edge"]["payload"]["feasibility"] == "FEASIBLE" for x in rows))
+        symbols = rows[0]["scope"]["symbol_bindings"]
+        self.assertEqual("STATE_READ", symbols[0]["role"])
+        self.assertEqual({"SEMANTIC_NODE", "STORAGE_ACCESS", "DEFINITION"}, {x["source_kind"] for x in symbols[0]["source_refs"]})
+        actions = extract_semantic_actions(sfir, input_fingerprint=INPUT_FINGERPRINT)
+        sealed = build_module1_result(result, actions)
+        validate_module1_result(sealed)
+        self.assertEqual(before, sfir)
+        self.assertEqual({e["id"] for e in upstream["edges"]}, {x["candidate_id"] for x in result["refinements"]})
+
+    def test_state_leaf_missing_type_location_version_owner(self):
+        for missing in ("type", "location", "read_version", "write_version", "owner", "phi", "target_type"):
+            sfir = yul_branch_fixture(state=True); f = sfir["functions"][0]; read = f["semantic_nodes"][0]
+            if missing == "type": read["semantic"].pop("result_type")
+            if missing == "location": read["semantic"]["location"].pop("state_variable")
+            if missing == "read_version": read["fact_ssa"]["reads"][0].pop("version")
+            if missing == "write_version": read["fact_ssa"]["writes"][0].pop("version")
+            if missing == "owner": f["fact_ssa"]["definitions"][-1].pop("owner_semantic_id")
+            if missing == "phi": f["fact_ssa"]["definitions"][-2]["definition_kind"] = "phi"
+            if missing == "target_type": f["fact_ssa"]["bindings"][-1]["type"] = "uint128"
+            rows = entry_rows(execute(sfir)[2])
+            self.assertTrue(all(x["edge"]["payload"]["feasibility"] == "UNRESOLVED" for x in rows), missing)
+            self.assertTrue(all(x["edge"]["status"]["solver"] == "UNSUPPORTED" for x in rows), missing)
+
+    def test_read_occurrence_identity_no_alias_and_post_effect_rejected(self):
+        sfir = yul_branch_fixture(state=True); f = sfir["functions"][0]
+        read = f["semantic_nodes"][0]; other = deepcopy(read); other["semantic_id"] = "other_read"
+        other["fact_ssa"]["writes"][0].update(binding_id="other:value", version="other:result")
+        f["fact_ssa"]["definitions"].append({**f["fact_ssa"]["definitions"][-1], "version": "other:result", "binding_id": "other:value", "owner_semantic_id": "other_read"})
+        f["semantic_nodes"].insert(1, other); f["fact_cfg"]["blocks"][0]["semantic_ids"].insert(1, "other_read")
+        upstream, _, result = execute(sfir)
+        row = entry_rows(result)[0]
+        self.assertEqual(2, len({s["symbol_ref"] for s in row["scope"]["symbol_bindings"] if s["role"] == "STATE_READ"}))
+        candidate = upstream["edges"][0]
+        for kind in ("StateWrite", "ExternalCall"):
+            broken = deepcopy(f); prior = node("prior", "entry", kind=kind); prior["fact_role"] = "effect"
+            broken["semantic_nodes"].insert(0, prior); broken["fact_cfg"]["blocks"][0]["semantic_ids"].insert(0, "prior")
+            closure = r._Closure(broken, candidate, ["entry"], r.DEFAULT_CONFIG)
+            with self.assertRaisesRegex(r.Unsupported, "storage/effectful"):
+                closure.state_read(read)
+        closure = r._Closure(f, candidate, ["entry", "entry"], r.DEFAULT_CONFIG)
+        with self.assertRaisesRegex(r.Unsupported, "dynamic iteration"):
+            closure.state_read(read)
+
+    def test_explicit_transparency_totality_and_missing_root(self):
+        sfir = yul_branch_fixture(); f = sfir["functions"][0]
+        support = node("location", "entry", kind="StorageLocationResolve")
+        support.update(fact_role="support", semantic={"operation": "storage_location_resolve", "resolution_status": "resolved",
+            "location": {"kind": "mapping", "state_variable": "balances", "access": "balances[key]", "keys": ["key"]}},
+            fact_ssa={"reads": [{"binding_id": "root", "version": "root:entry"}], "writes": []})
+        f["fact_ssa"]["bindings"].append({"binding_id": "root", "kind": "state", "declaration_id": 45, "base_name": "balances"})
+        f["fact_ssa"]["definitions"].append({"binding_id": "root", "version": "root:entry", "definition_kind": "entry"})
+        f["semantic_nodes"].insert(0, support); f["fact_cfg"]["blocks"][0]["semantic_ids"].insert(0, "location")
+        rows = entry_rows(execute(sfir)[2])
+        self.assertTrue(all(x["scope"]["scope_completeness"] == "COMPLETE" for x in rows))
+        self.assertEqual("resolved-semantic-storage-location-is-total/v1", rows[0]["scope"]["reachability_transparent_evidence"][0]["rule"])
+        for mutation in ("root", "unresolved", "unknown", "effect"):
+            broken = deepcopy(sfir); n = broken["functions"][0]["semantic_nodes"][0]
+            if mutation == "root": n["fact_ssa"]["reads"] = []
+            if mutation == "unresolved": n["semantic"]["resolution_status"] = "unresolved"
+            if mutation == "unknown": n["kind"] = "ValueCompute"
+            if mutation == "effect": n["fact_role"] = "effect"
+            self.assertTrue(all(x["scope"]["scope_completeness"] == "PARTIAL" for x in entry_rows(execute(broken)[2])), mutation)
+
+    def test_unused_checked_computation_does_not_become_transparent(self):
+        for checked, completeness in ((False, "COMPLETE"), (True, "PARTIAL")):
+            sfir = typed_branch_fixture([binary("unused", "+", operand("x"), operand(1, literal=True), "uint8", checked),
+                                        binary("p", "<", operand("x"), operand(8, literal=True))])
+            self.assertTrue(all(x["scope"]["scope_completeness"] == completeness for x in entry_rows(execute(sfir)[2])))
+        for kind, role in (("ValueCompute", "support"), ("ExternalCall", "effect")):
+            sfir = typed_branch_fixture([binary("unused", "+", operand("x"), operand(1, literal=True), "uint8", False),
+                                        binary("p", "<", operand("x"), operand(8, literal=True))])
+            sfir["functions"][0]["semantic_nodes"][0].update(kind=kind, fact_role=role)
+            self.assertTrue(all(x["scope"]["scope_completeness"] == "PARTIAL" for x in entry_rows(execute(sfir)[2])))
+
+    def test_typed_evidence_reorder_and_conflicting_literal(self):
+        sfir = yul_branch_fixture(state=True)
+        original = execute(sfir)[2]
+        reordered = deepcopy(sfir)
+        f = reordered["functions"][0]
+        f["semantic_nodes"].reverse()
+        f["fact_ssa"]["definitions"].reverse()
+        f["fact_ssa"]["bindings"].reverse()
+        f["fact_cfg"]["edges"].reverse()
+        self.assertEqual(r.serialize_refinement_result(original), r.serialize_refinement_result(execute(reordered)[2]))
+        sfir["functions"][0]["semantic_nodes"][1]["semantic"]["typed_predicate"]["expression"]["operands"][1]["literal"] = "9"
+        self.assertTrue(all(x["edge"]["status"]["solver"] == "UNSUPPORTED" for x in entry_rows(execute(sfir)[2])))
+
+    def test_unused_unsupported_cast_is_not_transparent(self):
+        sfir = typed_branch_fixture([
+            {"kind": "TypeConversion", "lvalue": operand("unused", "bool"), "variable": operand("x")},
+            binary("p", "<", operand("x"), operand(8, literal=True))])
+        rows = entry_rows(execute(sfir)[2])
+        self.assertTrue(all(x["scope"]["scope_completeness"] == "PARTIAL" for x in rows))
+        self.assertTrue(all(any(reason["reason"] == "Bool conversion is not supported"
+                                for reason in x["scope"]["incomplete_reasons"]) for x in rows))
+
+    def test_require_polarity_is_structural_not_inferred_from_text(self):
+        from s_seir_semantic_fact_ir import SemanticFactIRBridge
+        sfir = yul_branch_fixture(); f = sfir["functions"][0]; cfg = f["fact_cfg"]
+        cfg["block_by_id"] = {b["block_id"]: b for b in cfg["blocks"]}
+        require = {"kind": "Require", "condition": "opposite rendering", "placement": {"anchor_block": "entry"},
+                   "semantic_provenance": {"require_failure_cfg_node": "raw_yes"}}
+        SemanticFactIRBridge._normalize_require_guards(cfg, [*f["semantic_nodes"], require], {"raw_yes": "yes"})
+        binding = cfg["blocks"][0]["terminator"]["predicate_binding"]
+        self.assertFalse(binding["condition_polarity"])
+        rows = entry_rows(execute(sfir)[2])
+        self.assertTrue(all(x["scope"]["predicates"][0]["expression"]["op"] == "!" for x in rows))
+        self.assertTrue(all(x["edge"]["payload"]["feasibility"] == "FEASIBLE" for x in rows))
+        binding["semantic_id"] = "wrong"
+        self.assertTrue(all(x["edge"]["status"]["solver"] == "UNSUPPORTED" for x in entry_rows(execute(sfir)[2])))
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

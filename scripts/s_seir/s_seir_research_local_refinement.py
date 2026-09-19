@@ -22,7 +22,7 @@ from s_seir_research_control_edges import (
 )
 from s_seir_research_propagation import query_node_context_state, validate_result_evidence
 
-VERSION = "p1-t6-v1"
+VERSION = "p1-t6r-v1"
 TERM_FIELDS = {"op", "type", "operands", "literal", "symbol_ref", "arithmetic_mode"}
 GUARD_FIELDS = {"source_predicate_refs", "expression", "symbol_bindings", "scope",
                 "assumptions", "normalization_rules"}
@@ -276,6 +276,164 @@ class _Closure:
         if self.expansions > self.config["max_expansions"] or depth > self.config["max_depth"]:
             raise BudgetExceeded("local symbolic expansion/depth budget exhausted")
 
+    def before(self, node):
+        """Existing carrier + SFIR block order only, with no path discovery."""
+        anchor = (node.get("placement") or {}).get("anchor_block")
+        if anchor not in self.block_ids or len(set(self.block_ids)) != len(self.block_ids):
+            raise Unsupported("read requires unique carrier occurrence; dynamic iteration identity unavailable")
+        preceding = []
+        for bid in self.block_ids:
+            order = self.blocks[bid].get("semantic_ids") or []
+            if len(order) != len(set(order)) or any(s not in self.nodes for s in order):
+                raise Unsupported("read lacks closed SFIR operation order")
+            if bid == anchor:
+                if order.count(node["semantic_id"]) != 1:
+                    raise Unsupported("read occurrence missing from block order")
+                return preceding + [self.nodes[s] for s in order[:order.index(node["semantic_id"])]]
+            preceding.extend(self.nodes[s] for s in order)
+        raise Unsupported("read not on carrier")
+
+    def resolved_location(self, node):
+        semantic = node.get("semantic") or {}
+        location = semantic.get("location")
+        if (semantic.get("resolution_status") != "resolved" or not isinstance(location, dict)
+                or location.get("kind") not in {"state_variable", "mapping"}
+                or not location.get("state_variable") or not location.get("access")
+                or (location["kind"] == "mapping" and not location.get("keys"))
+                or semantic.get("candidate_status") not in {None, "resolved"}):
+            raise Unsupported("storage location lacks resolved scalar/mapping semantic evidence")
+        return location
+
+    def state_read(self, node):
+        """An exact read-point value, never an address alias or persistent RD."""
+        semantic = node.get("semantic") or {}
+        if node.get("kind") != "StateRead" or semantic.get("operation") != "state_read":
+            raise Unsupported("not an explicit StateRead")
+        location = self.resolved_location(node)
+        typ = typed_type(semantic.get("result_type"))
+        ssa = node.get("fact_ssa") or {}
+        reads, writes = ssa.get("reads", []), ssa.get("writes", [])
+        if len(reads) != 1 or len(writes) != 1:
+            raise Unsupported("StateRead requires exact storage read and result write versions")
+        read, write = reads[0], writes[0]
+        binding = self.bindings.get(read.get("binding_id"), {})
+        read_def, write_def = self.defs.get(read.get("version"), {}), self.defs.get(write.get("version"), {})
+        if (binding.get("facet") != "storage_location" or binding.get("identity_status") != "semantic_storage_location"
+                or binding.get("access") != location["access"] or binding.get("state_variable") != location["state_variable"]
+                or list(binding.get("keys") or []) != list(location.get("keys") or [])
+                or read_def.get("binding_id") != read.get("binding_id") or not read.get("version")
+                or read_def.get("definition_kind") != "entry"):
+            raise Unsupported("StateRead storage identity/version is missing, ambiguous or post-write")
+        if (not write.get("version") or write_def.get("binding_id") != write.get("binding_id")
+                or write_def.get("definition_kind") != "semantic_definition"
+                or write_def.get("owner_semantic_id") != node["semantic_id"]
+                or write_def.get("block_id") != node.get("placement", {}).get("anchor_block")
+                or write.get("value") != node.get("lvalue")):
+            raise Unsupported("StateRead result definition/owner is not exact")
+        result_binding = self.bindings.get(write.get("binding_id"), {})
+        if result_binding.get("type") and typed_type(result_binding["type"]) != typ:
+            raise Unsupported("StateRead result type conflicts with target declaration")
+        for prior in self.before(node):
+            if prior.get("kind") == "StateWrite" or (
+                prior.get("fact_role") == "effect" and prior.get("kind") not in {"StateRead"}
+            ):
+                raise Unsupported("StateRead follows storage/effectful operation; no alias/version proof")
+        occurrence = self.ref("SEMANTIC_NODE", {"semantic_id": node["semantic_id"]})
+        location_ref = self.ref("STORAGE_ACCESS", {"semantic_id": node["semantic_id"], "field_path": "semantic.location"})
+        definition_ref = self.ref("DEFINITION", {"version": write["version"], "binding_id": write["binding_id"]})
+        storage_version_ref = self.ref("DEFINITION", {"version": read["version"], "binding_id": read["binding_id"]})
+        refs = [occurrence, location_ref, definition_ref, storage_version_ref]
+        sid = stable_identity("symbol", {"read_occurrence": occurrence, "location_ref": location_ref,
+                                        "definition_ref": definition_ref, "storage_version_ref": storage_version_ref,
+                                        "location": location})
+        self.symbols[sid] = {"symbol_ref": sid, "type": typ, "source_refs": refs,
+                             "role": "STATE_READ", "value_semantics": "unknown value observed at this exact read point; no alias/equality claim"}
+        self.source_refs.extend(refs)
+        return term("symbol", typ, symbol_ref=sid)
+
+    def typed_yul(self, value, node, branch_ref, depth=0):
+        self.tick(depth)
+        if not isinstance(value, dict) or not value.get("type"):
+            raise Unsupported("Yul predicate lacks structured operand type")
+        op, typ = value.get("op"), typed_type(value["type"])
+        if op in {"read", "literal"}:
+            identity = value.get("identity") or {}
+            ast = identity.get("ast_node") or {}
+            if identity.get("predicate_ref") != branch_ref or not identity.get("step_temp") or "argument_index" not in identity:
+                raise Unsupported("Yul predicate lacks AST operand identity")
+            if op == "read" and ast.get("node_type") == "YulIdentifier" and ast.get("name"):
+                return self.operand({"text": ast["name"], "type": value["type"], "is_constant": False}, node, depth + 1)
+            if op == "literal" and ast.get("node_type") == "YulLiteral" and ast.get("literal_kind") == "number":
+                try:
+                    raw_literal = str(ast["value"])
+                    number = int(raw_literal, 16) if raw_literal.startswith("0x") else int(raw_literal)
+                    if typ != typed_type("uint256") or str(number) != value.get("literal"):
+                        raise ValueError("literal mismatch")
+                except (KeyError, ValueError, TypeError):
+                    raise Unsupported("Yul literal differs from AST evidence") from None
+                result = term("literal", typ, literal=value.get("literal"))
+                validate_term(result)
+                return result
+            raise Unsupported("Yul operand kind/identity mismatch")
+        ref = value.get("evaluation_ref") or {}
+        if ref.get("predicate_ref") != branch_ref or not ref.get("step_temp"):
+            raise Unsupported("Yul operator lacks AST evaluation reference")
+        args = [self.typed_yul(a, node, branch_ref, depth + 1) for a in value.get("operands", [])]
+        if op in {"eq", "lt", "gt", "slt", "sgt"} and len(args) == 2:
+            if any(a["type"] != typed_type("uint256") for a in args):
+                raise Unsupported("Yul comparison requires exact 256-bit word operands")
+            if op in {"slt", "sgt"}:
+                args = [term("cast", typed_type("int256"), [a]) for a in args]
+            result = term({"eq": "==", "lt": "<", "gt": ">", "slt": "<", "sgt": ">"}[op], BOOL, args)
+        elif op == "iszero" and len(args) == 1:
+            result = term("!", BOOL, args) if args[0]["type"] == BOOL else term("==", BOOL, [args[0], term("literal", args[0]["type"], literal="0")])
+        elif op in {"and", "or"} and len(args) == 2:
+            result = term("&&" if op == "and" else "||", BOOL, args, arithmetic_mode="EAGER")
+        else:
+            raise Unsupported("unsupported structured Yul predicate operator/arity")
+        if typ != BOOL:
+            raise Unsupported("Yul predicate result type mismatch")
+        validate_term(result)
+        return result
+
+    def transparent(self, node):
+        """A local totality check, not a kind-based blanket whitelist."""
+        self.tick(0)
+        semantic = node.get("semantic") or {}
+        if node.get("kind") == "StorageLocationResolve":
+            location = self.resolved_location(node)
+            if (semantic.get("operation") != "storage_location_resolve" or node.get("fact_role") != "support"
+                    or (node.get("fact_ssa") or {}).get("writes")):
+                raise Unsupported("storage location support node has unknown effects")
+            reads = (node.get("fact_ssa") or {}).get("reads", [])
+            if any(not x.get("version") or self.defs.get(x["version"], {}).get("binding_id") != x.get("binding_id")
+                   or self.defs[x["version"]].get("definition_kind") == "phi" for x in reads):
+                raise Unsupported("storage location support node lacks exact unambiguous input versions")
+            roots = [self.bindings.get(x.get("binding_id"), {}) for x in reads]
+            if not any(b.get("kind") == "state" and b.get("declaration_id") is not None and b.get("base_name") == location["state_variable"] for b in roots):
+                raise Unsupported("storage location support node lacks declared root evidence")
+            rule = "resolved-semantic-storage-location-is-total/v1"
+        elif node.get("kind") == "StateRead":
+            self.state_read(node)
+            rule = "exact-typed-state-read-is-total/v1"
+        else:
+            raw = (node.get("evidence") or {}).get("slither") or {}
+            supported_kinds = {"Assignment": "ValueAssign", "Binary": "BinaryOperation",
+                               "Unary": "UnaryOperation", "TypeConversion": "TypeConversion"}
+            if (raw.get("kind") not in supported_kinds or node.get("kind") != supported_kinds[raw["kind"]]
+                    or node.get("fact_role") != "support"):
+                raise Unsupported("carrier operation/failure semantics not covered by predicate closure")
+            expression = self.expression(node)
+            validate_term(expression)
+            def total(t):
+                return t["op"] != "unknown" and t["arithmetic_mode"] != "CHECKED" and all(total(a) for a in t["operands"])
+            if not total(expression):
+                raise Unsupported("carrier checked arithmetic definedness is not proven")
+            rule = "supported-total-typed-value/v1"
+        ref = self.ref("SEMANTIC_NODE", {"semantic_id": node["semantic_id"]})
+        self.source_refs.append(ref)
+        return {"rule": rule, "source_ref": ref, "claim": "no additional control/failure condition in Module 1 semantic abstraction"}
+
     def operand(self, raw, node, depth):
         self.tick(depth)
         if not isinstance(raw, dict):
@@ -347,6 +505,19 @@ class _Closure:
         self.active.add(sid)
         self.source_refs.append(self.ref("SEMANTIC_NODE", {"semantic_id": sid}))
         try:
+            semantic = node.get("semantic") or {}
+            if node.get("kind") == "StateRead":
+                return self.state_read(node)
+            if node.get("kind") == "BranchCondition" and semantic.get("operation") == "address_zero_check":
+                if semantic.get("status") != "resolved" or semantic.get("projection") != "identity" or semantic.get("variable_type") not in {"address", "address payable"} or semantic.get("check") not in {"is_zero", "is_nonzero"}:
+                    raise Unsupported("AddressZeroCheck lacks supported structured projection/type/check")
+                value = self.operand({"text": semantic.get("variable"), "type": semantic["variable_type"], "is_constant": False}, node, depth + 1)
+                return term("==" if semantic["check"] == "is_zero" else "!=", BOOL, [value, term("literal", value["type"], literal="0")])
+            if node.get("kind") == "BranchCondition" and semantic.get("operation") == "control_predicate":
+                structured = semantic.get("typed_predicate") or {}
+                if semantic.get("status") != "resolved" or structured.get("format") != "yul-typed-predicate/v1" or structured.get("resolution_status") != "resolved" or structured.get("evaluation_model") != "yul_ast_right_to_left_function_call_arguments" or structured.get("predicate_ref") != semantic.get("predicate_id") or not structured.get("predicate_ref"):
+                    raise Unsupported("Yul BranchCondition lacks structured typed AST evidence: " + str(structured.get("reason") or "missing representation"))
+                return self.typed_yul(structured.get("expression"), node, structured["predicate_ref"], depth + 1)
             raw = (node.get("evidence") or {}).get("slither") or {}
             kind = raw.get("kind")
             if kind == "Condition":
@@ -478,19 +649,44 @@ def build_candidate_scope(sfir, upstream, candidate_id, propagation_result, *, c
                 raise Unsupported("no unique existing BranchCondition in carrier block")
             node = nodes[0]
             value = ((node.get("evidence") or {}).get("slither") or {}).get("value")
-            if not isinstance(value, dict) or value.get("text") != condition:
+            semantic = node.get("semantic") or {}
+            polarity = True
+            if semantic.get("operation") in {"address_zero_check", "control_predicate"}:
+                terminator = block.get("terminator") or {}
+                binding = terminator.get("predicate_binding")
+                if binding:
+                    outgoing = [e for e in raw_edges if e.get("from") == raw["from"]]
+                    failing = [e for e in outgoing if e.get("edge_id") == binding.get("failure_edge_id")]
+                    continuing = [e for e in outgoing if e.get("edge_id") == binding.get("continuation_edge_id")]
+                    if (terminator.get("kind") != "Require" or len(outgoing) != 2 or len(failing) != 1 or len(continuing) != 1
+                            or failing[0].get("kind") != "false" or continuing[0].get("kind") != "true"
+                            or failing[0].get("to") != binding.get("failure_block")
+                            or binding.get("rule") != "require-continuation-from-original-cfg-polarity/v1"
+                            or binding.get("semantic_id") != node["semantic_id"]
+                            or {binding.get("original_failure_kind"), binding.get("original_continuation_kind")} != {"true", "false"}
+                            or type(binding.get("condition_polarity")) is not bool
+                            or binding["condition_polarity"] != (binding["original_continuation_kind"] == "true")):
+                        raise Unsupported("invalid structural Require predicate polarity evidence")
+                    polarity = binding["condition_polarity"]
+                elif semantic.get("expression") != condition or node.get("rvalue") != condition:
+                    raise Unsupported("structured BranchCondition/CFG association mismatch")
+            elif not isinstance(value, dict) or value.get("text") != condition:
                 raise Unsupported("BranchCondition lacks exact typed condition operand association")
             expression = closure.expression(node)
             if expression["type"] != BOOL:
                 raise Unsupported("condition is not typed Bool")
+            if not polarity:
+                expression = term("!", BOOL, [expression])
             predicates.append({"predicate_ref": closure.ref("SEMANTIC_NODE", {"semantic_id": node["semantic_id"]}),
-                               "edge_ref": ref, "expression": expression, "taken": taken})
+                               "edge_ref": ref, "expression": expression, "taken": taken,
+                               "condition_polarity": polarity})
         except Unsupported as exc:
             incomplete("TRUNCATED" if isinstance(exc, BudgetExceeded) else "UNSUPPORTED", str(exc), [ref])
     # Any checked/unsupported operation executed on the carrier can affect
-    # reachability even when its result is not a branch operand. Only trivial
-    # assignments and predicates already in the demanded closure are closed.
+    # reachability even when its result is not a branch operand. Additional
+    # nodes require an explicit typed totality / resolved support proof.
     used_nodes = {r["locator"].get("semantic_id") for r in closure.source_refs if r["source_kind"] == "SEMANTIC_NODE"}
+    transparent_evidence = []
     for bid in block_ids:
         block = closure.blocks.get(bid, {})
         ordered = block.get("semantic_ids") or []
@@ -510,15 +706,13 @@ def build_candidate_scope(sfir, upstream, candidate_id, propagation_result, *, c
             node = closure.nodes.get(sid)
             if node is None or sid in used_nodes:
                 continue
-            raw = (node.get("evidence") or {}).get("slither") or {}
-            if raw.get("kind") == "Assignment":
-                try:
-                    closure.expression(node)
-                    continue
-                except Unsupported as exc:
-                    incomplete("TRUNCATED" if isinstance(exc, BudgetExceeded) else "UNSUPPORTED", str(exc), [closure.ref("SEMANTIC_NODE", {"semantic_id": sid})])
-            else:
-                incomplete("INSUFFICIENT_EVIDENCE", "carrier operation/failure semantics not covered by predicate closure", [closure.ref("SEMANTIC_NODE", {"semantic_id": sid})])
+            try:
+                transparent_evidence.append(closure.transparent(node))
+            except Unsupported as exc:
+                code = "TRUNCATED" if isinstance(exc, BudgetExceeded) else "UNSUPPORTED"
+                if str(exc) == "carrier operation/failure semantics not covered by predicate closure":
+                    code = "INSUFFICIENT_EVIDENCE"
+                incomplete(code, str(exc), [closure.ref("SEMANTIC_NODE", {"semantic_id": sid})])
     taken_terms = [p["expression"] if p["taken"] else term("!", BOOL, [p["expression"]]) for p in predicates]
     if len(predicates) > config["max_depth"]:
         incomplete("TRUNCATED", "Guard construction depth budget exhausted", [candidate_id])
@@ -535,6 +729,7 @@ def build_candidate_scope(sfir, upstream, candidate_id, propagation_result, *, c
     return canonicalize({"candidate_id": candidate_id, "scope": scope, "carrier": carrier,
                          "scope_completeness": "PARTIAL" if reasons else "COMPLETE", "incomplete_reasons": _unique(reasons),
                          "query_safe": safe, "predicates": predicates, "base_assertions": [],
+                         "reachability_transparent_evidence": transparent_evidence,
                          "edge_assertions": taken_terms, "context_entries": context_entries,
                          "source_refs": _unique([*record["source_refs"], *closure.source_refs]),
                          "symbol_bindings": sorted(closure.symbols.values(), key=lambda s: s["symbol_ref"]),
@@ -689,11 +884,13 @@ def _refine_one(candidate, scope, backend):
         for old in (base_call, pos, neg):
             body = deepcopy(old["payload"])
             body["opaque_predicate_result"] = {"predicate_ref": p["predicate_ref"],
+                "condition_polarity": p["condition_polarity"],
                 "classification": classification, "evidence_refs": query_refs}
             new = _artifact("solver-evidence", candidate, body, old["status"], config, old["evidence_refs"])
             calls[calls.index(old)] = new
             replacement_calls.append(new)
         opaque.append({"predicate_ref": p["predicate_ref"], "classification": classification,
+                       "condition_polarity": p["condition_polarity"],
                        "evidence_refs": [c["id"] for c in replacement_calls],
                        "prefix_assertions": base, "scope": scope["scope"],
                        "base_infeasible": outcomes[0] == "UNSAT"})

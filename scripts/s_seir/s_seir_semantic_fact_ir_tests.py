@@ -79,6 +79,43 @@ def all_keys(value: object) -> set[str]:
 
 
 class SemanticFactIRBridgeTests(unittest.TestCase):
+    def test_typed_yul_evidence_survives_final_sfir_projection(self):
+        from s_seir_model import EffectNode
+        from s_seir_predicate_lifter import PredicateLifter
+        from s_seir_yul_eval_order import YulEvaluationOrder
+        ast_node = {"nodeType": "YulFunctionCall", "functionName": {"nodeType": "YulIdentifier", "name": "iszero"},
+                    "arguments": [{"nodeType": "YulIdentifier", "name": "amount"}]}
+        branch = EffectNode("branch", "Branch", ["stmt"], {"condition_evaluation": YulEvaluationOrder("stmt").materialize(ast_node)})
+        typed = PredicateLifter._typed_evaluation(branch, "predicate")
+        semantic = {"operation": "control_predicate", "predicate_id": "predicate", "context": "condition",
+                    "status": "resolved", "expression": "amount == 0", "typed_predicate": typed}
+        control = {"blocks": [block("guard", "yul")], "edges": []}
+        pred = yul("predicate", "guard", reads=["amount"], extra={"kind": "BranchCondition", "semantic": semantic})
+        result = SemanticFactIRBridge().build_function(function(control), [], [pred])
+        self.assertEqual(typed, result["semantic_nodes"][0]["semantic"]["typed_predicate"])
+        self.assertTrue(result["semantic_nodes"][0]["fact_ssa"]["reads"][0]["version"])
+
+    def test_require_projection_preserves_original_polarity_only_if_unique(self):
+        from copy import deepcopy
+        for ambiguous in (False, True):
+            guard = {"block_id": "guard", "terminator": {"kind": "Branch", "condition": "raw"}}
+            failure = {"block_id": "failure", "terminator": {"kind": "Revert"}}
+            cfg = {"block_by_id": {"guard": guard, "failure": failure}, "edges": [
+                {"edge_id": "bad", "from": "guard", "to": "failure", "kind": "true: raw", "guard": "raw"},
+                {"edge_id": "good", "from": "guard", "to": "ok", "kind": "false: raw", "guard": "!(raw)"}]}
+            pred = {"semantic_id": "predicate", "kind": "BranchCondition", "placement": {"anchor_block": "guard"}}
+            require = {"kind": "Require", "condition": "rendered complement", "placement": {"anchor_block": "guard"},
+                       "semantic_provenance": {"require_failure_cfg_node": "raw_failure"}}
+            nodes = [pred, require] + ([{**deepcopy(pred), "semantic_id": "second"}] if ambiguous else [])
+            SemanticFactIRBridge._normalize_require_guards(cfg, nodes, {"raw_failure": "failure"})
+            self.assertEqual("false", cfg["edges"][0]["kind"])
+            self.assertEqual("true", cfg["edges"][1]["kind"])
+            if ambiguous:
+                self.assertNotIn("predicate_binding", guard["terminator"])
+            else:
+                self.assertEqual(False, guard["terminator"]["predicate_binding"]["condition_polarity"])
+                self.assertEqual("predicate", guard["terminator"]["predicate_binding"]["semantic_id"])
+
     def test_call_output_relation_is_semantic_not_fact_ssa(self) -> None:
         control = {"blocks": [block("call", "yul"), block("read", "yul")], "edges": [{"from": "call", "to": "read", "kind": "next"}]}
         call = yul("call_overlay", "call", extra={

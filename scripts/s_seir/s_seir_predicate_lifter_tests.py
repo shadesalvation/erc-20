@@ -115,8 +115,37 @@ def test_loop_predicate_comes_from_cfg_true_edge() -> None:
     assert predicate.attrs["semantic_anchor_cfg_node"] == "bb_asm1_n3"
 
 
+def test_typed_predicate_preserves_ast_not_rendered_strings() -> None:
+    from copy import deepcopy
+    from s_seir_yul_eval_order import YulEvaluationOrder
+    def call(name, *args):
+        return {"nodeType": "YulFunctionCall", "functionName": {"nodeType": "YulIdentifier", "name": name}, "arguments": list(args)}
+    expr = call("iszero", call("lt", {"nodeType": "YulIdentifier", "name": "balance"},
+                              {"nodeType": "YulLiteral", "kind": "number", "value": "0x10"}))
+    evaluation = YulEvaluationOrder("stmt").materialize(expr)
+    branch = effect("eff_typed", "Branch", {"language": "yul", "condition": "iszero(lt(balance, 0x10))", "condition_evaluation": evaluation})
+    tree = PredicateLifter._typed_evaluation(branch, "predicate")
+    assert tree["resolution_status"] == "resolved"
+    assert tree["expression"]["op"] == "iszero"
+    comparison = tree["expression"]["operands"][0]
+    assert comparison["operands"][1]["literal"] == "16"
+    assert comparison["operands"][0]["identity"]["ast_node"]["name"] == "balance"
+    altered = deepcopy(branch)
+    for step in altered.attrs["condition_evaluation"]["steps"]:
+        step["raw_args"] = ["arbitrary display" for _ in step["raw_args"]]
+        step["expression_normalized"] = "arbitrary display"
+    assert PredicateLifter._typed_evaluation(altered, "predicate") == tree
+    altered.attrs["condition_evaluation"]["steps"][0].pop("argument_nodes")
+    assert PredicateLifter._typed_evaluation(altered, "predicate")["resolution_status"] == "unsupported"
+    # Exercise normal overlay creation, including serialization which drops
+    # low-level transport and default status fields elsewhere in the pipeline.
+    recovered = next(p for p in PredicateLifter().lift(TypeEnv(), [branch], []) if p.kind == "Predicate")
+    assert recovered.to_dict()["attrs"]["typed_predicate"]["resolution_status"] == "resolved"
+
+
 if __name__ == "__main__":
     for test in (
+        test_typed_predicate_preserves_ast_not_rendered_strings,
         test_branch_predicate_replaces_generic_condition_trace,
         test_call_status_and_returndata_predicate_are_high_level,
         test_nested_state_read_uses_branch_evaluation_def_use,
