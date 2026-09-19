@@ -1,0 +1,1873 @@
+{
+  "status": "PASS",
+  "contract": {
+    "evidence_refs": [
+      "evidence:2906598ed44c263117995b0da88c4a37bf7b92c5a462d58291adfc2dbca17489"
+    ],
+    "extensions": {},
+    "function_ref": null,
+    "id": "abstract-domain-contract:447cc1a6b031d9b8e5c117ecd0c52ed7e9005f16e25f806ca208445065858c36",
+    "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "payload": {
+      "context_policy": {
+        "element": "region id + dispatcher SourceRef + observed arm SourceRef",
+        "kind": "last-k-observed-dispatch-arms",
+        "supported_k": [
+          "0",
+          "32"
+        ]
+      },
+      "context_update": {
+        "append": "validated observed arm",
+        "claim": "observed context only; no successor or feasibility claim",
+        "truncate": "discard oldest beyond k"
+      },
+      "domain_version": "p1-t3-domain/1",
+      "join_rules": {
+        "bottom": "identity",
+        "evidence": "canonical set union",
+        "finite": "typed union; size > cap -> TOP",
+        "top": "absorbs known values of same type",
+        "type_mismatch": "UNKNOWN",
+        "unknown": "absorbing with diagnostic union; distinct from TOP"
+      },
+      "k": "2",
+      "stabilization_policy": {
+        "equality": "canonical state content (including diagnostics/evidence) + ordered context",
+        "finite_height": "fixed candidates/types/evidence/diagnostics/arms; bounded cap and k",
+        "subsumption": "join(left,right) == right; identical contexts",
+        "widening": "none beyond cap promotion"
+      },
+      "transfer_rules": {
+        "missing_semantics": "UNKNOWN; no source expression parsing",
+        "overflow": "CHECKED overflow -> UNKNOWN; WRAPPING -> modulo width",
+        "scope": "one candidate write fact; strict on unreached state",
+        "supported": [
+          "Assignment",
+          "Binary:&|^+-*",
+          "Phi",
+          "TypeConversion:identity"
+        ],
+        "version": "p1-t3-domain/1"
+      },
+      "value_domain": {
+        "bottom": "no reached contribution",
+        "finite_cap": "4",
+        "tags": [
+          "BOTTOM",
+          "FINITE",
+          "TOP",
+          "UNKNOWN"
+        ],
+        "top": "known typed universe",
+        "types": "explicit uintN/intN; N=8..256, multiple of 8",
+        "unknown": "uninterpretable evidence; diagnostics retained"
+      }
+    },
+    "producer": {
+      "config_fingerprint": "447cc1a6b031d9b8e5c117ecd0c52ed7e9005f16e25f806ca208445065858c36",
+      "implementation_version": "p1-t3-domain/1",
+      "task": "P1-T3"
+    },
+    "schema": "erc20-research/abstract-domain-contract/v1",
+    "status": {
+      "completion": "COMPLETE",
+      "diagnostics": [],
+      "proof": "PROVEN",
+      "solver": "NOT_RUN"
+    }
+  },
+  "evidence_records": [
+    {
+      "id": "evidence:2906598ed44c263117995b0da88c4a37bf7b92c5a462d58291adfc2dbca17489",
+      "artifact_refs": [],
+      "assumptions": [
+        "definition of local rules, not a reachability proof"
+      ],
+      "claim": {
+        "operands": {
+          "context_policy": {
+            "element": "region id + dispatcher SourceRef + observed arm SourceRef",
+            "kind": "last-k-observed-dispatch-arms",
+            "supported_k": [
+              "0",
+              "32"
+            ]
+          },
+          "context_update": {
+            "append": "validated observed arm",
+            "claim": "observed context only; no successor or feasibility claim",
+            "truncate": "discard oldest beyond k"
+          },
+          "domain_version": "p1-t3-domain/1",
+          "join_rules": {
+            "bottom": "identity",
+            "evidence": "canonical set union",
+            "finite": "typed union; size > cap -> TOP",
+            "top": "absorbs known values of same type",
+            "type_mismatch": "UNKNOWN",
+            "unknown": "absorbing with diagnostic union; distinct from TOP"
+          },
+          "k": "2",
+          "stabilization_policy": {
+            "equality": "canonical state content (including diagnostics/evidence) + ordered context",
+            "finite_height": "fixed candidates/types/evidence/diagnostics/arms; bounded cap and k",
+            "subsumption": "join(left,right) == right; identical contexts",
+            "widening": "none beyond cap promotion"
+          },
+          "transfer_rules": {
+            "missing_semantics": "UNKNOWN; no source expression parsing",
+            "overflow": "CHECKED overflow -> UNKNOWN; WRAPPING -> modulo width",
+            "scope": "one candidate write fact; strict on unreached state",
+            "supported": [
+              "Assignment",
+              "Binary:&|^+-*",
+              "Phi",
+              "TypeConversion:identity"
+            ],
+            "version": "p1-t3-domain/1"
+          },
+          "value_domain": {
+            "bottom": "no reached contribution",
+            "finite_cap": "4",
+            "tags": [
+              "BOTTOM",
+              "FINITE",
+              "TOP",
+              "UNKNOWN"
+            ],
+            "top": "known typed universe",
+            "types": "explicit uintN/intN; N=8..256, multiple of 8",
+            "unknown": "uninterpretable evidence; diagnostics retained"
+          }
+        },
+        "predicate": "domain_rules_declared"
+      },
+      "kind": "abstract_domain_rules",
+      "premises": [],
+      "producer": {
+        "config_fingerprint": "447cc1a6b031d9b8e5c117ecd0c52ed7e9005f16e25f806ca208445065858c36",
+        "implementation_version": "p1-t3-domain/1",
+        "task": "P1-T3"
+      },
+      "reason_code": "DOMAIN_DEFINITION",
+      "result": "DEFINED",
+      "rule": "p1-t3-domain/1",
+      "scope": {
+        "rules_digest": "447cc1a6b031d9b8e5c117ecd0c52ed7e9005f16e25f806ca208445065858c36"
+      },
+      "source_refs": [],
+      "status": {
+        "completion": "COMPLETE",
+        "diagnostics": [],
+        "proof": "PROVEN",
+        "solver": "NOT_RUN"
+      }
+    }
+  ],
+  "region_ref": "flattened-region:7db9c212ddfbb9d59872997403b48451ac6bf4deb6a172b68a1795e2a692c181",
+  "initial_state": {
+    "domain_ref": "abstract-domain-contract:447cc1a6b031d9b8e5c117ecd0c52ed7e9005f16e25f806ca208445065858c36",
+    "reached": true,
+    "region_ref": "flattened-region:7db9c212ddfbb9d59872997403b48451ac6bf4deb6a172b68a1795e2a692c181",
+    "upstream_status": {
+      "completion": "COMPLETE",
+      "diagnostics": [],
+      "proof": "CANDIDATE",
+      "solver": "NOT_RUN"
+    },
+    "values": {
+      "control-state-handle:8bceb254ed72aa632ddad3ef155bfec2d3068166338f143bd2f7383b3dae2f5d": {
+        "arithmetic_modes": [],
+        "source_refs": [
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "kind": "BranchCondition",
+              "origin_id": "origin:condition",
+              "semantic_id": "condition",
+              "source_lang": "solidity"
+            },
+            "source_kind": "SEMANTIC_NODE"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "kind": "ValueAssign",
+              "origin_id": "origin:set_a",
+              "semantic_id": "set_a",
+              "source_lang": "solidity"
+            },
+            "source_kind": "SEMANTIC_NODE"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "kind": "ValueCompute",
+              "origin_id": "origin:set_b",
+              "semantic_id": "set_b",
+              "source_lang": "solidity"
+            },
+            "source_kind": "SEMANTIC_NODE"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "kind": "ValueCompute",
+              "origin_id": "origin:set_fake",
+              "semantic_id": "set_fake",
+              "source_lang": "solidity"
+            },
+            "source_kind": "SEMANTIC_NODE"
+          }
+        ],
+        "status": {
+          "completion": "PARTIAL",
+          "diagnostics": [
+            {
+              "affected_refs": [
+                {
+                  "function_ref": {
+                    "canonical_signature": "run(uint256)",
+                    "contract": "Token",
+                    "contract_declaration": {
+                      "id": "decl:token",
+                      "name": "Token"
+                    },
+                    "declaration": {
+                      "full_name": "run(uint256)",
+                      "id": "decl:run",
+                      "name": "run"
+                    },
+                    "entry_kind": "function",
+                    "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                    "sfir_function_id": "Token.run(uint256)"
+                  },
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "locator": {
+                    "kind": "BranchCondition",
+                    "origin_id": "origin:condition",
+                    "semantic_id": "condition",
+                    "source_lang": "solidity"
+                  },
+                  "source_kind": "SEMANTIC_NODE"
+                },
+                {
+                  "function_ref": {
+                    "canonical_signature": "run(uint256)",
+                    "contract": "Token",
+                    "contract_declaration": {
+                      "id": "decl:token",
+                      "name": "Token"
+                    },
+                    "declaration": {
+                      "full_name": "run(uint256)",
+                      "id": "decl:run",
+                      "name": "run"
+                    },
+                    "entry_kind": "function",
+                    "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                    "sfir_function_id": "Token.run(uint256)"
+                  },
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "locator": {
+                    "kind": "ValueAssign",
+                    "origin_id": "origin:set_a",
+                    "semantic_id": "set_a",
+                    "source_lang": "solidity"
+                  },
+                  "source_kind": "SEMANTIC_NODE"
+                },
+                {
+                  "function_ref": {
+                    "canonical_signature": "run(uint256)",
+                    "contract": "Token",
+                    "contract_declaration": {
+                      "id": "decl:token",
+                      "name": "Token"
+                    },
+                    "declaration": {
+                      "full_name": "run(uint256)",
+                      "id": "decl:run",
+                      "name": "run"
+                    },
+                    "entry_kind": "function",
+                    "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                    "sfir_function_id": "Token.run(uint256)"
+                  },
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "locator": {
+                    "kind": "ValueCompute",
+                    "origin_id": "origin:set_b",
+                    "semantic_id": "set_b",
+                    "source_lang": "solidity"
+                  },
+                  "source_kind": "SEMANTIC_NODE"
+                },
+                {
+                  "function_ref": {
+                    "canonical_signature": "run(uint256)",
+                    "contract": "Token",
+                    "contract_declaration": {
+                      "id": "decl:token",
+                      "name": "Token"
+                    },
+                    "declaration": {
+                      "full_name": "run(uint256)",
+                      "id": "decl:run",
+                      "name": "run"
+                    },
+                    "entry_kind": "function",
+                    "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                    "sfir_function_id": "Token.run(uint256)"
+                  },
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "locator": {
+                    "kind": "ValueCompute",
+                    "origin_id": "origin:set_fake",
+                    "semantic_id": "set_fake",
+                    "source_lang": "solidity"
+                  },
+                  "source_kind": "SEMANTIC_NODE"
+                }
+              ],
+              "code": "INSUFFICIENT_EVIDENCE",
+              "evidence_refs": [],
+              "reason": "candidate has no supplied abstract value",
+              "scope": "local-control-state-domain"
+            }
+          ],
+          "proof": "UNKNOWN",
+          "solver": "NOT_RUN"
+        },
+        "tag": "UNKNOWN",
+        "type": null,
+        "values": []
+      }
+    }
+  },
+  "one_local_transfer": {
+    "domain_ref": "abstract-domain-contract:447cc1a6b031d9b8e5c117ecd0c52ed7e9005f16e25f806ca208445065858c36",
+    "reached": true,
+    "region_ref": "flattened-region:7db9c212ddfbb9d59872997403b48451ac6bf4deb6a172b68a1795e2a692c181",
+    "upstream_status": {
+      "completion": "COMPLETE",
+      "diagnostics": [],
+      "proof": "CANDIDATE",
+      "solver": "NOT_RUN"
+    },
+    "values": {
+      "control-state-handle:8bceb254ed72aa632ddad3ef155bfec2d3068166338f143bd2f7383b3dae2f5d": {
+        "arithmetic_modes": [
+          "VALUE"
+        ],
+        "source_refs": [
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "kind": "ValueAssign",
+              "origin_id": "origin:set_a",
+              "semantic_id": "set_a",
+              "source_lang": "solidity"
+            },
+            "source_kind": "SEMANTIC_NODE"
+          }
+        ],
+        "status": {
+          "completion": "COMPLETE",
+          "diagnostics": [],
+          "proof": "CANDIDATE",
+          "solver": "NOT_RUN"
+        },
+        "tag": "FINITE",
+        "type": {
+          "bit_width": "8",
+          "name": "uint8",
+          "signed": false
+        },
+        "values": [
+          "7"
+        ]
+      }
+    }
+  },
+  "observed_context": {
+    "elements": [
+      {
+        "arm_ref": {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "edge_id": "edge:2",
+            "from": "dispatch",
+            "kind": "case:1",
+            "to": "case_a"
+          },
+          "source_kind": "CFG_EDGE"
+        },
+        "dispatcher_ref": {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "block_id": "dispatch"
+          },
+          "source_kind": "CFG_BLOCK"
+        },
+        "region_ref": "flattened-region:7db9c212ddfbb9d59872997403b48451ac6bf4deb6a172b68a1795e2a692c181"
+      }
+    ],
+    "k": "2"
+  },
+  "upstream_evidence_records": [
+    {
+      "artifact_refs": [],
+      "assumptions": [],
+      "claim": {
+        "operands": {
+          "entries": [
+            {
+              "edge_ref": {
+                "function_ref": {
+                  "canonical_signature": "run(uint256)",
+                  "contract": "Token",
+                  "contract_declaration": {
+                    "id": "decl:token",
+                    "name": "Token"
+                  },
+                  "declaration": {
+                    "full_name": "run(uint256)",
+                    "id": "decl:run",
+                    "name": "run"
+                  },
+                  "entry_kind": "function",
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "sfir_function_id": "Token.run(uint256)"
+                },
+                "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                "locator": {
+                  "edge_id": "edge:1",
+                  "from": "entry",
+                  "kind": "next",
+                  "to": "dispatch"
+                },
+                "source_kind": "CFG_EDGE"
+              },
+              "from_ref": {
+                "function_ref": {
+                  "canonical_signature": "run(uint256)",
+                  "contract": "Token",
+                  "contract_declaration": {
+                    "id": "decl:token",
+                    "name": "Token"
+                  },
+                  "declaration": {
+                    "full_name": "run(uint256)",
+                    "id": "decl:run",
+                    "name": "run"
+                  },
+                  "entry_kind": "function",
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "sfir_function_id": "Token.run(uint256)"
+                },
+                "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                "locator": {
+                  "block_id": "entry"
+                },
+                "source_kind": "CFG_BLOCK"
+              },
+              "kind": "CFG_EDGE",
+              "to_ref": {
+                "function_ref": {
+                  "canonical_signature": "run(uint256)",
+                  "contract": "Token",
+                  "contract_declaration": {
+                    "id": "decl:token",
+                    "name": "Token"
+                  },
+                  "declaration": {
+                    "full_name": "run(uint256)",
+                    "id": "decl:run",
+                    "name": "run"
+                  },
+                  "entry_kind": "function",
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "sfir_function_id": "Token.run(uint256)"
+                },
+                "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                "locator": {
+                  "block_id": "dispatch"
+                },
+                "source_kind": "CFG_BLOCK"
+              }
+            }
+          ],
+          "exits": [
+            {
+              "edge_ref": {
+                "function_ref": {
+                  "canonical_signature": "run(uint256)",
+                  "contract": "Token",
+                  "contract_declaration": {
+                    "id": "decl:token",
+                    "name": "Token"
+                  },
+                  "declaration": {
+                    "full_name": "run(uint256)",
+                    "id": "decl:run",
+                    "name": "run"
+                  },
+                  "entry_kind": "function",
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "sfir_function_id": "Token.run(uint256)"
+                },
+                "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                "locator": {
+                  "edge_id": "edge:8",
+                  "from": "dispatch",
+                  "kind": "default",
+                  "to": "exit"
+                },
+                "source_kind": "CFG_EDGE"
+              },
+              "from_ref": {
+                "function_ref": {
+                  "canonical_signature": "run(uint256)",
+                  "contract": "Token",
+                  "contract_declaration": {
+                    "id": "decl:token",
+                    "name": "Token"
+                  },
+                  "declaration": {
+                    "full_name": "run(uint256)",
+                    "id": "decl:run",
+                    "name": "run"
+                  },
+                  "entry_kind": "function",
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "sfir_function_id": "Token.run(uint256)"
+                },
+                "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                "locator": {
+                  "block_id": "dispatch"
+                },
+                "source_kind": "CFG_BLOCK"
+              },
+              "kind": "CFG_EDGE",
+              "to_ref": {
+                "function_ref": {
+                  "canonical_signature": "run(uint256)",
+                  "contract": "Token",
+                  "contract_declaration": {
+                    "id": "decl:token",
+                    "name": "Token"
+                  },
+                  "declaration": {
+                    "full_name": "run(uint256)",
+                    "id": "decl:run",
+                    "name": "run"
+                  },
+                  "entry_kind": "function",
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "sfir_function_id": "Token.run(uint256)"
+                },
+                "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                "locator": {
+                  "block_id": "exit"
+                },
+                "source_kind": "CFG_BLOCK"
+              }
+            }
+          ]
+        },
+        "predicate": "candidate_region_has_structural_entry_and_exit"
+      },
+      "id": "evidence:3b5d71423d5d6abca46ecf59bec22f7c3f4c118cb0e6792588d85137c2041460",
+      "kind": "region_boundary",
+      "premises": [
+        {
+          "sfir_schema": "s-seir-semantic-fact-ir/v1"
+        },
+        {
+          "analysis": "CFG_STRUCTURAL_ONLY"
+        }
+      ],
+      "producer": {
+        "config_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "implementation_version": "p1-t2-v1",
+        "task": "P1-T2"
+      },
+      "reason_code": "STRUCTURAL_BOUNDARY",
+      "result": "OBSERVED",
+      "rule": "p1-t2/region_boundary/v1",
+      "scope": {
+        "function_ref": {
+          "canonical_signature": "run(uint256)",
+          "contract": "Token",
+          "contract_declaration": {
+            "id": "decl:token",
+            "name": "Token"
+          },
+          "declaration": {
+            "full_name": "run(uint256)",
+            "id": "decl:run",
+            "name": "run"
+          },
+          "entry_kind": "function",
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sfir_function_id": "Token.run(uint256)"
+        },
+        "region_cfg_refs": [
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "case_a"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "case_b"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "dispatch"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "fake"
+            },
+            "source_kind": "CFG_BLOCK"
+          }
+        ]
+      },
+      "source_refs": [
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "edge_id": "edge:1",
+            "from": "entry",
+            "kind": "next",
+            "to": "dispatch"
+          },
+          "source_kind": "CFG_EDGE"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "block_id": "entry"
+          },
+          "source_kind": "CFG_BLOCK"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "block_id": "dispatch"
+          },
+          "source_kind": "CFG_BLOCK"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "edge_id": "edge:8",
+            "from": "dispatch",
+            "kind": "default",
+            "to": "exit"
+          },
+          "source_kind": "CFG_EDGE"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "block_id": "dispatch"
+          },
+          "source_kind": "CFG_BLOCK"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "block_id": "exit"
+          },
+          "source_kind": "CFG_BLOCK"
+        }
+      ],
+      "status": {
+        "completion": "COMPLETE",
+        "diagnostics": [],
+        "proof": "PROVEN",
+        "solver": "NOT_RUN"
+      }
+    },
+    {
+      "artifact_refs": [],
+      "assumptions": [],
+      "claim": {
+        "operands": {
+          "arm_count": "4",
+          "dispatcher_ref": {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "dispatch"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          "returning_arm_count": "3"
+        },
+        "predicate": "multi_arm_dispatch_with_returning_arms"
+      },
+      "id": "evidence:5a04602a799bc87e7a9e71d38f59c1cead30c798e0ee2bc3070bf73ec5e00d15",
+      "kind": "dispatcher_structure",
+      "premises": [
+        {
+          "sfir_schema": "s-seir-semantic-fact-ir/v1"
+        },
+        {
+          "analysis": "CFG_STRUCTURAL_ONLY"
+        }
+      ],
+      "producer": {
+        "config_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "implementation_version": "p1-t2-v1",
+        "task": "P1-T2"
+      },
+      "reason_code": "STRUCTURAL_DISPATCH_LOOP",
+      "result": "CANDIDATE",
+      "rule": "p1-t2/dispatcher_structure/v1",
+      "scope": {
+        "function_ref": {
+          "canonical_signature": "run(uint256)",
+          "contract": "Token",
+          "contract_declaration": {
+            "id": "decl:token",
+            "name": "Token"
+          },
+          "declaration": {
+            "full_name": "run(uint256)",
+            "id": "decl:run",
+            "name": "run"
+          },
+          "entry_kind": "function",
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sfir_function_id": "Token.run(uint256)"
+        },
+        "region_cfg_refs": [
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "case_a"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "case_b"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "dispatch"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "fake"
+            },
+            "source_kind": "CFG_BLOCK"
+          }
+        ]
+      },
+      "source_refs": [
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "block_id": "dispatch"
+          },
+          "source_kind": "CFG_BLOCK"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "edge_id": "edge:2",
+            "from": "dispatch",
+            "kind": "case:1",
+            "to": "case_a"
+          },
+          "source_kind": "CFG_EDGE"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "edge_id": "edge:3",
+            "from": "dispatch",
+            "kind": "case:2",
+            "to": "case_b"
+          },
+          "source_kind": "CFG_EDGE"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "edge_id": "edge:4",
+            "from": "dispatch",
+            "kind": "case:3",
+            "to": "fake"
+          },
+          "source_kind": "CFG_EDGE"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "edge_id": "edge:8",
+            "from": "dispatch",
+            "kind": "default",
+            "to": "exit"
+          },
+          "source_kind": "CFG_EDGE"
+        }
+      ],
+      "status": {
+        "completion": "COMPLETE",
+        "diagnostics": [],
+        "proof": "CANDIDATE",
+        "solver": "NOT_RUN"
+      }
+    },
+    {
+      "artifact_refs": [],
+      "assumptions": [],
+      "claim": {
+        "operands": {
+          "candidates": [
+            {
+              "candidate": {
+                "kind": "SFIR_BINDING",
+                "read_evidence": [
+                  {
+                    "direction": "reads",
+                    "ref": {
+                      "base_name": "alpha",
+                      "binding_id": "decl:42:value",
+                      "value": "alpha"
+                    },
+                    "source": "fact_ssa"
+                  }
+                ],
+                "write_evidence": [
+                  {
+                    "direction": "writes",
+                    "ref": {
+                      "base_name": "alpha",
+                      "binding_id": "decl:42:value",
+                      "value": "alpha"
+                    },
+                    "source": "fact_ssa"
+                  },
+                  {
+                    "direction": "writes",
+                    "ref": {
+                      "base_name": "alpha",
+                      "binding_id": "decl:42:value",
+                      "value": "alpha"
+                    },
+                    "source": "fact_ssa"
+                  },
+                  {
+                    "direction": "writes",
+                    "ref": {
+                      "base_name": "alpha",
+                      "binding_id": "decl:42:value",
+                      "value": "alpha"
+                    },
+                    "source": "fact_ssa"
+                  }
+                ]
+              },
+              "source_refs": [
+                {
+                  "function_ref": {
+                    "canonical_signature": "run(uint256)",
+                    "contract": "Token",
+                    "contract_declaration": {
+                      "id": "decl:token",
+                      "name": "Token"
+                    },
+                    "declaration": {
+                      "full_name": "run(uint256)",
+                      "id": "decl:run",
+                      "name": "run"
+                    },
+                    "entry_kind": "function",
+                    "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                    "sfir_function_id": "Token.run(uint256)"
+                  },
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "locator": {
+                    "kind": "BranchCondition",
+                    "origin_id": "origin:condition",
+                    "semantic_id": "condition",
+                    "source_lang": "solidity"
+                  },
+                  "source_kind": "SEMANTIC_NODE"
+                },
+                {
+                  "function_ref": {
+                    "canonical_signature": "run(uint256)",
+                    "contract": "Token",
+                    "contract_declaration": {
+                      "id": "decl:token",
+                      "name": "Token"
+                    },
+                    "declaration": {
+                      "full_name": "run(uint256)",
+                      "id": "decl:run",
+                      "name": "run"
+                    },
+                    "entry_kind": "function",
+                    "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                    "sfir_function_id": "Token.run(uint256)"
+                  },
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "locator": {
+                    "kind": "ValueAssign",
+                    "origin_id": "origin:set_a",
+                    "semantic_id": "set_a",
+                    "source_lang": "solidity"
+                  },
+                  "source_kind": "SEMANTIC_NODE"
+                },
+                {
+                  "function_ref": {
+                    "canonical_signature": "run(uint256)",
+                    "contract": "Token",
+                    "contract_declaration": {
+                      "id": "decl:token",
+                      "name": "Token"
+                    },
+                    "declaration": {
+                      "full_name": "run(uint256)",
+                      "id": "decl:run",
+                      "name": "run"
+                    },
+                    "entry_kind": "function",
+                    "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                    "sfir_function_id": "Token.run(uint256)"
+                  },
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "locator": {
+                    "kind": "ValueCompute",
+                    "origin_id": "origin:set_b",
+                    "semantic_id": "set_b",
+                    "source_lang": "solidity"
+                  },
+                  "source_kind": "SEMANTIC_NODE"
+                },
+                {
+                  "function_ref": {
+                    "canonical_signature": "run(uint256)",
+                    "contract": "Token",
+                    "contract_declaration": {
+                      "id": "decl:token",
+                      "name": "Token"
+                    },
+                    "declaration": {
+                      "full_name": "run(uint256)",
+                      "id": "decl:run",
+                      "name": "run"
+                    },
+                    "entry_kind": "function",
+                    "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                    "sfir_function_id": "Token.run(uint256)"
+                  },
+                  "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  "locator": {
+                    "kind": "ValueCompute",
+                    "origin_id": "origin:set_fake",
+                    "semantic_id": "set_fake",
+                    "source_lang": "solidity"
+                  },
+                  "source_kind": "SEMANTIC_NODE"
+                }
+              ],
+              "status": {
+                "completion": "COMPLETE",
+                "diagnostics": [],
+                "proof": "CANDIDATE",
+                "solver": "NOT_RUN"
+              }
+            }
+          ]
+        },
+        "predicate": "dispatcher_value_has_local_region_read_write_evidence"
+      },
+      "id": "evidence:679b755dbe6f12f1dccf6c194e286a8aba37376d8a01c2cac4898ee69c814b26",
+      "kind": "control_state_candidate",
+      "premises": [
+        {
+          "sfir_schema": "s-seir-semantic-fact-ir/v1"
+        },
+        {
+          "analysis": "CFG_STRUCTURAL_ONLY"
+        }
+      ],
+      "producer": {
+        "config_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "implementation_version": "p1-t2-v1",
+        "task": "P1-T2"
+      },
+      "reason_code": "LOCAL_READ_WRITE_ASSOCIATION",
+      "result": "CANDIDATE",
+      "rule": "p1-t2/control_state_candidate/v1",
+      "scope": {
+        "dispatcher_ref": {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "block_id": "dispatch"
+          },
+          "source_kind": "CFG_BLOCK"
+        },
+        "function_ref": {
+          "canonical_signature": "run(uint256)",
+          "contract": "Token",
+          "contract_declaration": {
+            "id": "decl:token",
+            "name": "Token"
+          },
+          "declaration": {
+            "full_name": "run(uint256)",
+            "id": "decl:run",
+            "name": "run"
+          },
+          "entry_kind": "function",
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sfir_function_id": "Token.run(uint256)"
+        }
+      },
+      "source_refs": [
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "kind": "BranchCondition",
+            "origin_id": "origin:condition",
+            "semantic_id": "condition",
+            "source_lang": "solidity"
+          },
+          "source_kind": "SEMANTIC_NODE"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "kind": "ValueAssign",
+            "origin_id": "origin:set_a",
+            "semantic_id": "set_a",
+            "source_lang": "solidity"
+          },
+          "source_kind": "SEMANTIC_NODE"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "kind": "ValueCompute",
+            "origin_id": "origin:set_b",
+            "semantic_id": "set_b",
+            "source_lang": "solidity"
+          },
+          "source_kind": "SEMANTIC_NODE"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "kind": "ValueCompute",
+            "origin_id": "origin:set_fake",
+            "semantic_id": "set_fake",
+            "source_lang": "solidity"
+          },
+          "source_kind": "SEMANTIC_NODE"
+        }
+      ],
+      "status": {
+        "completion": "COMPLETE",
+        "diagnostics": [],
+        "proof": "CANDIDATE",
+        "solver": "NOT_RUN"
+      }
+    },
+    {
+      "artifact_refs": [
+        "semantic-action:1b8366ce1bc71989b87c3bc5c4ac87db44847d08b9d079a6e7ec31f59c289635",
+        "semantic-action:f737ac11f1f938564ebb91c2e7df1c98e817719724a8495f6f4dee1562d39f0f"
+      ],
+      "assumptions": [],
+      "claim": {
+        "operands": {
+          "control_anchors": [
+            {
+              "function_ref": {
+                "canonical_signature": "run(uint256)",
+                "contract": "Token",
+                "contract_declaration": {
+                  "id": "decl:token",
+                  "name": "Token"
+                },
+                "declaration": {
+                  "full_name": "run(uint256)",
+                  "id": "decl:run",
+                  "name": "run"
+                },
+                "entry_kind": "function",
+                "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                "sfir_function_id": "Token.run(uint256)"
+              },
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "locator": {
+                "block_id": "case_b",
+                "operation_order": "1",
+                "placement_status": "anchored",
+                "semantic_id": "write_b"
+              },
+              "source_kind": "CFG_BLOCK"
+            },
+            {
+              "function_ref": {
+                "canonical_signature": "run(uint256)",
+                "contract": "Token",
+                "contract_declaration": {
+                  "id": "decl:token",
+                  "name": "Token"
+                },
+                "declaration": {
+                  "full_name": "run(uint256)",
+                  "id": "decl:run",
+                  "name": "run"
+                },
+                "entry_kind": "function",
+                "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                "sfir_function_id": "Token.run(uint256)"
+              },
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "locator": {
+                "block_id": "case_a",
+                "operation_order": "1",
+                "placement_status": "anchored",
+                "semantic_id": "write_a"
+              },
+              "source_kind": "CFG_BLOCK"
+            }
+          ]
+        },
+        "predicate": "semantic_actions_anchor_inside_candidate_region"
+      },
+      "id": "evidence:fc2975c9a4084ab35db830560f77fa9bccea1a82862a86e78a433c14d320868e",
+      "kind": "semantic_action_location",
+      "premises": [
+        {
+          "sfir_schema": "s-seir-semantic-fact-ir/v1"
+        },
+        {
+          "analysis": "CFG_STRUCTURAL_ONLY"
+        }
+      ],
+      "producer": {
+        "config_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "implementation_version": "p1-t2-v1",
+        "task": "P1-T2"
+      },
+      "reason_code": "ACTION_CONTROL_ANCHOR",
+      "result": "OBSERVED",
+      "rule": "p1-t2/semantic_action_location/v1",
+      "scope": {
+        "function_ref": {
+          "canonical_signature": "run(uint256)",
+          "contract": "Token",
+          "contract_declaration": {
+            "id": "decl:token",
+            "name": "Token"
+          },
+          "declaration": {
+            "full_name": "run(uint256)",
+            "id": "decl:run",
+            "name": "run"
+          },
+          "entry_kind": "function",
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sfir_function_id": "Token.run(uint256)"
+        },
+        "region_cfg_refs": [
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "case_a"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "case_b"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "dispatch"
+            },
+            "source_kind": "CFG_BLOCK"
+          },
+          {
+            "function_ref": {
+              "canonical_signature": "run(uint256)",
+              "contract": "Token",
+              "contract_declaration": {
+                "id": "decl:token",
+                "name": "Token"
+              },
+              "declaration": {
+                "full_name": "run(uint256)",
+                "id": "decl:run",
+                "name": "run"
+              },
+              "entry_kind": "function",
+              "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "sfir_function_id": "Token.run(uint256)"
+            },
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "locator": {
+              "block_id": "fake"
+            },
+            "source_kind": "CFG_BLOCK"
+          }
+        ]
+      },
+      "source_refs": [
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "block_id": "case_b",
+            "operation_order": "1",
+            "placement_status": "anchored",
+            "semantic_id": "write_b"
+          },
+          "source_kind": "CFG_BLOCK"
+        },
+        {
+          "function_ref": {
+            "canonical_signature": "run(uint256)",
+            "contract": "Token",
+            "contract_declaration": {
+              "id": "decl:token",
+              "name": "Token"
+            },
+            "declaration": {
+              "full_name": "run(uint256)",
+              "id": "decl:run",
+              "name": "run"
+            },
+            "entry_kind": "function",
+            "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sfir_function_id": "Token.run(uint256)"
+          },
+          "input_fingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "locator": {
+            "block_id": "case_a",
+            "operation_order": "1",
+            "placement_status": "anchored",
+            "semantic_id": "write_a"
+          },
+          "source_kind": "CFG_BLOCK"
+        }
+      ],
+      "status": {
+        "completion": "COMPLETE",
+        "diagnostics": [],
+        "proof": "PROVEN",
+        "solver": "NOT_RUN"
+      }
+    }
+  ],
+  "note": "One local call; no propagation engine or node-context final-state table."
+}

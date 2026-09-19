@@ -2,55 +2,57 @@
 
 ## Current Task
 
-**P1-T2 = COMPLETE** — Dispatcher / Flattened Region Detection，2026-09-19。
+**P1-T3 = COMPLETE** — k-switch Abstract Domain and Context，2026-09-19。
 
-P0-T1/P0-T2/P0-T3/P1-T1 均为 COMPLETE；本次按正式 bootstrap 核验此前 `Next Allowed Task = P1-T2`。当前 branch `semantic-ir-next`，Task `start_head=aff573e557424b00fa0159d3f1cff0da055c3e38`，`end_head=aff573e557424b00fa0159d3f1cff0da055c3e38`（未创建提交）。起始及收尾均保留四处既有 OpenZeppelin dependency checkout，不归入 P1-T2 改动。
+P0-T1/P0-T2/P0-T3/P1-T1/P1-T2 均为 COMPLETE；本次按 frozen bootstrap 核验此前等待 P1-T3 授权，并只执行当前 Task。实际 branch `semantic-ir-next`；`start_head=end_head=1cb1d117c7c395cbf78464d7ff985a00441f767d`，未 commit/push。P1-T2 report 的旧 task-local SHA 与当前 post-task commit 差异已审查为 documentation drift，见 [bootstrap/report](docs/task_reports/P1-T3.md#framework-alignment--bootstrap)。四处既有 OpenZeppelin dependency checkout 改动完整保留，不计入本任务。
 
-本 Task 只实现 SFIR Fact CFG + P1-T1 SemanticAction → `FlattenedRegion` 的 structural candidate detection，没有修改既有 SFIR/P1-T1、MemorySSA/SinkResolver、oracle 或历史证据，没有执行 P1-T3 或后续 abstract interpretation、dependency、order、STIR、benchmark/experiment 工作。
+本 Task 只定义域、单个候选的局部 transfer/join、bounded observed-arm context 与 stabilization API；没有执行 P1-T4 worklist/fixed point 或后续 Tasks，没有修改 P1-T2/P1-T1/shared contract/SFIR/MemorySSA/SinkResolver/oracle。
 
 ## Baseline / Validation Summary
 
-修改前 P1-T1 targeted：19/19 PASS；修改前 runner：**27 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**。P1-T2 targeted：**14/14 PASS**；P1-T1 targeted regression：19/19 PASS；收尾 runner：**28 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**。测试入口增加一项仅因新增 `s_seir_research_regions_tests.py`。
+修改前 P1-T2 targeted：14/14 PASS；runner：28 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT。
+P1-T3 targeted：**33/33 PASS**；P1-T2 regression：14/14 PASS；P1-T1 regression：19/19 PASS。
+收尾 runner：**29 PASS / 0 FAIL / 0 SKIP / 0 TIMEOUT**（仅增加 P1-T3 测试入口）；专项验收 **17/17 PASS**。
 
-- [bootstrap/baseline](docs/task_reports/P1-T2_evidence/bootstrap.json)
-- [targeted tests](docs/task_reports/P1-T2_evidence/targeted_tests.json)
-- [专项验收 15/15](docs/task_reports/P1-T2_evidence/acceptance.json)
-- [final regression](docs/task_reports/P1-T2_evidence/final_regression/results.json)
-- [P1-T2 report](docs/task_reports/P1-T2.md)
+- [bootstrap](docs/task_reports/P1-T3_evidence/bootstrap.json)
+- [targeted tests](docs/task_reports/P1-T3_evidence/targeted_tests.json)
+- [专项验收](docs/task_reports/P1-T3_evidence/acceptance.json)
+- [final regression](docs/task_reports/P1-T3_evidence/final_regression/results.json)
+- [report / handoff](docs/task_reports/P1-T3.md#p1-t4-handoff)
 
 复现：
 
 ```bash
-PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/s_seir/s_seir_research_regions_tests.py
-PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/s_seir/s_seir_research_actions_tests.py
-PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py /tmp/p1-t2-regression
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/s_seir/s_seir_research_abstract_domain_tests.py
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P0-T1_baseline/run_baseline.py /tmp/p1-t3-regression
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/task_reports/P1-T3_evidence/verify.py
 ```
 
 ## Stable Outputs / Interfaces
 
-- `scripts/s_seir/s_seir_research_regions.py`：`detect_flattened_regions(sfir_payload, action_result, input_fingerprint=None, config=None)` 与 `validate_flattened_region`。
-- 唯一正式 artifact schema：`erc20-research/flattened-region/v1`；payload 严格为 `dispatcher_ref / region_cfg_refs / control_state_candidates / cases / entries / exits / detection_evidence`。
-- identity basis 为 `CFG origin set + dispatcher occurrence`；block/node/edge id 仅作 SourceRef locator。遍历重排稳定，不依赖 `state/pc/dispatcher` 等变量名。
-- detection 要求 multi-arm dispatch、至少两条结构回返 arm、已有 SFIR condition-read/region-write association 和可划定 entry/exit；这只是 `CANDIDATE`，solver 始终 `NOT_RUN`。
-- SemanticAction 直接复用且不修改；关联方式为 `control_anchor → CFG block → region_cfg_refs`。replacement 只作 evidence；unresolved/unanchored 完整保留。
-- ordinary acyclic switch 是合法 no-region；no-exit、multi-entry irreducible、ambiguous/insufficient 候选显式 `UNSUPPORTED` 或 `INSUFFICIENT_EVIDENCE/PARTIAL`。
+- `scripts/s_seir/s_seir_research_abstract_domain.py`：`build_contract / validate_contract / consume_regions`；值构造与规范化、`local_transfer / pure_operation / join_values / join_states / update_context / stabilized / value_leq / state_leq`。
+- 唯一正式 artifact：`erc20-research/abstract-domain-contract/v1`；payload 恰为 `domain_version / value_domain / context_policy / k / transfer_rules / join_rules / context_update / stabilization_policy`。identity = canonical 规则/config digest。
+- AbstractValue/AbstractState/KSwitchContext 仅内部 dict views；无新顶层 schema。BOTTOM/typed FINITE/TOP/UNKNOWN 严格区分，UNKNOWN 保留 status/reason/SourceRefs。
+- config 必须显式传 k（0..32）与 finite_cap（1..256）；不是论文默认值。finite distinct values > cap 才升 typed TOP；k 是最近 observed dispatcher arms 的历史长度。
+- 直接消费 P1-T2 region.id/payload/status/evidence，保留 candidate_diagnostics/action_input，不重新提取 actions。合法 no-region 与 upstream incomplete 分别返回 NO_REGION 与 NO_CONSUMABLE_REGION；均不伪造 per-region state。
+- typed uintN/intN 值、literal/copy、局部 `+ - * & | ^`、显式 typed literal Phi alternatives、identity cast；缺类型/模式/operand 或非支持操作显式 UNKNOWN。checked overflow 不等于 wrapping，不推导 failure path。
+- join/stabilization 用 canonical state/evidence/diagnostics + Context；不使用 object identity 或偶然 list order。SourceRef/FactSSA 只作已有局部证据，不重做 RD/CFG/SSA。
 
-P0-T3 frozen Module contracts、shared contract、P2-T1A REQUIRED 链、G1–G8、schema ownership 与 oracle isolation继续有效。本 Task 未改变 frozen interface，故无新 ADR。
+P0-T3 frozen interfaces、shared contract、P2-T1A REQUIRED 链、G1–G8、oracle isolation 继续有效；无冻结接口变更，无新 ADR。
 
 ## Known Limitations
 
-- detector 是 structural high-recall candidate stage，不证明 reachability/feasibility/Guard/order 或 case 的真实 successor。
-- control-state candidate 只用 SFIR 已有局部 reads/writes/FactSSA/binding/expression/placement evidence；没有跨 CFG value/constant propagation。
-- 当前不支持安全划定无出口 cyclic candidate 或 multi-entry irreducible region；显式 PARTIAL，不伪装成 negative。
-- standalone Yul object 仍不支持；仅处理已进入统一 SFIR 的 Solidity/Yul/Mixed。
-- abstract value、k-switch context、domain/transfer/join、fixed point、Candidate SemanticControlEdge、symbolic/SMT、Guard normalization 均尚未实现。
+R1 source support 仍 insufficient；没有声称复现论文 lattice/default k/算法。主线 atomic SFIR 未保留足够 typed operand 的复杂表达式、缺宽度/算术模式、非 identity cast、standalone Yul/non-SFIR 等仍为显式 UNKNOWN/UNSUPPORTED。checked 溢出保守 UNKNOWN。合法 initial unknown 并不表示 P1-T3 实现失败，也不作为 proven program value。
+
+尚未实现：worklist、whole-region fixed point、node/context propagated states、real successor、Candidate/Refined SemanticControlEdge、symbolic/SMT、Guard normalization、Def-Use/RD/VFG/StateDependency、order/STIR。
 
 ## Blocked Issues
 
-P1-T2 无当前阻塞。专项验收、必要回归、report、machine evidence 与 P1-T3 handoff 均完成，无未解释 failure。
+P1-T3 无当前阻塞；必要测试、17 项专项验收、machine evidence、report 与可调用 handoff 完整，无未解释 regression。
 
 ## Next Allowed Task
 
-P1-T2 已完成并停止；**等待单独授权 P1-T3 — k-switch Abstract Domain and Context**。P1-T3 必须直接消费 [P1-T2 handoff](docs/task_reports/P1-T2.md#p1-t3-handoff) 的 `FlattenedRegion` 与 diagnostics，不得重新检测 dispatcher/region，也不得把 cases 当作 real successor。
+P1-T3 已完成并停止；**等待单独授权 P1-T4 — Fixed-Point Propagation Engine**。
+P1-T4 直接使用 [P1-T3 handoff](docs/task_reports/P1-T3.md#p1-t4-handoff) 的域/state/context/transfer/join/stabilization API，不得复制第二套域逻辑。P1-T2 cases/RETURNS_TO_DISPATCHER 仍仅为 observed structural evidence，不是真实 successor。
 
-后续 bootstrap 仍为：RESEARCH_FRAMEWORK → TASK_MAP → PROJECT_STATUS → IMPLEMENTATION_PLAN 当前 Task/直接接口 → direct upstream report/handoff → 相关源码/测试，同时服从 AGENTS.md。不自动进入 P1-T3。
+后续 bootstrap：RESEARCH_FRAMEWORK → TASK_MAP → PROJECT_STATUS → IMPLEMENTATION_PLAN 当前 Task/直接接口 → direct upstream report/handoff → 相关源码/测试，同时服从 AGENTS.md。重新读取实际 branch/HEAD；不自动进入 P1-T4。
