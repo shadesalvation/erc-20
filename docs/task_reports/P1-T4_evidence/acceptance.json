@@ -1,0 +1,152 @@
+{
+  "task": "P1-T4",
+  "start_head": "58d8cfaa8e111a71e8aba51b21d7cf8d409e834c",
+  "end_head": "58d8cfaa8e111a71e8aba51b21d7cf8d409e834c",
+  "criteria": [
+    {
+      "id": 1,
+      "criterion": "Direct P1-T2/P1-T3 inputs and APIs are reused without mutation",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.IntakeIntegrationAndIsolationTests.test_direct_real_handoff_does_not_mutate_inputs_and_consumer_query_works",
+        "s_seir_research_propagation_tests.IntakeIntegrationAndIsolationTests.test_production_isolation_and_only_one_new_formal_artifact"
+      ]
+    },
+    {
+      "id": 2,
+      "criterion": "Cache identity is node plus canonical context",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.ArtifactAndDeterminismTests.test_exact_artifact_contract_termination_and_evidence",
+        "s_seir_research_propagation_tests.IntakeIntegrationAndIsolationTests.test_cache_is_node_context_and_different_contexts_never_merge"
+      ]
+    },
+    {
+      "id": 3,
+      "criterion": "Same-context predecessors join and different contexts remain separate",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.IntakeIntegrationAndIsolationTests.test_cache_is_node_context_and_different_contexts_never_merge",
+        "s_seir_research_propagation_tests.TransferJoinAndLoopTests.test_same_context_branch_join_uses_p1_t3_join"
+      ]
+    },
+    {
+      "id": 4,
+      "criterion": "Re-enqueue occurs only for new semantic information",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.TransferJoinAndLoopTests.test_loop_back_edge_reenqueues_until_natural_fixed_point"
+      ]
+    },
+    {
+      "id": 5,
+      "criterion": "FIXED_POINT means drained worklist after stabilization",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.ArtifactAndDeterminismTests.test_exact_artifact_contract_termination_and_evidence",
+        "s_seir_research_propagation_tests.TransferJoinAndLoopTests.test_loop_back_edge_reenqueues_until_natural_fixed_point"
+      ]
+    },
+    {
+      "id": 6,
+      "criterion": "UNKNOWN is distinct from engine UNSUPPORTED",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.ContextAndTerminationTests.test_engine_unsupported_and_invariant_error_are_distinct",
+        "s_seir_research_propagation_tests.TransferJoinAndLoopTests.test_missing_typed_semantics_is_unknown_but_reaches_fixed_point"
+      ]
+    },
+    {
+      "id": 7,
+      "criterion": "RESOURCE_LIMIT is distinct from FIXED_POINT and retains frontier",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.ContextAndTerminationTests.test_small_deterministic_budget_is_resource_limit_with_frontier"
+      ]
+    },
+    {
+      "id": 8,
+      "criterion": "Only observed dispatcher arms update context and no real-successor claim is made",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.ContextAndTerminationTests.test_k1_k2_partition_truncation_and_observed_arm_only"
+      ]
+    },
+    {
+      "id": 9,
+      "criterion": "Propagation counters and trace data do not pollute AbstractState",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.ArtifactAndDeterminismTests.test_identity_uses_region_domain_and_config_not_iterations"
+      ]
+    },
+    {
+      "id": 10,
+      "criterion": "Repeated and reordered inputs are deterministic, including limited frontier",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.ArtifactAndDeterminismTests.test_repeat_and_collection_reorder_have_identical_artifact_and_frontier"
+      ]
+    },
+    {
+      "id": 11,
+      "criterion": "AbstractPropagation is the only new formal artifact with exact six-field payload",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.ArtifactAndDeterminismTests.test_exact_artifact_contract_termination_and_evidence",
+        "s_seir_research_propagation_tests.IntakeIntegrationAndIsolationTests.test_production_isolation_and_only_one_new_formal_artifact"
+      ]
+    },
+    {
+      "id": 12,
+      "criterion": "No-region, no-consumable and inherited PARTIAL remain distinct",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.IntakeIntegrationAndIsolationTests.test_no_region_and_no_consumable_region_create_no_artifact",
+        "s_seir_research_propagation_tests.IntakeIntegrationAndIsolationTests.test_upstream_partial_fixed_point_is_not_whitewashed"
+      ]
+    },
+    {
+      "id": 13,
+      "criterion": "No P1-T5/P1-T6/P2+ capability or second parser/domain is implemented",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.IntakeIntegrationAndIsolationTests.test_production_isolation_and_only_one_new_formal_artifact"
+      ]
+    },
+    {
+      "id": 14,
+      "criterion": "Consumer query API directly reads canonical node/context state",
+      "status": "PASS",
+      "evidence": [
+        "s_seir_research_propagation_tests.IntakeIntegrationAndIsolationTests.test_direct_real_handoff_does_not_mutate_inputs_and_consumer_query_works"
+      ]
+    },
+    {
+      "id": 15,
+      "criterion": "P1-T4/P1-T3/P1-T2 targeted and required runner pass",
+      "status": "PASS",
+      "evidence": [
+        "targeted_tests.json",
+        "final_regression/results.json"
+      ]
+    },
+    {
+      "id": 16,
+      "criterion": "Report/status/evidence/handoff match code and task-only diff",
+      "status": "PASS",
+      "evidence": [
+        "../P1-T4.md",
+        "../../../PROJECT_STATUS.md",
+        "handoff_smoke.json",
+        "change_summary.json"
+      ]
+    }
+  ],
+  "counts": {
+    "PASS": 16,
+    "FAIL": 0,
+    "N/A": 0
+  },
+  "status": "PASS"
+}
