@@ -1,0 +1,15 @@
+PASS storage location: Solidity mapping writes use a canonical location fact
+PASS storage read: implicit SlithIR dereference is an explicit StateRead atom
+PASS guarded: nested mapping assignment is an atomic StateWrite
+PASS typed: fixed-array reference chains and ordered writes are preserved
+PASS guards: dominating Solidity requires annotate later state writes once each
+PASS control: nested expressions are split into ordered SSA computations
+PASS control metadata: branch expressions are marked control-only with CFG conditions
+PASS delete: nested mapping delete is one leaf StateWrite without an old-value StateRead
+PASS final facts: complex Solidity statements remain split into ordered atomic facts
+PASS ABI/calls: calls are atomic facts with immediate SSA arguments
+PASS mixed frontend: Solidity and Yul facts share the function CFG order without duplicate return
+PASS Yul parity: MappingSlot, StateRead, and StateWrite retain one ordered semantic chain
+PASS Bridge sink anchors: evidence CFG nodes remain intact while execution order uses endpoint effects
+PASS Yul multidimensional mapping: cumulative keys and ordered intermediate locations are preserved
+PASS Phi scope: only function CFG and loop-carried Phi facts are retained

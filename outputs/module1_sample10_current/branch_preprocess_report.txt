@@ -1,0 +1,133 @@
+INFO:SSEIROpaquePreprocess:algorithm AST-located conservative Yul opaque-if pruning
+INFO:SSEIROpaquePreprocess:rules syntactic algebraic identities only
+OpaqueIf: none
+
+INFO:SSEIRBranchPreprocess:input Solidity source only
+INFO:SSEIRBranchPreprocess:algorithm legacy BranchExpansion + MemorySSA path slices
+INFO:SSEIRBranchPreprocess:extra sinks log0-log4/call-data memory sinks
+
+AssemblyBlock 1: YulHeavyERC20.constructor(uint256 initialSupply)
+ConditionalMaterialization: sink=N7 target=log3 mode=linearized
+  baseline path: entry
+  baseline slot: log3(0x00=initialSupply)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, initialSupply); // origin: N6
+    log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0, caller()); // origin: N7
+  OriginSummary: shared=[6] cloned=[7]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 2: YulHeavyERC20.totalSupply()
+ConditionalMaterialization: sink=N2 target=result mode=linearized
+  baseline path: entry
+  baseline slot: _totalSupply.slot
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    result := sload(_totalSupply.slot); // origin: N2
+  OriginSummary: shared=[] cloned=[2]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 3: YulHeavyERC20.balanceOf(address account)
+ConditionalMaterialization: sink=N4 target=result mode=linearized
+  baseline path: entry
+  baseline slot: keccak256(0x00=account,add(0x00,32)=_balances.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, account); // origin: N2
+    mstore(0x20, _balances.slot); // origin: N3
+    result := sload(keccak256(0x00, 0x40)); // origin: N4
+  OriginSummary: shared=[2, 3] cloned=[4]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 4: YulHeavyERC20.allowance(address owner, address spender)
+ConditionalMaterialization: sink=N7 target=result mode=linearized
+  baseline path: entry
+  baseline slot: keccak256(0x00=spender,add(0x00,32)=ownerSlot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, spender); // origin: N5
+    mstore(0x20, ownerSlot); // origin: N6
+    result := sload(keccak256(0x00, 0x40)); // origin: N7
+  OriginSummary: shared=[5, 6] cloned=[7]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 5: YulHeavyERC20.approve(address spender, uint256 value)
+ConditionalMaterialization: sink=N9 target=log3 mode=linearized
+  baseline path: entry
+  baseline slot: log3(0x00=value)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, value); // origin: N8
+    log3(0x00, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), spender); // origin: N9
+  OriginSummary: shared=[8] cloned=[9]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 6: YulHeavyERC20.transfer(address to, uint256 value)
+ConditionalMaterialization: sink=N8 target=fromBalance mode=linearized
+  baseline path: !(iszero(to))
+  baseline slot: fromSlot=keccak256(0x00=caller(),add(0x00,32)=_balances.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, caller()); // origin: N5
+    mstore(0x20, _balances.slot); // origin: N6
+    let fromSlot := keccak256(0x00, 0x40); // origin: N7
+    let fromBalance := sload(fromSlot); // origin: N8
+  OriginSummary: shared=[5, 6, 7] cloned=[8]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N18 target=log3 mode=linearized
+  baseline path: !(iszero(to)) && !(lt(fromBalance, value))
+  baseline slot: log3(0x00=value)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, value); // origin: N17
+    log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), to); // origin: N18
+  OriginSummary: shared=[17] cloned=[18]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 7: YulHeavyERC20.transferFrom(address from, address to, uint256 value)
+ConditionalMaterialization: sink=N11 target=currentAllowance mode=linearized
+  baseline path: !(iszero(to))
+  baseline slot: allowanceSlot=keccak256(0x00=caller(),add(0x00,32)=ownerSlot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, caller()); // origin: N8
+    mstore(0x20, ownerSlot); // origin: N9
+    let allowanceSlot := keccak256(0x00, 0x40); // origin: N10
+    let currentAllowance := sload(allowanceSlot); // origin: N11
+  OriginSummary: shared=[8, 9, 10] cloned=[11]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 8: YulHeavyERC20.burn(uint256 value)
+ConditionalMaterialization: sink=N5 target=accountBalance mode=linearized
+  baseline path: entry
+  baseline slot: accountSlot=keccak256(0x00=caller(),add(0x00,32)=_balances.slot)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, caller()); // origin: N2
+    mstore(0x20, _balances.slot); // origin: N3
+    let accountSlot := keccak256(0x00, 0x40); // origin: N4
+    let accountBalance := sload(accountSlot); // origin: N5
+  OriginSummary: shared=[2, 3, 4] cloned=[5]
+  SourceRewrite: skipped linearized non-divergent expansion
+ConditionalMaterialization: sink=N12 target=log3 mode=linearized
+  baseline path: !(lt(accountBalance, value))
+  baseline slot: log3(0x00=value)
+  DiscardedUnknownPaths: 0
+  BranchExpandedYulIR:
+    mstore(0x00, value); // origin: N11
+    log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), 0); // origin: N12
+  OriginSummary: shared=[11] cloned=[12]
+  SourceRewrite: skipped linearized non-divergent expansion
+
+AssemblyBlock 9: YulHeavyERC20.batchBalanceSum(address[] accounts)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 10: YulHeavyERC20.hasCode(address account)
+  No path-divergent materializable memory sink.
+
+AssemblyBlock 11: YulHeavyERC20.externalBalanceOf(address token, address account)
+  No path-divergent materializable memory sink.
+
+INFO:SSEIRBranchPreprocess:opaque_rewrites 0
+INFO:SSEIRBranchPreprocess:branch_rewrites 0
+INFO:SSEIRBranchPreprocess:total_rewrites 0
