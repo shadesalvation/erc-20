@@ -167,6 +167,8 @@ Non-goals：通用 Alias Analyzer、任意地址/keccak/slot 算术求解、全�
 
 source representation 是 CFG edge guard、BranchCondition/Require/Assert、path witness 和 typed operands。canonical representation 是 typed predicate term：`{op, type, operands, literal, symbol_ref, arithmetic_mode}`；每个不适用字段可 null，unknown term 保留原始 refs/reason。symbol_ref 是声明/定义身份，不是显示名。P1-T6 负责最小 predicate term 与 SMT translation；P1-T7 拥有规范化；P2-T5 在同一 term vocabulary 上扩展值表达式，不能建立第二套 Guard。新增 term operator 必须有语义和版本决策。
 
+P1-T6 首个 operator/type/lowering 实现子集与 refined `guard_ref` view 见 [P1-T6-001](docs/decisions/P1-T6-001-local-typed-smt.md)。沿用上述六字段与七字段 SemanticControlEdge；不增加 canonicalization/equivalence 语义。
+
 规范化保留 bit width、signedness、checked/wrapping、转换、异常 side condition；不得把 EVM 位向量无条件化成数学整数。`compare_guards(left, right, assumptions) -> ComparisonResult`：outcome=`EQUIVALENT / DIFFERENT / UNKNOWN / TIMEOUT / UNSUPPORTED`，带 counterexample/proof/query refs 和 scope。同一已验证 canonical term 可作句法相同的充分证据；字符串不同不是语义不同证据。guard id 只是结构化身份，不代替逻辑等价；本 Task 不实现 SMT。
 
 ### Value Flow
